@@ -1,14 +1,9 @@
-import React from 'react'
+const App = () => {
+  return <div>
 
-function App() {
-  return (
-    // <div>
-      
-    // </div>
-    <div className="text-3xl font-bold text-blue-500">
-    Tailwind is working!
   </div>
-  )
-}
+};
+
+
 
 export default App
