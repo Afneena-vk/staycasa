@@ -1,6 +1,6 @@
 import React from 'react'
 
-function OwnerOTPverification() {
+function OwnerForgotPasssword() {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function OwnerOTPverification() {
   )
 }
 
-export default OwnerOTPverification
+export default OwnerForgotPasssword
