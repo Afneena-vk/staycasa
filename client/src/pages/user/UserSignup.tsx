@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useAuthStore } from "../../stores/authStore";
 
 const UserSignup = () => {
+    const {signup} = useAuthStore()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -13,10 +15,12 @@ const UserSignup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Add validation & API call
-    console.log(formData);
+    
+    console.log("User Signup Data:", formData);
+    await signup(formData,"user")
+   
   };
 
   return (
