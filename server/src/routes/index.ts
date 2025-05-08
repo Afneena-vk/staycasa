@@ -6,6 +6,7 @@ import userRoutes from "./userRoutes";
 
 const router = Router();
 
+// router.use("/auth", authRoutes);
 router.use("/user", userRoutes);
 router.use("/owner", ownerRoutes);
 //router.use("/admin", adminRoutes);
