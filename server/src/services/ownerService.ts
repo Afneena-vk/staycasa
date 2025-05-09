@@ -1,8 +1,9 @@
 
-import { IOwnerService, OwnerSignupData } from "./interfaces/IOwnerService";
+import { IOwnerService, OwnerSignupData, OwnerLoginData } from "./interfaces/IOwnerService";
 import ownerRepository from "../repositories/ownerRepository";
 import OTPService from "../utils/OTPService"
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 
 class OwnerService implements IOwnerService {
@@ -64,6 +65,65 @@ class OwnerService implements IOwnerService {
       await owner.save();
   
       return { status: STATUS_CODES.OK, message: "Owner verified successfully" };
+    }
+    
+    async loginOwner(data: OwnerLoginData): Promise<{
+      token: string;
+      owner: any;
+      message: string;
+      status: number;
+    }> {
+      const { email, password } = data;
+  
+      if (!email || !password) {
+        const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
+        error.status = STATUS_CODES.BAD_REQUEST;
+        throw error;
+      }
+  
+      const owner = await ownerRepository.findByEmail(email);
+      if (!owner) {
+        const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
+        error.status = STATUS_CODES.UNAUTHORIZED;
+        throw error;
+      }
+  
+      if (owner.isBlocked) {
+        const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
+        error.status = STATUS_CODES.FORBIDDEN;
+        throw error;
+      }
+  
+      if (!owner.isVerified) {
+        const error: any = new Error(MESSAGES.ERROR.UNAUTHORIZED);
+        error.status = STATUS_CODES.UNAUTHORIZED;
+        throw error;
+      }
+  
+      const isPasswordValid = await bcrypt.compare(password, owner.password);
+      if (!isPasswordValid) {
+        const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
+        error.status = STATUS_CODES.UNAUTHORIZED;
+        throw error;
+      }
+  
+      const JWT_SECRET = process.env.JWT_SECRET;
+      if (!JWT_SECRET) {
+        throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+      }
+  
+      const token = jwt.sign({ id: owner._id, email: owner.email }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+  
+      const { password: _, otp, ...ownerData } = owner.toObject();
+  
+      return {
+        token,
+        owner: ownerData,
+        message: MESSAGES.SUCCESS.LOGIN,
+        status: STATUS_CODES.OK,
+      };
     }
 }
 

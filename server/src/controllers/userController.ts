@@ -15,10 +15,16 @@ class UserController implements IUserController {
         message: result.message,
       });
 
-    } catch (error) {
-      console.error("Registration error:", error);
-      next(error);
-    }
+    // } catch (error) {
+    //   console.error("Registration error:", error);
+    //   next(error);
+    // }
+  } catch (error: any) {
+    console.error("Registration error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
   }
   async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -31,10 +37,30 @@ class UserController implements IUserController {
 
       const result = await userService.verifyOtp(email, otp);
       res.status(result.status).json({ message: result.message });
-    } catch (error) {
-      console.error("OTP verification error:", error);
-      next(error);
-    }
+    // } catch (error) {
+    //   console.error("OTP verification error:", error);
+    //   next(error);
+    // }
+  } catch (error: any) {
+    console.error("OTP verification error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+   }
+  }
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await userService.loginUser(req.body);
+      res.status(STATUS_CODES.OK).json(result);
+    // } catch (error) {
+    //   next(error);
+    // }
+  } catch (error: any) {
+    console.error("Login error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
   }
 }
 

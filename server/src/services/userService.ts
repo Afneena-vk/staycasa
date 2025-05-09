@@ -1,8 +1,9 @@
 
-import { IUserService, SignupData } from "./interfaces/IUserService";
+import { IUserService, SignupData,LoginData  } from "./interfaces/IUserService";
 import userRepository from "../repositories/userRepository";
 import OTPService from "../utils/OTPService";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 
 class UserService implements IUserService {
@@ -31,6 +32,7 @@ class UserService implements IUserService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
+
     await userRepository.create({
       name,
       email,
@@ -41,8 +43,10 @@ class UserService implements IUserService {
     });
 
     await OTPService.sendOTP(email, otp);
+
     return { status: STATUS_CODES.CREATED,message: "User registered successfully.Please verify OTP sent to your email." };
-  }
+    }
+
   async verifyOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
     const user = await userRepository.findByEmail(email);
 
@@ -64,6 +68,65 @@ class UserService implements IUserService {
 
     return { status: STATUS_CODES.OK, message: "User verified successfully" };
   }
+
+  async loginUser(data: LoginData): Promise<{ token: string; message: string; user: any;status: number }> {
+    const { email, password } = data;
+
+    if (!email || !password) {
+      const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
+      error.status = STATUS_CODES.BAD_REQUEST;
+      throw error;
+    }
+
+    const user = await userRepository.findByEmail(email);
+
+    if (!user) {
+      const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
+      error.status = STATUS_CODES.UNAUTHORIZED;
+      throw error;
+    }
+
+    if (user.status === "blocked") {
+      const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
+      error.status = STATUS_CODES.FORBIDDEN;
+      throw error;
+    }
+
+    if (!user.isVerified) {
+      const error: any = new Error(MESSAGES.ERROR.UNAUTHORIZED);
+      error.status = STATUS_CODES.UNAUTHORIZED;
+      throw error;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password || "");
+
+    if (!isPasswordValid) {
+      const error: any = new Error("Invalid email or password");
+      error.status = STATUS_CODES.UNAUTHORIZED;
+      throw error;
+    }
+
+    const JWT_SECRET = process.env.JWT_SECRET;
+
+     if (!JWT_SECRET) {
+        throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+     }
+
+
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    const { password: _, otp, ...userData } = user.toObject(); // remove password and otp
+
+    return {
+      token,
+      user: userData,
+      message: MESSAGES.SUCCESS.LOGIN,
+      status: STATUS_CODES.OK,
+    };
+  }
+  
 }
 
 export default new UserService();
