@@ -6,4 +6,6 @@ const userRoutes = Router();
 // })
 userRoutes.post("/signup", userController.signup);
 userRoutes.post("/verify-otp", userController.verifyOtp);
+userRoutes.post("/login", userController.login);
+
 export default userRoutes

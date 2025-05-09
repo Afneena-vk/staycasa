@@ -7,4 +7,5 @@ const ownerRoutes = Router();
 
 ownerRoutes.post("/signup",ownerController.signup)
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp);
+ownerRoutes.post("/login", ownerController.login);
 export default ownerRoutes
