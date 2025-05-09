@@ -5,4 +5,5 @@ const userRoutes = Router();
 //     console.log(req.body);
 // })
 userRoutes.post("/signup", userController.signup);
+userRoutes.post("/verify-otp", userController.verifyOtp);
 export default userRoutes
