@@ -42,31 +42,6 @@ const ownerSchema = new Schema<IOwner>(
   }
 );
 
-// // Pre-save middleware to hash password before saving to database
-// ownerSchema.pre('save', async function(next) {
-//   // Only hash the password if it's modified (or new)
-//   if (!this.isModified('password')) return next();
-  
-//   try {
-//     // Generate a salt
-//     const salt = await bcrypt.genSalt(10);
-    
-//     // Hash the password along with the new salt
-//     this.password = await bcrypt.hash(this.password, salt);
-//     next();
-//   } catch (error: any) {
-//     next(error);
-//   }
-// });
-
-// // Method to compare entered password with hashed password in database
-// ownerSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-//   try {
-//     return await bcrypt.compare(candidatePassword, this.password);
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 // Create and export the Owner model
 const Owner = mongoose.model<IOwner>('Owner', ownerSchema);

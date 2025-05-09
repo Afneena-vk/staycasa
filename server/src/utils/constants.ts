@@ -28,6 +28,8 @@ export const ROLES = {
       INVALID_CREDENTIALS: "Invalid credentials",
       EMAIL_EXISTS: "Email already exists",
       USER_NOT_FOUND: "User not found",
+      INVALID_INPUT: "Invalid input: Email and Password are required",
+      JWT_SECRET_MISSING: "JWT secret is not configured",
       OTP_INVALID: "Invalid OTP",
       OTP_EXPIRED: "OTP has expired",
       UNAUTHORIZED: "Unauthorized access",

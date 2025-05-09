@@ -18,5 +18,6 @@ export interface SignupData {
   
   export interface IUserService {
     registerUser(data: SignupData): Promise<{ message: string }>;
+    verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
   }
   
