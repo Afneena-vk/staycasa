@@ -1,5 +1,3 @@
-
-
 import { IBaseRepository } from './IBaseRepository';
 import { IOwner } from '../../models/ownerModel';
 

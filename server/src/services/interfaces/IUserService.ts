@@ -20,5 +20,6 @@ export interface SignupData {
     registerUser(data: SignupData): Promise<{ message: string }>;
     verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
     loginUser(data: LoginData): Promise<{ token: string; user: any; message: string; status: number; }>;
+     processGoogleAuth(profile: any): Promise<{ token: string; user: any; message: string; status: number }>;
   }
   

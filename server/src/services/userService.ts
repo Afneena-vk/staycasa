@@ -5,6 +5,7 @@ import OTPService from "../utils/OTPService";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
+import { IUser } from "../models/userModel";
 
 class UserService implements IUserService {
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
@@ -126,6 +127,50 @@ class UserService implements IUserService {
       status: STATUS_CODES.OK,
     };
   }
+
+
+  async processGoogleAuth(
+    profile: any
+  ): Promise<{ user: IUser; token: string; message: string; status: number }> {
+    const email = profile.email;
+  
+    let user = await userRepository.findByEmail(email);
+  
+    if (user) {
+      if (!user.googleId) {
+        user.googleId = profile.id;
+        await userRepository.update(user._id.toString(), user);
+      }
+    } else {
+      user = await userRepository.create({
+        googleId: profile.id,
+        name: profile.displayName,
+        email,
+        password: "", // Not needed for Google users
+        isVerified: true,
+      });
+    }
+  
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+    }
+  
+    const token = jwt.sign({ userId: user._id }, jwtSecret, {
+      expiresIn: "1h",
+    });
+  
+   
+    const { password: _, otp, ...userData } = user.toObject();
+  
+    return {
+      user: userData,
+      token,
+      message: MESSAGES.SUCCESS.LOGIN,
+      status: STATUS_CODES.OK,
+    };
+  }
+  
   
 }
 

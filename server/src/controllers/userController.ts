@@ -2,6 +2,7 @@ import { IUserController } from "./interfaces/IUserController";
 import { Request, Response, NextFunction } from "express";
 import userService from "../services/userService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
+import jwt from "jsonwebtoken";
 
 class UserController implements IUserController {
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -62,6 +63,35 @@ class UserController implements IUserController {
     });
   }
   }
+  async googleCallback(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user as any;
+      if (!user) {
+        res.status(STATUS_CODES.UNAUTHORIZED).json({
+          error: MESSAGES.ERROR.UNAUTHORIZED,
+        });
+        return;
+      }
+  
+      const result = await userService.processGoogleAuth(user);
+  
+      res.status(result.status).json({
+        message: result.message,
+        user: {
+          id: result.user._id,
+          name: result.user.name,
+          email: result.user.email,
+        },
+        token: result.token,
+      });
+    } catch (error: any) {
+      console.error("Google auth error:", error);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+    }
+  }
+  
 }
 
 export default new UserController();

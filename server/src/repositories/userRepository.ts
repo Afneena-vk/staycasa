@@ -19,3 +19,4 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
 }
 
 export default new UserRepository();
+
