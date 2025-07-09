@@ -5,6 +5,7 @@ import OTPService from "../utils/OTPService"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
+//import {IOwner} from '../models/ownerModel'
 
 class OwnerService implements IOwnerService {
   async registerOwner(data: OwnerSignupData): Promise<{ status: number;message: string }> {
@@ -49,7 +50,7 @@ class OwnerService implements IOwnerService {
       const owner = await ownerRepository.findByEmail(email);
   
       if (!owner) {
-        const error: any = new Error("User not found");
+        const error: any = new Error("Owner not found");
         error.status = STATUS_CODES.NOT_FOUND;
         throw error;
       }
@@ -66,6 +67,34 @@ class OwnerService implements IOwnerService {
   
       return { status: STATUS_CODES.OK, message: "Owner verified successfully" };
     }
+
+      async resendOtp(email: string): Promise<{ status: number; message: string }> {
+        const owner = await ownerRepository.findByEmail(email);
+    
+        if (!owner) {
+          const error: any = new Error("Owner not found");
+          error.status = STATUS_CODES.NOT_FOUND;
+          throw error;
+        }
+    
+        if (owner.isVerified) {
+          const error: any = new Error("Owner is already verified");
+          error.status = STATUS_CODES.BAD_REQUEST;
+          throw error;
+        }
+    
+        // Generate new OTP
+        const otp = OTPService.generateOTP();
+        console.log("New OTP is:", otp);
+        // Update owner with new OTP
+        owner.otp = otp;
+        await owner.save();
+    
+        // Send new OTP to email
+        await OTPService.sendOTP(email, otp);
+    
+        return { status: STATUS_CODES.OK, message: "New OTP sent successfully" };
+      }
     
     async loginOwner(data: OwnerLoginData): Promise<{
       token: string;
@@ -112,7 +141,7 @@ class OwnerService implements IOwnerService {
         throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
       }
   
-      const token = jwt.sign({ id: owner._id, email: owner.email }, JWT_SECRET, {
+      const token = jwt.sign({ userId: owner._id, email: owner.email, type: "owner" }, JWT_SECRET, {
         expiresIn: "7d",
       });
   

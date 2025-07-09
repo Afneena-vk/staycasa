@@ -1,55 +1,157 @@
-import { useState } from "react";
-import { useAuthStore } from "../../stores/authStore";
+
+
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAuthStore } from '../../stores/authStore';
+
+type SignupFormData = {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  businessName: string;
+  businessAddress: string;
+};
 
 const OwnerSignup = () => {
-    const { signup } = useAuthStore();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>();
+  const navigate = useNavigate();
+  const { signup, setTempEmail } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async(e: React.FormEvent) => {
-    e.preventDefault();
-
-    // TODO: Add validation & API call
-    console.log("Owner Signup Data:", formData);
-    await signup(formData,"owner")
+  const onSubmit = async (data: SignupFormData) => {
+    try {
+      setIsLoading(true);
+      await signup(data, 'owner');
+      setTempEmail(data.email);
+      toast.success('Registration successful! Please verify OTP sent to your email.');
+      navigate('/owner/otp-verification');
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || 'Registration failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-md w-96"
-      >
-        <h2 className="text-2xl mb-4 text-center font-bold">Owner Signup</h2>
-        {["name", "email", "phone", "password", "confirmPassword"].map(
-          (field) => (
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Create Owner Account</h2>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Name */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">Full Name</label>
             <input
-              key={field}
-              type={field.includes("password") ? "password" : "text"}
-              name={field}
-              placeholder={field.replace(/([A-Z])/g, " $1")}
-              value={(formData as any)[field]}
-              onChange={handleChange}
-              className="w-full mb-3 px-3 py-2 border rounded"
+              id="name"
+              type="text"
+              {...register('name', { required: 'Name is required' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="Your Name"
             />
-          )
-        )}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          Sign Up
-        </button>
-      </form>
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+          </div>
+
+          {/* Email */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              {...register('email', { required: 'Email is required' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="Email"
+            />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          </div>
+
+          {/* Phone */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="phone">Phone Number</label>
+            <input
+              id="phone"
+              type="tel"
+              {...register('phone', { required: 'Phone number is required' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="Phone Number"
+            />
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+          </div>
+
+          {/* Business Name */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="businessName">Business Name</label>
+            <input
+              id="businessName"
+              type="text"
+              {...register('businessName', { required: 'Business name is required' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="Business Name"
+            />
+            {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName.message}</p>}
+          </div>
+
+          {/* Business Address */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="businessAddress">Business Address</label>
+            <input
+              id="businessAddress"
+              type="text"
+              {...register('businessAddress', { required: 'Business address is required' })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="Business Address"
+            />
+            {errors.businessAddress && <p className="text-red-500 text-xs mt-1">{errors.businessAddress.message}</p>}
+          </div>
+
+          {/* Password */}
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Minimum 8 characters' } })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="********"
+            />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+          </div>
+
+          {/* Confirm Password */}
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              {...register('confirmPassword', {
+                required: 'Please confirm your password',
+                validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+              })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              placeholder="********"
+            />
+            {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Signing up...' : 'Sign Up'}
+          </button>
+        </form>
+
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Already have an account?{' '}
+            <a href="/owner/login" className="text-blue-500 hover:text-blue-700">Log in</a>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-// src/controllers/interfaces/IOwnerController.ts
+
 
 import { Request, Response, NextFunction } from "express";
 

@@ -1,4 +1,4 @@
-// src/repositories/interfaces/IUserRepository.ts
+
 
 import { IBaseRepository } from './IBaseRepository';
 import { IUser } from '../../models/userModel';

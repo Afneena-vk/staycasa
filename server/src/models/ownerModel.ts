@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, ObjectId  } from 'mongoose';
 
 
-// Define interface for Owner document
+
 export interface IOwner extends Document {
   _id: ObjectId;
   name: string;
@@ -21,7 +21,7 @@ export interface IOwner extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-// Define the Owner schema
+
 const ownerSchema = new Schema<IOwner>(
   {
     name: {type: String,required: true},
@@ -38,11 +38,11 @@ const ownerSchema = new Schema<IOwner>(
     otpExpires: {type: Date}
   },
   {
-    timestamps: true // Automatically create createdAt and updatedAt fields
+    timestamps: true 
   }
 );
 
 
-// Create and export the Owner model
+
 const Owner = mongoose.model<IOwner>('Owner', ownerSchema);
 export default Owner;

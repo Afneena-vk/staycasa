@@ -1,5 +1,5 @@
 
-// src/repositories/ownerRepository.ts
+
 
 import Owner, { IOwner } from '../models/ownerModel';
 import { BaseRepository } from './baseRepository';

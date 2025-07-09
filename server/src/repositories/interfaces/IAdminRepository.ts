@@ -1,4 +1,4 @@
-// src/repositories/interfaces/IAdminRepository.ts
+
 
 import { IBaseRepository } from './IBaseRepository';
 import { IAdmin } from '../../models/adminModel';

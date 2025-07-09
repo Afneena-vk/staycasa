@@ -1,4 +1,4 @@
-// src/services/interfaces/IUserServices.ts
+
 
 
 
@@ -19,7 +19,13 @@ export interface SignupData {
   export interface IUserService {
     registerUser(data: SignupData): Promise<{ message: string }>;
     verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
+    resendOtp(email: string): Promise<{ message: string; status: number }>;
     loginUser(data: LoginData): Promise<{ token: string; user: any; message: string; status: number; }>;
-     processGoogleAuth(profile: any): Promise<{ token: string; user: any; message: string; status: number }>;
+    processGoogleAuth(profile: any): Promise<{ token: string; user: any; message: string; status: number }>;
+
+
+    //  forgotPassword(email: string): Promise<{ message: string; status: number }>;
+    // verifyResetOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
+    // resetPassword(data: ResetPasswordData): Promise<{ message: string; status: number }>;
   }
   

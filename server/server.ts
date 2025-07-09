@@ -13,8 +13,8 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-await connectDB(); // Connect to the database
-    const server = http.createServer(app); // Create HTTP server with Express app
+await connectDB(); 
+    const server = http.createServer(app); 
 
     
 server.listen(PORT, () => { 

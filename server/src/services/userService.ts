@@ -30,6 +30,7 @@ class UserService implements IUserService {
       throw error;
     }
 
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
@@ -70,7 +71,37 @@ class UserService implements IUserService {
     return { status: STATUS_CODES.OK, message: "User verified successfully" };
   }
 
-  async loginUser(data: LoginData): Promise<{ token: string; message: string; user: any;status: number }> {
+
+  async resendOtp(email: string): Promise<{ status: number; message: string }> {
+    const user = await userRepository.findByEmail(email);
+
+    if (!user) {
+      const error: any = new Error("User not found");
+      error.status = STATUS_CODES.NOT_FOUND;
+      throw error;
+    }
+
+    if (user.isVerified) {
+      const error: any = new Error("User is already verified");
+      error.status = STATUS_CODES.BAD_REQUEST;
+      throw error;
+    }
+
+   
+    const otp = OTPService.generateOTP();
+    console.log("New OTP is:", otp);
+    
+    user.otp = otp;
+    await user.save();
+
+    
+    await OTPService.sendOTP(email, otp);
+
+    return { status: STATUS_CODES.OK, message: "New OTP sent successfully" };
+  }
+
+
+  async loginUser(data: LoginData): Promise<{ token: string; message: string; user: any; status: number }> {
     const { email, password } = data;
 
     if (!email || !password) {
@@ -114,11 +145,11 @@ class UserService implements IUserService {
      }
 
 
-    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    const { password: _, otp, ...userData } = user.toObject(); // remove password and otp
+    const { password: _, otp, ...userData } = user.toObject(); 
 
     return {
       token,
@@ -146,7 +177,7 @@ class UserService implements IUserService {
         googleId: profile.id,
         name: profile.displayName,
         email,
-        password: "", // Not needed for Google users
+        password: "", 
         isVerified: true,
       });
     }
@@ -156,7 +187,7 @@ class UserService implements IUserService {
       throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
     }
   
-    const token = jwt.sign({ userId: user._id }, jwtSecret, {
+    const token = jwt.sign({ userId: user._id, type: "user" }, jwtSecret, {
       expiresIn: "1h",
     });
   
@@ -171,6 +202,96 @@ class UserService implements IUserService {
     };
   }
   
+
+
+  //   async forgotPassword(email: string): Promise<{ status: number; message: string }> {
+  //   const user = await userRepository.findByEmail(email);
+
+  //   if (!user) {
+  //     const error: any = new Error("User not found");
+  //     error.status = STATUS_CODES.NOT_FOUND;
+  //     throw error;
+  //   }
+
+  //   if (!user.isVerified) {
+  //     const error: any = new Error("Please verify your account first");
+  //     error.status = STATUS_CODES.BAD_REQUEST;
+  //     throw error;
+  //   }
+
+  //   if (user.status === "blocked") {
+  //     const error: any = new Error("Your account is blocked. Please contact support.");
+  //     error.status = STATUS_CODES.FORBIDDEN;
+  //     throw error;
+  //   }
+
+  //   const otp = OTPService.generateOTP();
+  //   console.log("Password reset OTP:", otp);
+    
+  //   // Store OTP for password reset
+  //   user.otp = otp;
+  //   await user.save();
+
+  //   await OTPService.sendOTP(email, otp, "Password Reset");
+
+  //   return { status: STATUS_CODES.OK, message: "Password reset OTP sent to your email" };
+  // }
+
+  // async verifyResetOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
+  //   const user = await userRepository.findByEmail(email);
+
+  //   if (!user) {
+  //     const error: any = new Error("User not found");
+  //     error.status = STATUS_CODES.NOT_FOUND;
+  //     throw error;
+  //   }
+
+  //   if (user.otp !== otp) {
+  //     const error: any = new Error("Invalid OTP");
+  //     error.status = STATUS_CODES.BAD_REQUEST;
+  //     throw error;
+  //   }
+
+  //   return { status: STATUS_CODES.OK, message: "OTP verified successfully" };
+  // }
+
+  // async resetPassword(data: ResetPasswordData): Promise<{ status: number; message: string }> {
+  //   const { email, otp, newPassword, confirmPassword } = data;
+
+  //   if (!email || !otp || !newPassword || !confirmPassword) {
+  //     const error: any = new Error(MESSAGES.ERROR.MISSING_FIELDS);
+  //     error.status = STATUS_CODES.BAD_REQUEST;
+  //     throw error;
+  //   }
+
+  //   if (newPassword !== confirmPassword) {
+  //     const error: any = new Error(MESSAGES.ERROR.PASSWORD_MISMATCH);
+  //     error.status = STATUS_CODES.BAD_REQUEST;
+  //     throw error;
+  //   }
+
+  //   const user = await userRepository.findByEmail(email);
+
+  //   if (!user) {
+  //     const error: any = new Error("User not found");
+  //     error.status = STATUS_CODES.NOT_FOUND;
+  //     throw error;
+  //   }
+
+  //   if (user.otp !== otp) {
+  //     const error: any = new Error("Invalid OTP");
+  //     error.status = STATUS_CODES.BAD_REQUEST;
+  //     throw error;
+  //   }
+
+  //   const hashedPassword = await bcrypt.hash(newPassword, 10);
+  //   user.password = hashedPassword;
+  //   user.otp = undefined;
+  //   await user.save();
+
+  //   return { status: STATUS_CODES.OK, message: "Password reset successfully" };
+  // }
+
   
 }
 

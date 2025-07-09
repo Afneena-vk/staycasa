@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, ObjectId } from 'mongoose';
 
-// Define interface for address
+
 interface Address {
     houseNo: string;
     street: string;
@@ -10,7 +10,7 @@ interface Address {
     pincode: string;
   }
 
-// Define interface for User document
+
 export interface IUser extends Document {
   _id: ObjectId;
   name: string;
@@ -37,10 +37,10 @@ const addressSchema = new Schema<Address>(
       state: { type: String, default: '' },
       pincode: { type: String, default: '' },
     },
-    { _id: false } // prevents creating a separate _id for address
+    { _id: false } 
   );
 
-// Define the User schema
+
 const userSchema = new Schema<IUser>(
   {
     name: {type: String,required: true,trim: true},
@@ -70,6 +70,6 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Create and export the model
+
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

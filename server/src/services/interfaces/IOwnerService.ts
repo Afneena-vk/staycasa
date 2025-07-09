@@ -1,4 +1,4 @@
-// src/services/interfaces/IOwnerService.ts
+
 
 export interface OwnerSignupData {
     name: string;

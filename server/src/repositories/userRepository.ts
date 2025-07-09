@@ -1,4 +1,4 @@
-// src/repositories/userRepository.ts
+
 
 import User, { IUser } from '../models/userModel';
 import { BaseRepository } from './baseRepository';

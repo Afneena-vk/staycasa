@@ -6,6 +6,7 @@ import { STATUS_CODES, MESSAGES } from "../utils/constants";
 class AdminController implements IAdminController{
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
+          
           const result = await adminService.loginAdmin(req.body);
           res.status(STATUS_CODES.OK).json(result);
         // } catch (error) {

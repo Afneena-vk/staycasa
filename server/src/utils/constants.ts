@@ -36,6 +36,7 @@ export const ROLES = {
       FORBIDDEN: "Forbidden access",
       SERVER_ERROR: "Internal server error",
       MISSING_FIELDS: "Required fields are missing",
+      INVALID_TOKEN: "Invalid or expired token",
       PASSWORD_MISMATCH: "Password and Confirm Password do not match",
     },
   };

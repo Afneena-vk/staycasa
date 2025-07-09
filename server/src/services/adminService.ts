@@ -38,11 +38,11 @@ class AdminService implements IAdminService {
          }
     
     
-        const token = jwt.sign({ id: admin._id, email: admin.email }, JWT_SECRET, {
+        const token = jwt.sign({ id: admin._id, email: admin.email, type: "admin"}, JWT_SECRET, {
           expiresIn: "7d",
         });
     
-        const { password: _, otp, ...adminData } = admin.toObject(); // remove password and otp
+        const { password: _, otp, ...adminData } = admin.toObject(); 
     
         return {
           token,

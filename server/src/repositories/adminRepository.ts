@@ -1,4 +1,4 @@
-// src/repositories/adminRepository.ts
+
 
 import Admin, { IAdmin } from '../models/adminModel';
 import { BaseRepository } from './baseRepository';

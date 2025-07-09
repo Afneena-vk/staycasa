@@ -8,10 +8,15 @@ interface AuthState {
     user: any | null;
     authType: AuthType | null;
     isAuthenticated: boolean;
-  
-    // login: (email: string, password: string, authType: AuthType) => Promise<void>;
-     signup: (userData: any, authType: AuthType) => Promise<void>;
-  
+    tempEmail: string | null; 
+    
+
+     login: (email: string, password: string, authType: AuthType) => Promise<void>;
+     logout: () => void;
+     signup: (userData: any, authType:  Exclude<AuthType, "admin">) => Promise<void>;
+     verifyOTP: (email: string, otp: string, authType: AuthType) => Promise<void>;
+     resendOTP: (email: string, authType: AuthType) => Promise<void>;
+     setTempEmail: (email: string | null) => void;
   }
 
 export const useAuthStore = create<AuthState>()(
@@ -20,7 +25,50 @@ export const useAuthStore = create<AuthState>()(
         user: null,
         authType: sessionStorage.getItem("auth-type") as AuthType | null,
         isAuthenticated: false,
+         tempEmail: null,
       
+login: async (email, password, authType) => {
+          try {
+            let response;
+            switch (authType) {
+              case "user":
+                response = await authService.userLogin({ email, password });
+                break;
+              case "owner":
+                response = await authService.ownerLogin({ email, password });
+                break;
+              case "admin":
+                response = await authService.adminLogin({ email, password });
+                break;
+              default:
+                throw new Error("Invalid login type");
+            }
+            
+            
+            sessionStorage.setItem("auth-type", authType);
+            
+            set({ 
+              user: response.user, 
+              authType, 
+              isAuthenticated: true 
+            });
+            
+            return response;
+          } catch (error) {
+            console.error("Login failed", error);
+            throw error;
+          }
+        },
+
+        logout: () => {
+          
+          sessionStorage.removeItem("auth-type");
+          set({ user: null, authType: null, isAuthenticated: false });
+          
+          
+          // authService.logout();
+        },
+
       signup: async (userData, authType) => {
         try {
           let response;
@@ -37,15 +85,53 @@ export const useAuthStore = create<AuthState>()(
               throw new Error("Invalid signup type");
           }
 
+            set({ tempEmail: userData.email });
+
           return response;
         } catch (error) {
           console.error("Signup failed", error);
           throw error;
         }
       },
+       
+      verifyOTP: async (email, otp, authType) => {
+        try {
+           if (authType !== "user" && authType !== "owner") {
+           throw new Error("Invalid OTP verification type");
+         }
+          const response = await authService.verifyOTP(email, otp, authType);
+          
+          
+          set({ tempEmail: null });
+          
+          return response;
+        } catch (error) {
+          console.error("OTP verification failed", error);
+          throw error;
+        }
+      },
+
+       resendOTP: async (email, authType) => {
+        try {
+             if (authType !== "user" && authType !== "owner") {
+    throw new Error("Invalid resend OTP type ");
+         }
+          const response = await authService.resendOTP(email, authType);
+          return response;
+        } catch (error) {
+          console.error("OTP resend failed", error);
+          throw error;
+        }
+      },
+      
+      setTempEmail: (email) => {
+        set({ tempEmail: email });
+      }
     }),
       {
-        name: 'auth-storage', // Required: name of localStorage key
-        // getStorage: () => sessionStorage, // Optional: use sessionStorage instead of localStorage
+        name: 'auth-storage',
+        //getStorage: () => sessionStorage, // Optional: use sessionStorage instead of localStorage
+         storage: createJSONStorage(() => localStorage)
       }
     ))
+

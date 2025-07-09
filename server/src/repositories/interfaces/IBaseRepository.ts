@@ -1,4 +1,4 @@
-// src/repositories/interfaces/IBaseRepository.ts
+
 
 import { Document, ObjectId } from 'mongoose';
 

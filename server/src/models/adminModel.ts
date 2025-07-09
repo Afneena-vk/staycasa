@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema, ObjectId } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-// Define interface for Admin document
+
 export interface IAdmin extends Document {
   _id: ObjectId;
   name: string;
@@ -11,7 +11,7 @@ export interface IAdmin extends Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-// Define the Admin schema
+
 const adminSchema = new Schema<IAdmin>(
   {
     name: {type: String, required: true,trim: true},

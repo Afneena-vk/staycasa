@@ -6,7 +6,7 @@ import { STATUS_CODES, MESSAGES } from "../utils/constants";
 class OwnerController implements IOwnerController {
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await ownerService.registerOwner(req.body); // result is { message: "..." }
+      const result = await ownerService.registerOwner(req.body); 
     //   res.status(STATUS_CODES.CREATED).json({
     //     message: MESSAGES.SUCCESS.SIGNUP,
     //     details: result.message, // or just use message: result.message
@@ -44,9 +44,29 @@ class OwnerController implements IOwnerController {
     }
 
   }
+
+    async resendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try {
+        const { email } = req.body;
+  
+        if (!email) {
+          res.status(STATUS_CODES.BAD_REQUEST).json({ error: "Email is required" });
+          return;
+        }
+  
+        const result = await ownerService.resendOtp(email);
+        res.status(result.status).json({ message: result.message });
+      } catch (error: any) {
+        console.error("OTP resend error:", error);
+        res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+          error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+        });
+      }
+    }
+
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await ownerService.loginOwner(req.body); // similar to userService.loginUser
+      const result = await ownerService.loginOwner(req.body);
       res.status(STATUS_CODES.OK).json(result);
     } catch (error: any) {
       console.error("Owner login error:", error);
