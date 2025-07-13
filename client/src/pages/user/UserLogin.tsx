@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
+import GoogleAuthButton from "../../components/GoogleAuthButton";
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({
@@ -172,13 +173,14 @@ const UserLogin = () => {
               href={`${import.meta.env.VITE_BACKEND_URL}/api/user/auth/google`}
               className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
-              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+              {/* <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                 <path
                   d="M12.545 10.239v3.821h5.445c-0.712 2.315-2.647 3.972-5.445 3.972-3.332 0-6.033-2.701-6.033-6.032s2.701-6.032 6.033-6.032c1.498 0 2.866 0.549 3.921 1.453l2.814-2.814c-1.79-1.677-4.184-2.702-6.735-2.702-5.522 0-10 4.478-10 10s4.478 10 10 10c8.396 0 10.201-7.876 9.522-11.666h-9.522z"
                   fill="#4285F4"
                 />
-              </svg>
-              Sign in with Google
+              </svg> */}
+              {/* Sign in with Google */}
+                <GoogleAuthButton text="Sign in with Google" />
             </a>
           </div>
         </form>

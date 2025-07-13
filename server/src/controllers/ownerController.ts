@@ -75,6 +75,61 @@ class OwnerController implements IOwnerController {
       });
     }
   }
+
+async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        res.status(STATUS_CODES.BAD_REQUEST).json({ 
+          error: "Email is required" 
+        });
+        return;
+      }
+
+      const result = await ownerService.forgotPassword(email);
+      res.status(result.status).json({ 
+        message: result.message 
+      });
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email, otp, newPassword, confirmPassword } = req.body;
+
+      if (!email || !otp || !newPassword || !confirmPassword) {
+        res.status(STATUS_CODES.BAD_REQUEST).json({ 
+          error: "All fields are required" 
+        });
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        res.status(STATUS_CODES.BAD_REQUEST).json({ 
+          error: MESSAGES.ERROR.PASSWORD_MISMATCH 
+        });
+        return;
+      }
+
+      const result = await ownerService.resetPassword(email, otp, newPassword);
+      res.status(result.status).json({ 
+        message: result.message 
+      });
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+    }
+  }
+
+
 }
 
 export default new OwnerController();

@@ -44,5 +44,36 @@ export const authService = {
     return response.data;
   },
 
+
+  userForgotPassword: async (email: string) => {
+    const response = await userApi.post("/forgot-password", { email });
+    return response.data;
+  },
+
+  userResetPassword: async (email: string, otp: string, newPassword: string, confirmPassword: string) => {
+    const response = await userApi.post("/reset-password", {
+      email,
+      otp,
+      newPassword,
+      confirmPassword,
+    });
+    return response.data;
+  },
+
+  ownerForgotPassword: async (email: string) => {
+    const response = await ownerApi.post("/forgot-password", { email });
+    return response.data;
+  },
+
+  ownerResetPassword: async (email: string, otp: string, newPassword: string, confirmPassword: string) => {
+    const response = await ownerApi.post("/reset-password", {
+      email,
+      otp,
+      newPassword,
+      confirmPassword,
+    });
+    return response.data;
+  },
+
 }
 

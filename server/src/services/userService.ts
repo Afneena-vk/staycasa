@@ -202,95 +202,68 @@ class UserService implements IUserService {
     };
   }
   
+async forgotPassword(email: string): Promise<{ status: number; message: string }> {
+    const user = await userRepository.findByEmail(email);
 
+    if (!user) {
+      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
+      error.status = STATUS_CODES.NOT_FOUND;
+      throw error;
+    }
 
-  //   async forgotPassword(email: string): Promise<{ status: number; message: string }> {
-  //   const user = await userRepository.findByEmail(email);
+    if (user.status === "blocked") {
+      const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
+      error.status = STATUS_CODES.FORBIDDEN;
+      throw error;
+    }
 
-  //   if (!user) {
-  //     const error: any = new Error("User not found");
-  //     error.status = STATUS_CODES.NOT_FOUND;
-  //     throw error;
-  //   }
-
-  //   if (!user.isVerified) {
-  //     const error: any = new Error("Please verify your account first");
-  //     error.status = STATUS_CODES.BAD_REQUEST;
-  //     throw error;
-  //   }
-
-  //   if (user.status === "blocked") {
-  //     const error: any = new Error("Your account is blocked. Please contact support.");
-  //     error.status = STATUS_CODES.FORBIDDEN;
-  //     throw error;
-  //   }
-
-  //   const otp = OTPService.generateOTP();
-  //   console.log("Password reset OTP:", otp);
     
-  //   // Store OTP for password reset
-  //   user.otp = otp;
-  //   await user.save();
+    const otp = OTPService.generateOTP();
+    console.log("Password reset OTP:", otp);
 
-  //   await OTPService.sendOTP(email, otp, "Password Reset");
+    
+    user.otp = otp;
+    await user.save();
 
-  //   return { status: STATUS_CODES.OK, message: "Password reset OTP sent to your email" };
-  // }
+    
+    await OTPService.sendOTP(email, otp);
 
-  // async verifyResetOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
-  //   const user = await userRepository.findByEmail(email);
+    return { 
+      status: STATUS_CODES.OK, 
+      message: "Password reset OTP sent to your email" 
+    };
+  }
 
-  //   if (!user) {
-  //     const error: any = new Error("User not found");
-  //     error.status = STATUS_CODES.NOT_FOUND;
-  //     throw error;
-  //   }
+  async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
+    const user = await userRepository.findByEmail(email);
 
-  //   if (user.otp !== otp) {
-  //     const error: any = new Error("Invalid OTP");
-  //     error.status = STATUS_CODES.BAD_REQUEST;
-  //     throw error;
-  //   }
+    if (!user) {
+      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
+      error.status = STATUS_CODES.NOT_FOUND;
+      throw error;
+    }
 
-  //   return { status: STATUS_CODES.OK, message: "OTP verified successfully" };
-  // }
+    if (user.otp !== otp) {
+      const error: any = new Error(MESSAGES.ERROR.OTP_INVALID);
+      error.status = STATUS_CODES.BAD_REQUEST;
+      throw error;
+    }
 
-  // async resetPassword(data: ResetPasswordData): Promise<{ status: number; message: string }> {
-  //   const { email, otp, newPassword, confirmPassword } = data;
+    
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-  //   if (!email || !otp || !newPassword || !confirmPassword) {
-  //     const error: any = new Error(MESSAGES.ERROR.MISSING_FIELDS);
-  //     error.status = STATUS_CODES.BAD_REQUEST;
-  //     throw error;
-  //   }
+    
+    user.password = hashedPassword;
+    user.otp = undefined;
+    await user.save();
 
-  //   if (newPassword !== confirmPassword) {
-  //     const error: any = new Error(MESSAGES.ERROR.PASSWORD_MISMATCH);
-  //     error.status = STATUS_CODES.BAD_REQUEST;
-  //     throw error;
-  //   }
+    return { 
+      status: STATUS_CODES.OK, 
+      message: MESSAGES.SUCCESS.PASSWORD_RESET 
+    };
+  }
 
-  //   const user = await userRepository.findByEmail(email);
-
-  //   if (!user) {
-  //     const error: any = new Error("User not found");
-  //     error.status = STATUS_CODES.NOT_FOUND;
-  //     throw error;
-  //   }
-
-  //   if (user.otp !== otp) {
-  //     const error: any = new Error("Invalid OTP");
-  //     error.status = STATUS_CODES.BAD_REQUEST;
-  //     throw error;
-  //   }
-
-  //   const hashedPassword = await bcrypt.hash(newPassword, 10);
-  //   user.password = hashedPassword;
-  //   user.otp = undefined;
-  //   await user.save();
-
-  //   return { status: STATUS_CODES.OK, message: "Password reset successfully" };
-  // }
+  
 
   
 }

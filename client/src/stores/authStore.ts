@@ -17,6 +17,18 @@ interface AuthState {
      verifyOTP: (email: string, otp: string, authType: AuthType) => Promise<void>;
      resendOTP: (email: string, authType: AuthType) => Promise<void>;
      setTempEmail: (email: string | null) => void;
+
+     forgotPassword: (email: string, authType: Exclude<AuthType, "admin">) => Promise<void>;
+  resetPassword: (
+    email: string,
+    otp: string,
+    newPassword: string,
+    confirmPassword: string,
+    authType: Exclude<AuthType, "admin">
+  ) => Promise<void>;
+
+  setUser: (user: any, authType: AuthType) => void;
+
   }
 
 export const useAuthStore = create<AuthState>()(
@@ -126,11 +138,65 @@ login: async (email, password, authType) => {
       
       setTempEmail: (email) => {
         set({ tempEmail: email });
-      }
+      },
+
+         forgotPassword: async (email: string, authType: Exclude<AuthType, "admin">) => {
+        try {
+          let response;
+          switch (authType) {
+            case "user":
+              response = await authService.userForgotPassword(email);
+              break;
+            case "owner":
+              response = await authService.ownerForgotPassword(email);
+              break;
+            default:
+              throw new Error("Invalid forgot password type");
+          }
+          
+          set({ tempEmail: email });
+          return response;
+        } catch (error) {
+          console.error("Forgot password failed", error);
+          throw error;
+        }
+      },
+
+      resetPassword: async (email: string, otp: string, newPassword: string, confirmPassword: string, authType: Exclude<AuthType, "admin">) => {
+        try {
+          let response;
+          switch (authType) {
+            case "user":
+              response = await authService.userResetPassword(email, otp, newPassword, confirmPassword);
+              break;
+            case "owner":
+              response = await authService.ownerResetPassword(email, otp, newPassword, confirmPassword);
+              break;
+            default:
+              throw new Error("Invalid reset password type");
+          }
+          
+          set({ tempEmail: null });
+          return response;
+        } catch (error) {
+          console.error("Reset password failed", error);
+          throw error;
+        }
+      },
+    
+       setUser: (user: any, authType: AuthType) => {
+        sessionStorage.setItem("auth-type", authType);
+        set({ 
+          user, 
+          authType, 
+          isAuthenticated: true 
+        });
+      },
+
     }),
       {
         name: 'auth-storage',
-        //getStorage: () => sessionStorage, // Optional: use sessionStorage instead of localStorage
+        //getStorage: () => sessionStorage, 
          storage: createJSONStorage(() => localStorage)
       }
     ))

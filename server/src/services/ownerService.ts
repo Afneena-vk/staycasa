@@ -83,14 +83,14 @@ class OwnerService implements IOwnerService {
           throw error;
         }
     
-        // Generate new OTP
+       
         const otp = OTPService.generateOTP();
         console.log("New OTP is:", otp);
-        // Update owner with new OTP
+        
         owner.otp = otp;
         await owner.save();
     
-        // Send new OTP to email
+    
         await OTPService.sendOTP(email, otp);
     
         return { status: STATUS_CODES.OK, message: "New OTP sent successfully" };
@@ -154,6 +154,66 @@ class OwnerService implements IOwnerService {
         status: STATUS_CODES.OK,
       };
     }
+    async forgotPassword(email: string): Promise<{ status: number; message: string }> {
+        const owner = await ownerRepository.findByEmail(email);
+    
+        if (!owner) {
+          const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
+          error.status = STATUS_CODES.NOT_FOUND;
+          throw error;
+        }
+    
+        if (owner.isBlocked) {
+          const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
+          error.status = STATUS_CODES.FORBIDDEN;
+          throw error;
+        }
+    
+        
+        const otp = OTPService.generateOTP();
+        console.log("Password reset OTP:", otp);
+    
+        
+        owner.otp = otp;
+        await owner.save();
+    
+        
+        await OTPService.sendOTP(email, otp);
+    
+        return { 
+          status: STATUS_CODES.OK, 
+          message: "Password reset OTP sent to your email" 
+        };
+      }
+    
+      async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
+        const owner = await ownerRepository.findByEmail(email);
+    
+        if (!owner) {
+          const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
+          error.status = STATUS_CODES.NOT_FOUND;
+          throw error;
+        }
+    
+        if (owner.otp !== otp) {
+          const error: any = new Error(MESSAGES.ERROR.OTP_INVALID);
+          error.status = STATUS_CODES.BAD_REQUEST;
+          throw error;
+        }
+    
+     
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+        
+        owner.password = hashedPassword;
+        owner.otp = undefined;
+        await owner.save();
+    
+        return { 
+          status: STATUS_CODES.OK, 
+          message: MESSAGES.SUCCESS.PASSWORD_RESET 
+        };
+      }
 }
 
 export default new OwnerService();

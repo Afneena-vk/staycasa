@@ -13,7 +13,7 @@ import OwnerLogin from "./pages/owner/OwnerLogin.tsx";
 import OwnerForgotPassword from "./pages/owner/OwnerForgotPassword.tsx";
 import OwnerOTPVerification from "./pages/owner/OwnerOTPverification.tsx";
 import OwnerResetPassword from "./pages/owner/OwnerResetPassword";
-
+import AuthSuccess from "./pages/user/AuthSuccess.tsx";
 
 import UserSignup from "./pages/user/UserSignup";
 import UserLogin from "./pages/user/UserLogin";
@@ -42,6 +42,7 @@ const App = () => {
         <Route path="/user/forgot-password" element={<UserForgotPassword />} />
         <Route path="/user/otp-verification" element={<UserOTPVerification />} />
         <Route path="/user/reset-password" element={<UserResetPassword />} />
+        <Route path="/user/auth-success" element={<AuthSuccess />} />
       </Routes>
     </Router>
   );
