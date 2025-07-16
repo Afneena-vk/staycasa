@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import userService from "../services/userService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
+import logger
+ from "../utils/logger";
 
 class UserController implements IUserController {
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -21,7 +23,8 @@ class UserController implements IUserController {
     //   next(error);
     // }
   } catch (error: any) {
-    console.error("Registration error:", error);
+    //console.error("Registration error:", error);
+    logger.error("Registration error:", error);
     res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
     });
@@ -43,7 +46,8 @@ class UserController implements IUserController {
     //   next(error);
     // }
   } catch (error: any) {
-    console.error("OTP verification error:", error);
+   // console.error("OTP verification error:", error);
+    logger.error("OTP verification error: " + error.message);
     res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
     });
@@ -62,7 +66,8 @@ class UserController implements IUserController {
       const result = await userService.resendOtp(email);
       res.status(result.status).json({ message: result.message });
     } catch (error: any) {
-      console.error("OTP resend error:", error);
+     // console.error("OTP resend error:", error);
+     logger.error("OTP resend error: " + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });
@@ -89,19 +94,29 @@ class UserController implements IUserController {
       // });
       res.status(result.status).json({
   message: result.message,
-  user: {
-    id: result.user._id,
-    name: result.user.name,
-    email: result.user.email,
-    phone: result.user.phone,
-    status: result.user.status,
+  // user: {
+  //   id: result.user._id,
+  //   name: result.user.name,
+  //   email: result.user.email,
+  //   phone: result.user.phone,
+  //   status: result.user.status,
+  // },
+   user: {
+    id: result.id,
+    name: result.name,
+    email: result.email,
+    phone: result.phone,
+    // status: result.status,
+     status: result.userStatus,
+    isVerified: result.isVerified,
   },
   token: result.token,
 });
 
 
   } catch (error: any) {
-    console.error("Login error:", error);
+    //console.error("Login error:", error);
+     logger.error("Login error: " + error.message);
     res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
     });
@@ -168,7 +183,8 @@ class UserController implements IUserController {
       res.redirect(`${process.env.FRONTEND_URL}/user/auth-success?token=${result.token}`);
       
     } catch (error: any) {
-      console.error("Google auth error:", error);
+     // console.error("Google auth error:", error);
+      logger.error("Google auth error: " + error.message);
       res.redirect(`${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`);
     }
   }
@@ -191,7 +207,8 @@ class UserController implements IUserController {
         message: result.message 
       });
     } catch (error: any) {
-      console.error("Forgot password error:", error);
+      //console.error("Forgot password error:", error);
+      logger.error("Forgot password error: " + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });
@@ -221,7 +238,8 @@ class UserController implements IUserController {
         message: result.message 
       });
     } catch (error: any) {
-      console.error("Reset password error:", error);
+      //console.error("Reset password error:", error);
+       logger.error("Reset password error: " + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });

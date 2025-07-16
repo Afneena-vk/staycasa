@@ -6,6 +6,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { IUser } from "../models/userModel";
+import { UserMapper } from "../mappers/userMapper";
+import { UserLoginResponseDto, UserGoogleAuthResponseDto } from "../dtos/user.dto";
+
 
 class UserService implements IUserService {
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
@@ -101,7 +104,8 @@ class UserService implements IUserService {
   }
 
 
-  async loginUser(data: LoginData): Promise<{ token: string; message: string; user: any; status: number }> {
+  //async loginUser(data: LoginData): Promise<{ token: string; message: string; user: any; status: number }> {
+  async loginUser(data: LoginData): Promise<UserLoginResponseDto> {
     const { email, password } = data;
 
     if (!email || !password) {
@@ -112,7 +116,8 @@ class UserService implements IUserService {
 
     const user = await userRepository.findByEmail(email);
 
-    if (!user) {
+    //if (!user) {
+    if (!user || !(await bcrypt.compare(password, user.password || ""))){
       const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
       error.status = STATUS_CODES.UNAUTHORIZED;
       throw error;
@@ -130,13 +135,13 @@ class UserService implements IUserService {
       throw error;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password || "");
+    // const isPasswordValid = await bcrypt.compare(password, user.password || "");
 
-    if (!isPasswordValid) {
-      const error: any = new Error("Invalid email or password");
-      error.status = STATUS_CODES.UNAUTHORIZED;
-      throw error;
-    }
+    // if (!isPasswordValid) {
+    //   const error: any = new Error("Invalid email or password");
+    //   error.status = STATUS_CODES.UNAUTHORIZED;
+    //   throw error;
+    // }
 
     const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -149,59 +154,91 @@ class UserService implements IUserService {
       expiresIn: "7d",
     });
 
-    const { password: _, otp, ...userData } = user.toObject(); 
+    // const { password: _, otp, ...userData } = user.toObject(); 
 
-    return {
-      token,
-      user: userData,
-      message: MESSAGES.SUCCESS.LOGIN,
-      status: STATUS_CODES.OK,
-    };
+    // return {
+    //   token,
+    //   user: userData,
+    //   message: MESSAGES.SUCCESS.LOGIN,
+    //   status: STATUS_CODES.OK,
+    // };
+    return UserMapper.toLoginResponse(user, token, MESSAGES.SUCCESS.LOGIN);
   }
 
 
-  async processGoogleAuth(
-    profile: any
-  ): Promise<{ user: IUser; token: string; message: string; status: number }> {
-    const email = profile.email;
+  // async processGoogleAuth(
+  //   profile: any
+  // ): Promise<{ user: IUser; token: string; message: string; status: number }> {
+  //   const email = profile.email;
   
-    let user = await userRepository.findByEmail(email);
+  //   let user = await userRepository.findByEmail(email);
   
-    if (user) {
-      if (!user.googleId) {
-        user.googleId = profile.id;
-        await userRepository.update(user._id.toString(), user);
-      }
-    } else {
-      user = await userRepository.create({
-        googleId: profile.id,
-        name: profile.displayName,
-        email,
-        password: "", 
-        isVerified: true,
-      });
-    }
+  //   if (user) {
+  //     if (!user.googleId) {
+  //       user.googleId = profile.id;
+  //       await userRepository.update(user._id.toString(), user);
+  //     }
+  //   } else {
+  //     user = await userRepository.create({
+  //       googleId: profile.id,
+  //       name: profile.displayName,
+  //       email,
+  //       password: "", 
+  //       isVerified: true,
+  //     });
+  //   }
   
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
-    }
+  //   const jwtSecret = process.env.JWT_SECRET;
+  //   if (!jwtSecret) {
+  //     throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+  //   }
   
-    const token = jwt.sign({ userId: user._id, type: "user" }, jwtSecret, {
-      expiresIn: "1h",
-    });
+  //   const token = jwt.sign({ userId: user._id, type: "user" }, jwtSecret, {
+  //     expiresIn: "1h",
+  //   });
   
    
-    const { password: _, otp, ...userData } = user.toObject();
+  //   const { password: _, otp, ...userData } = user.toObject();
   
-    return {
-      user: userData,
-      token,
-      message: MESSAGES.SUCCESS.LOGIN,
-      status: STATUS_CODES.OK,
-    };
+  //   return {
+  //     user: userData,
+  //     token,
+  //     message: MESSAGES.SUCCESS.LOGIN,
+  //     status: STATUS_CODES.OK,
+  //   };
+  // }
+  
+
+  async processGoogleAuth(profile: any): Promise<UserGoogleAuthResponseDto> {
+  const email = profile.email;
+  let user = await userRepository.findByEmail(email);
+
+  if (user && !user.googleId) {
+    user.googleId = profile.id;
+    await userRepository.update(user._id.toString(), user);
   }
-  
+
+  if (!user) {
+    user = await userRepository.create({
+      googleId: profile.id,
+      name: profile.displayName,
+      email,
+      password: "",
+      isVerified: true,
+    });
+  }
+
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+
+  const token = jwt.sign({ userId: user._id, type: "user" }, jwtSecret, {
+    expiresIn: "1h",
+  });
+
+  return UserMapper.toGoogleAuthResponse(user, token, MESSAGES.SUCCESS.LOGIN);
+}
+
+
 async forgotPassword(email: string): Promise<{ status: number; message: string }> {
     const user = await userRepository.findByEmail(email);
 
@@ -263,9 +300,7 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
     };
   }
 
-  
-
-  
+   
 }
 
 export default new UserService();

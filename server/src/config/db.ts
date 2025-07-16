@@ -3,6 +3,7 @@
 
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import logger from '../utils/logger';
 
 dotenv.config();
 
@@ -12,11 +13,12 @@ const connectDB = async (): Promise<void> => {
   try {
     const connection = await mongoose.connect(MONGODB_URI);
     
-    console.log(`MongoDB Connected: ${connection.connection.host}`);
-    
+    //console.log(`MongoDB Connected: ${connection.connection.host}`);
+    logger.info(`MongoDB Connected: ${connection.connection.host}`);
     
     mongoose.connection.on('error', (err) => {
-      console.error(`MongoDB connection error: ${err}`);
+     // console.error(`MongoDB connection error: ${err}`);
+     logger.error(`Error connecting to MongoDB: ${err}`);
     });
     
     mongoose.connection.on('disconnected', () => {

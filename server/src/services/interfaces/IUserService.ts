@@ -1,6 +1,6 @@
 
 
-
+import { UserLoginResponseDto,UserGoogleAuthResponseDto } from "../../dtos/user.dto";
 
 export interface SignupData {
     name: string;
@@ -20,8 +20,10 @@ export interface SignupData {
     registerUser(data: SignupData): Promise<{ message: string }>;
     verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
     resendOtp(email: string): Promise<{ message: string; status: number }>;
-    loginUser(data: LoginData): Promise<{ token: string; user: any; message: string; status: number; }>;
-    processGoogleAuth(profile: any): Promise<{ token: string; user: any; message: string; status: number }>;
+    // loginUser(data: LoginData): Promise<{ token: string; user: any; message: string; status: number; }>;
+    // processGoogleAuth(profile: any): Promise<{ token: string; user: any; message: string; status: number }>;
+     loginUser(data: LoginData): Promise<UserLoginResponseDto>;
+  processGoogleAuth(profile: any): Promise<UserGoogleAuthResponseDto>;
     forgotPassword(email: string): Promise<{ message: string; status: number }>;
     resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string; status: number }>;
   }

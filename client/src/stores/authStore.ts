@@ -4,32 +4,79 @@ import { authService } from "../services/authService";
 
 type AuthType = "user" | "owner" | "admin";
 
-interface AuthState {
-    user: any | null;
-    authType: AuthType | null;
-    isAuthenticated: boolean;
-    tempEmail: string | null; 
-    
 
-     login: (email: string, password: string, authType: AuthType) => Promise<void>;
-     logout: () => void;
-     signup: (userData: any, authType:  Exclude<AuthType, "admin">) => Promise<void>;
-     verifyOTP: (email: string, otp: string, authType: AuthType) => Promise<void>;
-     resendOTP: (email: string, authType: AuthType) => Promise<void>;
-     setTempEmail: (email: string | null) => void;
+interface BaseAuthState {
+  user: any | null;
+  authType: AuthType | null;
+  isAuthenticated: boolean;
+  tempEmail: string | null;
+}
 
-     forgotPassword: (email: string, authType: Exclude<AuthType, "admin">) => Promise<void>;
-  resetPassword: (
+interface LoginActions {
+  login(email: string, password: string, authType: AuthType): Promise<void>;
+  logout(): void;
+}
+
+interface SignupActions {
+  signup(userData: any, authType: Exclude<AuthType, "admin">): Promise<void>;
+}
+
+interface OtpActions {
+  verifyOTP(email: string, otp: string, authType: AuthType): Promise<void>;
+  resendOTP(email: string, authType: AuthType): Promise<void>;
+}
+
+interface PasswordResetActions {
+  forgotPassword(email: string, authType: Exclude<AuthType, "admin">): Promise<void>;
+  resetPassword(
     email: string,
     otp: string,
     newPassword: string,
     confirmPassword: string,
     authType: Exclude<AuthType, "admin">
-  ) => Promise<void>;
+  ): Promise<void>;
+}
 
-  setUser: (user: any, authType: AuthType) => void;
 
-  }
+interface MiscAuthActions {
+  setTempEmail(email: string | null): void;
+  setUser(user: any, authType: AuthType): void;
+}
+
+
+type AuthState = BaseAuthState &
+  LoginActions &
+  SignupActions &
+  OtpActions &
+  PasswordResetActions &
+  MiscAuthActions;
+
+// interface AuthState {
+//     user: any | null;
+//     authType: AuthType | null;
+//     isAuthenticated: boolean;
+//     tempEmail: string | null; 
+    
+
+//      login: (email: string, password: string, authType: AuthType) => Promise<void>;
+//      logout: () => void;
+//      signup: (userData: any, authType:  Exclude<AuthType, "admin">) => Promise<void>;
+//      verifyOTP: (email: string, otp: string, authType: AuthType) => Promise<void>;
+//      resendOTP: (email: string, authType: AuthType) => Promise<void>;
+//      setTempEmail: (email: string | null) => void;
+
+//      forgotPassword: (email: string, authType: Exclude<AuthType, "admin">) => Promise<void>;
+//   resetPassword: (
+//     email: string,
+//     otp: string,
+//     newPassword: string,
+//     confirmPassword: string,
+//     authType: Exclude<AuthType, "admin">
+//   ) => Promise<void>;
+
+//   setUser: (user: any, authType: AuthType) => void;
+
+//   }
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -201,3 +248,4 @@ login: async (email, password, authType) => {
       }
     ))
 
+ 
