@@ -108,7 +108,11 @@ const UserSignup = () => {
                 minLength: {
                   value: 8,
                   message: 'Password must be at least 8 characters'
-                }
+                },
+                 pattern: {
+      value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/,
+      message: 'Password must include a letter, number, and special character'
+    }
               })}
             />
             {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}

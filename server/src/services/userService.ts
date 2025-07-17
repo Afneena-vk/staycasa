@@ -104,7 +104,7 @@ class UserService implements IUserService {
   }
 
 
-  //async loginUser(data: LoginData): Promise<{ token: string; message: string; user: any; status: number }> {
+
   async loginUser(data: LoginData): Promise<UserLoginResponseDto> {
     const { email, password } = data;
 
@@ -116,7 +116,7 @@ class UserService implements IUserService {
 
     const user = await userRepository.findByEmail(email);
 
-    //if (!user) {
+   
     if (!user || !(await bcrypt.compare(password, user.password || ""))){
       const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
       error.status = STATUS_CODES.UNAUTHORIZED;
@@ -135,34 +135,34 @@ class UserService implements IUserService {
       throw error;
     }
 
-    // const isPasswordValid = await bcrypt.compare(password, user.password || "");
-
-    // if (!isPasswordValid) {
-    //   const error: any = new Error("Invalid email or password");
-    //   error.status = STATUS_CODES.UNAUTHORIZED;
-    //   throw error;
-    // }
 
     const JWT_SECRET = process.env.JWT_SECRET;
-
-     if (!JWT_SECRET) {
-        throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
-     }
+    const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 
-    const token = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    //  if (!JWT_SECRET) {
+    //     throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+    //  }
+     if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+    throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+  }
 
-    // const { password: _, otp, ...userData } = user.toObject(); 
 
-    // return {
-    //   token,
-    //   user: userData,
-    //   message: MESSAGES.SUCCESS.LOGIN,
-    //   status: STATUS_CODES.OK,
-    // };
-    return UserMapper.toLoginResponse(user, token, MESSAGES.SUCCESS.LOGIN);
+    // const token = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
+    //   expiresIn: "7d",
+    // });
+
+
+     const accessToken = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
+    expiresIn: "15m", // short-lived
+  });
+
+  const refreshToken = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
+ 
+    //return UserMapper.toLoginResponse(user, token, MESSAGES.SUCCESS.LOGIN);
+    return UserMapper.toLoginResponse(user, accessToken, refreshToken, MESSAGES.SUCCESS.LOGIN);
   }
 
 

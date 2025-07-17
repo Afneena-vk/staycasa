@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { authService } from "../services/authService";
+import { tokenService } from "../utils/tokenService";
 
 type AuthType = "user" | "owner" | "admin";
 
@@ -51,33 +52,6 @@ type AuthState = BaseAuthState &
   PasswordResetActions &
   MiscAuthActions;
 
-// interface AuthState {
-//     user: any | null;
-//     authType: AuthType | null;
-//     isAuthenticated: boolean;
-//     tempEmail: string | null; 
-    
-
-//      login: (email: string, password: string, authType: AuthType) => Promise<void>;
-//      logout: () => void;
-//      signup: (userData: any, authType:  Exclude<AuthType, "admin">) => Promise<void>;
-//      verifyOTP: (email: string, otp: string, authType: AuthType) => Promise<void>;
-//      resendOTP: (email: string, authType: AuthType) => Promise<void>;
-//      setTempEmail: (email: string | null) => void;
-
-//      forgotPassword: (email: string, authType: Exclude<AuthType, "admin">) => Promise<void>;
-//   resetPassword: (
-//     email: string,
-//     otp: string,
-//     newPassword: string,
-//     confirmPassword: string,
-//     authType: Exclude<AuthType, "admin">
-//   ) => Promise<void>;
-
-//   setUser: (user: any, authType: AuthType) => void;
-
-//   }
-
 export const useAuthStore = create<AuthState>()(
     persist(
       (set, get) => ({
@@ -103,6 +77,9 @@ login: async (email, password, authType) => {
                 throw new Error("Invalid login type");
             }
             
+           tokenService.setAccessToken(response.accessToken);
+           tokenService.setRefreshToken(response.refreshToken);
+            
             
             sessionStorage.setItem("auth-type", authType);
             
@@ -121,6 +98,8 @@ login: async (email, password, authType) => {
 
         logout: () => {
           
+          tokenService.clearTokens();
+
           sessionStorage.removeItem("auth-type");
           set({ user: null, authType: null, isAuthenticated: false });
           

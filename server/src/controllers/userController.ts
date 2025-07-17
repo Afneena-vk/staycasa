@@ -84,10 +84,18 @@ class UserController implements IUserController {
     res.cookie("auth-token", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
+        //maxAge: 7 * 24 * 60 * 60 * 1000, 
+        maxAge: 15 * 60 * 1000,
         path: "/",
       });
       
+      res.cookie("refresh-token", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/",
+    });
+
       // res.status(STATUS_CODES.OK).json({
       //   message: result.message,
       //   user: result.user
@@ -110,7 +118,9 @@ class UserController implements IUserController {
      status: result.userStatus,
     isVerified: result.isVerified,
   },
-  token: result.token,
+  //token: result.token,
+   accessToken: result.token,
+   refreshToken: result.refreshToken,
 });
 
 

@@ -9,6 +9,7 @@ export class UserLoginResponseDto {
   status!: number;
   isVerified!: boolean;
   token!: string;
+  refreshToken!: string;
   message!: string;
 }
 

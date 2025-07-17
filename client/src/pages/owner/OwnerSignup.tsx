@@ -113,7 +113,13 @@ const OwnerSignup = () => {
             <input
               id="password"
               type="password"
-              {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Minimum 8 characters' } })}
+              {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Minimum 8 characters' },
+                 pattern: {
+        value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/,
+        message: 'Must include a letter, number, and special character',
+      },
+              
+              })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="********"
             />

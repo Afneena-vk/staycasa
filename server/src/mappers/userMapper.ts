@@ -2,7 +2,8 @@ import { IUser } from "../models/userModel";
 import { UserLoginResponseDto, UserGoogleAuthResponseDto } from "../dtos/user.dto";
 
 export class UserMapper {
-  static toLoginResponse(user: IUser, token: string, message: string): UserLoginResponseDto {
+  // static toLoginResponse(user: IUser, token: string, message: string): UserLoginResponseDto {
+    static toLoginResponse(user: IUser, accessToken: string, refreshToken: string,  message: string): UserLoginResponseDto {
     return {
       id: user._id.toString(),
       name: user.name,
@@ -12,7 +13,9 @@ export class UserMapper {
     //   status: user.status,
     userStatus: user.status,
       isVerified: user.isVerified,
-      token,
+      //token,
+       token: accessToken,
+      refreshToken: refreshToken,
       message,
        status: 200,
     };
