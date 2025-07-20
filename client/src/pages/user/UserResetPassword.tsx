@@ -37,6 +37,15 @@ const UserResetPassword = () => {
       return;
     }
 
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
+  if (!passwordRegex.test(formData.newPassword)) {
+    toast.error(
+      "Password must be at least 8 characters long and include a letter, number, and special character."
+    );
+    setIsLoading(false);
+    return;
+  }
+
     try {
       await resetPassword(
         tempEmail,

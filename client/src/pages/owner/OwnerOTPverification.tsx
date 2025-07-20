@@ -14,7 +14,7 @@ const OwnerOTPVerification = () => {
   const { verifyOTP, resendOTP, tempEmail } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const [timer, setTimer] = useState(60); // 5 minutes
+  const [timer, setTimer] = useState(60); 
   const [timerActive, setTimerActive] = useState(true);
 
   const hasCheckedEmail = useRef(false);

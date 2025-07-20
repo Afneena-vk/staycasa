@@ -10,14 +10,14 @@ export class UserMapper {
       email: user.email,
       phone: user.phone,
       profileImage: user.profileImage,
-    //   status: user.status,
-    userStatus: user.status,
+    //status: user.status,
+      userStatus: user.status,
       isVerified: user.isVerified,
       //token,
-       token: accessToken,
+      token: accessToken,
       refreshToken: refreshToken,
       message,
-       status: 200,
+      status: 200,
     };
   }
 

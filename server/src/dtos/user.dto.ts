@@ -4,8 +4,8 @@ export class UserLoginResponseDto {
   email!: string;
   phone?: string;
   profileImage?: string;
-   userStatus!: string;
-//   status!: string;
+  userStatus!: string;
+//status!: string;
   status!: number;
   isVerified!: boolean;
   token!: string;

@@ -140,73 +140,27 @@ class UserService implements IUserService {
     const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
 
-    //  if (!JWT_SECRET) {
-    //     throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
-    //  }
+
      if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
     throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
   }
 
 
-    // const token = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
-    //   expiresIn: "7d",
-    // });
 
 
      const accessToken = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
-    expiresIn: "15m", // short-lived
+    expiresIn: "15m",
   });
 
   const refreshToken = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
  
-    //return UserMapper.toLoginResponse(user, token, MESSAGES.SUCCESS.LOGIN);
+   
     return UserMapper.toLoginResponse(user, accessToken, refreshToken, MESSAGES.SUCCESS.LOGIN);
   }
 
 
-  // async processGoogleAuth(
-  //   profile: any
-  // ): Promise<{ user: IUser; token: string; message: string; status: number }> {
-  //   const email = profile.email;
-  
-  //   let user = await userRepository.findByEmail(email);
-  
-  //   if (user) {
-  //     if (!user.googleId) {
-  //       user.googleId = profile.id;
-  //       await userRepository.update(user._id.toString(), user);
-  //     }
-  //   } else {
-  //     user = await userRepository.create({
-  //       googleId: profile.id,
-  //       name: profile.displayName,
-  //       email,
-  //       password: "", 
-  //       isVerified: true,
-  //     });
-  //   }
-  
-  //   const jwtSecret = process.env.JWT_SECRET;
-  //   if (!jwtSecret) {
-  //     throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
-  //   }
-  
-  //   const token = jwt.sign({ userId: user._id, type: "user" }, jwtSecret, {
-  //     expiresIn: "1h",
-  //   });
-  
-   
-  //   const { password: _, otp, ...userData } = user.toObject();
-  
-  //   return {
-  //     user: userData,
-  //     token,
-  //     message: MESSAGES.SUCCESS.LOGIN,
-  //     status: STATUS_CODES.OK,
-  //   };
-  // }
   
 
   async processGoogleAuth(profile: any): Promise<UserGoogleAuthResponseDto> {

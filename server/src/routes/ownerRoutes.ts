@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ownerController from "../controllers/ownerController";
-//import passport from "passport";
+
 
 const ownerRoutes = Router();
 
