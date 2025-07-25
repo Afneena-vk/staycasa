@@ -2,22 +2,19 @@ import { IOwnerController } from "./interfaces/IOwnerController";
 import { Request, Response, NextFunction } from "express";
 import ownerService from "../services/ownerService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
+import logger from "../utils/logger";
 
 class OwnerController implements IOwnerController {
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await ownerService.registerOwner(req.body); 
-    //   res.status(STATUS_CODES.CREATED).json({
-    //     message: MESSAGES.SUCCESS.SIGNUP,
-    //     details: result.message, // or just use message: result.message
-    //   });
+   
     res.status(result.status).json({
         message: result.message,
       });
-    // } catch (error) {
-    //   next(error);
-    // }
+  
   } catch (error: any) {
+    logger.error("Registartion failed",error);
     res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
     });
@@ -34,10 +31,9 @@ class OwnerController implements IOwnerController {
   
         const result = await ownerService.verifyOtp(email, otp);
         res.status(result.status).json({ message: result.message });
-      // } catch (error) {
-      //   next(error);
-      // }
+    
     } catch (error: any) {
+      logger.error("OTP verification error: " + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });
@@ -57,7 +53,8 @@ class OwnerController implements IOwnerController {
         const result = await ownerService.resendOtp(email);
         res.status(result.status).json({ message: result.message });
       } catch (error: any) {
-        console.error("OTP resend error:", error);
+        //console.error("OTP resend error:", error);
+        logger.error("OTP resend error:",error);
         res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
           error: error.message || MESSAGES.ERROR.SERVER_ERROR,
         });
@@ -67,9 +64,45 @@ class OwnerController implements IOwnerController {
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await ownerService.loginOwner(req.body);
-      res.status(STATUS_CODES.OK).json(result);
+
+       res.cookie("auth-token", result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        //maxAge: 7 * 24 * 60 * 60 * 1000, 
+        maxAge: 15 * 60 * 1000,
+        path: "/",
+      });
+      
+      res.cookie("refresh-token", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
+    
+      res.status(result.status).json({
+  message: result.message,
+
+   //user: {
+   owner: {
+    id: result.id,
+    name: result.name,
+    email: result.email,
+    phone: result.phone,
+    //status: result.userStatus,
+    isBlocked: result.isBlocked,
+    isVerified: result.isVerified,
+  },
+ 
+   accessToken: result.token,
+   refreshToken: result.refreshToken,
+});
+
+      //res.status(STATUS_CODES.OK).json(result);
     } catch (error: any) {
       console.error("Owner login error:", error);
+      logger.error('Login error: " + error.message');
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });
@@ -92,7 +125,7 @@ async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<v
         message: result.message 
       });
     } catch (error: any) {
-      console.error("Forgot password error:", error);
+      logger.error("Forgot password error: " + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });
@@ -122,7 +155,8 @@ async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<v
         message: result.message 
       });
     } catch (error: any) {
-      console.error("Reset password error:", error);
+      
+      logger.error("Reset password error: " + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });

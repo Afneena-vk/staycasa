@@ -7,7 +7,7 @@ type AuthType = "user" | "owner" | "admin";
 
 
 interface BaseAuthState {
-  user: any | null;
+  userData: any | null;
   authType: AuthType | null;
   isAuthenticated: boolean;
   tempEmail: string | null;
@@ -55,7 +55,7 @@ type AuthState = BaseAuthState &
 export const useAuthStore = create<AuthState>()(
     persist(
       (set, get) => ({
-        user: null,
+        userData: null,
         authType: sessionStorage.getItem("auth-type") as AuthType | null,
         isAuthenticated: false,
          tempEmail: null,
@@ -76,15 +76,23 @@ login: async (email, password, authType) => {
               default:
                 throw new Error("Invalid login type");
             }
-            
-           tokenService.setAccessToken(response.accessToken);
-           tokenService.setRefreshToken(response.refreshToken);
-            
+
+
+            ['user', 'owner', 'admin'].forEach(type => {
+            if (type !== authType) {
+             tokenService.clearTokens(type as AuthType);
+             }
+             });
+                  
+       
+          console.log("Tokens:", response.accessToken, response.refreshToken);
+            tokenService.setAccessToken(response.accessToken, authType);
+            tokenService.setRefreshToken(response.refreshToken, authType);
             
             sessionStorage.setItem("auth-type", authType);
             
             set({ 
-              user: response.user, 
+              userData: response.user  || response.owner || response.admin, 
               authType, 
               isAuthenticated: true 
             });
@@ -96,17 +104,39 @@ login: async (email, password, authType) => {
           }
         },
 
-        logout: () => {
+  //       logout: () => {
           
-          tokenService.clearTokens();
+  //        // tokenService.clearTokens();
 
-          sessionStorage.removeItem("auth-type");
-          set({ user: null, authType: null, isAuthenticated: false });
-          
-          
-          // authService.logout();
-        },
+  //         //   const authType = get().authType;
+  //         //     if (authType) {
+  //         //     tokenService.clearTokens(authType);
+  //         // }
+  //        const currentAuthType = get().authType;
+  
+  // // Clear tokens for current auth type
+  //           if (currentAuthType) {
+  //          tokenService.clearTokens(currentAuthType);
+  //           }
 
+  //           ['user', 'owner', 'admin'].forEach(authType => {
+  //           tokenService.clearTokens(authType as AuthType);
+  //           });
+
+  //         sessionStorage.removeItem("auth-type");
+  //         set({ user: null, authType: null, isAuthenticated: false });
+          
+          
+  //         // authService.logout();
+  //       },
+
+         logout: () => {
+  // Clear all tokens to prevent cross-contamination
+         tokenService.clearAllTokens();
+  
+         sessionStorage.removeItem("auth-type");
+         set({ userData: null, authType: null, isAuthenticated: false, tempEmail: null });
+          },
       signup: async (userData, authType) => {
         try {
           let response;
@@ -210,10 +240,10 @@ login: async (email, password, authType) => {
         }
       },
     
-       setUser: (user: any, authType: AuthType) => {
+       setUser: (userData: any, authType: AuthType) => {
         sessionStorage.setItem("auth-type", authType);
         set({ 
-          user, 
+          userData, 
           authType, 
           isAuthenticated: true 
         });
