@@ -1,13 +1,21 @@
+import { injectable, inject } from "tsyringe";
 import { IOwnerController } from "./interfaces/IOwnerController";
 import { Request, Response, NextFunction } from "express";
-import ownerService from "../services/ownerService";
+//import ownerService from "../services/ownerService";
+import { IOwnerService } from "../services/interfaces/IOwnerService";
+import { TOKENS } from "../config/tokens";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import logger from "../utils/logger";
 
-class OwnerController implements IOwnerController {
+@injectable()
+export class OwnerController implements IOwnerController {
+    constructor(
+    @inject(TOKENS.IOwnerService) private ownerService: IOwnerService
+  ) {}
+
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await ownerService.registerOwner(req.body); 
+      const result = await this.ownerService.registerOwner(req.body); 
    
     res.status(result.status).json({
         message: result.message,
@@ -29,7 +37,7 @@ class OwnerController implements IOwnerController {
           return;
         }
   
-        const result = await ownerService.verifyOtp(email, otp);
+        const result = await this.ownerService.verifyOtp(email, otp);
         res.status(result.status).json({ message: result.message });
     
     } catch (error: any) {
@@ -50,7 +58,7 @@ class OwnerController implements IOwnerController {
           return;
         }
   
-        const result = await ownerService.resendOtp(email);
+        const result = await this.ownerService.resendOtp(email);
         res.status(result.status).json({ message: result.message });
       } catch (error: any) {
         //console.error("OTP resend error:", error);
@@ -63,7 +71,7 @@ class OwnerController implements IOwnerController {
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await ownerService.loginOwner(req.body);
+      const result = await this.ownerService.loginOwner(req.body);
 
        res.cookie("auth-token", result.token, {
         httpOnly: true,
@@ -120,7 +128,7 @@ async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<v
         return;
       }
 
-      const result = await ownerService.forgotPassword(email);
+      const result = await this.ownerService.forgotPassword(email);
       res.status(result.status).json({ 
         message: result.message 
       });
@@ -150,7 +158,7 @@ async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<v
         return;
       }
 
-      const result = await ownerService.resetPassword(email, otp, newPassword);
+      const result = await this.ownerService.resetPassword(email, otp, newPassword);
       res.status(result.status).json({ 
         message: result.message 
       });
@@ -166,4 +174,4 @@ async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<v
 
 }
 
-export default new OwnerController();
+//export default new OwnerController();

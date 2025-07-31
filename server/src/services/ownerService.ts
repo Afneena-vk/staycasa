@@ -1,6 +1,9 @@
 
+import {injectable, inject } from 'tsyringe';
 import { IOwnerService, OwnerSignupData, OwnerLoginData } from "./interfaces/IOwnerService";
-import ownerRepository from "../repositories/ownerRepository";
+//import ownerRepository from "../repositories/ownerRepository";
+import { IOwnerRepository } from '../repositories/interfaces/IOwnerRepository';
+import { TOKENS } from '../config/tokens';
 import OTPService from "../utils/OTPService"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -9,7 +12,14 @@ import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { OwnerMapper } from "../mappers/ownerMapper";
 import { OwnerLoginResponseDto } from "../dtos/owner.dto";
 
-class OwnerService implements IOwnerService {
+@injectable()
+
+ export class OwnerService implements IOwnerService {
+ constructor(
+    @inject(TOKENS.IOwnerRepository) private ownerRepository: IOwnerRepository
+  ) {}
+
+
   async registerOwner(data: OwnerSignupData): Promise<{ status: number;message: string }> {
     const { name, email, phone, password, confirmPassword, businessName, businessAddress  } = data;
 
@@ -25,7 +35,7 @@ class OwnerService implements IOwnerService {
       throw error;
     }
 
-    const existingOwner = await ownerRepository.findByEmail(email);
+    const existingOwner = await this.ownerRepository.findByEmail(email);
     if (existingOwner) {
       const error: any = new Error(MESSAGES.ERROR.EMAIL_EXISTS);
       error.status = STATUS_CODES.CONFLICT;
@@ -35,7 +45,7 @@ class OwnerService implements IOwnerService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
-    await ownerRepository.create({
+    await this.ownerRepository.create({
         name,
         email,
         phone,
@@ -49,7 +59,7 @@ class OwnerService implements IOwnerService {
       return {status: STATUS_CODES.CREATED, message: "Owner registered successfully.Please verify OTP sent to your email." };
   }
   async verifyOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
-      const owner = await ownerRepository.findByEmail(email);
+      const owner = await this.ownerRepository.findByEmail(email);
   
       if (!owner) {
         const error: any = new Error("Owner not found");
@@ -71,7 +81,7 @@ class OwnerService implements IOwnerService {
     }
 
       async resendOtp(email: string): Promise<{ status: number; message: string }> {
-        const owner = await ownerRepository.findByEmail(email);
+        const owner = await this.ownerRepository.findByEmail(email);
     
         if (!owner) {
           const error: any = new Error("Owner not found");
@@ -109,7 +119,7 @@ class OwnerService implements IOwnerService {
     throw error;
   }
 
-  const owner = await ownerRepository.findByEmail(email);
+  const owner = await this.ownerRepository.findByEmail(email);
   if (!owner || !(await bcrypt.compare(password, owner.password))) {
     const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
     error.status = STATUS_CODES.UNAUTHORIZED;
@@ -151,7 +161,7 @@ class OwnerService implements IOwnerService {
 }
 
     async forgotPassword(email: string): Promise<{ status: number; message: string }> {
-        const owner = await ownerRepository.findByEmail(email);
+        const owner = await this.ownerRepository.findByEmail(email);
     
         if (!owner) {
           const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
@@ -183,7 +193,7 @@ class OwnerService implements IOwnerService {
       }
     
       async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
-        const owner = await ownerRepository.findByEmail(email);
+        const owner = await this.ownerRepository.findByEmail(email);
     
         if (!owner) {
           const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
@@ -212,4 +222,4 @@ class OwnerService implements IOwnerService {
       }
 }
 
-export default new OwnerService();
+//export default new OwnerService();

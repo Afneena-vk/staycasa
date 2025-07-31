@@ -1,11 +1,12 @@
 
 
-
+import { injectable } from 'tsyringe';
 import Owner, { IOwner } from '../models/ownerModel';
 import { BaseRepository } from './baseRepository';
 import { IOwnerRepository } from './interfaces/IOwnerRepository';
 
-class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRepository {
+@injectable()
+export class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRepository {
   constructor() {
     super(Owner);
   }
@@ -19,4 +20,4 @@ class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRepository
   }
 }
 
-export default new OwnerRepository();
+//export default new OwnerRepository();

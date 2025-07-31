@@ -30,7 +30,7 @@ export interface OwnerSignupData {
   // }
   
   export interface IOwnerService {
-  registerOwner(data: OwnerSignupData): Promise<{ message: string }>;
+  registerOwner(data: OwnerSignupData): Promise<{ message: string , status: number }>;
 
   verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
 

@@ -1,10 +1,11 @@
 
-
+import { injectable } from 'tsyringe';
 import Admin, { IAdmin } from '../models/adminModel';
 import { BaseRepository } from './baseRepository';
 import { IAdminRepository } from './interfaces/IAdminRepository';
 
-class AdminRepository extends BaseRepository<IAdmin> implements IAdminRepository {
+@injectable()
+export class AdminRepository extends BaseRepository<IAdmin> implements IAdminRepository {
   constructor() {
     super(Admin);
   }
