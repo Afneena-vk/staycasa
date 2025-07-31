@@ -1,18 +1,22 @@
 import { Router } from "express";
-import userController from "../controllers/userController";
+import { container } from '../config/container';
+import { IUserController } from '../controllers/interfaces/IUserController';
+import { TOKENS } from '../config/tokens';
+//import userController from "../controllers/userController";
 import passport from "passport";
 import { authMiddleware } from "../middleware/authMiddleware";
 const userRoutes = Router();
 
+const userController = container.resolve<IUserController>(TOKENS.IUserController);
 
-userRoutes.post("/signup", userController.signup);
-userRoutes.post("/verify-otp", userController.verifyOtp);
-userRoutes.post("/resend-otp",userController.resendOtp)
-userRoutes.post("/login", userController.login);
 
-userRoutes.post("/forgot-password", userController.forgotPassword);
-userRoutes.post("/reset-password", userController.resetPassword);
+userRoutes.post("/signup", userController.signup.bind(userController));
+userRoutes.post("/verify-otp", userController.verifyOtp.bind(userController));
+userRoutes.post("/resend-otp",userController.resendOtp.bind(userController))
+userRoutes.post("/login", userController.login.bind(userController));
 
+userRoutes.post("/forgot-password", userController.forgotPassword.bind(userController));
+userRoutes.post("/reset-password", userController.resetPassword.bind(userController));
 
 
 
@@ -21,15 +25,15 @@ userRoutes.get(
     passport.authenticate("google", { scope: ["profile", "email"], prompt: "select_account", })
   );
   
+
   userRoutes.get(
     "/auth/google/callback",
     passport.authenticate("google", {
       session: false,
       failureRedirect: "/login",
     }),
-    userController.googleCallback
+    userController.googleCallback.bind(userController)
   );
-
 
 
 
@@ -47,4 +51,7 @@ userRoutes.get(
 );
 
 
-export default userRoutes
+export default userRoutes   
+
+
+

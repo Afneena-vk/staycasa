@@ -6,7 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 import AdminLogin from "./pages/admin/AdminLogin";
-
+import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
+import UserManagement from "./pages/admin/UserManagement.tsx";
 
 import OwnerSignup from "./pages/owner/OwnerSignup";
 import OwnerLogin from "./pages/owner/OwnerLogin.tsx";
@@ -28,7 +29,8 @@ const App = () => {
       <Routes>
         
         <Route path="/admin/login" element={<AdminLogin />} />
-
+        <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
+        <Route path="/admin/users" element={<UserManagement />} />
         
         <Route path="/owner/signup" element={<OwnerSignup />} />
         <Route path="/owner/login" element={<OwnerLogin />} />

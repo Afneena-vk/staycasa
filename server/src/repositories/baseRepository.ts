@@ -1,11 +1,13 @@
-
-
 import { Document, Model, ObjectId } from 'mongoose';
 import { IBaseRepository } from './interfaces/IBaseRepository';
+import { injectable } from 'tsyringe';
 
+
+@injectable()
 export class BaseRepository<T extends Document> implements IBaseRepository<T> {
-  private model: Model<T>;
-
+  //private model: Model<T>;
+   protected model: Model<T>;
+  
   constructor(model: Model<T>) {
     this.model = model;
   }
@@ -30,3 +32,7 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
     return await this.model.findByIdAndDelete(id).exec();
   }
 }
+
+
+
+

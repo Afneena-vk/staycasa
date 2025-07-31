@@ -17,7 +17,7 @@ export interface SignupData {
   
   
   export interface IUserService {
-    registerUser(data: SignupData): Promise<{ message: string }>;
+    registerUser(data: SignupData): Promise<{ message: string; status: number }>;
     verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
     resendOtp(email: string): Promise<{ message: string; status: number }>;
     loginUser(data: LoginData): Promise<UserLoginResponseDto>;

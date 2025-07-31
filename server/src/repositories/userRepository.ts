@@ -1,10 +1,11 @@
 
-
+import { injectable } from 'tsyringe';
 import User, { IUser } from '../models/userModel';
 import { BaseRepository } from './baseRepository';
 import { IUserRepository } from './interfaces/IUserRepository';
 
-class UserRepository extends BaseRepository<IUser> implements IUserRepository {
+@injectable()
+export class UserRepository extends BaseRepository<IUser> implements IUserRepository {
   constructor() {
     super(User);
   }
@@ -13,10 +14,12 @@ class UserRepository extends BaseRepository<IUser> implements IUserRepository {
     return User.findOne({ email }).exec();
   }
 
+
   async findByGoogleId(googleId: string): Promise<IUser | null> {
     return User.findOne({ googleId }).exec();
   }
 }
 
-export default new UserRepository();
+//export default new UserRepository();
+
 

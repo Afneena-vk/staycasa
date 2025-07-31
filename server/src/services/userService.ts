@@ -1,6 +1,8 @@
-
+import { injectable, inject } from 'tsyringe';
 import { IUserService, SignupData,LoginData  } from "./interfaces/IUserService";
-import userRepository from "../repositories/userRepository";
+import { IUserRepository } from "../repositories/interfaces/IUserRepository";
+//import userRepository from "../repositories/userRepository";
+import { TOKENS } from "../config/tokens";
 import OTPService from "../utils/OTPService";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -9,8 +11,12 @@ import { IUser } from "../models/userModel";
 import { UserMapper } from "../mappers/userMapper";
 import { UserLoginResponseDto, UserGoogleAuthResponseDto } from "../dtos/user.dto";
 
+@injectable()
+export class UserService implements IUserService {
+     constructor(
+    @inject(TOKENS.IUserRepository) private userRepository: IUserRepository
+  ) {}
 
-class UserService implements IUserService {
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
     const { name, email, phone, password, confirmPassword } = data;
 
@@ -26,7 +32,7 @@ class UserService implements IUserService {
       throw error;
     }
 
-    const existingUser = await userRepository.findByEmail(email);
+    const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       const error: any = new Error(MESSAGES.ERROR.EMAIL_EXISTS);
       error.status = STATUS_CODES.CONFLICT;
@@ -38,7 +44,7 @@ class UserService implements IUserService {
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
 
-    await userRepository.create({
+    await this.userRepository.create({
       name,
       email,
       phone,
@@ -53,7 +59,7 @@ class UserService implements IUserService {
     }
 
   async verifyOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
-    const user = await userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error("User not found");
@@ -76,7 +82,7 @@ class UserService implements IUserService {
 
 
   async resendOtp(email: string): Promise<{ status: number; message: string }> {
-    const user = await userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error("User not found");
@@ -114,7 +120,7 @@ class UserService implements IUserService {
       throw error;
     }
 
-    const user = await userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
 
    
     if (!user || !(await bcrypt.compare(password, user.password || ""))){
@@ -165,15 +171,15 @@ class UserService implements IUserService {
 
   async processGoogleAuth(profile: any): Promise<UserGoogleAuthResponseDto> {
   const email = profile.email;
-  let user = await userRepository.findByEmail(email);
+  let user = await this.userRepository.findByEmail(email);
 
   if (user && !user.googleId) {
     user.googleId = profile.id;
-    await userRepository.update(user._id.toString(), user);
+    await this.userRepository.update(user._id.toString(), user);
   }
 
   if (!user) {
-    user = await userRepository.create({
+    user = await this.userRepository.create({
       googleId: profile.id,
       name: profile.displayName,
       email,
@@ -194,7 +200,7 @@ class UserService implements IUserService {
 
 
 async forgotPassword(email: string): Promise<{ status: number; message: string }> {
-    const user = await userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
@@ -226,7 +232,7 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
   }
 
   async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
-    const user = await userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
@@ -257,4 +263,5 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
    
 }
 
-export default new UserService();
+//export default new UserService();
+

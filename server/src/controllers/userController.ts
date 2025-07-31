@@ -1,15 +1,24 @@
+import { injectable, inject } from 'tsyringe';
 import { IUserController } from "./interfaces/IUserController";
 import { Request, Response, NextFunction } from "express";
-import userService from "../services/userService";
+import { IUserService } from "../services/interfaces/IUserService";
+import { TOKENS } from "../config/tokens";
+//import userService from "../services/userService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
 import logger
  from "../utils/logger";
 
-class UserController implements IUserController {
+
+@injectable() 
+export class UserController implements IUserController {
+      constructor(
+    @inject(TOKENS.IUserService) private userService: IUserService
+  ) {}
+  
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await userService.registerUser(req.body); 
+      const result = await this.userService.registerUser(req.body); 
   
     res.status(result.status).json({
         message: result.message,
@@ -21,8 +30,9 @@ class UserController implements IUserController {
     res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
     });
+   }
   }
-  }
+
   async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, otp } = req.body;
@@ -32,7 +42,7 @@ class UserController implements IUserController {
         return;
       }
 
-      const result = await userService.verifyOtp(email, otp);
+      const result = await this.userService.verifyOtp(email, otp);
       res.status(result.status).json({ message: result.message });
 
   } catch (error: any) {
@@ -53,7 +63,7 @@ class UserController implements IUserController {
         return;
       }
 
-      const result = await userService.resendOtp(email);
+      const result = await this.userService.resendOtp(email);
       res.status(result.status).json({ message: result.message });
     } catch (error: any) {
      // console.error("OTP resend error:", error);
@@ -66,7 +76,7 @@ class UserController implements IUserController {
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await userService.loginUser(req.body);
+      const result = await this.userService.loginUser(req.body);
 
     res.cookie("auth-token", result.token, {
         httpOnly: true,
@@ -120,7 +130,7 @@ class UserController implements IUserController {
         return;
       }
   
-      const result = await userService.processGoogleAuth(user);
+      const result = await this.userService.processGoogleAuth(user);
       
       res.cookie("auth-token", result.token, {
         httpOnly: true,
@@ -153,7 +163,7 @@ class UserController implements IUserController {
         return;
       }
 
-      const result = await userService.forgotPassword(email);
+      const result = await this.userService.forgotPassword(email);
       res.status(result.status).json({ 
         message: result.message 
       });
@@ -184,7 +194,7 @@ class UserController implements IUserController {
         return;
       }
 
-      const result = await userService.resetPassword(email, otp, newPassword);
+      const result = await this.userService.resetPassword(email, otp, newPassword);
       res.status(result.status).json({ 
         message: result.message 
       });
@@ -201,4 +211,6 @@ class UserController implements IUserController {
   
 }
 
-export default new UserController();
+//export default new UserController();
+
+

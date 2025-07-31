@@ -1,3 +1,5 @@
+import "reflect-metadata";
+import './config/container';
 import express from "express";
 import cors from "cors";
 import routes from "./routes";
@@ -29,3 +31,4 @@ app.use("/api", routes);
 
 
 export default app;
+

@@ -1,5 +1,5 @@
 
-
+import 'reflect-metadata';
 import dotenv from "dotenv";
 import logger from "./src/utils/logger";
 dotenv.config();
@@ -36,3 +36,6 @@ process.on("unhandledRejection", (reason) => {
 process.on("uncaughtException", (err) => {
   logger.error(`Uncaught Exception: ${err.message}`);
 });
+
+
+
