@@ -18,7 +18,7 @@ const AuthSuccess: React.FC = () => {
         if (response.ok) {
           const userData = await response.json();
           setUser(userData.user, 'user');
-          navigate('/'); 
+          navigate('/user/dashboard'); 
         } else {
           navigate('/user/login?error=auth_failed');
         }

@@ -6,6 +6,15 @@ interface LoginCredentials {
   password: string;
 }
 
+interface UserFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: "all" | "active" | "blocked";
+  sortBy?: "name" | "email" | "createdAt";
+  sortOrder?: "asc" | "desc";
+}
+
 export const authService = {
  
   userSignup: async (userData: any) => {
@@ -86,4 +95,77 @@ export const authService = {
     });
     return response.data;
   },
+
+   getUsers: async (filters: UserFilters = {}) => {
+    const queryParams = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        queryParams.append(key, value.toString());
+      }
+    });
+
+    const queryString = queryParams.toString();
+  const url = queryString ? `/admin/users?${queryString}` : "/admin/users";
+
+    //const response = await api.get(`/admin/users?${queryParams.toString()}`);
+     const response = await api.get(url);
+    return response.data;
+  },
+
+
+
+   blockUser: async (userId: string) => { // Changed parameter type
+    const response = await api.patch(`/admin/users/${userId}/block`);
+    return response.data;
+  },
+
+
+unblockUser: async (userId: string) => { // Changed parameter type
+    const response = await api.patch(`/admin/users/${userId}/unblock`);
+    return response.data;
+  },
+
+
+ 
+ getUserDetails: async (userId: string) => { // Changed parameter type
+    const response = await api.get(`/admin/users/${userId}`);
+    return response.data;
+  },
+
+ 
+  getOwners: async (filters: UserFilters = {}) => {
+  const queryParams = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      queryParams.append(key, value.toString());
+    }
+  });
+
+  const queryString = queryParams.toString();
+  const url = queryString ? `/admin/owners?${queryString}` : "/admin/owners";
+
+  //const response = await api.get(`/admin/owners?${queryParams.toString()}`);
+  const response = await api.get(url);
+  return response.data;
+},
+
+
+   blockOwner: async (ownerId: string) => { // Changed parameter type
+    const response = await api.patch(`/admin/owners/${ownerId}/block`);
+    return response.data;
+  },
+
+
+   unblockOwner: async (ownerId: string) => { // Changed parameter type
+    const response = await api.patch(`/admin/owners/${ownerId}/unblock`);
+    return response.data;
+  },
+
+   getOwnerDetails: async (ownerId: string) => { // Changed parameter type
+    const response = await api.get(`/admin/owners/${ownerId}`);
+    return response.data;
+  },
+
 };

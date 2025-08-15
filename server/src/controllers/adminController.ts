@@ -5,18 +5,18 @@ import { IAdminService } from "../services/interfaces/IAdminService";
 import { TOKENS } from "../config/tokens";
 //import adminService from "../services/adminService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
-
+import { UserListQueryDto, UserDetailResponseDto, OwnerListQueryDto } from "../dtos/admin.dto";
 
 @injectable()
 export class AdminController implements IAdminController{
     constructor(
-    @inject(TOKENS.IAdminService) private adminService: IAdminService
+    @inject(TOKENS.IAdminService) private _adminService: IAdminService
   ) {}
 
     async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
           
-          const result = await this.adminService.loginAdmin(req.body);
+          const result = await this._adminService.loginAdmin(req.body);
 
         res.cookie("auth-token", result.token, {
         httpOnly: true,
@@ -59,6 +59,214 @@ export class AdminController implements IAdminController{
         });
       }
       }
+
+       async getUsersList(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            
+            const queryParams: UserListQueryDto = {
+                page: req.query.page ? parseInt(req.query.page as string) : 1,
+                limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
+                search: req.query.search as string,
+                status: req.query.status as 'active' | 'blocked' | 'all',
+                sortBy: req.query.sortBy as 'name' | 'email' | 'createdAt',
+                sortOrder: req.query.sortOrder as 'asc' | 'desc'
+            };
+
+            const result = await this._adminService.getUsersList(queryParams);
+            
+            res.status(STATUS_CODES.OK).json(result);
+
+        } catch (error: any) {
+            console.error("Get users list error:", error);
+            res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+                error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+                status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+            });
+        }
+    }
+async blockUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({
+                error: "User ID is required",
+                status: STATUS_CODES.BAD_REQUEST
+            });
+            return;
+        }
+
+        const result = await this._adminService.blockUser(userId);
+        
+        res.status(result.status).json({
+            message: result.message,
+            status: result.status
+        });
+
+    } catch (error: any) {
+        console.error("Block user error:", error);
+        res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+            error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+            status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+        });
+    }
+}
+
+async unblockUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            res.status(STATUS_CODES.BAD_REQUEST).json({
+                error: "User ID is required",
+                status: STATUS_CODES.BAD_REQUEST
+            });
+            return;
+        }
+
+        const result = await this._adminService.unblockUser(userId);
+        
+        res.status(result.status).json({
+            message: result.message,
+            status: result.status
+        });
+
+    } catch (error: any) {
+        console.error("Unblock user error:", error);
+        res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+            error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+            status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+        });
+    }
+  }
+   
+  async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({
+        error: "User ID is required",
+        status: STATUS_CODES.BAD_REQUEST
+      });
+      return;
+    }
+
+    const result = await this._adminService.getUserById(userId);
+    
+    res.status(STATUS_CODES.OK).json(result);
+
+  } catch (error: any) {
+    console.error("Get user by ID error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
+
+async getOwnersList(req: Request, res: Response): Promise<void> {
+  try {
+    const queryParams: OwnerListQueryDto = {
+      page: req.query.page ? parseInt(req.query.page as string) : 1,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
+      search: req.query.search as string,
+      status: req.query.status as 'active' | 'blocked' | 'all',
+      sortBy: req.query.sortBy as 'name' | 'email' | 'createdAt',
+      sortOrder: req.query.sortOrder as 'asc' | 'desc'
+    };
+
+    const result = await this._adminService.getOwnersList(queryParams);
+    res.status(STATUS_CODES.OK).json(result);
+  } catch (error: any) {
+    console.error("Get owners list error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
+async blockOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { ownerId } = req.params;
+
+    if (!ownerId) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({
+        error: "Owner ID is required",
+        status: STATUS_CODES.BAD_REQUEST
+      });
+      return;
+    }
+
+    const result = await this._adminService.blockOwner(ownerId);
+
+    res.status(result.status).json({
+      message: result.message,
+      status: result.status
+    });
+  } catch (error: any) {
+    console.error("Block owner error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
+async unblockOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { ownerId } = req.params;
+
+    if (!ownerId) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({
+        error: "Owner ID is required",
+        status: STATUS_CODES.BAD_REQUEST
+      });
+      return;
+    }
+
+    const result = await this._adminService.unblockOwner(ownerId);
+
+    res.status(result.status).json({
+      message: result.message,
+      status: result.status
+    });
+  } catch (error: any) {
+    console.error("Unblock owner error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
+async getOwnerById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { ownerId } = req.params;
+
+    if (!ownerId) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({
+        error: "Owner ID is required",
+        status: STATUS_CODES.BAD_REQUEST
+      });
+      return;
+    }
+
+    const result = await this._adminService.getOwnerById(ownerId);
+
+    res.status(STATUS_CODES.OK).json(result);
+  } catch (error: any) {
+    console.error("Get owner by ID error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+    });
+  }
+}
+
+
 }
 
 //export default new AdminController();

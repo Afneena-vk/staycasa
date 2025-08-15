@@ -16,7 +16,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
 
  export class OwnerService implements IOwnerService {
  constructor(
-    @inject(TOKENS.IOwnerRepository) private ownerRepository: IOwnerRepository
+    @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository
   ) {}
 
 
@@ -35,7 +35,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
       throw error;
     }
 
-    const existingOwner = await this.ownerRepository.findByEmail(email);
+    const existingOwner = await this._ownerRepository.findByEmail(email);
     if (existingOwner) {
       const error: any = new Error(MESSAGES.ERROR.EMAIL_EXISTS);
       error.status = STATUS_CODES.CONFLICT;
@@ -45,7 +45,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
-    await this.ownerRepository.create({
+    await this._ownerRepository.create({
         name,
         email,
         phone,
@@ -59,7 +59,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
       return {status: STATUS_CODES.CREATED, message: "Owner registered successfully.Please verify OTP sent to your email." };
   }
   async verifyOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
-      const owner = await this.ownerRepository.findByEmail(email);
+      const owner = await this._ownerRepository.findByEmail(email);
   
       if (!owner) {
         const error: any = new Error("Owner not found");
@@ -81,7 +81,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
     }
 
       async resendOtp(email: string): Promise<{ status: number; message: string }> {
-        const owner = await this.ownerRepository.findByEmail(email);
+        const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
           const error: any = new Error("Owner not found");
@@ -119,7 +119,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
     throw error;
   }
 
-  const owner = await this.ownerRepository.findByEmail(email);
+  const owner = await this._ownerRepository.findByEmail(email);
   if (!owner || !(await bcrypt.compare(password, owner.password))) {
     const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
     error.status = STATUS_CODES.UNAUTHORIZED;
@@ -127,8 +127,8 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
   }
 
   if (owner.isBlocked) {
-    const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
-    error.status = STATUS_CODES.FORBIDDEN;
+    const error: any = new Error("Owner is blocked");
+    error.status = STATUS_CODES.UNAUTHORIZED;
     throw error;
   }
 
@@ -161,7 +161,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
 }
 
     async forgotPassword(email: string): Promise<{ status: number; message: string }> {
-        const owner = await this.ownerRepository.findByEmail(email);
+        const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
           const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
@@ -193,7 +193,7 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
       }
     
       async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
-        const owner = await this.ownerRepository.findByEmail(email);
+        const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
           const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);

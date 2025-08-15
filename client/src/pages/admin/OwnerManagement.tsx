@@ -1,25 +1,28 @@
 
 
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/admin/AdminLayout";
 import { api } from "../../api/api";
 import { authService } from "../../services/authService";
 
-interface User {
+interface Owner {
   id: string; 
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
+  businessName: string;
+  businessAddress: string;
   status: "Active" | "Blocked";
-  //isVerified: boolean;
+  isVerified: boolean;
   profileImage?: string;
-  //createdAt: string;
+  documents: string[];
   updatedAt: string;
 }
 
-interface UsersResponse {
-  users: User[];
+interface OwnersResponse {
+  owners: Owner[];
   totalCount: number;
   currentPage: number;
   totalPages: number;
@@ -27,9 +30,9 @@ interface UsersResponse {
   status: number;
 }
 
-const UserManagement = () => {
+const OwnerManagement = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
+  const [owners, setOwners] = useState<Owner[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -39,45 +42,45 @@ const UserManagement = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "blocked">("all");
+  //const [verificationFilter, setVerificationFilter] = useState<"all" | "verified" | "unverified">("all");
   const [sortBy, setSortBy] = useState<"name" | "email" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
- 
   
   const limit = 10; 
 
  
-  const fetchUsers = async () => {
+  const fetchOwners = async () => {
     try {
       setLoading(true);
       setError(null);
 
-  const data: UsersResponse = await authService.getUsers({
-  page: currentPage,
-  limit,
-  status: statusFilter,
-  sortBy,
-  sortOrder,
-  search,
-});
       
-    
-      setUsers(
-  data.users.map((user) => ({
-    ...user,
-    status: user.status.charAt(0).toUpperCase() + user.status.slice(1).toLowerCase() as "Active" | "Blocked",
-  }))
-);
+      const data: OwnersResponse = await authService.getOwners({
+        page: currentPage,
+        limit,
+        status: statusFilter,
+        sortBy,
+        sortOrder,
+        search,
+      });
+      
+      setOwners(
+        data.owners.map((owner) => ({
+          ...owner,
+          status: owner.status.charAt(0).toUpperCase() + owner.status.slice(1).toLowerCase() as "Active" | "Blocked",
+        }))
+      );
 
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
       
     } catch (err: any) {
-      console.error('Error fetching users:', err);
+      console.error('Error fetching owners:', err);
       setError(
         err.response?.data?.message || 
         err.response?.data?.error || 
         err.message || 
-        'Failed to fetch users'
+        'Failed to fetch owners'
       );
     } finally {
       setLoading(false);
@@ -85,44 +88,56 @@ const UserManagement = () => {
   };
 
   
- 
-  const toggleUserStatus = async (userId: string, currentStatus: string) => {
-     const action = currentStatus === "Active" ? "block" : "unblock";
+  const toggleOwnerStatus = async (ownerId: string, currentStatus: string) => {
+    const action = currentStatus === "Active" ? "block" : "unblock";
     try {
+      await api.patch(`/admin/owners/${ownerId}/${action}`);
+      
      
-      await api.patch(`/admin/users/${userId}/${action}`);
-      
-      
-      fetchUsers();
+      fetchOwners();
     } catch (err: any) {
-      console.error(`Error ${action}ing user:`, err);
+      console.error(`Error ${action}ing owner:`, err);
       setError(
         err.response?.data?.message || 
         err.response?.data?.error || 
-        `Failed to ${action} user`
+        `Failed to ${action} owner`
       );
     }
   };
 
-   
-  const handleViewUser = (userId: string) => {
-    navigate(`/admin/users/${userId}`);
+  
+  const toggleOwnerVerification = async (ownerId: string, currentVerificationStatus: boolean) => {
+    const action = currentVerificationStatus ? "unverify" : "verify";
+    try {
+      await api.patch(`/admin/owners/${ownerId}/${action}`);
+      
+      
+      fetchOwners();
+    } catch (err: any) {
+      console.error(`Error ${action}ing owner:`, err);
+      setError(
+        err.response?.data?.message || 
+        err.response?.data?.error || 
+        `Failed to ${action} owner`
+      );
+    }
+  };
+
+  
+  const handleViewOwner = (ownerId: string) => {
+    navigate(`/admin/owners/${ownerId}`);
   };
 
   
   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, statusFilter, sortBy, sortOrder]);
-
-   useEffect(() => {
-    fetchUsers();
+    fetchOwners();
   }, [currentPage, statusFilter, sortBy, sortOrder]);
 
   
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setCurrentPage(1); 
-      fetchUsers();
+      fetchOwners();
     }, 500);
 
     return () => clearTimeout(debounceTimer);
@@ -140,8 +155,6 @@ const UserManagement = () => {
     }
   };
 
-
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -150,13 +163,12 @@ const UserManagement = () => {
     });
   };
 
-  if (loading && users.length === 0) {
+  if (loading && owners.length === 0) {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-lg text-gray-600">Loading users...</div>
+          <div className="text-lg text-gray-600">Loading owners...</div>
         </div>
-    
       </AdminLayout>
     );
   }
@@ -164,17 +176,17 @@ const UserManagement = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        
+        {/* Header and Controls */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-800">User Management</h1>
+            <h1 className="text-2xl font-semibold text-gray-800">Owner Management</h1>
             <p className="text-sm text-gray-600 mt-1">
-              Total Users: {totalCount}
+              Total Owners: {totalCount}
             </p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4">
-           
+            {/* Search Input */}
             <input
               type="text"
               placeholder="Search by name or email"
@@ -183,7 +195,7 @@ const UserManagement = () => {
               className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
             />
             
-         
+            {/* Status Filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "blocked")}
@@ -194,7 +206,7 @@ const UserManagement = () => {
               <option value="blocked">Blocked</option>
             </select>
 
-          
+            {/* Sort Options */}
             <select
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => {
@@ -214,7 +226,7 @@ const UserManagement = () => {
           </div>
         </div>
 
-        
+        {/* Error Message */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
             <div className="flex justify-between items-center">
@@ -229,87 +241,76 @@ const UserManagement = () => {
           </div>
         )}
 
-       
+        {/* Owners Table */}
         <div className="overflow-x-auto bg-white shadow rounded-lg">
           <table className="min-w-full text-sm text-left text-gray-700">
             <thead className="bg-gray-100 text-xs uppercase text-gray-600">
               <tr>
-                <th className="px-6 py-4">Username</th>
+                <th className="px-6 py-4">Owner Name</th>
                 <th className="px-6 py-4">Email</th>
                 <th className="px-6 py-4">Phone</th>
                 <th className="px-6 py-4">Status</th>
-                {/* <th className="px-6 py-4">Verified</th>
-                <th className="px-6 py-4">Joined</th> */}
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="border-t hover:bg-gray-50 transition">
+              {owners.map((owner) => (
+                <tr key={owner.id} className="border-t hover:bg-gray-50 transition">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      {user.profileImage ? (
+                      {owner.profileImage ? (
                         <img
-                          src={user.profileImage}
-                          alt={user.name}
+                          src={owner.profileImage}
+                          alt={owner.name}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                           <span className="text-gray-600 text-xs font-medium">
-                            {user.name.charAt(0).toUpperCase()}
+                            {owner.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
-                      <span>{user.name}</span>
+                      <span>{owner.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">{user.email}</td>
-                  <td className="px-6 py-4">{user.phone || '-'}</td>
+                  <td className="px-6 py-4">{owner.email}</td>
+                  <td className="px-6 py-4">{owner.phone}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      user.status === "Active"
+                      owner.status === "Active"
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-700"
                     }`}>
-                      {user.status}
+                      {owner.status}
                     </span>
                   </td>
-                  {/* <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      user.isVerified
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}>
-                      {user.isVerified ? "Verified" : "Pending"}
-                    </span>
-                  </td> */}
-                  {/* <td className="px-6 py-4 text-gray-600">
-                    {formatDate(user.createdAt)}
-                  </td> */}
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
                       <button 
-                        onClick={() => toggleUserStatus(user.id, user.status)}
+                        onClick={() => toggleOwnerStatus(owner.id, owner.status)}
                         className={`px-3 py-1 rounded text-xs font-medium ${
-                          user.status === "Active"
+                          owner.status === "Active"
                             ? "bg-red-100 text-red-700 hover:bg-red-200"
                             : "bg-green-100 text-green-700 hover:bg-green-200"
                         }`}
                       >
-                        {user.status === "Active" ? "Block" : "Unblock"}
+                        {owner.status === "Active" ? "Block" : "Unblock"}
                       </button>
-                      <button  onClick={() => handleViewUser(user.id)} className="px-3 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200">
+                      <button 
+                        onClick={() => handleViewOwner(owner.id)} 
+                        className="px-3 py-1 rounded text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      >
                         View Details
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {users.length === 0 && !loading && (
+              {owners.length === 0 && !loading && (
                 <tr>
-                  <td colSpan={7} className="text-center px-6 py-8 text-gray-500">
-                    No users found.
+                  <td colSpan={5} className="text-center px-6 py-8 text-gray-500">
+                    No owners found.
                   </td>
                 </tr>
               )}
@@ -321,7 +322,7 @@ const UserManagement = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between bg-white px-6 py-3 rounded-lg shadow">
             <div className="text-sm text-gray-700">
-              Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, totalCount)} of {totalCount} users
+              Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, totalCount)} of {totalCount} owners
             </div>
             
             <div className="flex items-center gap-2">
@@ -357,7 +358,7 @@ const UserManagement = () => {
         )}
 
         {/* Loading overlay for subsequent requests */}
-        {loading && users.length > 0 && (
+        {loading && owners.length > 0 && (
           <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50">
             <div className="bg-white px-6 py-4 rounded-lg shadow-lg">
               <div className="text-lg text-gray-600">Loading...</div>
@@ -369,4 +370,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default OwnerManagement;

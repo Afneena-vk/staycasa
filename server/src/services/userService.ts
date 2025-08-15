@@ -14,7 +14,7 @@ import { UserLoginResponseDto, UserGoogleAuthResponseDto } from "../dtos/user.dt
 @injectable()
 export class UserService implements IUserService {
      constructor(
-    @inject(TOKENS.IUserRepository) private userRepository: IUserRepository
+    @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository
   ) {}
 
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
@@ -32,7 +32,7 @@ export class UserService implements IUserService {
       throw error;
     }
 
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await this._userRepository.findByEmail(email);
     if (existingUser) {
       const error: any = new Error(MESSAGES.ERROR.EMAIL_EXISTS);
       error.status = STATUS_CODES.CONFLICT;
@@ -44,7 +44,7 @@ export class UserService implements IUserService {
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
 
-    await this.userRepository.create({
+    await this._userRepository.create({
       name,
       email,
       phone,
@@ -59,7 +59,7 @@ export class UserService implements IUserService {
     }
 
   async verifyOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error("User not found");
@@ -82,7 +82,7 @@ export class UserService implements IUserService {
 
 
   async resendOtp(email: string): Promise<{ status: number; message: string }> {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error("User not found");
@@ -120,7 +120,7 @@ export class UserService implements IUserService {
       throw error;
     }
 
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this._userRepository.findByEmail(email);
 
    
     if (!user || !(await bcrypt.compare(password, user.password || ""))){
@@ -130,8 +130,8 @@ export class UserService implements IUserService {
     }
 
     if (user.status === "blocked") {
-      const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
-      error.status = STATUS_CODES.FORBIDDEN;
+      const error: any = new Error("user is blocked");
+      error.status = STATUS_CODES.UNAUTHORIZED;
       throw error;
     }
 
@@ -171,15 +171,15 @@ export class UserService implements IUserService {
 
   async processGoogleAuth(profile: any): Promise<UserGoogleAuthResponseDto> {
   const email = profile.email;
-  let user = await this.userRepository.findByEmail(email);
+  let user = await this._userRepository.findByEmail(email);
 
   if (user && !user.googleId) {
     user.googleId = profile.id;
-    await this.userRepository.update(user._id.toString(), user);
+    await this._userRepository.update(user._id.toString(), user);
   }
 
   if (!user) {
-    user = await this.userRepository.create({
+    user = await this._userRepository.create({
       googleId: profile.id,
       name: profile.displayName,
       email,
@@ -200,7 +200,7 @@ export class UserService implements IUserService {
 
 
 async forgotPassword(email: string): Promise<{ status: number; message: string }> {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
@@ -232,7 +232,7 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
   }
 
   async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
       const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);

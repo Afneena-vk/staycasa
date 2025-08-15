@@ -1,14 +1,12 @@
-
-
 import { ReactNode, useState } from "react";
-import AdminSidebar from "../../components/Admin/AdminSidebar";
+import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 import { FaBars } from "react-icons/fa";
 
-interface ModernAdminLayoutProps {
+interface OwnerLayoutProps {
   children: ReactNode;
 }
 
-const AdminLayout = ({ children }: ModernAdminLayoutProps) => {
+const OwnerLayout = ({ children }: OwnerLayoutProps) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -34,36 +32,33 @@ const AdminLayout = ({ children }: ModernAdminLayoutProps) => {
 
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`${
-        mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      } lg:translate-x-0 fixed lg:static top-0 left-0 h-full z-50 transition-transform duration-300 ease-smooth`}>
-        <AdminSidebar 
-          collapsed={sidebarCollapsed} 
-          onToggle={toggleSidebar} 
-        />
+      <div
+        className={`${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 fixed lg:static top-0 left-0 h-full z-50 transition-transform duration-300 ease-smooth`}
+      >
+        <OwnerSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
       </div>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Mobile Header Spacer */}
         <div className="lg:hidden h-16" />
-        
+
         {/* Content Area */}
         <div className="flex-1 p-6">
-          <div className="max-w-full mx-auto">
-            {children}
-          </div>
+          <div className="max-w-full mx-auto">{children}</div>
         </div>
       </main>
     </div>
   );
 };
 
-export default AdminLayout;
+export default OwnerLayout;

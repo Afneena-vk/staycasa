@@ -13,12 +13,12 @@ import logger
 @injectable() 
 export class UserController implements IUserController {
       constructor(
-    @inject(TOKENS.IUserService) private userService: IUserService
+    @inject(TOKENS.IUserService) private _userService: IUserService
   ) {}
   
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await this.userService.registerUser(req.body); 
+      const result = await this._userService.registerUser(req.body); 
   
     res.status(result.status).json({
         message: result.message,
@@ -42,7 +42,7 @@ export class UserController implements IUserController {
         return;
       }
 
-      const result = await this.userService.verifyOtp(email, otp);
+      const result = await this._userService.verifyOtp(email, otp);
       res.status(result.status).json({ message: result.message });
 
   } catch (error: any) {
@@ -63,7 +63,7 @@ export class UserController implements IUserController {
         return;
       }
 
-      const result = await this.userService.resendOtp(email);
+      const result = await this._userService.resendOtp(email);
       res.status(result.status).json({ message: result.message });
     } catch (error: any) {
      // console.error("OTP resend error:", error);
@@ -76,7 +76,7 @@ export class UserController implements IUserController {
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const result = await this.userService.loginUser(req.body);
+      const result = await this._userService.loginUser(req.body);
 
     res.cookie("auth-token", result.token, {
         httpOnly: true,
@@ -130,7 +130,7 @@ export class UserController implements IUserController {
         return;
       }
   
-      const result = await this.userService.processGoogleAuth(user);
+      const result = await this._userService.processGoogleAuth(user);
       
       res.cookie("auth-token", result.token, {
         httpOnly: true,
@@ -163,7 +163,7 @@ export class UserController implements IUserController {
         return;
       }
 
-      const result = await this.userService.forgotPassword(email);
+      const result = await this._userService.forgotPassword(email);
       res.status(result.status).json({ 
         message: result.message 
       });
@@ -194,7 +194,7 @@ export class UserController implements IUserController {
         return;
       }
 
-      const result = await this.userService.resetPassword(email, otp, newPassword);
+      const result = await this._userService.resetPassword(email, otp, newPassword);
       res.status(result.status).json({ 
         message: result.message 
       });

@@ -15,19 +15,6 @@ export interface OwnerSignupData {
     password: string;
   }
   
-  // export interface IOwnerService {
-  //   registerOwner(data: OwnerSignupData): Promise<{ message: string }>;
-  //   verifyOtp(email: string, otp: string): Promise<{ message: string; status: number }>;
-  //   resendOtp(email: string): Promise<{ message: string; status: number }>;
-  //   forgotPassword(email: string): Promise<{ message: string; status: number }>;
-  //   resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string; status: number }>;
-  //   loginOwner(data: OwnerLoginData): Promise<{
-  //     token: string;
-  //     owner: any;
-  //     message: string;
-  //     status: number;
-  //   }>;
-  // }
   
   export interface IOwnerService {
   registerOwner(data: OwnerSignupData): Promise<{ message: string , status: number }>;

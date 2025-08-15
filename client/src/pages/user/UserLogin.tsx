@@ -28,7 +28,7 @@ const UserLogin = () => {
     try {
       await login(formData.email, formData.password, "user");
       toast.success("Login successful!");
-      navigate("/"); 
+      navigate("/user/dashboard"); 
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Login failed. Please try again.");
     } finally {
