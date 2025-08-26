@@ -11,4 +11,10 @@ export interface IOwnerController {
 
   forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
   resetPassword(req: Request, res: Response, next: NextFunction): Promise<void>;
+
+  getProfile(req: Request, res: Response, next: NextFunction): Promise<void>;
+  updateProfile(req: Request, res: Response, next: NextFunction): Promise<void>;
+
+  uploadDocument(req: Request, res: Response, next: NextFunction): Promise<void>;
+
 }

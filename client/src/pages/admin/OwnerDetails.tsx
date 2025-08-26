@@ -14,7 +14,7 @@ interface Owner {
   profileImage?: string;
   businessName: string;
   businessAddress: string;
-  documents: string[];
+  document?: string;
   isBlocked: boolean;
   //isVerified: boolean;
   createdAt: string;
@@ -189,16 +189,24 @@ const OwnerDetails: React.FC = () => {
           {/* Documents */}
           <div className="p-6 border-t">
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Documents</h4>
-            {owner.documents.length > 0 ? (
-              <ul className="list-disc pl-6 space-y-2">
-                {owner.documents.map((doc, index) => (
-                  <li key={index}>
-                    <a href={doc} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                      Document {index + 1}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+            {owner.document? (
+              // <ul className="list-disc pl-6 space-y-2">
+              //   {owner.documents.map((doc, index) => (
+              //     <li key={index}>
+              //       <a href={doc} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              //         Document {index + 1}
+              //       </a>
+              //     </li>
+              //   ))}
+              // </ul>
+              <a
+      href={owner.document}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:underline"
+    >
+      View Document
+    </a>
             ) : (
               <p>No documents uploaded.</p>
             )}

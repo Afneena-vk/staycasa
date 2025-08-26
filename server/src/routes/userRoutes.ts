@@ -39,17 +39,28 @@ userRoutes.get(
 
 
 
+// userRoutes.get(
+//   "/profile",
+//   authMiddleware(["user"]),
+//   (req, res) => {
+//     res.json({
+//       userId: (req as any).userId,
+//       userType: (req as any).userType,
+//     });
+//   }
+// );
+
 userRoutes.get(
   "/profile",
   authMiddleware(["user"]),
-  (req, res) => {
-    res.json({
-      userId: (req as any).userId,
-      userType: (req as any).userType,
-    });
-  }
+  userController.getProfile.bind(userController)
 );
 
+userRoutes.put(
+  "/profile",
+  authMiddleware(["user"]),
+  userController.updateProfile.bind(userController)
+);
 
 export default userRoutes   
 

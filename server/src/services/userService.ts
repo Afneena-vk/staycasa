@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { IUser } from "../models/userModel";
 import { UserMapper } from "../mappers/userMapper";
-import { UserLoginResponseDto, UserGoogleAuthResponseDto } from "../dtos/user.dto";
+import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, UserProfileResponseDto } from "../dtos/user.dto";
 
 @injectable()
 export class UserService implements IUserService {
@@ -258,7 +258,63 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
       status: STATUS_CODES.OK, 
       message: MESSAGES.SUCCESS.PASSWORD_RESET 
     };
+  }  
+
+async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
+    // const user: IUser | null = await this._userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
+
+
+    if (!user) {
+      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
+      error.status = STATUS_CODES.NOT_FOUND;
+      throw error;
+    }
+
+    return UserMapper.toProfileResponse(user, "Profile retrieved successfully");
   }
+
+  async updateUserProfile(
+    userId: string,
+    data: UserProfileUpdateDto
+  ): Promise<UserProfileResponseDto> {
+    const user = await this._userRepository.findById(userId);
+
+    if (!user) {
+      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
+      error.status = STATUS_CODES.NOT_FOUND;
+      throw error;
+    }
+
+    // Build update data carefully
+    const updateData: Partial<IUser> = {};
+
+    if (data.name) updateData.name = data.name;
+    if (data.phone) updateData.phone = data.phone;
+
+    if (data.address) {
+      updateData.address = {
+        houseNo: data.address.houseNo ?? user.address?.houseNo ?? "",
+        street: data.address.street ?? user.address?.street ?? "",
+        city: data.address.city ?? user.address?.city ?? "",
+        district: data.address.district ?? user.address?.district ?? "",
+        state: data.address.state ?? user.address?.state ?? "",
+        pincode: data.address.pincode ?? user.address?.pincode ?? "",
+      };
+    }
+
+    const updatedUser = await this._userRepository.update(userId, updateData);
+
+    if (!updatedUser) {
+      const error: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
+      error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+      throw error;
+    }
+
+    return UserMapper.toProfileResponse(updatedUser, "Profile updated successfully");
+  }
+
+
 
    
 }

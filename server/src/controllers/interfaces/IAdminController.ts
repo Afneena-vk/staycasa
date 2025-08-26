@@ -9,4 +9,6 @@ export interface IAdminController {
     blockOwner(req: Request, res: Response, next: NextFunction): Promise<void>;
     unblockOwner(req: Request, res: Response, next: NextFunction): Promise<void>;  
     getOwnerById(req: Request, res: Response, next: NextFunction): Promise<void>;
+    approveOwner(req: Request, res: Response, next: NextFunction): Promise<void>;
+    rejectOwner(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

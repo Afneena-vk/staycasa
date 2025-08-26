@@ -27,6 +27,8 @@ interface OtpActions {
   resendOTP(email: string, authType: AuthType): Promise<void>;
 }
 
+
+
 interface PasswordResetActions {
   forgotPassword(email: string, authType: Exclude<AuthType, "admin">): Promise<void>;
   resetPassword(
@@ -37,6 +39,100 @@ interface PasswordResetActions {
     authType: Exclude<AuthType, "admin">
   ): Promise<void>;
 }
+
+export interface OwnerProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  businessName: string;
+  businessAddress: string;
+  //profileImage?: string;
+  approvalStatus: "pending" | "approved" | "rejected"; // 👈 add
+  documents: string[];
+}
+
+export interface ProfileResponse {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  businessName: string;
+  businessAddress: string;
+  //profileImage?: string; 
+  approvalStatus: "pending" | "approved" | "rejected"; // 👈 add
+  documents: string[]; 
+  status: number;
+  message?: string;
+  data: OwnerProfile;
+}
+
+interface ProfileActions {
+  getOwnerProfile(): Promise<ProfileResponse>;
+  updateOwnerProfile(profileData: Partial<OwnerProfile>): Promise<ProfileResponse>;
+  updateUserData(userData: Partial<OwnerProfile>): void;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  // profileImage?: string;
+  address?: {
+    houseNo: string;
+    street: string;
+    city: string;
+    district: string;
+    state: string;
+    pincode: string;
+  };
+  userStatus: "active" | "blocked";
+  isVerified: boolean;
+}
+
+export interface UserProfileResponse {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  // profileImage?: string;
+  address?: {
+    houseNo: string;
+    street: string;
+    city: string;
+    district: string;
+    state: string;
+    pincode: string;
+  };
+  userStatus: "active" | "blocked";
+  isVerified: boolean;
+  status: number;
+  message: string;
+  data: UserProfile;
+}
+
+interface UserProfileActions {
+  getUserProfile(): Promise<UserProfileResponse>;
+  updateUserProfile(profileData: Partial<UserProfile>): Promise<UserProfileResponse>;
+}
+
+interface DocumentActions {
+  uploadDocument(file: File): Promise<{ message: string; document: string }>;
+}
+
+interface OwnerApprovalActions {
+  approveOwner(ownerId: string): Promise<void>;
+  rejectOwner(ownerId: string): Promise<void>;
+}
+
+
+// interface ProfileActions {
+//   getOwnerProfile(): Promise<any>;
+//   updateOwnerProfile(profileData: any): Promise<void>;
+//   updateUserData(userData: any): void;
+// }
+
 
 
 interface MiscAuthActions {
@@ -50,6 +146,10 @@ type AuthState = BaseAuthState &
   SignupActions &
   OtpActions &
   PasswordResetActions &
+  ProfileActions &
+  UserProfileActions &
+  DocumentActions & 
+  OwnerApprovalActions& 
   MiscAuthActions;
 
 export const useAuthStore = create<AuthState>()(
@@ -239,6 +339,138 @@ login: async (email, password, authType) => {
           throw error;
         }
       },
+
+
+   
+      //  getOwnerProfile: async () => {
+      //   try {
+      //     const response = await authService.getOwnerProfile();
+      //     return response;
+      //   } catch (error) {
+      //     console.error("Get owner profile failed", error);
+      //     throw error;
+      //   }
+      // },
+      getOwnerProfile: async () => {
+  try {
+    const response: ProfileResponse = await authService.getOwnerProfile();
+    return response;
+  } catch (error) {
+    console.error("Get owner profile failed", error);
+    throw error;
+  }
+},
+
+      // updateOwnerProfile: async (profileData: any) => {
+      //   try {
+      //     const response = await authService.updateOwnerProfile(profileData);
+          
+      //     // Update the userData in store with the updated profile
+      //     const currentState = get();
+      //     if (currentState.userData) {
+      //       set({
+      //         userData: {
+      //           ...currentState.userData,
+      //           ...profileData
+      //         }
+      //       });
+      //     }
+          
+      //     return response;
+      //   } catch (error) {
+      //     console.error("Update owner profile failed", error);
+      //     throw error;
+      //   }
+      // },
+
+      updateOwnerProfile: async (profileData: Partial<OwnerProfile>) => {
+  try {
+    const response: ProfileResponse = await authService.updateOwnerProfile(profileData);
+
+    const currentState = get();
+    if (currentState.userData) {
+      set({
+        userData: {
+          ...currentState.userData,
+          ...response.data, // use updated fields from API response
+        },
+      });
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Update owner profile failed", error);
+    throw error;
+  }
+},
+
+
+uploadDocument: async (file: File) => {
+  try {
+    const response = await authService.uploadDocument(file);
+    
+    // Refresh profile to get updated documents
+    const updatedProfile = await get().getOwnerProfile();
+    if (updatedProfile && updatedProfile.status === 200) {
+      get().updateUserData({
+        documents: updatedProfile.documents,
+        approvalStatus: updatedProfile.approvalStatus
+      });
+    }
+    
+    return response;
+  } catch (error) {
+    console.error("Document upload failed", error);
+    throw error;
+  }
+},
+
+approveOwner: async (ownerId: string) => {
+  try {
+    const response = await authService.approveOwner(ownerId);
+    return response;
+  } catch (error) {
+    console.error("Approve owner failed", error);
+    throw error;
+  }
+},
+
+rejectOwner: async (ownerId: string) => {
+  try {
+    const response = await authService.rejectOwner(ownerId);
+    return response;
+  } catch (error) {
+    console.error("Reject owner failed", error);
+    throw error;
+  }
+},
+
+
+  getUserProfile: async () => {
+        return await authService.getUserProfile();
+      },
+
+      updateUserProfile: async (profileData) => {
+        const response = await authService.updateUserProfile(profileData);
+        const currentState = get();
+        if (currentState.userData) {
+          set({
+            userData: { ...currentState.userData, ...response.data },
+          });
+        }
+        return response;
+      },
+
+      updateUserData: (userData: any) => {
+        const currentState = get();
+        set({
+          userData: {
+            ...currentState.userData,
+            ...userData
+          }
+        });
+      },
+
     
        setUser: (userData: any, authType: AuthType) => {
         sessionStorage.setItem("auth-type", authType);

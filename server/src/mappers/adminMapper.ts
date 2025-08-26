@@ -101,11 +101,12 @@ static toOwnerListItem(owner: IOwner): OwnerListItemDto {
     profileImage: owner.profileImage || undefined,
     businessAddress: owner.businessAddress,
     businessName: owner.businessName,
-    documents: owner.documents,
+    document: owner.document,
     status: owner.isBlocked ? 'blocked' : 'active',
     isVerified: owner.isVerified,
     createdAt: owner.createdAt,
     updatedAt: owner.updatedAt,
+    approvalStatus: owner.approvalStatus,
   };
 }
 
@@ -138,9 +139,10 @@ static toOwnerDetail(owner: IOwner): OwnerDetailDto {
       profileImage: owner.profileImage || undefined,
       businessAddress: owner.businessAddress,
       businessName: owner.businessName,
-      documents: owner.documents,
+      document: owner.document,
       status: owner.isBlocked ? 'blocked' : 'active',
       isVerified: owner.isVerified,
+      approvalStatus: owner.approvalStatus,
       createdAt: owner.createdAt,
       updatedAt: owner.updatedAt,
     };

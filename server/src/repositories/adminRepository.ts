@@ -155,6 +155,24 @@ async findUserById(userId: string): Promise<IUser | null> {
       throw new Error(`Failed to find owner: ${error}`);
     }
   }
+async updateOwnerApprovalStatus(
+  ownerId: string,
+  status: 'pending' | 'approved' | 'rejected'
+): Promise<IOwner | null> {
+  try {
+    const updatedOwner = await Owner.findByIdAndUpdate(
+      ownerId,
+      { approvalStatus: status },
+      { new: true, runValidators: true }
+    )
+      .select('-password -otp')
+      .exec();
+
+    return updatedOwner;
+  } catch (error) {
+    throw new Error(`Failed to update owner approval status: ${error}`);
+  }
+}
 
 
 }

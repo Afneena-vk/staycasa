@@ -356,7 +356,126 @@ async getOwnerById(ownerId: string): Promise<OwnerDetailResponseDto> {
   }
 }
 
-      
+//  async approveOwner(ownerId: string): Promise<{ message: string; status: number }> {
+//     const owner = await this._adminRepository.findOwnerById(ownerId);
+
+//     if (!owner) {
+//       return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+//     }
+
+//     // ✅ Prevent approval if no document uploaded
+//     if (!owner.document) {
+//       return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+//     }
+
+
+//     // ✅ Prevent approving if already handled
+//     // if (owner.approvalStatus !== "pending") {
+//     //   return { message: `Owner already ${owner.approvalStatus}`, status: STATUS_CODES.BAD_REQUEST };
+//     // }
+//      if (owner.approvalStatus === "approved") {
+//       return { message: "Owner is already approved.", status: STATUS_CODES.BAD_REQUEST };
+//     }
+
+//    // await this._adminRepository.updateOwnerApprovalStatus(ownerId, "approved");
+
+//    if (owner.approvalStatus === "pending" || owner.approvalStatus === "rejected") {
+//       await this._adminRepository.updateOwnerApprovalStatus(ownerId, "approved");
+//       return { message: "Owner approved successfully", status: STATUS_CODES.OK };
+//     }
+//     return { message: "Owner approved successfully", status: STATUS_CODES.OK };
+//   }
+
+async approveOwner(ownerId: string): Promise<{ message: string; status: number }> {
+  try {
+    const owner = await this._adminRepository.findOwnerById(ownerId);
+
+    if (!owner) {
+      return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+    }
+
+    // ✅ Prevent approval if no document uploaded
+    if (!owner.document) {
+      return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+    }
+
+    // ✅ Check if already approved
+    if (owner.approvalStatus === "approved") {
+      return { message: "Owner is already approved.", status: STATUS_CODES.BAD_REQUEST };
+    }
+
+    // ✅ Allow approval for both pending and rejected owners
+    if (owner.approvalStatus === "pending" || owner.approvalStatus === "rejected") {
+      await this._adminRepository.updateOwnerApprovalStatus(ownerId, "approved");
+      return { message: "Owner approved successfully", status: STATUS_CODES.OK };
+    }
+
+    // This should never be reached, but just in case
+    return { message: "Invalid approval status", status: STATUS_CODES.BAD_REQUEST };
+  } catch (error: any) {
+    if (error.status) throw error;
+    const customError: any = new Error("Failed to approve owner");
+    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw customError;
+  }
 }
+  // ✅ Reject Owner
+//   async rejectOwner(ownerId: string): Promise<{ message: string; status: number }> {
+//     const owner = await this._adminRepository.findOwnerById(ownerId);
+
+//     if (!owner) {
+//       return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+//     }
+
+//     // ✅ Prevent rejection if no document uploaded
+//     if (!owner.document) {
+//       return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+//     }
+
+//     // ✅ Prevent rejecting if already handled
+//     if (owner.approvalStatus !== "pending") {
+//       return { message: `Owner already ${owner.approvalStatus}`, status: STATUS_CODES.BAD_REQUEST };
+//     }
+
+//     await this._adminRepository.updateOwnerApprovalStatus(ownerId, "rejected");
+//     return { message: "Owner rejected successfully", status: STATUS_CODES.OK };
+//   }
+
+async rejectOwner(ownerId: string): Promise<{ message: string; status: number }> {
+  try {
+    const owner = await this._adminRepository.findOwnerById(ownerId);
+
+    if (!owner) {
+      return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+    }
+
+    // ✅ Prevent rejection if no document uploaded
+    if (!owner.document) {
+      return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+    }
+
+    // ✅ Check if already rejected
+    if (owner.approvalStatus === "rejected") {
+      return { message: "Owner is already rejected.", status: STATUS_CODES.BAD_REQUEST };
+    }
+
+    // ✅ Allow rejection for both pending and approved owners
+    if (owner.approvalStatus === "pending" || owner.approvalStatus === "approved") {
+      await this._adminRepository.updateOwnerApprovalStatus(ownerId, "rejected");
+      return { message: "Owner rejected successfully", status: STATUS_CODES.OK };
+    }
+
+    // This should never be reached, but just in case
+    return { message: "Invalid rejection status", status: STATUS_CODES.BAD_REQUEST };
+  } catch (error: any) {
+    if (error.status) throw error;
+    const customError: any = new Error("Failed to reject owner");
+    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw customError;
+  }
+}
+      
+ }
+
 
 //export default new AdminService();

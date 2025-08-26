@@ -18,6 +18,15 @@ export class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRep
   async findByPhone(phone: string): Promise<IOwner | null> {
     return Owner.findOne({ phone }).exec();
   }
+
+   async updateDocument(ownerId: string, document: string ): Promise<IOwner | null> {
+    return await this.model.findByIdAndUpdate(
+      ownerId,
+      { document },
+      { new: true }
+    ).exec();
+   }
+
 }
 
 //export default new OwnerRepository();

@@ -24,6 +24,9 @@ export const ROLES = {
       OTP_SENT: "OTP sent to your email",
       OTP_VERIFIED: "OTP verified successfully",
       PASSWORD_RESET: "Password reset successful",
+      PROFILE_RETRIEVED: "Profile retrieved successfully",
+      PROFILE_UPDATED: "Profile updated successfully",  
+      DOCUMENTS_UPLOADED: "Documents uploaded successfully",
     },
     ERROR: {
       INVALID_CREDENTIALS: "Invalid credentials",
@@ -40,5 +43,9 @@ export const ROLES = {
       MISSING_FIELDS: "Required fields are missing",
       INVALID_TOKEN: "Invalid or expired token",
       PASSWORD_MISMATCH: "Password and Confirm Password do not match",
+      NO_DOCUMENTS: "No documents provided",
+      MAX_DOCUMENTS_EXCEEDED: "Maximum 5 documents allowed",
+      UPLOAD_FAILED: "Failed to upload documents",
+      ALREADY_APPROVED: "Cannot upload documents. Owner is already approved.",
     },
   };

@@ -1,4 +1,4 @@
-import { OwnerLoginResponseDto } from "../../dtos/owner.dto";
+import { OwnerLoginResponseDto,OwnerProfileResponseDto, OwnerProfileUpdateDto } from "../../dtos/owner.dto";
 
 export interface OwnerSignupData {
     name: string;
@@ -28,4 +28,11 @@ export interface OwnerSignupData {
   resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string; status: number }>;
 
   loginOwner(data: OwnerLoginData): Promise<OwnerLoginResponseDto>;
+
+  getOwnerProfile(ownerId: string): Promise<OwnerProfileResponseDto>;
+  
+  updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<OwnerProfileResponseDto>;
+
+  uploadDocument(ownerId: string, files: Express.Multer.File): Promise<{ message: string; status: number; document: string }>;
+  
 }

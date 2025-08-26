@@ -20,6 +20,7 @@ import OwnerResetPassword from "./pages/owner/OwnerResetPassword";
 import AuthSuccess from "./pages/user/AuthSuccess.tsx";
 import OwnerDashboard from "./pages/owner/OwnerDashboard.tsx";
 import OwnerProperties from "./pages/owner/OwnerProperties.tsx";
+import OwnerProfile from "./components/Owner/OwnerProfile.tsx";
 
 import UserSignup from "./pages/user/UserSignup";
 import UserLogin from "./pages/user/UserLogin";
@@ -27,6 +28,7 @@ import UserForgotPassword from "./pages/user/UserForgotPassword";
 import UserOTPVerification from "./pages/user/UserOTPverification";
 import UserResetPassword from "./pages/user/UserResetPassword";
 import UserLanding from "./pages/user/UserLanding.tsx";
+import UserProfile from "./components/User/UserProfile.tsx";
 
 const App = () => {
   return (
@@ -48,6 +50,7 @@ const App = () => {
         <Route path="/owner/reset-password" element={<OwnerResetPassword />} />
         <Route path="/owner/dashboard" element={<OwnerDashboard/>}/>
         <Route path="/owner/properties" element={<OwnerProperties/>}/>
+        <Route path='/owner/profile' element={<OwnerProfile/>}/>
   
         <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />
@@ -56,6 +59,7 @@ const App = () => {
         <Route path="/user/reset-password" element={<UserResetPassword />} />
         <Route path="/user/auth-success" element={<AuthSuccess />} />
         <Route path="/user/dashboard" element={<UserLanding />} />
+        <Route path='/user/profile' element={<UserProfile/>}/>
         
       </Routes>
     </Router>

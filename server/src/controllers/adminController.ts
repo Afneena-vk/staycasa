@@ -266,6 +266,49 @@ async getOwnerById(req: Request, res: Response, next: NextFunction): Promise<voi
   }
 }
 
+ async approveOwner(req: Request, res: Response): Promise<void> {
+    try {
+      const { ownerId } = req.params;
+      if (!ownerId) {
+        res.status(STATUS_CODES.BAD_REQUEST).json({
+          error: "Owner ID is required",
+          status: STATUS_CODES.BAD_REQUEST,
+        });
+        return;
+      }
+      const result = await this._adminService.approveOwner(ownerId);
+      res.status(result.status).json(result);
+    } catch (error: any) {
+      console.error("Approve owner error:", error);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
+      });
+    }
+  }
+
+  // ✅ New: Reject Owner
+  async rejectOwner(req: Request, res: Response): Promise<void> {
+    try {
+      const { ownerId } = req.params;
+      if (!ownerId) {
+        res.status(STATUS_CODES.BAD_REQUEST).json({
+          error: "Owner ID is required",
+          status: STATUS_CODES.BAD_REQUEST,
+        });
+        return;
+      }
+      const result = await this._adminService.rejectOwner(ownerId);
+      res.status(result.status).json(result);
+    } catch (error: any) {
+      console.error("Reject owner error:", error);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
+      });
+    }
+  }
+
 
 }
 

@@ -208,6 +208,38 @@ export class UserController implements IUserController {
   }
 
   
+   async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = (req as any).userId;
+      const result = await this._userService.getUserProfile(userId);
+
+      res.status(result.status).json(result);
+    } catch (error: any) {
+      console.error("Get user profile error:", error);
+      logger.error("Get user profile error: " + error.message);
+
+      res
+        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
+    }
+  }
+
+  async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = (req as any).userId;
+      const result = await this._userService.updateUserProfile(userId, req.body);
+
+      res.status(result.status).json(result);
+    } catch (error: any) {
+      console.error("Update user profile error:", error);
+      logger.error("Update user profile error: " + error.message);
+
+      res
+        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
+    }
+  }
+
   
 }
 

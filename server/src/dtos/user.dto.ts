@@ -25,3 +25,38 @@ export class UserGoogleAuthResponseDto {
   token!: string;
   message!: string;
 }
+
+export class UserProfileUpdateDto {
+  name?: string;
+  phone?: string;
+  //profileImage?: string;
+  address?: {
+    houseNo?: string;
+    street?: string;
+    city?: string;
+    district?: string;
+    state?: string;
+    pincode?: string;
+  };
+}
+
+export class UserProfileResponseDto {
+  id!: string;
+  name!: string;
+  email!: string;
+  phone?: string;
+  //profileImage?: string;
+  address?: {
+    houseNo: string;
+    street: string;
+    city: string;
+    district: string;
+    state: string;
+    pincode: string;
+  };
+  userStatus!: "active" | "blocked";
+  isVerified!: boolean;
+  message!: string;
+  //responseStatus!: number; // differentiate from userStatus
+  status!:number
+}

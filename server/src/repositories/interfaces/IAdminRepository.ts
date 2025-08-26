@@ -43,4 +43,9 @@ export interface IAdminRepository extends IBaseRepository<IAdmin> {
   findOwnersWithPagination(query: OwnerListQuery): Promise<OwnerListResult>;
   updateOwnerStatus(ownerId: string, status: 'active' | 'blocked'): Promise<IOwner | null>;
   findOwnerById(ownerId: string): Promise<IOwner | null>;
+  updateOwnerApprovalStatus(
+    ownerId: string,
+    status: 'pending' |'approved' | 'rejected'
+  ): Promise<IOwner | null>;
+
 }

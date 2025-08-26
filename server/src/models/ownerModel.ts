@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, ObjectId  } from 'mongoose';
 
-
+export type OwnerStatus = 'pending' | 'approved' | 'rejected';
 
 export interface IOwner extends Document {
   _id: ObjectId;
@@ -11,8 +11,10 @@ export interface IOwner extends Document {
   password: string;
   businessAddress: string;
   businessName: string;
-  documents: string[];
+  // documents: string[];
+  document?: string;
   isBlocked: boolean;
+  approvalStatus: OwnerStatus;
   isVerified: boolean;
   otp?: string|null;
   otpExpires?: Date|null;
@@ -31,8 +33,13 @@ const ownerSchema = new Schema<IOwner>(
     profileImage: {type: String},
     businessAddress: {type: String,required:true,trim: true},
     businessName: {type: String,required: true,trim: true},
-    documents: {type: [String],default: []},
+    document: {type: String,default: null},
     isBlocked: {type: Boolean, default: false},
+    approvalStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
+    },
     isVerified: {type: Boolean,default: false},
     otp: {type: String,default: null },
     otpExpires: {type: Date}

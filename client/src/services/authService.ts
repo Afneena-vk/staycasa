@@ -15,6 +15,28 @@ interface UserFilters {
   sortOrder?: "asc" | "desc";
 }
 
+interface OwnerProfileUpdateData {
+  name?: string;
+  phone?: string;
+  businessName?: string;
+  businessAddress?: string;
+  //profileImage?: string;
+}
+
+interface UserProfileUpdateData {
+  name?: string;
+  phone?: string;
+  // profileImage?: string;
+  address?: {
+    houseNo?: string;
+    street?: string;
+    city?: string;
+    district?: string;
+    state?: string;
+    pincode?: string;
+  };
+}
+
 export const authService = {
  
   userSignup: async (userData: any) => {
@@ -96,6 +118,43 @@ export const authService = {
     return response.data;
   },
 
+getOwnerProfile: async () => {
+    const response = await api.get("/owner/profile");
+    return response.data;
+  },
+
+  updateOwnerProfile: async (profileData: OwnerProfileUpdateData) => {
+    const response = await api.put("/owner/profile", profileData);
+    return response.data;
+  },
+
+  
+uploadDocument: async (file: File) => {
+  const formData = new FormData();
+  
+    formData.append('document', file);
+  
+  
+  const response = await api.post('/owner/upload-document', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+},
+
+   getUserProfile: async () => {
+    const response = await api.get("/user/profile");
+    return response.data;
+  },
+
+  updateUserProfile: async (profileData: UserProfileUpdateData) => {
+    const response = await api.put("/user/profile", profileData);
+    return response.data;
+  },
+
+
+
    getUsers: async (filters: UserFilters = {}) => {
     const queryParams = new URLSearchParams();
     
@@ -167,5 +226,15 @@ unblockUser: async (userId: string) => { // Changed parameter type
     const response = await api.get(`/admin/owners/${ownerId}`);
     return response.data;
   },
+
+approveOwner: async (ownerId: string) => {
+  const response = await api.patch(`/admin/owners/${ownerId}/approve`, { status: "approved" });
+  return response.data;
+},
+
+rejectOwner: async (ownerId: string) => {
+  const response = await api.patch(`/admin/owners/${ownerId}/reject`, { status: "rejected" });
+  return response.data;
+},
 
 };

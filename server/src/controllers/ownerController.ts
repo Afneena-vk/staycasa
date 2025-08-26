@@ -101,6 +101,7 @@ export class OwnerController implements IOwnerController {
     //status: result.userStatus,
     isBlocked: result.isBlocked,
     isVerified: result.isVerified,
+    approvalStatus: result.approvalStatus, 
   },
  
    accessToken: result.token,
@@ -165,6 +166,69 @@ async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<v
     } catch (error: any) {
       
       logger.error("Reset password error: " + error.message);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+    }
+  }
+
+  
+
+async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId = (req as any).userId;
+    const result = await this._ownerService.getOwnerProfile(ownerId);
+    
+    res.status(result.status).json(result);
+  } catch (error: any) {
+    console.error("Get owner profile error:", error);
+    logger.error('Get profile error: ' + error.message);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+async updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId = (req as any).userId;
+    const result = await this._ownerService.updateOwnerProfile(ownerId, req.body);
+    
+    res.status(result.status).json(result);
+  } catch (error: any) {
+    console.error("Update owner profile error:", error);
+    logger.error('Update profile error: ' + error.message);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+async uploadDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      // const ownerId = req.user?.userId; // From auth middleware
+      const ownerId = (req as any).userId;
+
+      const file = req.file as Express.Multer.File;
+
+      if (!file) {
+        res.status(STATUS_CODES.BAD_REQUEST).json({
+          error: MESSAGES.ERROR.NO_DOCUMENTS
+        });
+        return;
+      }
+
+      
+
+      const result = await this._ownerService.uploadDocument(ownerId, file);
+      
+      res.status(result.status).json({
+        message: result.message,
+        documents: result.document
+      });
+    } catch (error: any) {
+      console.error("Document upload error:", error);
+      logger.error('Document upload error: ' + error.message);
       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         error: error.message || MESSAGES.ERROR.SERVER_ERROR,
       });

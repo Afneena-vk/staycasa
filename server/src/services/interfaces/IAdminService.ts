@@ -26,4 +26,8 @@ export interface AdminLoginData {
       unblockOwner(ownerId: string): Promise<{ message: string; status: number }>;
       getOwnerById(ownerId: string): Promise<OwnerDetailResponseDto>;
 
+      approveOwner(ownerId: string): Promise<{ message: string; status: number }>;
+      rejectOwner(ownerId: string): Promise<{ message: string; status: number }>;
+
+
     }

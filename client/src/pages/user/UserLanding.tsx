@@ -10,7 +10,9 @@ const UserLanding: React.FC = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white pt-28 pb-20">
+      {/* <section className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white pt-28 pb-20"> */}
+      
+      <section className="flex-1 bg-gradient-to-r from-blue-950 to-blue-800 text-white pt-28 pb-20">
         <div className="container mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Your Dream Vacation Starts Here
@@ -21,7 +23,7 @@ const UserLanding: React.FC = () => {
           </p>
           <Link
             to="/destinations"
-            className="bg-white text-purple-600 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
+            className="bg-white text-blue-950 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
           >
             Explore Now
           </Link>
@@ -31,7 +33,7 @@ const UserLanding: React.FC = () => {
       {/* Featured Destinations */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Featured Destinations</h2>
+          <h2 className="text-3xl  text-blue-950  font-bold text-center mb-12">Featured Destinations</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Card */}
             {["Bali", "Santorini", "Swiss Alps"].map((place, i) => (

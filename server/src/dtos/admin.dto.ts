@@ -83,9 +83,11 @@ export class OwnerListItemDto {
   profileImage?: string;
   businessAddress!: string;
   businessName!: string;
-  documents!: string[];
+  // documents!: string[];
+  document?: string;  
   status!: 'active' | 'blocked'; 
   isVerified!: boolean;
+  approvalStatus!: 'pending' | 'approved' | 'rejected'; 
   createdAt!: Date;
   updatedAt!: Date;
 }
@@ -116,9 +118,11 @@ export class OwnerDetailDto {
   profileImage?: string;
   businessAddress!: string;
   businessName!: string;
-  documents!: string[]; 
+  // documents!: string[]; 
+  document?: string;  
   status!: 'active' | 'blocked'; 
   isVerified!: boolean;
+  approvalStatus!: 'pending' | 'approved' | 'rejected'; 
   createdAt!: Date;
   updatedAt!: Date;
 }

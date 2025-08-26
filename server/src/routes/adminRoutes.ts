@@ -57,6 +57,16 @@ adminRoutes.get(
   adminController.getOwnerById.bind(adminController)
 );
 
+adminRoutes.patch(
+    "/owners/:ownerId/approve",
+    authMiddleware(["admin"]),
+    adminController.approveOwner.bind(adminController)
+);
 
+adminRoutes.patch(
+    "/owners/:ownerId/reject",
+    authMiddleware(["admin"]),
+    adminController.rejectOwner.bind(adminController)
+);
 
 export default adminRoutes;

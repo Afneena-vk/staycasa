@@ -10,7 +10,8 @@ import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 //import {IOwner} from '../models/ownerModel'
 import { OwnerMapper } from "../mappers/ownerMapper";
-import { OwnerLoginResponseDto } from "../dtos/owner.dto";
+import { OwnerLoginResponseDto, OwnerProfileResponseDto, OwnerProfileUpdateDto } from "../dtos/owner.dto";
+import { cloudinary } from '../config/cloudinary';
 
 @injectable()
 
@@ -220,6 +221,108 @@ import { OwnerLoginResponseDto } from "../dtos/owner.dto";
           message: MESSAGES.SUCCESS.PASSWORD_RESET 
         };
       }
+
+
+async getOwnerProfile(ownerId: string): Promise<OwnerProfileResponseDto> {
+  const owner = await this._ownerRepository.findById(ownerId);
+  
+  if (!owner) {
+    const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
+    error.status = STATUS_CODES.NOT_FOUND;
+    throw error;
+  }
+
+  return OwnerMapper.toProfileResponse(owner, "Profile retrieved successfully");
+}
+
+async updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<OwnerProfileResponseDto> {
+  const owner = await this._ownerRepository.findById(ownerId);
+  
+  if (!owner) {
+    const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
+    error.status = STATUS_CODES.NOT_FOUND;
+    throw error;
+  }
+
+  // Validate and update only provided fields
+  //const updateData: Partial<IOwner> = {};
+  const updateData: Partial<OwnerProfileUpdateDto> = {};
+
+  if (data.name) updateData.name = data.name;
+  if (data.phone) updateData.phone = data.phone;
+  if (data.businessName) updateData.businessName = data.businessName;
+  if (data.businessAddress) updateData.businessAddress = data.businessAddress;
+  //if (data.profileImage) updateData.profileImage = data.profileImage;
+
+  const updatedOwner = await this._ownerRepository.update(ownerId, updateData);
+  
+  if (!updatedOwner) {
+    const error: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
+    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw error;
+  }
+
+  return OwnerMapper.toProfileResponse(updatedOwner, "Profile updated successfully");
+}
+
+async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ message: string; status: number; document: string }> {
+    try {
+      // Check if owner exists and has pending/rejected status
+      const owner = await this._ownerRepository.findById(ownerId);
+      
+      if (!owner) {
+        const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
+        error.status = STATUS_CODES.NOT_FOUND;
+        throw error;
+      }
+
+      // Only allow upload if status is pending or rejected
+      if (owner.approvalStatus === 'approved') {
+        const error: any = new Error(MESSAGES.ERROR.ALREADY_APPROVED);
+        error.status = STATUS_CODES.BAD_REQUEST;
+        throw error;
+      }
+
+      // Delete existing documents from Cloudinary if any
+      if (owner.document) {
+        
+          try {
+            // Extract public_id from Cloudinary URL
+            const publicId = owner.document.split('/').pop()?.split('.')[0];
+            if (publicId) {
+              await cloudinary.uploader.destroy(`staycasa/owner-documents/${publicId}`, { resource_type: 'auto' });
+            }
+          } catch (deleteError) {
+            console.log('Error deleting old document:', deleteError);
+          }
+        
+      }
+
+      // Get URLs from uploaded files (already uploaded by multer-cloudinary)
+      // const documentUrls = files.map(file => (file as any).path);
+      const documentUrl = (file as any).path;
+      // Update owner's documents
+      const updatedOwner = await this._ownerRepository.updateDocument(ownerId, documentUrl);
+      
+      if (!updatedOwner) {
+        const error: any = new Error(MESSAGES.ERROR.UPLOAD_FAILED);
+        error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+        throw error;
+      }
+
+      return {
+        message: "Documents uploaded successfully",
+        status: STATUS_CODES.OK,
+        document: documentUrl
+      };
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+
+
+
 }
 
 //export default new OwnerService();
