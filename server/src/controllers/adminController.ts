@@ -287,7 +287,7 @@ async getOwnerById(req: Request, res: Response, next: NextFunction): Promise<voi
     }
   }
 
-  // ✅ New: Reject Owner
+ 
   async rejectOwner(req: Request, res: Response): Promise<void> {
     try {
       const { ownerId } = req.params;

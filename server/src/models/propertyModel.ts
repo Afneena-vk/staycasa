@@ -5,14 +5,17 @@ import { PropertyStatus } from "./status/status";
 export type FurnishingType = "Fully-Furnished" | "Semi-Furnished" | "Not Furnished";
 
 export interface IProperty extends Document {
-  _id: ObjectId;
-  ownerId: ObjectId;
-  title: string;
-  type: string; // e.g., Apartment, Villa, Cottage, Farmhouse
-  description: string;
-  category?: ObjectId | null;
+  // _id: ObjectId;
+  // ownerId: ObjectId;
+   _id: mongoose.Types.ObjectId;     
+  ownerId: mongoose.Types.ObjectId;  
 
-  // Location
+  title: string;
+  type: string; 
+  description: string;
+  category?:  mongoose.Types.ObjectId| null;
+
+
   mapLocation?: {
     place?: string;
     coordinates: {
@@ -28,37 +31,37 @@ export interface IProperty extends Document {
   state: string;
   pincode: number;
 
-  // Property details
+ 
   bedrooms: number;
   bathrooms: number;
   furnishing: FurnishingType;
   availableFrom: Date;
   pricePerMonth: number;
 
-  // Stay details
+ 
   maxGuests: number;
-  checkInTime?: string;   // e.g., "14:00"
-  checkOutTime?: string;  // e.g., "11:00"
+  checkInTime?: string; 
+  checkOutTime?: string;  
 
-  // Media
+  
   images: string[];
 
-  // Lease & rules
-  minLeasePeriod: number; // in months
-  maxLeasePeriod: number; // in months
+  
+  minLeasePeriod: number; 
+  maxLeasePeriod: number; 
   rules: string;
   cancellationPolicy: string;
 
-  // Features / Amenities
-  features: string[];      // e.g., ["WiFi", "AC", "Kitchen"]
+  
+  features: string[];      
   otherFeatures?: string[];
 
-  // Review & status
+  
   averageRating: number;
   totalReviews: number;
   isBooked: boolean;
 
-  // Moderation
+  
   isRejected: boolean;
   rejectedReason?: string;
   status: PropertyStatus;
@@ -71,11 +74,11 @@ const propertySchema = new Schema<IProperty>(
   {
     ownerId: { type: Schema.Types.ObjectId, ref: "Owner", required: true },
     title: { type: String, required: true, trim: true },
-    type: { type: String, required: true, trim: true }, // Villa, Apartment, etc.
+    type: { type: String, required: true, trim: true }, 
     description: { type: String, required: true },
     category: { type: Schema.Types.ObjectId, ref: "Category" },
 
-    // Location
+  
     mapLocation: {
       place: { type: String },
       coordinates: {
@@ -91,7 +94,7 @@ const propertySchema = new Schema<IProperty>(
     state: { type: String, required: true },
     pincode: { type: Number, required: true },
 
-    // Property details
+    
     bedrooms: { type: Number, required: true },
     bathrooms: { type: Number, required: true },
     furnishing: {
@@ -102,30 +105,30 @@ const propertySchema = new Schema<IProperty>(
     availableFrom: { type: Date, default: Date.now },
     pricePerMonth: { type: Number, required: true },
 
-    // Stay details
+    
     maxGuests: { type: Number, required: true },
     checkInTime: { type: String, default: "14:00" },
     checkOutTime: { type: String, default: "11:00" },
 
-    // Media
+  
     images: { type: [String], default: [] },
 
-    // Lease & rules
+    
     minLeasePeriod: { type: Number, required: true },
     maxLeasePeriod: { type: Number, required: true },
     rules: { type: String, default: "" },
     cancellationPolicy: { type: String, default: "" },
 
-    // Features
+   
     features: { type: [String], default: [] },
     otherFeatures: { type: [String], default: [] },
 
-    // Review & status
+    
     averageRating: { type: Number, default: 0 },
     totalReviews: { type: Number, default: 0 },
     isBooked: { type: Boolean, default: false },
 
-    // Moderation
+   
     isRejected: { type: Boolean, default: false },
     rejectedReason: { type: String },
     status: {

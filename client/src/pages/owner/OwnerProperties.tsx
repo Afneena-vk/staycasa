@@ -4,6 +4,8 @@ import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch } from "react-icons/fa";
 //import OwnerLayout from "../../layouts/Owner/OwnerLayout";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
+import { useNavigate } from "react-router-dom";
+
 
 interface Property {
   id: string;
@@ -50,6 +52,13 @@ const OwnerProperties = () => {
   const {userData} = useAuthStore();
   const isApproved = userData?.approvalStatus === 'approved';
 
+  const navigate = useNavigate(); 
+  const handleAddProperty = () => {
+    if (isApproved) {
+      navigate("/owner/add-property"); // ✅ navigate to add property page
+    }
+  };
+
   const filteredProperties = dummyProperties.filter((property) =>
     property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     property.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,6 +77,7 @@ const OwnerProperties = () => {
         </button> */}
 
         <button 
+          onClick={handleAddProperty}
           disabled={!isApproved}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md transition ${
           isApproved 

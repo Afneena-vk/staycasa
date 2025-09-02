@@ -38,18 +38,6 @@ userRoutes.get(
 
 
 
-
-// userRoutes.get(
-//   "/profile",
-//   authMiddleware(["user"]),
-//   (req, res) => {
-//     res.json({
-//       userId: (req as any).userId,
-//       userType: (req as any).userType,
-//     });
-//   }
-// );
-
 userRoutes.get(
   "/profile",
   authMiddleware(["user"]),

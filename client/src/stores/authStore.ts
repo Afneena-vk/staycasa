@@ -231,7 +231,7 @@ login: async (email, password, authType) => {
   //       },
 
          logout: () => {
-  // Clear all tokens to prevent cross-contamination
+  
          tokenService.clearAllTokens();
   
          sessionStorage.removeItem("auth-type");
@@ -392,7 +392,7 @@ login: async (email, password, authType) => {
       set({
         userData: {
           ...currentState.userData,
-          ...response.data, // use updated fields from API response
+          ...response.data, 
         },
       });
     }
@@ -409,7 +409,7 @@ uploadDocument: async (file: File) => {
   try {
     const response = await authService.uploadDocument(file);
     
-    // Refresh profile to get updated documents
+   
     const updatedProfile = await get().getOwnerProfile();
     if (updatedProfile && updatedProfile.status === 200) {
       get().updateUserData({

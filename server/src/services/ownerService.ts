@@ -244,7 +244,7 @@ async updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<
     throw error;
   }
 
-  // Validate and update only provided fields
+
   //const updateData: Partial<IOwner> = {};
   const updateData: Partial<OwnerProfileUpdateDto> = {};
 
@@ -267,7 +267,7 @@ async updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<
 
 async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ message: string; status: number; document: string }> {
     try {
-      // Check if owner exists and has pending/rejected status
+    
       const owner = await this._ownerRepository.findById(ownerId);
       
       if (!owner) {
@@ -276,18 +276,18 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
         throw error;
       }
 
-      // Only allow upload if status is pending or rejected
+      
       if (owner.approvalStatus === 'approved') {
         const error: any = new Error(MESSAGES.ERROR.ALREADY_APPROVED);
         error.status = STATUS_CODES.BAD_REQUEST;
         throw error;
       }
 
-      // Delete existing documents from Cloudinary if any
+      
       if (owner.document) {
         
           try {
-            // Extract public_id from Cloudinary URL
+          
             const publicId = owner.document.split('/').pop()?.split('.')[0];
             if (publicId) {
               await cloudinary.uploader.destroy(`staycasa/owner-documents/${publicId}`, { resource_type: 'auto' });
@@ -298,10 +298,9 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
         
       }
 
-      // Get URLs from uploaded files (already uploaded by multer-cloudinary)
-      // const documentUrls = files.map(file => (file as any).path);
+      
       const documentUrl = (file as any).path;
-      // Update owner's documents
+     
       const updatedOwner = await this._ownerRepository.updateDocument(ownerId, documentUrl);
       
       if (!updatedOwner) {

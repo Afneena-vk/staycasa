@@ -20,6 +20,7 @@ import OwnerResetPassword from "./pages/owner/OwnerResetPassword";
 import AuthSuccess from "./pages/user/AuthSuccess.tsx";
 import OwnerDashboard from "./pages/owner/OwnerDashboard.tsx";
 import OwnerProperties from "./pages/owner/OwnerProperties.tsx";
+import OwnerAddProperty from "./pages/owner/OwnerAddProperty.tsx";
 import OwnerProfile from "./components/Owner/OwnerProfile.tsx";
 
 import UserSignup from "./pages/user/UserSignup";
@@ -51,7 +52,8 @@ const App = () => {
         <Route path="/owner/dashboard" element={<OwnerDashboard/>}/>
         <Route path="/owner/properties" element={<OwnerProperties/>}/>
         <Route path='/owner/profile' element={<OwnerProfile/>}/>
-  
+         <Route path="/owner/add-property" element={<OwnerAddProperty />} />
+
         <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/user/forgot-password" element={<UserForgotPassword />} />

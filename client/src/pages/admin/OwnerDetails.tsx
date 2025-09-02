@@ -7,7 +7,7 @@ import { authService } from "../../services/authService";
 import { toast } from "react-toastify";
 
 interface Owner {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -15,7 +15,8 @@ interface Owner {
   businessName: string;
   businessAddress: string;
   document?: string;
-  isBlocked: boolean;
+  // isBlocked: boolean;
+  status: "active" | "blocked";
   //isVerified: boolean;
   createdAt: string;
   updatedAt: string;
@@ -27,6 +28,7 @@ const OwnerDetails: React.FC = () => {
   const [owner, setOwner] = useState<Owner | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
 
   const fetchOwnerDetails = async () => {
     try {
@@ -40,24 +42,42 @@ const OwnerDetails: React.FC = () => {
     }
   };
 
+  // const handleBlockToggle = async () => {
+  //   if (!owner) return;
+  //   try {
+  //     setActionLoading(true);
+  //     if (owner.isBlocked) {
+  //       await authService.unblockOwner(owner.id);
+  //       toast.success("Owner unblocked");
+  //     } else {
+  //       await authService.blockOwner(owner.id);
+  //       toast.success("Owner blocked");
+  //     }
+  //     fetchOwnerDetails();
+  //   } catch {
+  //     toast.error("Action failed");
+  //   } finally {
+  //     setActionLoading(false);
+  //   }
+  // };
   const handleBlockToggle = async () => {
-    if (!owner) return;
-    try {
-      setActionLoading(true);
-      if (owner.isBlocked) {
-        await authService.unblockOwner(owner._id);
-        toast.success("Owner unblocked");
-      } else {
-        await authService.blockOwner(owner._id);
-        toast.success("Owner blocked");
-      }
-      fetchOwnerDetails();
-    } catch {
-      toast.error("Action failed");
-    } finally {
-      setActionLoading(false);
+  if (!owner) return;
+  try {
+    setActionLoading(true);
+    if (owner.status === "blocked") {
+      await authService.unblockOwner(owner.id);
+      toast.success("Owner unblocked");
+    } else {
+      await authService.blockOwner(owner.id);
+      toast.success("Owner blocked");
     }
-  };
+    fetchOwnerDetails();
+  } catch {
+    toast.error("Action failed");
+  } finally {
+    setActionLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchOwnerDetails();
@@ -108,7 +128,7 @@ const OwnerDetails: React.FC = () => {
               <p className="text-sm text-gray-600">Complete information about the owner</p>
             </div>
           </div>
-          <button
+          {/* <button
             onClick={handleBlockToggle}
             disabled={actionLoading}
             className={`px-4 py-2 rounded-lg font-medium transition ${
@@ -118,7 +138,19 @@ const OwnerDetails: React.FC = () => {
             } ${actionLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             {actionLoading ? "Processing..." : owner.isBlocked ? "Unblock Owner" : "Block Owner"}
-          </button>
+          </button> */}
+          <button
+  onClick={handleBlockToggle}
+  disabled={actionLoading}
+  className={`px-4 py-2 rounded-lg font-medium transition ${
+    owner.status === "blocked"
+      ? "bg-green-100 text-green-700 hover:bg-green-200"
+      : "bg-red-100 text-red-700 hover:bg-red-200"
+  } ${actionLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+>
+  {actionLoading ? "Processing..." : owner.status === "blocked" ? "Unblock Owner" : "Block Owner"}
+</button>
+
         </div>
 
         {/* Details Card */}
@@ -143,7 +175,7 @@ const OwnerDetails: React.FC = () => {
                 <h2 className="text-2xl font-bold">{owner.name}</h2>
                 <p className="text-purple-100">{owner.email}</p>
                 <div className="flex items-center gap-4 mt-2">
-                  <span
+                  {/* <span
                     className={`px-3 py-1 rounded-full text-sm font-semibold ${
                       owner.isBlocked
                         ? "bg-red-100 text-red-700"
@@ -151,7 +183,17 @@ const OwnerDetails: React.FC = () => {
                     }`}
                   >
                     {owner.isBlocked ? "Blocked" : "Active"}
-                  </span>
+                  </span> */}
+                  <span
+  className={`px-3 py-1 rounded-full text-sm font-semibold ${
+    owner.status === "blocked"
+      ? "bg-red-100 text-red-700"
+      : "bg-green-100 text-green-700"
+  }`}
+>
+  {owner.status === "blocked" ? "Blocked" : "Active"}
+</span>
+
                   {/* <span
                     className={`px-3 py-1 rounded-full text-sm font-semibold ${
                       owner.isVerified
@@ -187,7 +229,7 @@ const OwnerDetails: React.FC = () => {
           </div>
 
           {/* Documents */}
-          <div className="p-6 border-t">
+          {/* <div className="p-6 border-t">
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Documents</h4>
             {owner.document? (
               // <ul className="list-disc pl-6 space-y-2">
@@ -210,7 +252,43 @@ const OwnerDetails: React.FC = () => {
             ) : (
               <p>No documents uploaded.</p>
             )}
-          </div>
+          </div> */}
+          {/* Documents */}
+<div className="p-6 border-t">
+  <h4 className="text-lg font-semibold text-gray-800 mb-4">Documents</h4>
+  {owner.document ? (
+    <button
+      onClick={() => setSelectedDoc(owner.document!)}
+      className="text-blue-600 hover:underline"
+    >
+      View Document
+    </button>
+  ) : (
+    <p>No documents uploaded.</p>
+  )}
+</div>
+
+{/* Modal */}
+{selectedDoc && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg shadow-lg max-w-3xl w-full relative">
+      <button
+        onClick={() => setSelectedDoc(null)}
+        className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+      >
+        ✕
+      </button>
+      <div className="p-4">
+        <iframe
+          src={selectedDoc}
+          title="Document Viewer"
+          className="w-full h-[500px] rounded"
+        />
+      </div>
+    </div>
+  </div>
+)}
+
         </div>
       </div>
     </AdminLayout>

@@ -174,20 +174,20 @@ uploadDocument: async (file: File) => {
 
 
 
-   blockUser: async (userId: string) => { // Changed parameter type
+   blockUser: async (userId: string) => { 
     const response = await api.patch(`/admin/users/${userId}/block`);
     return response.data;
   },
 
 
-unblockUser: async (userId: string) => { // Changed parameter type
+unblockUser: async (userId: string) => { 
     const response = await api.patch(`/admin/users/${userId}/unblock`);
     return response.data;
   },
 
 
  
- getUserDetails: async (userId: string) => { // Changed parameter type
+ getUserDetails: async (userId: string) => { 
     const response = await api.get(`/admin/users/${userId}`);
     return response.data;
   },
@@ -211,18 +211,18 @@ unblockUser: async (userId: string) => { // Changed parameter type
 },
 
 
-   blockOwner: async (ownerId: string) => { // Changed parameter type
+   blockOwner: async (ownerId: string) => { 
     const response = await api.patch(`/admin/owners/${ownerId}/block`);
     return response.data;
   },
 
 
-   unblockOwner: async (ownerId: string) => { // Changed parameter type
+   unblockOwner: async (ownerId: string) => { 
     const response = await api.patch(`/admin/owners/${ownerId}/unblock`);
     return response.data;
   },
 
-   getOwnerDetails: async (ownerId: string) => { // Changed parameter type
+   getOwnerDetails: async (ownerId: string) => { 
     const response = await api.get(`/admin/owners/${ownerId}`);
     return response.data;
   },

@@ -31,7 +31,7 @@ export class OwnerMapper {
     //profileImage: owner.profileImage,
     businessName: owner.businessName,
     businessAddress: owner.businessAddress,
-    approvalStatus: owner.approvalStatus,  // ✅ include status
+    approvalStatus: owner.approvalStatus,  
     document: owner.document, 
     message,
     status: 200,

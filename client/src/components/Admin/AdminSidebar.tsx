@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 
 const navLinks = [
-  { name: "Home", path: "/admin/home", icon: FaHome },
+  { name: "Home", path: "/admin-dashboard", icon: FaHome },
   { name: "Users", path: "/admin/users", icon: FaUsers },
   { name: "Owners", path: "/admin/owners", icon: FaCrown },
   { name: "Properties", path: "/admin/properties", icon: FaBuilding },

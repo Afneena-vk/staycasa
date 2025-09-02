@@ -18,16 +18,6 @@ ownerRoutes.post("/forgot-password", ownerController.forgotPassword.bind(ownerCo
 ownerRoutes.post("/reset-password", ownerController.resetPassword.bind(ownerController));
 
 
-// ownerRoutes.get(
-//   "/profile",
-//   authMiddleware(["owner"]),
-//   (req, res) => {
-//     res.json({
-//       ownerId: (req as any).userId,
-//       userType: (req as any).userType,
-//     });
-//   }
-// );
 
 ownerRoutes.get(
   "/profile",

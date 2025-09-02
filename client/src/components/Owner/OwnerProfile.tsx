@@ -38,13 +38,13 @@ const OwnerProfile = () => {
   const [uploading, setUploading] = useState(false);
 
 
-  // Load profile data on component mount
+  
   useEffect(() => {
     const loadProfile = async () => {
       try {
         setLoading(true);
         
-        // First try to get from userData in store
+        
         if (userData) {
           setProfile({
             name: userData.name || "",
@@ -58,7 +58,7 @@ const OwnerProfile = () => {
           });
         }
         
-        // Then fetch fresh data from API
+       
         const response = await getOwnerProfile();
         if (response && response.status === 200) {
           const profileData = {
@@ -74,7 +74,7 @@ const OwnerProfile = () => {
           
           setProfile(profileData);
           
-          // Update the userData in store with fresh data
+         
           updateUserData(profileData);
         }
       } catch (error: any) {
@@ -101,13 +101,13 @@ const OwnerProfile = () => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       
-      // Validate file type
+    
       if (!file.type.startsWith('image/')) {
         toast.error("Please select a valid image file");
         return;
       }
       
-      // Validate file size (max 5MB)
+      
       if (file.size > 5 * 1024 * 1024) {
         toast.error("File size should be less than 5MB");
         return;
@@ -142,111 +142,7 @@ const OwnerProfile = () => {
       setDocumentFile(file);
     }
   };
-  //   const validFiles = files.filter(file => {
-  //       if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
-  //         toast.error(`${file.name}: Only image or PDF files are allowed`);
-  //         return false;
-  //       }
-  //       if (file.size > 5 * 1024 * 1024) {
-  //         toast.error(`${file.name}: File size must be less than 5MB`);
-  //         return false;
-  //       }
-  //       return true;
-  //     });
-  //     if (validFiles.length > 5) {
-  //       toast.error("Maximum 5 files allowed");
-  //       return;
-  //     }
 
-  //     setDocumentFiles(validFiles);
-  //   }
-  // };
-
-  // 🔹 Handle document upload
-  // const handleDocumentUpload = async () => {
-  //   // if (!documentFile) {
-  //    if (documentFiles.length === 0) {
-  //     toast.error("Please select a document first");
-  //     return;
-  //   }
-
-  //   try {
-  //     setUploading(true);
-
-  //     const formData = new FormData();
-  //     formData.append("document", documentFile);
-
-  //     const res = await fetch("/api/owner/upload-documents", {
-  //       method: "POST",
-  //       body: formData,
-  //       credentials: "include",
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (res.ok) {
-  //       toast.success(data.message || "Document uploaded successfully");
-  //       // Refresh profile
-  //       const updated = await getOwnerProfile();
-  //       if (updated && updated.status === 200) {
-  //         setProfile({
-  //           name: updated.name,
-  //           email: updated.email,
-  //           phone: updated.phone,
-  //           businessName: updated.businessName,
-  //           businessAddress: updated.businessAddress,
-  //           approvalStatus: updated.approvalStatus,
-  //           documents: updated.documents || [],
-  //         });
-  //       }
-  //     } else {
-  //       toast.error(data.error || "Failed to upload document");
-  //     }
-  //   } catch (err) {
-  //     toast.error("Upload failed. Try again later.");
-  //   } finally {
-  //     setUploading(false);
-  //     setDocumentFile(null);
-  //   }
-  // };
-
-//   const handleDocumentUpload = async () => {
-//   if (documentFiles.length === 0) {
-//     toast.error("Please select at least one document");
-//     return;
-//   }
-
-//   try {
-//     setUploading(true);
-    
-//     const response = await uploadDocuments(documentFiles);
-    
-//     if (response) {
-//       toast.success(response.message || "Documents uploaded successfully");
-      
-//       // Refresh profile data
-//       const updated = await getOwnerProfile();
-//       if (updated && updated.status === 200) {
-//         setProfile(prev => ({
-//           ...prev,
-//           documents: updated.documents || [],
-//           approvalStatus: updated.approvalStatus || prev.approvalStatus,
-//         }));
-//       }
-      
-//       // Clear selected files
-//       setDocumentFiles([]);
-//       // Clear file input
-//       const fileInput = document.getElementById('documentUpload') as HTMLInputElement;
-//       if (fileInput) fileInput.value = '';
-//     }
-//   } catch (error: any) {
-//     console.error("Upload failed:", error);
-//     toast.error(error.response?.data?.error || "Upload failed. Try again later.");
-//   } finally {
-//     setUploading(false);
-//   }
-// };
 
 const handleDocumentUpload = async () => {
   if (!documentFile) {
@@ -288,13 +184,13 @@ const handleDocumentUpload = async () => {
     try {
       setSaving(true);
       
-      // Prepare data for update (exclude email as it shouldn't be updated)
+     
       const updateData = {
         name: profile.name,
         phone: profile.phone,
         businessName: profile.businessName,
         businessAddress: profile.businessAddress,
-        // ...(profile.profileImage && { profileImage: profile.profileImage }),
+        
       };
 
       const response = await updateOwnerProfile(updateData);
@@ -302,7 +198,7 @@ const handleDocumentUpload = async () => {
       if (response && response.status === 200) {
         toast.success(response.message || "Profile updated successfully");
         
-        // Update local profile state with the response data
+      
         if (response.name) {
           setProfile(prev => ({
             ...prev,
@@ -310,7 +206,7 @@ const handleDocumentUpload = async () => {
             phone: response.phone,
             businessName: response.businessName,
             businessAddress: response.businessAddress,
-            // profileImage: response.profileImage || prev.profileImage,
+           
           }));
         }
       }

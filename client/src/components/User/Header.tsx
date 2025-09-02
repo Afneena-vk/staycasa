@@ -66,7 +66,7 @@ const Header: React.FC = () => {
 
         {/* Navigation */}
         <nav className="hidden md:flex space-x-6">
-          <Link to="/" className="text-gray-700 hover:text-blue-950">
+          <Link to="/user/dashboard" className="text-gray-700 hover:text-blue-950">
             Home
           </Link>
           <Link to="/destinations" className="text-gray-700 hover:text-blue-950">
