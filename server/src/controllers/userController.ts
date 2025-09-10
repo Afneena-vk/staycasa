@@ -78,7 +78,7 @@ export class UserController implements IUserController {
     try {
       const result = await this._userService.loginUser(req.body);
 
-    res.cookie("auth-token", result.token, {
+    res.cookie("user-auth-token", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         //maxAge: 7 * 24 * 60 * 60 * 1000, 
@@ -86,7 +86,7 @@ export class UserController implements IUserController {
         path: "/",
       });
       
-      res.cookie("refresh-token", result.refreshToken, {
+      res.cookie("user-refresh-token", result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000, 

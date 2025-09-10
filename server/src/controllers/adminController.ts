@@ -18,7 +18,7 @@ export class AdminController implements IAdminController{
           
           const result = await this._adminService.loginAdmin(req.body);
 
-        res.cookie("auth-token", result.token, {
+        res.cookie("admin-auth-token", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         //maxAge: 7 * 24 * 60 * 60 * 1000, 
@@ -26,7 +26,7 @@ export class AdminController implements IAdminController{
         path: "/",
       });
       
-      res.cookie("refresh-token", result.refreshToken, {
+      res.cookie("admin-refresh-token", result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000, 
