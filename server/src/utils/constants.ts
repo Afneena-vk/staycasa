@@ -27,6 +27,8 @@ export const ROLES = {
       PROFILE_RETRIEVED: "Profile retrieved successfully",
       PROFILE_UPDATED: "Profile updated successfully",  
       DOCUMENTS_UPLOADED: "Documents uploaded successfully",
+      PROPERTY_CREATED: "Property created successfully",
+      PROPERTIES_RETRIEVED: "Properties retrieved successfully",
     },
     ERROR: {
       INVALID_CREDENTIALS: "Invalid credentials",
@@ -47,5 +49,7 @@ export const ROLES = {
       MAX_DOCUMENTS_EXCEEDED: "Maximum 5 documents allowed",
       UPLOAD_FAILED: "Failed to upload documents",
       ALREADY_APPROVED: "Cannot upload documents. Owner is already approved.",
+      PROPERTY_CREATION_FAILED: "Failed to create property",
+      PROPERTIES_NOT_FOUND: "No properties found",
     },
   };

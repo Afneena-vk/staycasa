@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { container } from '../config/container'
 import { IOwnerController } from "../controllers/interfaces/IOwnerController";
+import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -8,6 +9,7 @@ import { cloudinaryUpload } from "../config/cloudinary";
 
 const ownerRoutes = Router();
 const ownerController = container.resolve<IOwnerController>(TOKENS.IOwnerController);
+const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -37,5 +39,19 @@ ownerRoutes.post(
   cloudinaryUpload.single('document'), 
   ownerController.uploadDocument.bind(ownerController)
 );
+
+ownerRoutes.post(
+  "/properties",
+  authMiddleware(["owner"]),
+  cloudinaryUpload.array("images", 5),
+  propertyController.createProperty.bind(propertyController)
+);
+
+ownerRoutes.get(
+  "/properties",
+  authMiddleware(["owner"]),
+  propertyController.getOwnerProperties.bind(propertyController)
+);
+
 
 export default ownerRoutes
