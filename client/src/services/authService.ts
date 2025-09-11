@@ -237,4 +237,17 @@ rejectOwner: async (ownerId: string) => {
   return response.data;
 },
 
+addProperty: async (propertyData: FormData) => {
+    const response = await api.post("/owner/properties", propertyData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+  getOwnerProperties: async () => {
+    const response = await api.get("/owner/properties");
+    return response.data;
+  },
+
 };

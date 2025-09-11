@@ -495,8 +495,9 @@ import { AuthSlice, createAuthSlice } from "./slices/authSlice";
 import { AdminSlice, createAdminSlice } from "./slices/adminSlice";
 import { OwnerSlice, createOwnerSlice } from "./slices/ownerSlice";
 import { UserSlice, createUserSlice } from "./slices/userSlice";
+import { PropertySlice, createPropertySlice } from "./slices/propertySlice";
 
-type StoreState = AuthSlice & AdminSlice & OwnerSlice & UserSlice;
+type StoreState = AuthSlice & AdminSlice & OwnerSlice & UserSlice & PropertySlice;
 
 export const useAuthStore = create<StoreState>()(
   persist(
@@ -505,6 +506,7 @@ export const useAuthStore = create<StoreState>()(
       ...createAdminSlice(...args),
       ...createOwnerSlice(...args),
       ...createUserSlice(...args),
+      ...createPropertySlice(...args),
     }),
     {
       name: "auth-storage",
@@ -519,3 +521,4 @@ export const useAuthStore = create<StoreState>()(
 export type { AuthType } from "./slices/authSlice";
 export type { OwnerProfile, ProfileResponse } from "./slices/ownerSlice";
 export type { UserProfile, UserProfileResponse } from "./slices/userSlice";
+export type {PropertySlice,PropertyFormData} from './slices/propertySlice'

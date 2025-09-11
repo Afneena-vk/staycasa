@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import { authService } from "../../services/authService";
+import { useAuthStore } from "../../stores/authStore";
+
 const AddProperty: React.FC = () => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
@@ -21,6 +24,9 @@ const AddProperty: React.FC = () => {
   const [amenities, setAmenities] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
+const { addProperty, isLoading, error, clearError } = useAuthStore();
 
   const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -33,12 +39,19 @@ const AddProperty: React.FC = () => {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImages(Array.from(e.target.files));
+      // setImages(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      setImages(files);
+      const previews = files.map((file) => URL.createObjectURL(file));
+      setImagePreviews(previews);
     }
   };
 
+
+
   const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
+    clearError(); 
 
     const formData = new FormData();
     formData.append("title", title);
@@ -57,6 +70,7 @@ const AddProperty: React.FC = () => {
     formData.append("minLeasePeriod", String(minLeasePeriod));
     formData.append("maxLeasePeriod", String(maxLeasePeriod));
     formData.append("description", description);
+
     amenities.forEach((a) => formData.append("amenities", a));
     images.forEach((img) => formData.append("images", img));
 
@@ -81,32 +95,72 @@ const AddProperty: React.FC = () => {
     //   amenities,
     //   images,
     // });
-      try {
-    const response = await fetch("/api/owner/add-property", {
-      method: "POST",
-      body: formData,
-      credentials: "include", // ensures cookies/session are sent
-    });
+  //     try {
+  //   const response = await fetch("/api/owner/add-property", {
+  //     method: "POST",
+  //     body: formData,
+  //     credentials: "include", // ensures cookies/session are sent
+  //   });
 
-    const result = await response.json();
+  //   const result = await response.json();
 
-    if (response.ok) {
+  //   if (response.ok) {
+  //     alert("Property added successfully!");
+  //     // Reset form fields here if needed
+  //     // e.g. setTitle(""), setType(""), setImages([])
+  //   } else {
+  //     alert("Error: " + (result.error || "Something went wrong"));
+  //   }
+  // } catch (error) {
+  //   console.error("Error:", error);
+  //   alert("Failed to add property");
+  // }
+  // };
+
+   try {
+   // const response = await authService.addProperty(formData);
+      await addProperty(formData);
+    //if (response.status === 201) {
       alert("Property added successfully!");
-      // Reset form fields here if needed
-      // e.g. setTitle(""), setType(""), setImages([])
-    } else {
-      alert("Error: " + (result.error || "Something went wrong"));
-    }
-  } catch (error) {
+      // Reset form
+      setTitle("");
+      setType("");
+      setHouseNumber("");
+      setStreet("");
+      setCity("");
+      setDistrict("");
+      setState("");
+      setPincode("");
+      setPricePerMonth("");
+      setBedrooms("");
+      setBathrooms("");
+      setFurnishing("");
+      setMaxGuests("");
+      setMinLeasePeriod("");
+      setMaxLeasePeriod("");
+      setAmenities([]);
+      setDescription("");
+      setImages([]);
+    // } else {
+    //   alert("Error: " + (response.message || "Something went wrong"));
+    // }
+  } catch (error: any) {
     console.error("Error:", error);
-    alert("Failed to add property");
+    alert("Failed to add property: " + (error.response?.data?.error || error.message));
   }
-  };
+};
 
   return (
     <OwnerLayout>
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 mt-8">
       <h2 className="text-2xl font-bold mb-6">Add New Property</h2>
+
+       {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Title */}
@@ -295,13 +349,38 @@ const AddProperty: React.FC = () => {
           className="w-full"
         />
 
+         {imagePreviews.length > 0 && (
+            <div className="flex gap-2 flex-wrap mt-3">
+              {imagePreviews.map((preview, index) => (
+                <img
+                  key={index}
+                  src={preview}
+                  alt={`Preview ${index}`}
+                  className="w-20 h-20 object-cover rounded border"
+                />
+              ))}
+            </div>
+          )}
+
+
         {/* Submit */}
-        <button
+        {/* <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
         >
           Add Property
-        </button>
+        </button> */}
+        <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full py-2 rounded-lg text-white font-medium ${
+              isLoading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {isLoading ? "Adding Property..." : "Add Property"}
+          </button>
       </form>
     </div>
     </OwnerLayout>
