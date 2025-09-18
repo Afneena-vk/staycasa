@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
 //import { authService } from "../../services/authService";
 import { useAuthStore } from "../../stores/authStore";
+import ImageCropper from "../../components/ImageCropper"; 
 
 const AddProperty: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -25,6 +26,9 @@ const AddProperty: React.FC = () => {
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [filesToCrop, setFilesToCrop] = useState<File[]>([]);
+  const [croppingImage, setCroppingImage] = useState<string | null>(null);
+  
 
 const { addProperty, isLoading, error, clearError } = useAuthStore();
 
@@ -41,12 +45,45 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
     if (e.target.files) {
       // setImages(Array.from(e.target.files));
       const files = Array.from(e.target.files);
-      setImages(files);
-      const previews = files.map((file) => URL.createObjectURL(file));
-      setImagePreviews(previews);
+      // setImages(files);
+      // const previews = files.map((file) => URL.createObjectURL(file));
+      // setImagePreviews(previews);
+       setFilesToCrop(files); // put all images in queue
+      if (files.length > 0) {
+        setCroppingImage(URL.createObjectURL(files[0])); // start cropping first
+      }
     }
   };
 
+
+   const handleCropDone = (croppedBlob: Blob) => {
+    const currentFile = filesToCrop[0];
+    const croppedFile = new File([croppedBlob], currentFile.name, { type: "image/jpeg" });
+
+    setImages((prev) => [...prev, croppedFile]);
+    setImagePreviews((prev) => [...prev, URL.createObjectURL(croppedFile)]);
+
+    const remaining = filesToCrop.slice(1);
+    setFilesToCrop(remaining);
+
+    if (remaining.length > 0) {
+      setCroppingImage(URL.createObjectURL(remaining[0]));
+    } else {
+      setCroppingImage(null);
+    }
+  };
+
+  // 🔹 if cropping is canceled
+  const handleCropCancel = () => {
+    const remaining = filesToCrop.slice(1);
+    setFilesToCrop(remaining);
+
+    if (remaining.length > 0) {
+      setCroppingImage(URL.createObjectURL(remaining[0]));
+    } else {
+      setCroppingImage(null);
+    }
+  };
 
 
   const handleSubmit = async(e: React.FormEvent) => {
@@ -141,6 +178,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
       setAmenities([]);
       setDescription("");
       setImages([]);
+      setImagePreviews([]);
     // } else {
     //   alert("Error: " + (response.message || "Something went wrong"));
     // }
@@ -383,6 +421,16 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
           </button>
       </form>
     </div>
+
+    {
+      croppingImage && (
+       <ImageCropper
+       image={ croppingImage }
+       onCropDone={handleCropDone}
+       onCancel={handleCropCancel}
+       />
+      )
+    }
     </OwnerLayout>
   );
 };
