@@ -29,6 +29,7 @@ const OwnerProfile = () => {
     documents: [],
   });
   
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
@@ -93,9 +94,24 @@ const OwnerProfile = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setProfile({ ...profile, [name]: value });
+    setErrors(prev => ({ ...prev, [name]: "" }));
   };
 
+const validate = () => {
+    const newErrors: { [key: string]: string } = {};
 
+    if (!profile.name.trim()) newErrors.name = "Name is required";
+    if (!profile.phone.trim()) newErrors.phone = "Phone is required";
+    else if (!/^\d{10}$/.test(profile.phone.trim()))
+      newErrors.phone = "Phone must be 10 digits";
+
+    if (!profile.businessName.trim()) newErrors.businessName = "Business name is required";
+    if (!profile.businessAddress.trim()) newErrors.businessAddress = "Business address is required";
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -180,6 +196,8 @@ const handleDocumentUpload = async () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+     if (!validate()) return;
     
     try {
       setSaving(true);
@@ -289,9 +307,10 @@ const handleDocumentUpload = async () => {
                 value={profile.name}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-                required
+                
                 disabled={saving}
               />
+               {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
             </div>
 
             {/* Email */}
@@ -321,9 +340,10 @@ const handleDocumentUpload = async () => {
                 value={profile.phone}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-                required
+               
                 disabled={saving}
               />
+              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             </div>
 
             {/* Business Name */}
@@ -337,9 +357,10 @@ const handleDocumentUpload = async () => {
                 value={profile.businessName}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-                required
+                
                 disabled={saving}
               />
+              {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
             </div>
 
             {/* Business Address */}
@@ -353,9 +374,10 @@ const handleDocumentUpload = async () => {
                 value={profile.businessAddress}
                 onChange={handleChange}
                 className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-                required
+                
                 disabled={saving}
               />
+               {errors.businessAddress && <p className="text-red-500 text-xs mt-1">{errors.businessAddress}</p>}
             </div>
 
             {/* Save Button */}

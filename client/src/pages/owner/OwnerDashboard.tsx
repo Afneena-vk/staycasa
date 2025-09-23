@@ -1,36 +1,63 @@
 
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
+import { useEffect, useState} from "react";
 import { FaBuilding, FaCalendarAlt, FaWallet, FaComments, FaCheckCircle, FaClock, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
+import { authService } from "../../services/authService";
 //import OwnerStatus from "../../components/Owner/OwnerStaus";
 
 const OwnerDashboard = () => {
 
   const { userData } = useAuthStore();
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const isApproved = userData?.approvalStatus === 'approved';
+
+   useEffect(() => {
+    const fetchProperties = async () => {
+      if (!userData) return;
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await authService.getOwnerProperties();
+        setProperties(response.properties || []);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch properties");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, [userData]);
+
+  const totalProperties = properties.length;
 
   const stats = [
     {
       title: "Total Properties",
-      value: 12,
+      value:  totalProperties,
       icon: <FaBuilding size={22} />,
       color: "from-blue-500 to-indigo-600",
     },
     {
       title: "Active Bookings",
-      value: 8,
+      //value: 8,
       icon: <FaCalendarAlt size={22} />,
       color: "from-green-500 to-emerald-600",
     },
     {
       title: "Wallet Balance",
-      value: "$2,450",
+     // value: "$2,450",
       icon: <FaWallet size={22} />,
       color: "from-purple-500 to-pink-600",
     },
     {
       title: "New Messages",
-      value: 5,
+      //value: 5,
       icon: <FaComments size={22} />,
       color: "from-yellow-500 to-orange-500",
     },
