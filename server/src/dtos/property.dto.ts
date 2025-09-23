@@ -51,3 +51,30 @@ export interface CreatePropertyResponseDto {
   status: number;
   property: PropertyResponseDto;
 }
+
+export interface UpdatePropertyDto {
+  title?: string;
+  type?: string;
+  description?: string;
+  houseNumber?: string;
+  street?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  pincode?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  furnishing?: FurnishingType;
+  pricePerMonth?: number;
+  maxGuests?: number;
+  minLeasePeriod?: number;
+  maxLeasePeriod?: number;
+  features?: string[];
+  images?: string[];
+}
+
+export interface UpdatePropertyResponseDto {
+  message: string;
+  status: number;
+  property: PropertyResponseDto;
+}

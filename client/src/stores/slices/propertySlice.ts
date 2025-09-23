@@ -42,20 +42,27 @@ export interface PropertyFormData {
   maxGuests: number;
   minLeasePeriod: number;
   maxLeasePeriod: number;
-  amenities: string[];
+  //amenities: string[];
+    features: string[];
   images: File[];
 }
+
 
 export interface PropertySlice {
   properties: Property[];
   isLoading: boolean;
   error: string | null;
-  
+  selectedProperty: Property | null; 
+
   // Actions
   addProperty(propertyData: FormData): Promise<void>;
   getOwnerProperties(): Promise<void>;
+  getOwnerPropertyById(propertyId: string): Promise<void>;
+  updateProperty: (propertyId: string, propertyData: FormData) => Promise<void>;  
+  deleteProperty: (propertyId: string) => Promise<void>;
   clearError(): void;
   setLoading(loading: boolean): void;
+  resetProperties(): void;
 }
 
 export const createPropertySlice: StateCreator<
@@ -65,6 +72,7 @@ export const createPropertySlice: StateCreator<
   PropertySlice
 > = (set, get) => ({
   properties: [],
+   selectedProperty: null,
   isLoading: false,
   error: null,
 
@@ -114,11 +122,86 @@ export const createPropertySlice: StateCreator<
     }
   },
 
+    getOwnerPropertyById: async (propertyId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authService.getOwnerPropertyById(propertyId);
+      set({
+        selectedProperty: response.property,
+        isLoading: false,
+        error: null,
+      });
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.error || error.message || "Failed to fetch property details";
+      set({
+        selectedProperty: null,
+        isLoading: false,
+        error: errorMessage,
+      });
+    }
+  },
+
+  updateProperty: async (propertyId: string, propertyData: FormData) => {
+    set({ isLoading: true, error: null });
+
+  try {
+    const response = await authService.updateProperty(propertyId, propertyData);
+
+    if (response.status === 200) {
+      const updatedProperty = response.property;
+
+      set((state) => ({
+        properties: state.properties.map((prop) =>
+          prop.id === updatedProperty.id ? updatedProperty : prop
+        ),
+        selectedProperty: updatedProperty, // keep current property updated
+        isLoading: false,
+        error: null,
+      }));
+    }
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error ||
+      error.message ||
+      "Failed to update property";
+    set({
+      isLoading: false,
+      error: errorMessage,
+    });
+    throw new Error(errorMessage);
+  }
+},
+
+deleteProperty: async (propertyId: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    await authService.deleteOwnerProperty(propertyId);
+    set((state) => ({
+      properties: state.properties.filter((p) => p.id !== propertyId),
+      isLoading: false,
+      error: null,
+    }));
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || error.message || "Failed to delete property";
+    set({ isLoading: false, error: errorMessage });
+    throw new Error(errorMessage);
+  }
+},
+
+
   clearError: () => {
     set({ error: null });
   },
 
   setLoading: (loading: boolean) => {
     set({ isLoading: loading });
+  },
+  resetProperties: () => {
+    set({ 
+      properties: [], 
+      isLoading: false, 
+      error: null 
+    });
   },
 });

@@ -245,9 +245,31 @@ addProperty: async (propertyData: FormData) => {
     });
     return response.data;
   },
+
   getOwnerProperties: async () => {
     const response = await api.get("/owner/properties");
     return response.data;
   },
+
+ getOwnerPropertyById: async (propertyId: string) => {
+  const response = await api.get(`/owner/properties/${propertyId}`);
+  return response.data;
+},
+
+updateProperty: async (propertyId: string, propertyData: FormData) => {
+   const response = await api.put(`/owner/properties/${propertyId}`, propertyData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+},
+
+// authService.ts
+deleteOwnerProperty: async (propertyId: string) => {
+  const response = await api.delete(`/owner/properties/${propertyId}`);
+  return response.data;
+},
+
 
 };

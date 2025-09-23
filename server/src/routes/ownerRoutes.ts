@@ -53,5 +53,24 @@ ownerRoutes.get(
   propertyController.getOwnerProperties.bind(propertyController)
 );
 
+ownerRoutes.get(
+  "/properties/:propertyId", 
+  authMiddleware(["owner"]),  
+   propertyController.getOwnerPropertyById.bind(propertyController)
+);
+
+ownerRoutes.put(
+  "/properties/:propertyId",
+  authMiddleware(["owner"]),
+  cloudinaryUpload.array("images", 5),  // if images update is needed
+  propertyController.updateOwnerProperty.bind(propertyController)
+);
+
+ownerRoutes.delete(
+  "/properties/:propertyId",
+  authMiddleware(["owner"]),
+  propertyController.deleteOwnerProperty.bind(propertyController)
+);
+
 
 export default ownerRoutes

@@ -22,6 +22,8 @@ import OwnerDashboard from "./pages/owner/OwnerDashboard.tsx";
 import OwnerProperties from "./pages/owner/OwnerProperties.tsx";
 import OwnerAddProperty from "./pages/owner/OwnerAddProperty.tsx";
 import OwnerProfile from "./components/Owner/OwnerProfile.tsx";
+import OwnerPropertyDetails from "./pages/owner/OwnerPropertyDetails.tsx"
+import OwnerEditProperty from "./pages/owner/OwnerEditProperty.tsx";
 
 import UserSignup from "./pages/user/UserSignup";
 import UserLogin from "./pages/user/UserLogin";
@@ -51,8 +53,10 @@ const App = () => {
         <Route path="/owner/reset-password" element={<OwnerResetPassword />} />
         <Route path="/owner/dashboard" element={<OwnerDashboard/>}/>
         <Route path="/owner/properties" element={<OwnerProperties/>}/>
-        <Route path='/owner/profile' element={<OwnerProfile/>}/>
-         <Route path="/owner/add-property" element={<OwnerAddProperty />} />
+        <Route path="/owner/profile" element={<OwnerProfile/>}/>
+        <Route path="/owner/add-property" element={<OwnerAddProperty />} />
+        <Route path="/owner/properties/:propertyId" element={<OwnerPropertyDetails />}/>
+        <Route path="/owner/properties/:propertyId/edit" element={<OwnerEditProperty/>}/>
 
         <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />

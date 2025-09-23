@@ -1,5 +1,5 @@
 import { IProperty } from '../models/propertyModel';
-import { PropertyResponseDto, CreatePropertyResponseDto } from '../dtos/property.dto';
+import { PropertyResponseDto, CreatePropertyResponseDto, UpdatePropertyResponseDto } from '../dtos/property.dto';
 import { STATUS_CODES } from '../utils/constants';
 
 export class PropertyMapper {
@@ -36,6 +36,17 @@ export class PropertyMapper {
     return {
       message,
       status: STATUS_CODES.CREATED,
+      property: this.toPropertyResponse(property),
+    };
+  }
+  
+   static toUpdatePropertyResponse(
+    property: IProperty,
+    message: string
+  ): UpdatePropertyResponseDto {
+    return {
+      message,
+      status: STATUS_CODES.OK,
       property: this.toPropertyResponse(property),
     };
   }

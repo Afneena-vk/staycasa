@@ -10,7 +10,7 @@ export class PropertyRepository extends BaseRepository<IProperty> implements IPr
   }
 
   async findByOwnerId(ownerId: string): Promise<IProperty[]> {
-    return Property.find({ ownerId }).exec();
+    return Property.find({ ownerId }).sort({ createdAt: -1 }).exec();
   }
 
   async findByStatus(status: string): Promise<IProperty[]> {
@@ -24,4 +24,20 @@ export class PropertyRepository extends BaseRepository<IProperty> implements IPr
       { new: true }
     ).exec();
   }
+
+  async findByPropertyId(propertyId: string): Promise<IProperty | null> {
+    return Property.findById(propertyId).exec();
+  }
+
+  async updateProperty(propertyId: string, data: Partial<IProperty>): Promise<IProperty | null> {
+    return await this.model.findByIdAndUpdate(propertyId, data, { new: true }).exec();
+  }
+
+  async deleteByOwner(ownerId: string, propertyId: string): Promise<IProperty | null> {
+  return await this.model.findOneAndDelete({
+    _id: propertyId,
+    ownerId: ownerId
+  }).exec();
 }
+
+} 

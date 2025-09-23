@@ -71,7 +71,12 @@ export const createAuthSlice: StateCreator<
         userData: response.user || response.owner || response.admin,
         authType,
         isAuthenticated: true,
+       
       });
+        const store = get() as any;
+      if (store.resetProperties) {
+        store.resetProperties();
+      }
 
       return response;
     } catch (error) {
@@ -83,12 +88,21 @@ export const createAuthSlice: StateCreator<
   logout: () => {
     tokenService.clearAllTokens();
     sessionStorage.removeItem("auth-type");
+
+    // Clear properties before clearing auth data
+    const store = get() as any;
+    if (store.resetProperties) {
+      store.resetProperties();
+    }
+
     set({
       userData: null,
       authType: null,
       isAuthenticated: false,
       tempEmail: null,
+     
     });
+    
   },
 
   signup: async (userData, authType) => {
@@ -200,10 +214,16 @@ export const createAuthSlice: StateCreator<
 
   setUser: (userData, authType) => {
     sessionStorage.setItem("auth-type", authType);
+
+    const store = get() as any;
+    if (store.resetProperties) {
+      store.resetProperties();
+    }
     set({
       userData,
       authType,
       isAuthenticated: true,
+     
     });
   },
 });

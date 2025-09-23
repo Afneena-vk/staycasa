@@ -489,7 +489,7 @@
 //       }
 //     ))
 
- import { create } from "zustand";
+import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { AuthSlice, createAuthSlice } from "./slices/authSlice";
 import { AdminSlice, createAdminSlice } from "./slices/adminSlice";
@@ -511,6 +511,17 @@ export const useAuthStore = create<StoreState>()(
     {
       name: "auth-storage",
       storage: createJSONStorage(() => localStorage),
+        partialize: (state) => ({
+        // Only persist authentication-related data
+        userData: state.userData,
+        authType: state.authType,
+        isAuthenticated: state.isAuthenticated,
+        // Don't persist user-specific data that should be fresh for each session
+        properties: [], // Always start with empty properties
+        isLoading: false, // Don't persist loading states
+        error: null, // Don't persist errors
+        tempEmail: null, // Don't persist temporary data
+      }),
     }
   )
 );
