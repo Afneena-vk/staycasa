@@ -56,7 +56,7 @@ userRoutes.put(
 userRoutes.post(
   "/profile/upload-image",
   authMiddleware(["user"]),
-  cloudinaryUpload.single("profileImage"), // expects field "profileImage" in form-data
+  cloudinaryUpload.single("profileImage"), 
   userController.uploadProfileImage.bind(userController)
 );
 

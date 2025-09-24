@@ -10,7 +10,7 @@ export interface AuthSlice {
   isAuthenticated: boolean;
   tempEmail: string | null;
   
-  // Auth actions
+  
   login(email: string, password: string, authType: AuthType): Promise<void>;
   logout(): void;
   signup(userData: any, authType: Exclude<AuthType, "admin">): Promise<void>;
@@ -89,7 +89,7 @@ export const createAuthSlice: StateCreator<
     tokenService.clearAllTokens();
     sessionStorage.removeItem("auth-type");
 
-    // Clear properties before clearing auth data
+    
     const store = get() as any;
     if (store.resetProperties) {
       store.resetProperties();

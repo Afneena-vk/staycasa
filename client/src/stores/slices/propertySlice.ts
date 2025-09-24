@@ -54,7 +54,7 @@ export interface PropertySlice {
   error: string | null;
   selectedProperty: Property | null; 
 
-  // Actions
+  
   addProperty(propertyData: FormData): Promise<void>;
   getOwnerProperties(): Promise<void>;
   getOwnerPropertyById(propertyId: string): Promise<void>;
@@ -155,7 +155,7 @@ export const createPropertySlice: StateCreator<
         properties: state.properties.map((prop) =>
           prop.id === updatedProperty.id ? updatedProperty : prop
         ),
-        selectedProperty: updatedProperty, // keep current property updated
+        selectedProperty: updatedProperty, 
         isLoading: false,
         error: null,
       }));

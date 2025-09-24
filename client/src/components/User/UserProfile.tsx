@@ -14,7 +14,7 @@ import {
 import { useAuthStore } from "../../stores/authStore";
 import { toast } from "react-toastify";
 
-// ⬅️ Import Header and Footer
+
 import Header from "./Header";
 import Footer from "./Footer";
 
@@ -126,14 +126,14 @@ const [uploadingImage, setUploadingImage] = useState(false);
   const file = e.target.files?.[0];
   if (!file) return;
 
-  // Validate file type and size
+ 
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
   if (!allowedTypes.includes(file.type)) {
     toast.error('Please select a valid image file (JPEG, JPG, or PNG)');
     return;
   }
 
-  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+  if (file.size > 5 * 1024 * 1024) { 
     toast.error('Image size should be less than 5MB');
     return;
   }
@@ -152,7 +152,7 @@ const uploadImage = async () => {
     const newImageUrl = response.profileImage || response.data?.profileImage;
     if (newImageUrl) {
       setProfile(prev => ({ ...prev, profileImage: newImageUrl }));
-      // Also update the auth store
+      
       updateUserData({ ...userData, profileImage: newImageUrl });
     }
     return response.imageUrl || response.profileImage;

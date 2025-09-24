@@ -74,7 +74,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
     }
   };
 
-  // 🔹 if cropping is canceled
+  
   const handleCropCancel = () => {
     const remaining = filesToCrop.slice(1);
     setFilesToCrop(remaining);
@@ -154,7 +154,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
       await addProperty(formData);
     //if (response.status === 201) {
       alert("Property added successfully!");
-      // Reset form
+      
       setTitle("");
       setType("");
       setHouseNumber("");

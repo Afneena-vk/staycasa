@@ -1,38 +1,4 @@
-// import React, { useEffect } from "react";
-// import { useParams } from "react-router-dom";
-// import { useAuthStore } from "../../stores/authStore";
 
-// function OwnerPropertyDetails() {
-//   const { propertyId } = useParams<{ propertyId: string }>();
-//   const { selectedProperty, getOwnerPropertyById, isLoading, error } = useAuthStore();
-
-//   useEffect(() => {
-//     if (propertyId) {
-//       getOwnerPropertyById(propertyId);
-//     }
-//   }, [propertyId, getOwnerPropertyById]);
-
-//   if (isLoading) return <p>Loading property...</p>;
-//   if (error) return <p>Error: {error}</p>;
-//   if (!selectedProperty) return <p>No property found.</p>;
-
-//   return (
-//     <div className="p-4">
-//       <h2 className="text-2xl font-bold">{selectedProperty.title}</h2>
-//       <p>{selectedProperty.description}</p>
-//       <p><strong>Type:</strong> {selectedProperty.type}</p>
-//       <p><strong>Location:</strong> {selectedProperty.city}, {selectedProperty.state}</p>
-//       <p><strong>Price:</strong> ₹{selectedProperty.pricePerMonth} / month</p>
-//       <div className="grid grid-cols-3 gap-2 mt-4">
-//         {selectedProperty.images.map((img, index) => (
-//           <img key={index} src={img} alt="Property" className="w-full h-40 object-cover rounded" />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default OwnerPropertyDetails;
 
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -68,23 +34,7 @@ function OwnerPropertyDetails() {
   return (
     <OwnerLayout>
     <div className="max-w-6xl mx-auto p-6">
-      {/* Image Gallery */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl overflow-hidden shadow-lg">
-        <img
-          src={selectedProperty.images?.[0] || "/placeholder.jpg"}
-          alt={selectedProperty.title}
-          className="w-full h-80 object-cover col-span-1 md:col-span-2 rounded-xl"
-        />
-        {selectedProperty.images?.slice(1, 5).map((img: string, idx: number) => (
-          <img
-            key={idx}
-            src={img}
-            alt={`Property image ${idx}`}
-            className="w-full h-48 object-cover rounded-lg"
-          />
-        ))}
-      </div> */}
-      {/* Image Gallery */}
+      
 <div className="rounded-xl overflow-hidden shadow-lg">
   {/* Main Image */}
   <img

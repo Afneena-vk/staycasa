@@ -286,7 +286,7 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
       throw error;
     }
 
-    // Build update data carefully
+    
     const updateData: Partial<IUser> = {};
 
     if (data.name) updateData.name = data.name;

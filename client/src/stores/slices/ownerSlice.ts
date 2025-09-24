@@ -74,7 +74,7 @@ export const createOwnerSlice: StateCreator<
     try {
       const response = await authService.uploadDocument(file);
 
-      // Update profile after document upload
+      
       const updatedProfile = await get().getOwnerProfile();
       if (updatedProfile && updatedProfile.status === 200) {
         get().updateUserData({

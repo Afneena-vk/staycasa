@@ -265,7 +265,7 @@ updateProperty: async (propertyId: string, propertyData: FormData) => {
   return response.data;
 },
 
-// authService.ts
+
 deleteOwnerProperty: async (propertyId: string) => {
   const response = await api.delete(`/owner/properties/${propertyId}`);
   return response.data;

@@ -62,7 +62,7 @@ ownerRoutes.get(
 ownerRoutes.put(
   "/properties/:propertyId",
   authMiddleware(["owner"]),
-  cloudinaryUpload.array("images", 5),  // if images update is needed
+  cloudinaryUpload.array("images", 5),  
   propertyController.updateOwnerProperty.bind(propertyController)
 );
 

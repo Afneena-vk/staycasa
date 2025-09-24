@@ -35,7 +35,7 @@ export class OwnerProfileResponseDto {
   //profileImage?: string;
   businessName!: string;
   businessAddress!: string;
-  approvalStatus!: OwnerStatus;   // ✅ add this
+  approvalStatus!: OwnerStatus;  
   // documents!: string[];  
   document?: string;  
   message!: string;

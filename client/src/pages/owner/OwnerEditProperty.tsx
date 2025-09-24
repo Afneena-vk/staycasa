@@ -17,7 +17,7 @@ const OwnerEditProperty: React.FC = () => {
     clearError,
   } = useAuthStore();
 
-  // States for property fields
+
   const [title, setTitle] = useState("");
   const [type, setType] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
@@ -47,7 +47,7 @@ const OwnerEditProperty: React.FC = () => {
   const [croppingImage, setCroppingImage] = useState<string | null>(null);
    const [imageError, setImageError] = useState<string | null>(null);
 
-  // 🔹 Load property details
+ 
   useEffect(() => {
     if (propertyId) {
       getOwnerPropertyById(propertyId);
@@ -79,10 +79,10 @@ const OwnerEditProperty: React.FC = () => {
 
     }
   }, [selectedProperty]);
-// Add cleanup for image previews
+
 useEffect(() => {
   return () => {
-    // Cleanup image preview URLs when component unmounts
+   
     imagePreviews.forEach(url => {
       if (url.startsWith('blob:')) {
         URL.revokeObjectURL(url);
@@ -91,10 +91,10 @@ useEffect(() => {
   };
 }, [imagePreviews]);
 
-// Add this useEffect to refresh property after update
+
 useEffect(() => {
   if (selectedProperty && propertyId) {
-    // Clear new images and previews after successful update
+    
     setNewImages([]);
     setImagePreviews(prev => {
       prev.forEach(url => {
@@ -105,7 +105,7 @@ useEffect(() => {
       return [];
     });
   }
-}, [selectedProperty?.images]); // Trigger when images change after update
+}, [selectedProperty?.images]); 
   // 🔹 Amenities handler
 //   const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 //     const { value, checked } = e.target;
@@ -126,7 +126,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 
-  // 🔹 Handle new image uploads
+  //  Handle new image uploads
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -149,7 +149,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     }
   };
 
-  // 🔹 Cropping logic
+  //  Cropping logic
   const handleCropDone = (croppedBlob: Blob) => {
     const currentFile = filesToCrop[0];
     const croppedFile = new File([croppedBlob], currentFile.name, {
@@ -180,12 +180,12 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     }
   };
 
-  // 🔹 Remove existing image
+  
   const handleRemoveExistingImage = (index: number) => {
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 🔹 Remove new image
+ 
   const handleRemoveNewImage = (index: number) => {
     setNewImages((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
@@ -222,7 +222,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 
-  // 🔹 Submit form
+  // Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
@@ -244,7 +244,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       return;
     }
 
-    setImageError(null); // clear error on valid submit
+    setImageError(null); 
 
 
     const formData = new FormData();
@@ -296,7 +296,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           </div>
         )}
 
-                {/* Display image error */}
+                
         {imageError && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {imageError}
@@ -305,7 +305,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Title */}
+          {/* Title */} 
           <input
             type="text"
             placeholder="Property Title"
@@ -315,7 +315,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
            
           />
    {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
-          {/* Type */}
+          {/* Type */} 
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
