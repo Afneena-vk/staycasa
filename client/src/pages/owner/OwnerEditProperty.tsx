@@ -1,505 +1,4 @@
 
-// import React, { useEffect } from "react";
-// import { useParams, useNavigate } from "react-router-dom";
-// import OwnerLayout from "../../layouts/owner/OwnerLayout";
-// import { useAuthStore } from "../../stores/authStore";
-
-// const OwnerPropertyDetails: React.FC = () => {
-//   const { propertyId } = useParams<{ propertyId: string }>();
-//   const navigate = useNavigate();
-
-//   const {
-//     selectedProperty,
-//     getOwnerPropertyById,
-//     isLoading,
-//     error,
-//     clearError,
-//   } = useAuthStore();
-
-//   // Fetch property details on mount
-//   useEffect(() => {
-//     if (!propertyId) return;
-//     getOwnerPropertyById(propertyId);
-//   }, [propertyId, getOwnerPropertyById]);
-
-//   if (isLoading) {
-//     return (
-//       <OwnerLayout>
-//         <div className="text-center mt-10">Loading property details...</div>
-//       </OwnerLayout>
-//     );
-//   }
-
-//   if (error) {
-//     return (
-//       <OwnerLayout>
-//         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-6">
-//           {error}
-//           <button
-//             onClick={clearError}
-//             className="ml-4 text-blue-600 underline"
-//           >
-//             Dismiss
-//           </button>
-//         </div>
-//       </OwnerLayout>
-//     );
-//   }
-
-//   if (!selectedProperty) {
-//     return (
-//       <OwnerLayout>
-//         <div className="text-center mt-10">Property not found.</div>
-//       </OwnerLayout>
-//     );
-//   }
-
-//   const {
-//     title,
-//     type,
-//     houseNumber,
-//     street,
-//     city,
-//     district,
-//     state,
-//     pincode,
-//     bedrooms,
-//     bathrooms,
-//     furnishing,
-//     pricePerMonth,
-//     maxGuests,
-//     minLeasePeriod,
-//     maxLeasePeriod,
-//     features,
-//     description,
-//     images,
-//     status,
-//     createdAt,
-//   } = selectedProperty;
-
-//   return (
-//     <OwnerLayout>
-//       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 mt-8">
-//         <h2 className="text-2xl font-bold mb-4">{title}</h2>
-//         <p className="text-gray-600 mb-2">
-//           Type: <strong>{type}</strong>
-//         </p>
-//         <p className="text-gray-600 mb-2">
-//           Status:{" "}
-//           <strong
-//             className={
-//               status === "approved"
-//                 ? "text-green-600"
-//                 : status === "pending"
-//                 ? "text-yellow-600"
-//                 : "text-red-600"
-//             }
-//           >
-//             {status}
-//           </strong>
-//         </p>
-//         <p className="text-gray-600 mb-4">
-//           Added on: {new Date(createdAt).toLocaleDateString()}
-//         </p>
-
-//         <h3 className="font-semibold mb-2">Address</h3>
-//         <p className="mb-4">
-//           {houseNumber}, {street}, {city}, {district}, {state} - {pincode}
-//         </p>
-
-//         <h3 className="font-semibold mb-2">Details</h3>
-//         <div className="grid grid-cols-2 gap-4 mb-4">
-//           <p>Bedrooms: {bedrooms}</p>
-//           <p>Bathrooms: {bathrooms}</p>
-//           <p>Furnishing: {furnishing}</p>
-//           <p>Price/Month: ${pricePerMonth}</p>
-//           <p>Max Guests: {maxGuests}</p>
-//           <p>
-//             Lease Period: {minLeasePeriod} - {maxLeasePeriod} months
-//           </p>
-//         </div>
-
-//         <h3 className="font-semibold mb-2">Amenities</h3>
-//         <ul className="list-disc ml-5 mb-4">
-//           {features.map((f, idx) => (
-//             <li key={idx}>{f}</li>
-//           ))}
-//         </ul>
-
-//         <h3 className="font-semibold mb-2">Description</h3>
-//         <p className="mb-4">{description}</p>
-
-//         {images.length > 0 && (
-//           <div>
-//             <h3 className="font-semibold mb-2">Images</h3>
-//             <div className="flex gap-2 flex-wrap">
-//               {images.map((img, index) => (
-//                 <img
-//                   key={index}
-//                   src={img}
-//                   alt={`Property ${index}`}
-//                   className="w-32 h-32 object-cover rounded border"
-//                 />
-//               ))}
-//             </div>
-//           </div>
-//         )}
-
-//         <button
-//           onClick={() => navigate(`/owner/properties/edit/${propertyId}`)}
-//           className="mt-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-//         >
-//           Edit Property
-//         </button>
-//       </div>
-//     </OwnerLayout>
-//   );
-// };
-
-// export default OwnerPropertyDetails;
-
-// import React, { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import OwnerLayout from "../../layouts/owner/OwnerLayout";
-// import { useAuthStore } from "../../stores/authStore";
-// import ImageCropper from "../../components/ImageCropper";
-// import { FaTimes } from "react-icons/fa";
-
-// const OwnerEditProperty: React.FC = () => {
-//   const { propertyId } = useParams<{ propertyId: string }>();
-//   const {
-//     selectedProperty,
-//     getOwnerPropertyById,
-//     //updateProperty,
-//     isLoading,
-//     error,
-//     clearError,
-//   } = useAuthStore();
-
-//   // States for property fields
-//   const [title, setTitle] = useState("");
-//   const [type, setType] = useState("");
-//   const [houseNumber, setHouseNumber] = useState("");
-//   const [street, setStreet] = useState("");
-//   const [city, setCity] = useState("");
-//   const [district, setDistrict] = useState("");
-//   const [state, setState] = useState("");
-//   const [pincode, setPincode] = useState<number | "">("");
-//   const [pricePerMonth, setPricePerMonth] = useState<number | "">("");
-//   const [bedrooms, setBedrooms] = useState<number | "">("");
-//   const [bathrooms, setBathrooms] = useState<number | "">("");
-//   const [furnishing, setFurnishing] = useState("");
-//   const [maxGuests, setMaxGuests] = useState<number | "">("");
-//   const [minLeasePeriod, setMinLeasePeriod] = useState<number | "">("");
-//   const [maxLeasePeriod, setMaxLeasePeriod] = useState<number | "">("");
-//   const [amenities, setAmenities] = useState<string[]>([]);
-//   const [description, setDescription] = useState("");
-
-//   // Images
-//   const [existingImages, setExistingImages] = useState<string[]>([]);
-//   const [newImages, setNewImages] = useState<File[]>([]);
-//   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-//   const [filesToCrop, setFilesToCrop] = useState<File[]>([]);
-//   const [croppingImage, setCroppingImage] = useState<string | null>(null);
-
-//   // 🔹 Load property details
-//   useEffect(() => {
-//     if (propertyId) {
-//       getOwnerPropertyById(propertyId);
-//     }
-//   }, [propertyId, getOwnerPropertyById]);
-
-//   useEffect(() => {
-//     if (selectedProperty) {
-//       setTitle(selectedProperty.title || "");
-//       setType(selectedProperty.type || "");
-//       setHouseNumber(selectedProperty.houseNumber || "");
-//       setStreet(selectedProperty.street || "");
-//       setCity(selectedProperty.city || "");
-//       setDistrict(selectedProperty.district || "");
-//       setState(selectedProperty.state || "");
-//       setPincode(selectedProperty.pincode || "");
-//       setPricePerMonth(selectedProperty.pricePerMonth || "");
-//       setBedrooms(selectedProperty.bedrooms || "");
-//       setBathrooms(selectedProperty.bathrooms || "");
-//       setFurnishing(selectedProperty.furnishing || "");
-//       setMaxGuests(selectedProperty.maxGuests || "");
-//       setMinLeasePeriod(selectedProperty.minLeasePeriod || "");
-//       setMaxLeasePeriod(selectedProperty.maxLeasePeriod || "");
-//       setAmenities(selectedProperty.features || []);
-//       setDescription(selectedProperty.description || "");
-//       setExistingImages(selectedProperty.images || []);
-//     }
-//   }, [selectedProperty]);
-
-//   // 🔹 Amenities handler
-//   const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { value, checked } = e.target;
-//     if (checked) {
-//       setAmenities([...amenities, value]);
-//     } else {
-//       setAmenities(amenities.filter((a) => a !== value));
-//     }
-//   };
-
-//   // 🔹 Handle new image uploads
-//   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     if (e.target.files) {
-//       const files = Array.from(e.target.files);
-//       setFilesToCrop(files);
-//       if (files.length > 0) {
-//         setCroppingImage(URL.createObjectURL(files[0]));
-//       }
-//     }
-//   };
-
-//   // 🔹 Cropping logic
-//   const handleCropDone = (croppedBlob: Blob) => {
-//     const currentFile = filesToCrop[0];
-//     const croppedFile = new File([croppedBlob], currentFile.name, {
-//       type: "image/jpeg",
-//     });
-
-//     setNewImages((prev) => [...prev, croppedFile]);
-//     setImagePreviews((prev) => [...prev, URL.createObjectURL(croppedFile)]);
-
-//     const remaining = filesToCrop.slice(1);
-//     setFilesToCrop(remaining);
-
-//     if (remaining.length > 0) {
-//       setCroppingImage(URL.createObjectURL(remaining[0]));
-//     } else {
-//       setCroppingImage(null);
-//     }
-//   };
-
-//   const handleCropCancel = () => {
-//     const remaining = filesToCrop.slice(1);
-//     setFilesToCrop(remaining);
-
-//     if (remaining.length > 0) {
-//       setCroppingImage(URL.createObjectURL(remaining[0]));
-//     } else {
-//       setCroppingImage(null);
-//     }
-//   };
-
-//   // 🔹 Remove existing image
-//   const handleRemoveExistingImage = (index: number) => {
-//     setExistingImages((prev) => prev.filter((_, i) => i !== index));
-//   };
-
-//   // 🔹 Remove new image
-//   const handleRemoveNewImage = (index: number) => {
-//     setNewImages((prev) => prev.filter((_, i) => i !== index));
-//     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-//   };
-
-//   // 🔹 Submit form
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     clearError();
-
-//     const formData = new FormData();
-//     formData.append("title", title);
-//     formData.append("type", type);
-//     formData.append("houseNumber", houseNumber);
-//     formData.append("street", street);
-//     formData.append("city", city);
-//     formData.append("district", district);
-//     formData.append("state", state);
-//     formData.append("pincode", String(pincode));
-//     formData.append("pricePerMonth", String(pricePerMonth));
-//     formData.append("bedrooms", String(bedrooms));
-//     formData.append("bathrooms", String(bathrooms));
-//     formData.append("furnishing", furnishing);
-//     formData.append("maxGuests", String(maxGuests));
-//     formData.append("minLeasePeriod", String(minLeasePeriod));
-//     formData.append("maxLeasePeriod", String(maxLeasePeriod));
-//     formData.append("description", description);
-
-//     amenities.forEach((a) => formData.append("amenities", a));
-//     existingImages.forEach((img) => formData.append("existingImages", img));
-//     newImages.forEach((img) => formData.append("newImages", img));
-
-//     try {
-//       //await updateProperty(propertyId!, formData);
-//       alert("Property updated successfully!");
-//     } catch (err: any) {
-//       console.error("Error updating property:", err);
-//       alert("Failed to update property");
-//     }
-//   };
-
-//   return (
-//     <OwnerLayout>
-//       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 mt-8">
-//         <h2 className="text-2xl font-bold mb-6">Edit Property</h2>
-
-//         {error && (
-//           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-//             {error}
-//           </div>
-//         )}
-
-//         <form onSubmit={handleSubmit} className="space-y-4">
-//           {/* 🔹 Title */}
-//           <input
-//             type="text"
-//             placeholder="Property Title"
-//             value={title}
-//             onChange={(e) => setTitle(e.target.value)}
-//             className="w-full border p-2 rounded-lg"
-//             required
-//           />
-
-//           {/* 🔹 Type */}
-//           <select
-//             value={type}
-//             onChange={(e) => setType(e.target.value)}
-//             className="w-full border p-2 rounded-lg"
-//             required
-//           >
-//             <option value="">Select Type</option>
-//             <option value="Apartment">Apartment</option>
-//             <option value="Villa">Villa</option>
-//             <option value="Cottage">Cottage</option>
-//             <option value="Farmhouse">Farmhouse</option>
-//             <option value="Homestay">Homestay</option>
-//           </select>
-
-//           {/* 🔹 Address */}
-//           <div className="border rounded-lg p-4">
-//             <h3 className="font-semibold mb-2">Address</h3>
-//             <div className="grid grid-cols-2 gap-4">
-//               <input
-//                 type="text"
-//                 placeholder="House Number"
-//                 value={houseNumber}
-//                 onChange={(e) => setHouseNumber(e.target.value)}
-//                 className="w-full border p-2 rounded-lg"
-//                 required
-//               />
-//               <input
-//                 type="text"
-//                 placeholder="Street"
-//                 value={street}
-//                 onChange={(e) => setStreet(e.target.value)}
-//                 className="w-full border p-2 rounded-lg"
-//                 required
-//               />
-//               <input
-//                 type="text"
-//                 placeholder="City"
-//                 value={city}
-//                 onChange={(e) => setCity(e.target.value)}
-//                 className="w-full border p-2 rounded-lg"
-//                 required
-//               />
-//               <input
-//                 type="text"
-//                 placeholder="District"
-//                 value={district}
-//                 onChange={(e) => setDistrict(e.target.value)}
-//                 className="w-full border p-2 rounded-lg"
-//                 required
-//               />
-//               <input
-//                 type="text"
-//                 placeholder="State"
-//                 value={state}
-//                 onChange={(e) => setState(e.target.value)}
-//                 className="w-full border p-2 rounded-lg"
-//                 required
-//               />
-//               <input
-//                 type="number"
-//                 placeholder="Pincode"
-//                 value={pincode}
-//                 onChange={(e) => setPincode(Number(e.target.value))}
-//                 className="w-full border p-2 rounded-lg"
-//                 required
-//               />
-//             </div>
-//           </div>
-
-//           {/* 🔹 Images */}
-//           <div>
-//             <h3 className="font-semibold mb-2">Images</h3>
-//             <div className="flex gap-2 flex-wrap mb-4">
-//               {existingImages.map((img, idx) => (
-//                 <div key={idx} className="relative">
-//                   <img
-//                     src={img}
-//                     alt={`Property ${idx}`}
-//                     className="w-20 h-20 object-cover rounded border"
-//                   />
-//                   <button
-//                     type="button"
-//                     onClick={() => handleRemoveExistingImage(idx)}
-//                     className="absolute -top-2 -right-2 bg-red-600 text-white p-1 rounded-full"
-//                   >
-//                     <FaTimes size={12} />
-//                   </button>
-//                 </div>
-//               ))}
-
-//               {imagePreviews.map((preview, idx) => (
-//                 <div key={idx} className="relative">
-//                   <img
-//                     src={preview}
-//                     alt={`New Preview ${idx}`}
-//                     className="w-20 h-20 object-cover rounded border"
-//                   />
-//                   <button
-//                     type="button"
-//                     onClick={() => handleRemoveNewImage(idx)}
-//                     className="absolute -top-2 -right-2 bg-red-600 text-white p-1 rounded-full"
-//                   >
-//                     <FaTimes size={12} />
-//                   </button>
-//                 </div>
-//               ))}
-//             </div>
-
-//             <input
-//               type="file"
-//               multiple
-//               accept="image/*"
-//               onChange={handleImageChange}
-//               className="w-full"
-//             />
-//           </div>
-
-//           {/* 🔹 Submit */}
-//           <button
-//             type="submit"
-//             disabled={isLoading}
-//             className={`w-full py-2 rounded-lg text-white font-medium ${
-//               isLoading
-//                 ? "bg-gray-400 cursor-not-allowed"
-//                 : "bg-blue-600 hover:bg-blue-700"
-//             }`}
-//           >
-//             {isLoading ? "Updating..." : "Update Property"}
-//           </button>
-//         </form>
-//       </div>
-
-//       {croppingImage && (
-//         <ImageCropper
-//           image={croppingImage}
-//           onCropDone={handleCropDone}
-//           onCancel={handleCropCancel}
-//         />
-//       )}
-//     </OwnerLayout>
-//   );
-// };
-
-// export default OwnerEditProperty;
-
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
@@ -536,6 +35,7 @@ const OwnerEditProperty: React.FC = () => {
   const [maxLeasePeriod, setMaxLeasePeriod] = useState<number | "">("");
   //const [amenities, setAmenities] = useState<string[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [description, setDescription] = useState("");
 
@@ -691,10 +191,43 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+ const validate = () => {
+  const newErrors: Record<string, string> = {};
+
+  if (!title.trim()) newErrors.title = "Title is required";
+  if (!type) newErrors.type = "Property type is required";
+  if (!houseNumber.trim()) newErrors.houseNumber = "House number is required";
+  if (!street.trim()) newErrors.street = "Street is required";
+  if (!city.trim()) newErrors.city = "City is required";
+  if (!district.trim()) newErrors.district = "District is required";
+  if (!state.trim()) newErrors.state = "State is required";
+  if (!pincode || pincode.toString().length !== 6) newErrors.pincode = "Enter a valid 6-digit pincode";
+  if (!pricePerMonth || pricePerMonth <= 0) newErrors.pricePerMonth = "Price per month must be greater than 0";
+  if (!bedrooms || bedrooms < 0) newErrors.bedrooms = "Enter valid number of bedrooms";
+  if (!bathrooms || bathrooms < 0) newErrors.bathrooms = "Enter valid number of bathrooms";
+  if (!furnishing) newErrors.furnishing = "Select furnishing type";
+  if (!maxGuests || maxGuests <= 0) newErrors.maxGuests = "Max guests must be greater than 0";
+  if (!minLeasePeriod || minLeasePeriod <= 0) newErrors.minLeasePeriod = "Min lease period must be greater than 0";
+  if (!maxLeasePeriod || Number(maxLeasePeriod) < Number(minLeasePeriod))
+    newErrors.maxLeasePeriod = "Max lease period must be greater than or equal to min lease period";
+  if (!description.trim()) newErrors.description = "Description is required";
+
+  const totalImages = existingImages.length + newImages.length;
+  if (totalImages === 0) newErrors.images = "Please upload at least one image";
+  if (totalImages > 5) newErrors.images = "Maximum 5 images allowed";
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
+
+
   // 🔹 Submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
+
+    if (!validate()) return;
 
   // const totalImages = existingImages.length + newImages.length;
   // if (totalImages > 5) {
@@ -779,15 +312,15 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border p-2 rounded-lg"
-            required
+           
           />
-
+   {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
           {/* Type */}
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
             className="w-full border p-2 rounded-lg"
-            required
+            
           >
             <option value="">Select Type</option>
             <option value="Apartment">Apartment</option>
@@ -796,7 +329,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <option value="Farmhouse">Farmhouse</option>
             <option value="Homestay">Homestay</option>
           </select>
-
+           {errors.type && <p className="text-red-600 text-sm mt-1">{errors.type}</p>}
           {/* Address */}
           <div className="border rounded-lg p-4">
             <h3 className="font-semibold mb-2">Address</h3>
@@ -807,48 +340,54 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 value={houseNumber}
                 onChange={(e) => setHouseNumber(e.target.value)}
                 className="w-full border p-2 rounded-lg"
-                required
+                
               />
+              {errors.houseNumber && <p className="text-red-600 text-sm mt-1">{errors.houseNumber}</p>}
               <input
                 type="text"
                 placeholder="Street"
                 value={street}
                 onChange={(e) => setStreet(e.target.value)}
                 className="w-full border p-2 rounded-lg"
-                required
+               
               />
+              {errors.street && <p className="text-red-600 text-sm mt-1">{errors.street}</p>}
               <input
                 type="text"
                 placeholder="City"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className="w-full border p-2 rounded-lg"
-                required
+                
               />
+              {errors.city && <p className="text-red-600 text-sm mt-1">{errors.city}</p>}
               <input
                 type="text"
                 placeholder="District"
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 className="w-full border p-2 rounded-lg"
-                required
+                
               />
+              {errors.district && <p className="text-red-600 text-sm mt-1">{errors.district}</p>}
               <input
                 type="text"
                 placeholder="State"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 className="w-full border p-2 rounded-lg"
-                required
+                
               />
+              {errors.state && <p className="text-red-600 text-sm mt-1">{errors.state}</p>}
               <input
                 type="number"
                 placeholder="Pincode"
                 value={pincode}
                 onChange={(e) => setPincode(Number(e.target.value))}
                 className="w-full border p-2 rounded-lg"
-                required
+                
               />
+              {errors.pincode && <p className="text-red-600 text-sm mt-1">{errors.pincode}</p>}
             </div>
           </div>
 
@@ -859,9 +398,9 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             value={pricePerMonth}
             onChange={(e) => setPricePerMonth(Number(e.target.value))}
             className="w-full border p-2 rounded-lg"
-            required
+            
           />
-
+{errors.pricePerMonth && <p className="text-red-600 text-sm mt-1">{errors.pricePerMonth}</p>}
           {/* Bedrooms & Bathrooms */}
           <div className="grid grid-cols-2 gap-4">
             <input
@@ -871,6 +410,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               onChange={(e) => setBedrooms(Number(e.target.value))}
               className="w-full border p-2 rounded-lg"
             />
+            {errors.bedrooms && <p className="text-red-500 text-xs mt-1">{errors.bedrooms}</p>}
             <input
               type="number"
               placeholder="Bathrooms"
@@ -878,6 +418,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               onChange={(e) => setBathrooms(Number(e.target.value))}
               className="w-full border p-2 rounded-lg"
             />
+            {errors.bedrooms && <p className="text-red-500 text-xs mt-1">{errors.bedrooms}</p>}
           </div>
 
           {/* Furnishing */}
@@ -891,6 +432,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <option value="Semi-Furnished">Semi Furnished</option>
             <option value="Not Furnished">Not Furnished</option>
           </select>
+           {errors.furnishing && <p className="text-red-500 text-xs mt-1">{errors.furnishing}</p>}
 
           {/* Max Guests */}
           <input
@@ -899,8 +441,9 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             value={maxGuests}
             onChange={(e) => setMaxGuests(Number(e.target.value))}
             className="w-full border p-2 rounded-lg"
-            required
+            
           />
+          {errors.maxGuests && <p className="text-red-600 text-sm mt-1">{errors.maxGuests}</p>}
 
           {/* Lease Period */}
           <div className="grid grid-cols-2 gap-4">
@@ -910,16 +453,18 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               value={minLeasePeriod}
               onChange={(e) => setMinLeasePeriod(Number(e.target.value))}
               className="w-full border p-2 rounded-lg"
-              required
+            
             />
+            {errors.minLeasePeriod && <p className="text-red-600 text-sm mt-1">{errors.minLeasePeriod}</p>}
             <input
               type="number"
               placeholder="Max Lease Period (months)"
               value={maxLeasePeriod}
               onChange={(e) => setMaxLeasePeriod(Number(e.target.value))}
               className="w-full border p-2 rounded-lg"
-              required
+              
             />
+            {errors.maxLeasePeriod && <p className="text-red-600 text-sm mt-1">{errors.maxLeasePeriod}</p>}
           </div>
 
           {/* Amenities */}
@@ -998,6 +543,9 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               onChange={handleImageChange}
               className="w-full"
             />
+             {errors.images && (
+    <p className="text-red-600 text-sm mt-1">{errors.images}</p>
+  )}
           </div>
 
           {/* Submit */}
