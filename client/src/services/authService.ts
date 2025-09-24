@@ -26,7 +26,7 @@ interface OwnerProfileUpdateData {
 interface UserProfileUpdateData {
   name?: string;
   phone?: string;
-  // profileImage?: string;
+  profileImage?: string;
   address?: {
     houseNo?: string;
     street?: string;
@@ -271,5 +271,16 @@ deleteOwnerProperty: async (propertyId: string) => {
   return response.data;
 },
 
+uploadProfileImage: async (file: File) => {
+  const formData = new FormData();
+  formData.append('profileImage', file);
+  
+  const response = await api.post('/user/profile/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+},
 
 };

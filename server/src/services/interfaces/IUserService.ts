@@ -26,5 +26,6 @@ export interface SignupData {
     resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string; status: number }>;
     getUserProfile(userId: string): Promise<UserProfileResponseDto>;
     updateUserProfile(userId: string, data: UserProfileUpdateDto): Promise<UserProfileResponseDto>;
+     updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto>;
   }
   

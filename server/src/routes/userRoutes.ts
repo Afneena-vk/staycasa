@@ -5,6 +5,8 @@ import { TOKENS } from '../config/tokens';
 //import userController from "../controllers/userController";
 import passport from "passport";
 import { authMiddleware } from "../middleware/authMiddleware";
+import { cloudinaryUpload } from "../config/cloudinary";
+
 const userRoutes = Router();
 
 const userController = container.resolve<IUserController>(TOKENS.IUserController);
@@ -48,6 +50,14 @@ userRoutes.put(
   "/profile",
   authMiddleware(["user"]),
   userController.updateProfile.bind(userController)
+);
+
+
+userRoutes.post(
+  "/profile/upload-image",
+  authMiddleware(["user"]),
+  cloudinaryUpload.single("profileImage"), // expects field "profileImage" in form-data
+  userController.uploadProfileImage.bind(userController)
 );
 
 export default userRoutes   

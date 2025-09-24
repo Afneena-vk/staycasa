@@ -314,6 +314,27 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
     return UserMapper.toProfileResponse(updatedUser, "Profile updated successfully");
   }
 
+async updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto> {
+  const user = await this._userRepository.findById(userId);
+
+  if (!user) {
+    const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
+    error.status = STATUS_CODES.NOT_FOUND;
+    throw error;
+  }
+
+  const updatedUser = await this._userRepository.update(userId, {
+    profileImage: imageUrl,
+  });
+
+  if (!updatedUser) {
+    const error: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
+    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw error;
+  }
+
+  return UserMapper.toProfileResponse(updatedUser, "Profile image updated successfully");
+}
 
 
    

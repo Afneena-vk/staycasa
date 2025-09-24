@@ -1,6 +1,7 @@
 
 
 import { useState, useEffect } from "react";
+import { authService } from "../../services/authService";
 import {
   FaUser,
   FaEnvelope,
@@ -30,6 +31,7 @@ interface ProfileData {
   name: string;
   email: string;
   phone?: string;
+  profileImage: string;
   address?: Address;
 }
 
@@ -41,6 +43,7 @@ const UserProfile = () => {
     name: "",
     email: "",
     phone: "",
+    profileImage: "",
     address: {
       houseNo: "",
       street: "",
@@ -51,6 +54,9 @@ const UserProfile = () => {
     },
   });
 
+const [imagePreview, setImagePreview] = useState<string | null>(null);
+const [imageFile, setImageFile] = useState<File | null>(null);
+const [uploadingImage, setUploadingImage] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -66,6 +72,7 @@ const UserProfile = () => {
             name: userData.name || "",
             email: userData.email || "",
             phone: userData.phone || "",
+            profileImage: userData.profileImage || "",
             address: userData.address || {
               houseNo: "",
               street: "",
@@ -83,7 +90,13 @@ const UserProfile = () => {
             name: response.name || "",
             email: response.email || "",
             phone: response.phone || "",
+            profileImage: response.profileImage || "",
             address: response.address || {
+    //           name: userData.name || "",
+    // email: userData.email || "",
+    // phone: userData.phone || "",
+    // profileImage: userData.profileImage || "",
+    // address: userData.address || {
               houseNo: "",
               street: "",
               city: "",
@@ -108,6 +121,48 @@ const UserProfile = () => {
 
     loadProfile();
   }, [getUserProfile]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  // Validate file type and size
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  if (!allowedTypes.includes(file.type)) {
+    toast.error('Please select a valid image file (JPEG, JPG, or PNG)');
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    toast.error('Image size should be less than 5MB');
+    return;
+  }
+
+  setImageFile(file);
+  setImagePreview(URL.createObjectURL(file));
+};
+
+const uploadImage = async () => {
+  if (!imageFile) return null;
+
+  try {
+    setUploadingImage(true);
+    const response = await authService.uploadProfileImage(imageFile);
+
+    const newImageUrl = response.profileImage || response.data?.profileImage;
+    if (newImageUrl) {
+      setProfile(prev => ({ ...prev, profileImage: newImageUrl }));
+      // Also update the auth store
+      updateUserData({ ...userData, profileImage: newImageUrl });
+    }
+    return response.imageUrl || response.profileImage;
+  } catch (error: any) {
+    toast.error('Failed to upload image');
+    throw error;
+  } finally {
+    setUploadingImage(false);
+  }
+};
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -155,10 +210,18 @@ const UserProfile = () => {
      if (!validate()) return;
     try {
       setSaving(true);
+
+       let profileImageUrl = profile.profileImage;
+
+        if (imageFile) {
+      profileImageUrl = await uploadImage();
+    }
+
       const updateData = {
         name: profile.name,
         phone: profile.phone,
         address: profile.address,
+         ...(profileImageUrl && { profileImage: profileImageUrl }),
       };
 
       const response = await updateUserProfile(updateData);
@@ -166,10 +229,13 @@ const UserProfile = () => {
         toast.success(response.message || "Profile updated successfully");
         setProfile((prev) => ({
           ...prev,
-          name: response.name,
-          phone: response.phone,
-          address: response.address,
+          // name: response.name,
+          // phone: response.phone,
+          // address: response.address,
+          ...response.data 
         }));
+        setImageFile(null);
+        setImagePreview(null);
       }
     } catch (error: any) {
       console.error("Profile update failed:", error);
@@ -201,14 +267,9 @@ const UserProfile = () => {
         <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
           {/* Profile Header */}
           <div className="flex items-center gap-6 border-b pb-6 mb-6">
-            {/* <div className="relative">
-              <img
-                src="https://via.placeholder.com/150"
-                alt="Profile"
-                className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
-              /> */}
+            
               <div className="relative">
-    {userData?.profileImage ? (
+    {/* {userData?.profileImage ? (
       <img
         src={userData.profileImage}
         alt="Profile"
@@ -219,19 +280,100 @@ const UserProfile = () => {
         {profile.name?.charAt(0).toUpperCase() || "U"}
       </div>
     )}
-              {/* <label
-                htmlFor="profileImage"
+
+              {/* <label */}
+                {/* htmlFor="profileImage"
                 className="absolute bottom-2 right-2 bg-blue-950 text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-indigo-700 transition"
               >
                 <FaUpload size={14} />
-              </label> */}
+              </label> */} 
+              {imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Profile Preview"
+                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                />
+              // ) : userData?.profileImage ? (
+              //   <img
+              //     src={userData.profileImage}
+              //     alt="Profile"
+               ) : profile.profileImage ? (
+                <img
+                  src={profile.profileImage}
+                  alt="Profile"
+                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                />
+              ) : (
+                <div className="w-28 h-28 rounded-full bg-blue-950 flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-md">
+                  {profile.name?.charAt(0).toUpperCase() || "U"}
+                </div>
+              )}
+
+              {/* Cancel button */}
+              {imagePreview && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageFile(null);
+                    setImagePreview(null);
+                  }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600"
+                  disabled={saving || uploadingImage}
+                >
+                  ✕
+                </button>
+              )}
+
+              <label
+                htmlFor="profileImage"
+                className="absolute bottom-2 right-2 bg-blue-950 text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-indigo-700 transition disabled:opacity-50"
+              >
+                {/* {uploadingImage ? (
+                  <FaSpinner className="animate-spin" size={14} />
+                ) : ( */}
+                  <FaUpload size={14} />
+                {/* )} */}
+              </label>  
+
               <input
                 type="file"
                 id="profileImage"
-                accept="image/*"
+                // accept="image/*"
+                accept="image/jpeg,image/jpg,image/png"
                 className="hidden"
-                disabled={saving}
+                onChange={handleImageUpload}
+                // disabled={saving}
+                //disabled={saving || uploadingImage}
+                disabled={uploadingImage}
               />
+              {imageFile && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      const imageUrl = await uploadImage();
+                      //if (imageUrl) setProfile((prev) => ({ ...prev, profileImage: imageUrl }));
+
+                      // toast.success("Profile image uploaded successfully");
+                      // setImageFile(null);
+                      // setImagePreview(null);
+                      if (imageUrl) {
+          toast.success("Profile image uploaded successfully");
+          setProfile(prev => ({ ...prev, profileImage: imageUrl }));
+          setImageFile(null);
+          setImagePreview(null);
+        }
+                    } catch (err) {
+                      console.error(err);
+                      toast.error("Failed to upload image");
+                    }
+                  }}
+                  className="absolute bottom-2 right-2 bg-green-600 text-white p-2 rounded-full shadow-md hover:bg-green-700 transition disabled:opacity-50"
+                  disabled={uploadingImage}
+                >
+                  {uploadingImage ? <FaSpinner className="animate-spin" size={14} /> : "Upload"}
+                </button>
+              )}
             </div>
             <div>
               <h2 className="text-2xl font-bold text-blue-950">

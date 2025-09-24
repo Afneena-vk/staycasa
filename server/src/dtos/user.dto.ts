@@ -29,7 +29,7 @@ export class UserGoogleAuthResponseDto {
 export class UserProfileUpdateDto {
   name?: string;
   phone?: string;
-  //profileImage?: string;
+  profileImage?: string;
   address?: {
     houseNo?: string;
     street?: string;
@@ -45,7 +45,7 @@ export class UserProfileResponseDto {
   name!: string;
   email!: string;
   phone?: string;
-  //profileImage?: string;
+  profileImage?: string;
   address?: {
     houseNo: string;
     street: string;

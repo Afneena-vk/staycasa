@@ -46,7 +46,7 @@ export class UserMapper {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      //profileImage: user.profileImage,
+      profileImage: user.profileImage,
       address: user.address
         ? {
             houseNo: user.address.houseNo,

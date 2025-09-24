@@ -240,6 +240,28 @@ export class UserController implements IUserController {
     }
   }
 
+  async uploadProfileImage(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = (req as any).userId;
+
+    if (!req.file) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({ error: "No file uploaded" });
+      return;
+    }
+
+    const imageUrl = (req.file as any).path; // multer-storage-cloudinary attaches the file URL here
+
+    const result = await this._userService.updateUserProfileImage(userId, imageUrl);
+
+    res.status(result.status).json(result);
+  } catch (error: any) {
+    console.error("Upload profile image error:", error);
+    res
+      .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
+  }
+}
+
   
 }
 

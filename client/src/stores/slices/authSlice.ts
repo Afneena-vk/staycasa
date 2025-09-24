@@ -208,6 +208,8 @@ export const createAuthSlice: StateCreator<
     }
   },
 
+  
+
   setTempEmail: (email) => {
     set({ tempEmail: email });
   },

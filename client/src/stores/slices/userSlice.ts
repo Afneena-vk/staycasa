@@ -15,6 +15,7 @@ export interface UserProfile {
     pincode: string;
   };
   userStatus: "active" | "blocked";
+  profileImage?: string;
   isVerified: boolean;
 }
 
@@ -34,6 +35,7 @@ export interface UserProfileResponse {
   userStatus: "active" | "blocked";
   isVerified: boolean;
   status: number;
+  profileImage?: string;
   message: string;
   data: UserProfile;
 }
@@ -58,6 +60,15 @@ export const createUserSlice: StateCreator<
       throw error;
     }
   },
+
+  // updateUserData: (data: any) => {
+  //   const currentState = get();
+  //   if (currentState.userData) {
+  //     set({
+  //       userData: { ...currentState.userData, ...data },
+  //     });
+  //   }
+  // },
 
   updateUserProfile: async (profileData) => {
     try {
