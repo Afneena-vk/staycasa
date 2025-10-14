@@ -10,7 +10,7 @@ import { authService } from "../../services/authService";
 interface Owner {
   id: string;
   name: string;
-  email: string;
+  email: string;  
   phone: string;
   profileImage?: string;
   businessAddress: string;
@@ -61,6 +61,20 @@ const OwnerManagement: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const limit = 10; 
+
+const handlePreviousPage = () => {
+  if (currentPage > 1) {
+    setCurrentPage(currentPage - 1);
+  }
+};
+
+const handleNextPage = () => {
+  if (currentPage < totalPages) {
+    setCurrentPage(currentPage + 1);
+  }
+};
 
   const handleApprove = async (ownerId: string) => {
     try {
@@ -269,6 +283,45 @@ const OwnerManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
+        {/* Pagination */}
+{totalPages > 1 && (
+  <div className="flex items-center justify-between bg-white px-6 py-3 rounded-lg shadow mt-4">
+    <div className="text-sm text-gray-700">
+      Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, totalCount)} of {totalCount} owners
+    </div>
+    
+    <div className="flex items-center gap-2">
+      <button
+        onClick={handlePreviousPage}
+        disabled={currentPage === 1}
+        className={`px-3 py-1 rounded border ${
+          currentPage === 1
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-white text-gray-700 hover:bg-gray-50"
+        }`}
+      >
+        Previous
+      </button>
+      
+      <span className="px-3 py-1 text-sm text-gray-700">
+        Page {currentPage} of {totalPages}
+      </span>
+      
+      <button
+        onClick={handleNextPage}
+        disabled={currentPage === totalPages}
+        className={`px-3 py-1 rounded border ${
+          currentPage === totalPages
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-white text-gray-700 hover:bg-gray-50"
+        }`}
+      >
+        Next
+      </button>
+    </div>
+  </div>
+)}
+
 
         {/* Document Modal */}
         {selectedDoc && (

@@ -11,6 +11,8 @@ import UserManagement from "./pages/admin/UserManagement.tsx";
 import OwnerManagement from "./pages/admin/OwnerManagement.tsx";
 import UserDetails from "./pages/admin/UserDetails.tsx";
 import OwnerDetails from "./pages/admin/OwnerDetails.tsx";
+import AdminProperties from "./pages/admin/AdminProperties.tsx";
+import AdminPropertyDetails from "./pages/admin/AdminPropertyDetails.tsx";
 
 import OwnerSignup from "./pages/owner/OwnerSignup";
 import OwnerLogin from "./pages/owner/OwnerLogin.tsx";
@@ -45,6 +47,8 @@ const App = () => {
         <Route path="/admin/users/:userId"  element={<UserDetails />} />
         <Route path="/admin/owners" element={<OwnerManagement />} />
         <Route path="/admin/owners/:ownerId" element={<OwnerDetails />} />
+        <Route path="/admin/properties" element={<AdminProperties/>}/>
+        <Route path="/admin/properties/:propertyId" element={<AdminPropertyDetails/>}/>
         
         <Route path="/owner/signup" element={<OwnerSignup />} />
         <Route path="/owner/login" element={<OwnerLogin />} />

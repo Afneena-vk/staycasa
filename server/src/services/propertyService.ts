@@ -2,7 +2,7 @@ import { injectable, inject } from 'tsyringe';
 import { IPropertyService } from './interfaces/IPropertyService';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { TOKENS } from '../config/tokens';
-import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto } from '../dtos/property.dto';
+import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto } from '../dtos/property.dto';
 import { PropertyMapper } from '../mappers/propertyMapper';
 import { MESSAGES, STATUS_CODES } from '../utils/constants';
 import { PropertyStatus } from '../models/status/status';
@@ -142,5 +142,119 @@ async deleteOwnerProperty(ownerId: string, propertyId: string): Promise<{ messag
   }
 }
 
+async getAllProperties():Promise<AdminPropertyListResponseDto>{
+  try {
+    
+   const properties = await this._propertyRepository.getAllProperties();
+   console.log(" PropertyService returning:", properties.length, "properties");
+   return PropertyMapper.toAdminPropertyListResponse(properties);
+
+  } catch (error:any) {
+    const err:any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
+  }
+}
+
+async getAdminPropertyById(propertyId: string): Promise<PropertyResponseDto> {
+  try {
+
+    const property = await this._propertyRepository.findByPropertyIdForAdmin(propertyId); 
+    console.log("propertyDetailsService for admin returning:", property);
+    if(!property){
+      const err: any = new Error("Property not found");
+      err.status = STATUS_CODES.NOT_FOUND;
+      throw err;
+    }
+
+    return PropertyMapper.toPropertyResponse(property);
+    
+  } catch (error:any) {
+     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
+  }
+}
+
+async approveProperty(propertyId:string): Promise<AdminPropertyActionResponseDto> {
+  
+  try {
+    
+  const property = await this._propertyRepository.findByPropertyId(propertyId);
+  
+    if (!property) {
+      const err: any = new Error("Property not found");
+      err.status = STATUS_CODES.NOT_FOUND;
+      throw err;
+    }
+
+    const updatedProperty = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Active);
+     
+    if (!updatedProperty) {
+      const err: any = new Error("Failed to activate property");
+      err.status = STATUS_CODES.BAD_REQUEST;
+      throw err;
+    }
+
+    return PropertyMapper.toAdminPropertyActionResponse(
+      updatedProperty,
+      "Property activated successfully"
+    )
+
+
+  } catch (error:any) {
+     console.error("Approve property error:", error);
+    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
+  }
+
+}  
+
+async rejectProperty(propertyId:string): Promise<AdminPropertyActionResponseDto>{
+  try {
+    const property = await this._propertyRepository.findByPropertyId(propertyId);
+    if(!property){
+        const err: any = new Error("Property not found");
+      err.status = STATUS_CODES.NOT_FOUND;
+      throw err;
+    }
+
+     const updatedProperty = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Rejected);
+ 
+
+     if (!updatedProperty) {
+      const err: any = new Error("Failed to reject property");
+      err.status = STATUS_CODES.BAD_REQUEST;
+      throw err;
+    }
+
+    return PropertyMapper.toAdminPropertyActionResponse(
+       updatedProperty,
+      "Property rejected successfully"
+    )
+
+  } catch (error: any) {
+    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
+  }
+}
+
+async blockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionResponseDto> {
+
+  const property = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Blocked);
+  if (!property) throw new Error("Property not found");
+
+  return PropertyMapper.toAdminPropertyActionResponse(property, "Property blocked successfully");
+
+}
+
+async unblockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionResponseDto> {
+   const property = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Active);
+  if (!property) throw new Error("Property not found");
+
+  return PropertyMapper.toAdminPropertyActionResponse(property, "Property unblocked successfully");
+}
 
 }

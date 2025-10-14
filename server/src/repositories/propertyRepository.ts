@@ -22,12 +22,19 @@ export class PropertyRepository extends BaseRepository<IProperty> implements IPr
       propertyId,
       { status },
       { new: true }
-    ).exec();
+    )  .populate("ownerId", "name email phone businessName businessAddress")
+    .exec();
   }
 
   async findByPropertyId(propertyId: string): Promise<IProperty | null> {
     return Property.findById(propertyId).exec();
   }
+  async findByPropertyIdForAdmin(propertyId: string): Promise<IProperty | null> {
+    return Property.findById(propertyId)
+    .populate("ownerId", "name email phone businessName businessAddress")
+    .exec();
+  }
+
 
   async updateProperty(propertyId: string, data: Partial<IProperty>): Promise<IProperty | null> {
     return await this.model.findByIdAndUpdate(propertyId, data, { new: true }).exec();
@@ -39,5 +46,12 @@ export class PropertyRepository extends BaseRepository<IProperty> implements IPr
     ownerId: ownerId
   }).exec();
 }
+
+  async getAllProperties(): Promise<IProperty[]>{
+      console.log(" Fetching properties from database...");
+    return await this.model.find().sort({createdAt:-1}).exec();
+  }
+
+
 
 } 

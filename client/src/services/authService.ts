@@ -281,6 +281,36 @@ uploadProfileImage: async (file: File) => {
     },
   });
   return response.data;
+},  
+
+getAllPropertiesAdmin:async()=>{
+  const response = await api.get("/admin/properties");
+  return response.data;
 },
+
+getPropertyByAdmin:async(propertyId:string)=>{
+  const response = await api.get(`/admin/properties/${propertyId}`);
+  return response.data;
+},
+
+approveProperty: async(propertyId:string)=>{
+  const response = await api.patch(`/admin/properties/${propertyId}/approve`)
+  return response.data;
+},
+
+rejectProperty: async(propertyId:string)=>{
+  const response = await api.patch(`/admin/properties/${propertyId}/reject`)
+  return response.data;
+},
+
+blockPropertyByAdmin: async(propertyId:string)=>{
+  const response = await api.patch(`/admin/properties/${propertyId}/block`);
+  return response.data;
+},
+
+unblockPropertyByAdmin: async(propertyId:string)=>{
+  const response = await api.patch(`/admin/properties/${propertyId}/unblock`);
+  return response.data;
+}
 
 };

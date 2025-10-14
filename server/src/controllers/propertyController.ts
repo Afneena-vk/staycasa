@@ -119,5 +119,92 @@ async deleteOwnerProperty(req: Request, res: Response, next: NextFunction): Prom
   }
 }
 
+async getAllProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const result = await this._propertyService.getAllProperties();
+    console.log("properties fetched successfully:", result)
+    res.status(result.status).json(result);
+  } catch (error:any) {
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+async getAdminPropertyById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+
+    const {propertyId} = req.params;
+    const property = await this._propertyService.getAdminPropertyById(propertyId);
+     console.log("property in the admin side fetched successfully:", property)
+      res.status(STATUS_CODES.OK).json({
+      message: "Property fetched successfully",
+      property,
+    });
+  } catch (error:any) {
+     res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+async approveProperty(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const {propertyId} = req.params;
+
+  const result = await this._propertyService.approveProperty(propertyId);
+  console.log("property activated successfully", result);
+    res.status(result.status).json(result);
+
+  } catch (error:any) {
+    console.error("Approve property error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+async rejectProperty(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { propertyId } = req.params;
+
+    const result = await this._propertyService.rejectProperty(propertyId);
+    console.log("Property rejected successfully:", result);
+
+    res.status(result.status).json(result);
+  } catch (error: any) {
+     console.error("Reject property error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
  
+async blockPropertyByAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const {propertyId} = req.params;
+    const result = await this._propertyService.blockPropertyByAdmin(propertyId);
+    res.status(result.status).json(result);
+
+  } catch (error: any) {
+    console.error("Block property error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+async unblockPropertyByAdmin(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+     const {propertyId} = req.params;
+    const result = await this._propertyService.unblockPropertyByAdmin(propertyId);
+    res.status(result.status).json(result);
+  } catch (error: any) {
+     console.error("unBlock property error:", error);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
 }

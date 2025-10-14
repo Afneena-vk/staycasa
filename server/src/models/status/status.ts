@@ -3,5 +3,6 @@ export enum PropertyStatus {
   Active = "active",
   Blocked = "blocked",
   Booked = "booked",
-  Rejected = "rejected"
+  Rejected = "rejected",
+  
 }

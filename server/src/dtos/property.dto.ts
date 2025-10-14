@@ -22,6 +22,15 @@ export interface CreatePropertyDto {
   images: string[];
 }
 
+export interface OwnerInfoDto {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  businessName: string;
+  businessAddress: string;
+}
+
 export interface PropertyResponseDto {
   id: string;
   title: string;
@@ -44,6 +53,7 @@ export interface PropertyResponseDto {
   images: string[];
   status: PropertyStatus;
   createdAt: Date;
+  owner?: OwnerInfoDto;
 }
 
 export interface CreatePropertyResponseDto {
@@ -74,6 +84,18 @@ export interface UpdatePropertyDto {
 }
 
 export interface UpdatePropertyResponseDto {
+  message: string;
+  status: number;
+  property: PropertyResponseDto;
+}
+
+export interface AdminPropertyListResponseDto {
+  message: string;
+  status: number;
+  properties: PropertyResponseDto[];
+}
+
+export interface AdminPropertyActionResponseDto {
   message: string;
   status: number;
   property: PropertyResponseDto;

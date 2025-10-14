@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
+import { SiTryitonline } from "react-icons/si";
 
 export interface Property {
   id: string;
@@ -21,8 +22,18 @@ export interface Property {
   maxLeasePeriod: number;
   features: string[];
   images: string[];
-  status: "pending" | "approved" | "rejected";
+  // status: "pending" | "approved" | "rejected";
+  status: "pending" | "active" | "rejected" |"blocked"|"booked";
   createdAt: Date;
+
+  owner?: {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+    businessName?: string;
+    businessAddress?: string;
+  };
 }
 
 export interface PropertyFormData {
@@ -60,6 +71,12 @@ export interface PropertySlice {
   getOwnerPropertyById(propertyId: string): Promise<void>;
   updateProperty: (propertyId: string, propertyData: FormData) => Promise<void>;  
   deleteProperty: (propertyId: string) => Promise<void>;
+  getAllPropertiesAdmin(): Promise<void>; 
+  getPropertyByAdmin(propertyId:string): Promise<void>;
+  approveProperty(propertyId:string): Promise<void>;
+  rejectProperty(propertyId:string): Promise<void>;
+  blockPropertyByAdmin(propertyId:string): Promise<void>;
+  unblockPropertyByAdmin(propertyId:string): Promise<void>;
   clearError(): void;
   setLoading(loading: boolean): void;
   resetProperties(): void;
@@ -188,6 +205,148 @@ deleteProperty: async (propertyId: string) => {
     throw new Error(errorMessage);
   }
 },
+
+getAllPropertiesAdmin: async () =>{
+  set({ isLoading: true, error: null });
+  try {
+    const response = await authService.getAllPropertiesAdmin();
+      set({
+      properties: response.properties || [],
+      isLoading: false,
+      error: null,
+    });
+  } catch (error:any) {
+    const errorMessage =
+      error.response?.data?.error || error.message || "Failed to fetch all properties";
+    set({ properties: [], isLoading: false, error: errorMessage });
+  }
+},
+
+getPropertyByAdmin: async (propertyId:string)=>{
+  set({ isLoading: true, error: null });
+  try {
+    const response = await authService.getPropertyByAdmin(propertyId);
+
+    set({
+      selectedProperty:response.property,
+       isLoading: false,
+      error: null,
+    })
+  } catch (error: any) {
+    const errorMessage =
+    error.response?.data?.error || error.message || "Failed to fetch property details";
+     set({
+      selectedProperty: null,
+      isLoading: false,
+      error: errorMessage,
+    });
+  }
+},
+
+approveProperty: async (propertyId:string)=>{
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authService.approveProperty(propertyId);
+       set((state) => ({
+      properties: state.properties.map((p) =>
+        p.id === propertyId ? response.property : p
+      ),
+      selectedProperty:
+        state.selectedProperty?.id === propertyId
+          ? response.property
+          : state.selectedProperty,
+      isLoading: false,
+      error: null,
+    }));
+
+    return response;
+
+    } catch (error: any) {
+      const errorMessage =
+      error.response?.data?.error || error.message || "Failed to approve property";
+    set({ isLoading: false, error: errorMessage });
+    throw new Error(errorMessage);
+    }
+},
+
+rejectProperty: async (propertyId: string) => {
+  set({ isLoading: true, error: null });
+
+  try {
+    const response = await authService.rejectProperty(propertyId);
+
+  
+    set((state) => ({
+      properties: state.properties.map((p) =>
+        p.id === propertyId ? response.property : p
+      ),
+      selectedProperty:
+        state.selectedProperty?.id === propertyId
+          ? response.property
+          : state.selectedProperty,
+      isLoading: false,
+      error: null,
+    }));
+
+
+
+    return response;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error || error.message || "Failed to reject property";
+    set({ isLoading: false, error: errorMessage });
+    throw new Error(errorMessage);
+  }
+},
+
+blockPropertyByAdmin: async (propertyId: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    const response = await authService.blockPropertyByAdmin(propertyId);
+    set((state) => ({
+      properties: state.properties.map((p) =>
+        p.id === propertyId ? response.property : p
+      ),
+      selectedProperty:
+        state.selectedProperty?.id === propertyId
+          ? response.property
+          : state.selectedProperty,
+      isLoading: false,
+      error: null,
+    }));
+    return response; 
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || error.message || "Failed to block property";
+    set({ isLoading: false, error: errorMessage });
+    throw new Error(errorMessage);
+  }
+},
+
+unblockPropertyByAdmin: async (propertyId: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    const response = await authService.unblockPropertyByAdmin(propertyId);
+    set((state) => ({
+      properties: state.properties.map((p) =>
+        p.id === propertyId ? response.property : p
+      ),
+      selectedProperty:
+        state.selectedProperty?.id === propertyId
+          ? response.property
+          : state.selectedProperty,
+      isLoading: false,
+      error: null,
+    }));
+    return response;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || error.message || "Failed to unblock property";
+    set({ isLoading: false, error: errorMessage });
+     throw new Error(errorMessage);
+  }
+},
+
+
+
 
 
   clearError: () => {

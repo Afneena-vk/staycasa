@@ -1,7 +1,8 @@
 import { IProperty } from '../models/propertyModel';
 import { PropertyResponseDto, CreatePropertyResponseDto, UpdatePropertyResponseDto } from '../dtos/property.dto';
 import { STATUS_CODES } from '../utils/constants';
-
+import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto } from '../dtos/property.dto';
+import { IOwner } from '../models/ownerModel';
 export class PropertyMapper {
   static toPropertyResponse(property: IProperty): PropertyResponseDto {
     return {
@@ -26,6 +27,32 @@ export class PropertyMapper {
       images: property.images,
       status: property.status,
       createdAt: property.createdAt,
+      // owner: property.ownerId && typeof property.ownerId === "object" 
+      // ? {
+      //     id: property.ownerId._id.toString(),
+      //     name: property.ownerId.name,
+      //     email: property.ownerId.email,
+      //     phone: property.ownerId.phone,
+      //     businessName: property.ownerId.businessName,
+      //     businessAddress: property.ownerId.businessAddress,
+      //   }
+      // : undefined,
+      owner:
+  property.ownerId && typeof property.ownerId === "object"
+    ? (() => {
+        const owner = property.ownerId as IOwner;
+        return {
+          id: owner._id.toString(),
+          name: owner.name,
+          email: owner.email,
+          phone: owner.phone,
+          businessName: owner.businessName,
+          businessAddress: owner.businessAddress,
+        };
+      })()
+    : undefined,
+
+      
     };
   }
 
@@ -50,4 +77,21 @@ export class PropertyMapper {
       property: this.toPropertyResponse(property),
     };
   }
+
+   static toAdminPropertyListResponse(properties: IProperty[]): AdminPropertyListResponseDto {
+    return {
+      message: "Properties fetched successfully",
+      status: STATUS_CODES.OK,
+      properties: properties.map((p) => this.toPropertyResponse(p)),
+    };
+  }
+
+   static toAdminPropertyActionResponse(property: IProperty, message: string): AdminPropertyActionResponseDto {
+    return {
+      message,
+      status: STATUS_CODES.OK,
+      property: this.toPropertyResponse(property),
+    };
+  }
+
 }
