@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 const UserLanding: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
+     
       <Header />
 
-      {/* Hero Section */}
+    
       {/* <section className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white pt-28 pb-20"> */}
       
       <section className="flex-1 bg-gradient-to-r from-blue-950 to-blue-800 text-white pt-28 pb-20">
@@ -21,12 +21,28 @@ const UserLanding: React.FC = () => {
             Discover and book unique vacation homes, cabins, and villas across the globe.
             Your perfect getaway is just a few clicks away.
           </p>
-          <Link
+
+          {/* <Link
             to="/destinations"
             className="bg-white text-blue-950 font-semibold px-6 py-3 rounded-lg hover:bg-gray-100 transition"
           >
             Explore Now
-          </Link>
+          </Link> */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <Link
+              to="/properties"
+              className="bg-white text-blue-950 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition"
+            >
+              Book a Stay
+            </Link>
+
+            <Link
+              to="/owner/signup"
+              className="bg-transparent border border-white text-white font-semibold px-8 py-3 rounded-lg hover:bg-white hover:text-blue-950 transition"
+            >
+              Host Your Place
+            </Link>
+          </div>
         </div>
       </section>
 
