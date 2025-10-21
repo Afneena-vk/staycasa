@@ -48,15 +48,16 @@ api.interceptors.response.use(
       !originalRequest._retry &&
        authType &&
       tokenService.getRefreshToken(authType)
-      //tokenService.getRefreshToken()
+      
     ) {
       originalRequest._retry = true;
 
       try {
         const refreshResponse = await axios.post(
-          `${API_URL}/api/refresh-token`,
+          `${API_URL}/api/auth/refresh-token`,
+          {},
          // { refreshToken: tokenService.getRefreshToken() },
-         { refreshToken: tokenService.getRefreshToken(authType) },
+         //{ refreshToken: tokenService.getRefreshToken(authType) },
           { withCredentials: true }
         );
 
@@ -70,6 +71,7 @@ api.interceptors.response.use(
        // tokenService.clearTokens();
         tokenService.clearTokens(authType);
         //const authType = sessionStorage.getItem("auth-type") || "user";
+        sessionStorage.removeItem("auth-type");
         window.location.href = `/${authType}/login`;
         return Promise.reject(refreshError);
       }
