@@ -15,27 +15,6 @@ export const api = axios.create({
 });
 
 
-// api.interceptors.request.use((config) => {
-//   const token = tokenService.getAccessToken();
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
-
-api.interceptors.request.use((config) => {
-  const authType = sessionStorage.getItem("auth-type") as "user" | "owner" | "admin" | null;
-
-  if (authType) {
-    const token = tokenService.getAccessToken(authType);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-
-  return config;
-});
-
 
 api.interceptors.response.use(
   (response) => response,
@@ -46,32 +25,35 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-       authType &&
-      tokenService.getRefreshToken(authType)
+      authType
+      //  authType &&
+      // tokenService.getRefreshToken(authType)
       
     ) {
       originalRequest._retry = true;
 
       try {
-        const refreshResponse = await axios.post(
+        await axios.post(
+        // const refreshResponse = await axios.post(
           `${API_URL}/api/auth/refresh-token`,
           {},
-         // { refreshToken: tokenService.getRefreshToken() },
+       
          //{ refreshToken: tokenService.getRefreshToken(authType) },
           { withCredentials: true }
         );
 
-        const newAccessToken = refreshResponse.data.accessToken;
-        //tokenService.setAccessToken(newAccessToken);
-        tokenService.setAccessToken(newAccessToken, authType);
+        // const newAccessToken = refreshResponse.data.accessToken;
+       
+        // tokenService.setAccessToken(newAccessToken, authType);
         
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-       // tokenService.clearTokens();
-        tokenService.clearTokens(authType);
+
+       tokenService.clearAuthType();
+        // tokenService.clearTokens(authType);
         //const authType = sessionStorage.getItem("auth-type") || "user";
-        sessionStorage.removeItem("auth-type");
+       // sessionStorage.removeItem("auth-type");
         window.location.href = `/${authType}/login`;
         return Promise.reject(refreshError);
       }

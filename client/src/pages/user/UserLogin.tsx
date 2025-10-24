@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
 import GoogleAuthButton from "../../components/GoogleAuthButton";
 
 const UserLogin = () => {
+
+   const logout = useAuthStore((state) => state.logout);
+
+  useEffect(() => {
+    logout(); 
+  }, [logout]);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",

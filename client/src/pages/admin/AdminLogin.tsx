@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../stores/authStore'; 
 import { useNavigate } from 'react-router-dom';
 
 const AdminLogin: React.FC = () => {
+   const logout = useAuthStore((state) => state.logout);
+
+  useEffect(() => {
+    logout(); 
+  }, [logout]);
+
   const navigate = useNavigate();
   const { login } = useAuthStore();
 

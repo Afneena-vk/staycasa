@@ -63,9 +63,10 @@ export const createAuthSlice: StateCreator<
     //     }
     //   });
 
-      tokenService.setAccessToken(response.accessToken, authType);
-      tokenService.setRefreshToken(response.refreshToken, authType);
-      sessionStorage.setItem("auth-type", authType);
+      // tokenService.setAccessToken(response.accessToken, authType);
+      // tokenService.setRefreshToken(response.refreshToken, authType);
+      // sessionStorage.setItem("auth-type", authType);
+       tokenService.setAuthType(authType);
 
       set({
         userData: response.user || response.owner || response.admin,
@@ -86,9 +87,9 @@ export const createAuthSlice: StateCreator<
   },
 
   logout: () => {
-    tokenService.clearAllTokens();
-    sessionStorage.removeItem("auth-type");
-
+    // tokenService.clearAllTokens();
+    // sessionStorage.removeItem("auth-type");
+    tokenService.clearAuthType();
     
     const store = get() as any;
     if (store.resetProperties) {
@@ -215,7 +216,8 @@ export const createAuthSlice: StateCreator<
   },
 
   setUser: (userData, authType) => {
-    sessionStorage.setItem("auth-type", authType);
+    //sessionStorage.setItem("auth-type", authType);
+    tokenService.setAuthType(authType);
 
     const store = get() as any;
     if (store.resetProperties) {
