@@ -76,6 +76,20 @@ export const authService = {
     return response.data;
   },
 
+  logoutUser: async () => {
+  const response = await api.post("/user/logout");
+  return response.data;
+},
+  logoutOwner: async () => {
+  const response = await api.post("/owner/logout");
+  return response.data;
+},
+  logoutAdmin: async () => {
+  const response = await api.post("/admin/logout");
+  return response.data;
+},
+
+
  
   userForgotPassword: async (email: string) => {
     const response = await api.post("/user/forgot-password", { email });

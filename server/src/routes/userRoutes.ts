@@ -21,6 +21,11 @@ userRoutes.post("/forgot-password", userController.forgotPassword.bind(userContr
 userRoutes.post("/reset-password", userController.resetPassword.bind(userController));
 
 
+userRoutes.post(
+  "/logout",
+  authMiddleware(["user"]), // ensure only logged-in users can log out
+  userController.logout.bind(userController)
+);
 
 userRoutes.get(
     "/auth/google",

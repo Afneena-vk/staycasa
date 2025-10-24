@@ -6,6 +6,7 @@ import { TOKENS } from "../config/tokens";
 //import adminService from "../services/adminService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import { UserListQueryDto, UserDetailResponseDto, OwnerListQueryDto } from "../dtos/admin.dto";
+import logger from "../utils/logger";
 
 @injectable()
 export class AdminController implements IAdminController{
@@ -59,6 +60,27 @@ export class AdminController implements IAdminController{
         });
       }
       }
+
+       
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      
+      res.clearCookie("admin-auth-token", { path: "/" });
+      res.clearCookie("admin-refresh-token", { path: "/" });
+
+      res
+        .status(STATUS_CODES.OK)
+        .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
+    } catch (error: any) {
+      logger.error("Logout error: " + error.message);
+      res
+        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({
+          error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+        });
+    }
+  }
+  
 
        async getUsersList(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {

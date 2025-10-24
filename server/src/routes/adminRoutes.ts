@@ -12,6 +12,12 @@ const adminController = container.resolve<IAdminController>(TOKENS.IAdminControl
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController)
 
 adminRoutes.post("/login", adminController.login.bind(adminController));
+adminRoutes.post(
+  "/logout",
+ authMiddleware(["admin"]),
+adminController.logout.bind(adminController)
+);
+
 adminRoutes.get(
     "/users", 
     authMiddleware(["admin"]), 

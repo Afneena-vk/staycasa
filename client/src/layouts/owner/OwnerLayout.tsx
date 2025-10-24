@@ -44,7 +44,9 @@ const OwnerLayout = ({ children }: OwnerLayoutProps) => {
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 fixed lg:static top-0 left-0 h-full z-50 transition-transform duration-300 ease-smooth`}
       >
-        <OwnerSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} />
+        {/* <OwnerSidebar collapsed={sidebarCollapsed} onToggle={toggleSidebar} /> */}
+        <OwnerSidebar />
+
       </div>
 
       {/* Main Content */}

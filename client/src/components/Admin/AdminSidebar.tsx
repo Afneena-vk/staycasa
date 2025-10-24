@@ -1,6 +1,6 @@
 
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaBars,
   FaTimes,
@@ -15,6 +15,8 @@ import {
   FaChevronLeft
 } from "react-icons/fa";
 import { useState } from "react";
+
+import { useAuthStore } from "../../stores/authStore";
 
 const navLinks = [
   { name: "Home", path: "/admin-dashboard", icon: FaHome },
@@ -35,6 +37,19 @@ interface AdminSidebarProps {
 const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const logout = useAuthStore((state)=>state.logout);
+  const navigate = useNavigate();
+
+   const handleLogout = async () => {
+    try {
+      await logout(); 
+      navigate("/admin/login"); 
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+
 
   const toggleSidebarMobile = () => {
     setIsOpen(!isOpen);
@@ -49,6 +64,21 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
     const isActive = location.pathname === link.path;
     const isLogout = link.name === "Logout";
 
+   if (isLogout) {
+      return (
+        <button
+          key={link.name}
+          onClick={handleLogout}
+          className="group flex items-center space-x-3 py-3 px-4 w-full text-left rounded-xl transition-all duration-200 hover:bg-red-600/20 text-red-400"
+        >
+          <div className="w-5 h-5 flex items-center justify-center">
+            <Icon size={18} />
+          </div>
+          {!collapsed && <span className="font-medium text-sm">{link.name}</span>}
+        </button>
+      );
+    }
+
     return (
       <Link
         key={link.name}
@@ -58,8 +88,8 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
         className={`group flex items-center space-x-3 py-3 px-4 rounded-xl transition-all duration-200 ${
           isActive
             ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-[1.02]"
-            : isLogout
-            ? "hover:bg-red-600/20 text-red-400"
+            // : isLogout
+            // ? "hover:bg-red-600/20 text-red-400"
             : "hover:bg-slate-700/50 text-slate-300 hover:text-white"
         }`}
       >

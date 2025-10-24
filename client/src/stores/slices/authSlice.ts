@@ -86,10 +86,24 @@ export const createAuthSlice: StateCreator<
     }
   },
 
-  logout: () => {
+  logout: async() => {
     // tokenService.clearAllTokens();
     // sessionStorage.removeItem("auth-type");
-    tokenService.clearAuthType();
+
+    try {
+      const authType = tokenService.getAuthType();
+
+    if (authType === "user") {
+      await authService.logoutUser();
+    } else  if (authType === "owner") {
+      await authService.logoutOwner();
+    } else  if (authType === "admin") {
+      await authService.logoutAdmin();
+    }
+    } catch (error) {
+      console.error("Logout failed", error);
+    } finally {
+         tokenService.clearAuthType();
     
     const store = get() as any;
     if (store.resetProperties) {
@@ -103,7 +117,9 @@ export const createAuthSlice: StateCreator<
       tempEmail: null,
      
     });
-    
+      //window.location.href = "/user/login";
+    }
+
   },
 
   signup: async (userData, authType) => {

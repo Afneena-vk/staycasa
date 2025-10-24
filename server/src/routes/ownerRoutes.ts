@@ -19,7 +19,11 @@ ownerRoutes.post("/login", ownerController.login.bind(ownerController));
 ownerRoutes.post("/forgot-password", ownerController.forgotPassword.bind(ownerController));
 ownerRoutes.post("/reset-password", ownerController.resetPassword.bind(ownerController));
 
-
+ownerRoutes.post(
+  "/logout",
+ authMiddleware(["owner"]),
+ownerController.logout.bind(ownerController)
+);
 
 ownerRoutes.get(
   "/profile",

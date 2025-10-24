@@ -120,6 +120,24 @@ export class UserController implements IUserController {
   }
   }
   
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      
+      res.clearCookie("user-auth-token", { path: "/" });
+      res.clearCookie("user-refresh-token", { path: "/" });
+
+      res
+        .status(STATUS_CODES.OK)
+        .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
+    } catch (error: any) {
+      logger.error("Logout error: " + error.message);
+      res
+        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({
+          error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+        });
+    }
+  }
   
   
   async googleCallback(req: Request, res: Response, next: NextFunction): Promise<void> {
