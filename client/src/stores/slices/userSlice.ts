@@ -61,14 +61,14 @@ export const createUserSlice: StateCreator<
     }
   },
 
-  // updateUserData: (data: any) => {
-  //   const currentState = get();
-  //   if (currentState.userData) {
-  //     set({
-  //       userData: { ...currentState.userData, ...data },
-  //     });
-  //   }
-  // },
+  updateUserData: (data: any) => {
+    const currentState = get();
+    if (currentState.userData) {
+      set({
+        userData: { ...currentState.userData, ...data },
+      });
+    }
+  },
 
   updateUserProfile: async (profileData) => {
     try {

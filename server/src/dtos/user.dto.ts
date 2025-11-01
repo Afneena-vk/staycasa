@@ -23,6 +23,7 @@ export class UserGoogleAuthResponseDto {
   isVerified!: boolean;
   status!: string;
   token!: string;
+  refreshToken!: string;
   message!: string;
 }
 

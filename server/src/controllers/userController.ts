@@ -150,16 +150,22 @@ export class UserController implements IUserController {
   
       const result = await this._userService.processGoogleAuth(user);
       
-      res.cookie("auth-token", result.token, {
+      res.cookie("user-auth-token", result.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000, 
+        maxAge:  15 * 60 * 1000,
         path: "/",
         sameSite: "lax"
       });
-  
+      res.cookie("user-refresh-token", result.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge:  7 * 24 * 60 * 60 * 1000, 
+        path: "/",
+        sameSite: "lax"
+      });
     
-      res.redirect(`${process.env.FRONTEND_URL}/user/auth-success?token=${result.token}`);
+      res.redirect(`${process.env.FRONTEND_URL}/user/auth-success`);
       
     } catch (error: any) {
      
@@ -267,7 +273,7 @@ export class UserController implements IUserController {
       return;
     }
 
-    const imageUrl = (req.file as any).path; // multer-storage-cloudinary attaches the file URL here
+    const imageUrl = (req.file as any).path; 
 
     const result = await this._userService.updateUserProfileImage(userId, imageUrl);
 

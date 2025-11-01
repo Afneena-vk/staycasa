@@ -23,7 +23,6 @@ userRoutes.post("/reset-password", userController.resetPassword.bind(userControl
 
 userRoutes.post(
   "/logout",
-  authMiddleware(["user"]), // ensure only logged-in users can log out
   userController.logout.bind(userController)
 );
 

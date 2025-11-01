@@ -188,14 +188,27 @@ export class UserService implements IUserService {
     });
   }
 
-  const jwtSecret = process.env.JWT_SECRET;
-  if (!jwtSecret) throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+  //const jwtSecret = process.env.JWT_SECRET;
+  const JWT_SECRET = process.env.JWT_SECRET;
+  const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
-  const token = jwt.sign({ userId: user._id, type: "user" }, jwtSecret, {
-    expiresIn: "1h",
+     if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+    throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+  }
+
+ 
+  const accessToken = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_SECRET, {
+    expiresIn: "15m",
   });
 
-  return UserMapper.toGoogleAuthResponse(user, token, MESSAGES.SUCCESS.LOGIN);
+  const refreshToken = jwt.sign({ userId: user._id, email: user.email, type: "user" }, JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
+
+
+ 
+
+  return UserMapper.toGoogleAuthResponse(user, accessToken, refreshToken, MESSAGES.SUCCESS.LOGIN);
 }
 
 

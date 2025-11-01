@@ -21,7 +21,6 @@ ownerRoutes.post("/reset-password", ownerController.resetPassword.bind(ownerCont
 
 ownerRoutes.post(
   "/logout",
- authMiddleware(["owner"]),
 ownerController.logout.bind(ownerController)
 );
 

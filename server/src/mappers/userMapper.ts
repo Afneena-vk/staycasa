@@ -21,17 +21,18 @@ export class UserMapper {
     };
   }
 
-  static toGoogleAuthResponse(user: IUser, token: string, message: string): UserGoogleAuthResponseDto {
+  static toGoogleAuthResponse(user: IUser,  accessToken: string, refreshToken: string, message: string): UserGoogleAuthResponseDto {
     return {
       id: user._id.toString(),
       name: user.name,
       email: user.email,
       phone: user.phone,
       profileImage: user.profileImage,
-       userStatus: user.status,
+      userStatus: user.status,
       status: user.status,
       isVerified: user.isVerified,
-      token,
+      token: accessToken,
+      refreshToken: refreshToken,
       message,
     };
   }
