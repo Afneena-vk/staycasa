@@ -44,6 +44,8 @@ function AdminProperties() {
 
 
 const handleApprove = async (propertyId: string) => {
+  const confirmation = window.confirm("Do you want to approve the property");
+  if(!confirmation) return;
   try {
     await approveProperty(propertyId);
     //alert("Property approved successfully");
@@ -55,6 +57,8 @@ const handleApprove = async (propertyId: string) => {
 };
 
 const handleReject = async (propertyId: string) => {
+  const confirmation = window.confirm("Do you want to reject the property");
+  if(!confirmation) return;
   try {
     await rejectProperty(propertyId);
     
@@ -66,6 +70,8 @@ const handleReject = async (propertyId: string) => {
 };
 
 const handleBlock = async (propertyId: string) => {
+   const confirmation = window.confirm("Do you want to block the property");
+  if(!confirmation) return;
   try {
    
     await blockPropertyByAdmin(propertyId);
@@ -78,6 +84,8 @@ const handleBlock = async (propertyId: string) => {
 };
 
 const handleUnblock = async (propertyId: string) => {
+   const confirmation = window.confirm("Do you want to unblock property");
+  if(!confirmation) return;
   try {
    
     await unblockPropertyByAdmin(propertyId);

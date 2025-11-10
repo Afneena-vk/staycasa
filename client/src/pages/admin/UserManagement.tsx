@@ -88,6 +88,8 @@ const UserManagement = () => {
  
   const toggleUserStatus = async (userId: string, currentStatus: string) => {
      const action = currentStatus === "Active" ? "block" : "unblock";
+      const confirmation= window.confirm("Are you sure want to change the status"); 
+      if(!confirmation) return;
     try {
      
       await api.patch(`/admin/users/${userId}/${action}`);

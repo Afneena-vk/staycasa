@@ -76,7 +76,9 @@ const handleNextPage = () => {
   }
 };
 
-  const handleApprove = async (ownerId: string) => {
+  const handleApprove = async (ownerId: string) => { 
+    const confirmed = window.confirm("Are you sure you want to approve this owner?");
+      if (!confirmed) return;
     try {
       setActionLoading(`approve-${ownerId}`);
       await approveOwner(ownerId);
@@ -86,7 +88,11 @@ const handleNextPage = () => {
     }
   };
 
-  const handleReject = async (ownerId: string) => {
+  const handleReject = async (ownerId: string) => {  
+
+     const confirmed = window.confirm("Are you sure you want to reject this owner?");
+          if (!confirmed) return;
+
     try {
       setActionLoading(`reject-${ownerId}`);
       await rejectOwner(ownerId);
@@ -96,7 +102,10 @@ const handleNextPage = () => {
     }
   };
 
-  const handleBlock = async (ownerId: string) => {
+  const handleBlock = async (ownerId: string) => { 
+      const confirmed = window.confirm("Are you sure you want to block this owner?");
+           if (!confirmed) return;
+
     try {
       setActionLoading(`block-${ownerId}`);
       await authService.blockOwner(ownerId);
@@ -106,7 +115,11 @@ const handleNextPage = () => {
     }
   };
 
-  const handleUnblock = async (ownerId: string) => {
+  const handleUnblock = async (ownerId: string) => { 
+
+     const confirmed = window.confirm("Are you sure you want to unblock this owner?");
+        if (!confirmed) return;
+
     try {
       setActionLoading(`unblock-${ownerId}`);
       await authService.unblockOwner(ownerId);
@@ -224,7 +237,8 @@ const handleNextPage = () => {
                         <button
                           onClick={() => handleApprove(owner.id)}
                           disabled={actionLoading === `approve-${owner.id}`}
-                          className="text-green-600 hover:text-green-800"
+                          className="text-green-600 hover:text-green-800" 
+                          title="approve"
                         >
                           <CheckCircle size={18} />
                         </button>
