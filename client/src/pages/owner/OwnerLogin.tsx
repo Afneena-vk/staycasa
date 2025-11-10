@@ -4,13 +4,6 @@ import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
 
 const OwnerLogin = () => {
-
-   const logout = useAuthStore((state) => state.logout);
-
-  useEffect(() => {
-    logout(); 
-  }, [logout]);
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",

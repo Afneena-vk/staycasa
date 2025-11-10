@@ -6,6 +6,7 @@ import { TOKENS } from '../config/tokens';
 import passport from "passport";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { cloudinaryUpload } from "../config/cloudinary";
+import { checkUserStatus } from "../middleware/statusCheckingMiddleware";
 
 const userRoutes = Router();
 
@@ -47,12 +48,14 @@ userRoutes.get(
 userRoutes.get(
   "/profile",
   authMiddleware(["user"]),
+   checkUserStatus,
   userController.getProfile.bind(userController)
 );
 
 userRoutes.put(
   "/profile",
   authMiddleware(["user"]),
+   checkUserStatus,
   userController.updateProfile.bind(userController)
 );
 
@@ -60,6 +63,7 @@ userRoutes.put(
 userRoutes.post(
   "/profile/upload-image",
   authMiddleware(["user"]),
+   checkUserStatus,
   cloudinaryUpload.single("profileImage"), 
   userController.uploadProfileImage.bind(userController)
 );

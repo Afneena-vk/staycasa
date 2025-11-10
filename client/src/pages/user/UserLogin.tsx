@@ -6,12 +6,6 @@ import GoogleAuthButton from "../../components/GoogleAuthButton";
 
 const UserLogin = () => {
 
-   const logout = useAuthStore((state) => state.logout);
-
-  useEffect(() => {
-    logout(); 
-  }, [logout]);
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",

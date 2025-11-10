@@ -4,6 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import ProtectedRoute from "./components/routes/ProtectedRoute.tsx";
+import PublicRoute from "./components/routes/PublicRoute";
+import SessionManager from "./components/routes/SessionManager.tsx";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
@@ -38,19 +41,83 @@ import UserProfile from "./components/User/UserProfile.tsx";
 const App = () => {
   return (
     <Router>
+      <SessionManager />
       <ToastContainer />
       <Routes>
-        
-        <Route path="/admin/login" element={<AdminLogin />} />
+         <Route
+          path="/admin/login"
+          element={
+            <PublicRoute restrictedFor={["admin"]}>
+              <AdminLogin />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users/:userId"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <UserDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/owners"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <OwnerManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/owners/:ownerId"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <OwnerDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/properties"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminProperties />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/properties/:propertyId"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminPropertyDetails />
+            </ProtectedRoute>
+          }
+        />
+        {/* <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="/admin/users/:userId"  element={<UserDetails />} />
         <Route path="/admin/owners" element={<OwnerManagement />} />
         <Route path="/admin/owners/:ownerId" element={<OwnerDetails />} />
         <Route path="/admin/properties" element={<AdminProperties/>}/>
-        <Route path="/admin/properties/:propertyId" element={<AdminPropertyDetails/>}/>
+        <Route path="/admin/properties/:propertyId" element={<AdminPropertyDetails/>}/> */}
         
-        <Route path="/owner/signup" element={<OwnerSignup />} />
+        {/* <Route path="/owner/signup" element={<OwnerSignup />} />
         <Route path="/owner/login" element={<OwnerLogin />} />
         <Route path="/owner/forgot-password" element={<OwnerForgotPassword />} />
         <Route path="/owner/otp-verification" element={<OwnerOTPVerification />} />
@@ -60,9 +127,99 @@ const App = () => {
         <Route path="/owner/profile" element={<OwnerProfile/>}/>
         <Route path="/owner/add-property" element={<OwnerAddProperty />} />
         <Route path="/owner/properties/:propertyId" element={<OwnerPropertyDetails />}/>
-        <Route path="/owner/properties/:propertyId/edit" element={<OwnerEditProperty/>}/>
+        <Route path="/owner/properties/:propertyId/edit" element={<OwnerEditProperty/>}/> */}
+        <Route
+  path="/"
+  element={
+    <PublicRoute restrictedFor={["user", "owner"]}>
+      <UserLanding />
+    </PublicRoute>
+  }
+/>
 
-        <Route path="/user/signup" element={<UserSignup />} />
+          <Route
+          path="/owner/signup"
+          element={
+            <PublicRoute restrictedFor={["owner"]}>
+              <OwnerSignup />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/owner/login"
+          element={
+            <PublicRoute restrictedFor={["owner"]}>
+              <OwnerLogin />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/owner/forgot-password"
+          element={
+            <PublicRoute restrictedFor={["owner"]}>
+              <OwnerForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route path="/owner/otp-verification" element={<OwnerOTPVerification />} />
+        <Route
+          path="/owner/reset-password"
+          element={
+            <PublicRoute restrictedFor={["owner"]}>
+              <OwnerResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/owner/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner/properties"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerProperties />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner/profile"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner/add-property"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerAddProperty />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner/properties/:propertyId"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerPropertyDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/owner/properties/:propertyId/edit"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerEditProperty />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/user/forgot-password" element={<UserForgotPassword />} />
         <Route path="/user/otp-verification" element={<UserOTPVerification />} />
@@ -70,7 +227,59 @@ const App = () => {
         <Route path="/user/auth-success" element={<AuthSuccess />} />
         <Route path="/user/dashboard" element={<UserLanding />} />
         <Route path='/user/profile' element={<UserProfile/>}/>
-        
+         */}
+
+                {/* User Routes */}
+        <Route
+          path="/user/signup"
+          element={
+            <PublicRoute restrictedFor={["user"]}>
+              <UserSignup />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/user/login"
+          element={
+            <PublicRoute restrictedFor={["user"]}>
+              <UserLogin />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/user/forgot-password"
+          element={
+            <PublicRoute restrictedFor={["user"]}>
+              <UserForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route path="/user/otp-verification" element={<UserOTPVerification />} />
+        <Route
+          path="/user/reset-password"
+          element={
+            <PublicRoute restrictedFor={["user"]}>
+              <UserResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route path="/user/auth-success" element={<AuthSuccess />} />
+        <Route
+          path="/user/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserLanding />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/profile"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserProfile />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -6,6 +6,7 @@ import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { cloudinaryUpload } from "../config/cloudinary";
+import { checkUserStatus } from "../middleware/statusCheckingMiddleware";
 
 const ownerRoutes = Router();
 const ownerController = container.resolve<IOwnerController>(TOKENS.IOwnerController);
@@ -27,18 +28,21 @@ ownerController.logout.bind(ownerController)
 ownerRoutes.get(
   "/profile",
   authMiddleware(["owner"]),
+   checkUserStatus,
   ownerController.getProfile.bind(ownerController)
 );
 
 ownerRoutes.put(
   "/profile",
   authMiddleware(["owner"]),
+   checkUserStatus,
   ownerController.updateProfile.bind(ownerController)
 );
 
 ownerRoutes.post(
   "/upload-document",
   authMiddleware(["owner"]),
+   checkUserStatus,
   cloudinaryUpload.single('document'), 
   ownerController.uploadDocument.bind(ownerController)
 );
@@ -46,6 +50,7 @@ ownerRoutes.post(
 ownerRoutes.post(
   "/properties",
   authMiddleware(["owner"]),
+   checkUserStatus,
   cloudinaryUpload.array("images", 5),
   propertyController.createProperty.bind(propertyController)
 );
@@ -53,18 +58,21 @@ ownerRoutes.post(
 ownerRoutes.get(
   "/properties",
   authMiddleware(["owner"]),
+   checkUserStatus,
   propertyController.getOwnerProperties.bind(propertyController)
 );
 
 ownerRoutes.get(
   "/properties/:propertyId", 
   authMiddleware(["owner"]),  
+   checkUserStatus,
    propertyController.getOwnerPropertyById.bind(propertyController)
 );
 
 ownerRoutes.put(
   "/properties/:propertyId",
   authMiddleware(["owner"]),
+   checkUserStatus,
   cloudinaryUpload.array("images", 5),  
   propertyController.updateOwnerProperty.bind(propertyController)
 );
@@ -72,6 +80,7 @@ ownerRoutes.put(
 ownerRoutes.delete(
   "/properties/:propertyId",
   authMiddleware(["owner"]),
+   checkUserStatus,
   propertyController.deleteOwnerProperty.bind(propertyController)
 );
 

@@ -54,14 +54,30 @@ api.interceptors.response.use(
         // tokenService.clearTokens(authType);
         //const authType = sessionStorage.getItem("auth-type") || "user";
        // sessionStorage.removeItem("auth-type");
-        window.location.href = `/${authType}/login`;
+        // window.location.href = `/${authType}/login`; 
+         if (!window.location.pathname.includes("/login")) {
+          window.location.href = `/${authType}/login`;
+        }
         return Promise.reject(refreshError);
+      }
+    }
+     
+if (error.response?.status === 403) {
+
+      tokenService.clearAuthType();
+
+      if (authType && !window.location.pathname.includes("/login")) {
+        window.location.href = `/${authType}/login`;
       }
     }
 
     return Promise.reject(error);
   }
 );
+
+
+
+
 
 
 

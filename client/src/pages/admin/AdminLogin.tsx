@@ -3,12 +3,6 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNavigate } from 'react-router-dom';
 
 const AdminLogin: React.FC = () => {
-   const logout = useAuthStore((state) => state.logout);
-
-  useEffect(() => {
-    logout(); 
-  }, [logout]);
-
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
@@ -27,7 +21,7 @@ const AdminLogin: React.FC = () => {
 
     try {
       await login(email, password, 'admin');
-      navigate('/admin-dashboard'); 
+      navigate('/admin/dashboard'); 
     } catch (err: any) {
       setError('Invalid email or password');
     }
