@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/admin/AdminLayout";
 import { api } from "../../api/api";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
+import { useAuthStore } from "../../stores/authStore";
 
 interface User {
   id: string; 
@@ -41,7 +42,8 @@ const UserManagement = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "blocked">("all");
   const [sortBy, setSortBy] = useState<"name" | "email" | "createdAt">("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
- 
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const getUsers = useAuthStore(state => state.getUsers);
   
   const limit = 10; 
 
@@ -51,13 +53,15 @@ const UserManagement = () => {
       setLoading(true);
       setError(null);
 
-  const data: UsersResponse = await authService.getUsers({
+  // const data: UsersResponse = await authService.getUsers({
+  const data:UsersResponse = await getUsers({
   page: currentPage,
   limit,
   status: statusFilter,
   sortBy,
   sortOrder,
-  search,
+  // search,
+  search: debouncedSearch,
 });
       
     
@@ -114,21 +118,30 @@ const UserManagement = () => {
   
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, statusFilter, sortBy, sortOrder]);
+  }, [currentPage,debouncedSearch,statusFilter, sortBy, sortOrder]);
 
-   useEffect(() => {
-    fetchUsers();
-  }, [currentPage, statusFilter, sortBy, sortOrder]);
+  //  useEffect(() => {
+  //   fetchUsers();
+  // }, [currentPage, statusFilter, sortBy, sortOrder]);
 
   
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      setCurrentPage(1); 
-      fetchUsers();
-    }, 500);
+useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 500);
 
-    return () => clearTimeout(debounceTimer);
-  }, [search]);
+  return () => clearTimeout(handler);
+}, [search]);
+
+
+  // useEffect(() => {
+  //   const debounceTimer = setTimeout(() => {
+  //     setCurrentPage(1); 
+  //     fetchUsers();
+  //   }, 500);
+
+  //   return () => clearTimeout(debounceTimer);
+  // }, [search]);
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {

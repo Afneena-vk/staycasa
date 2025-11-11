@@ -33,21 +33,27 @@ const OwnerManagement: React.FC = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "blocked">("all");
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
 
   const { approveOwner, rejectOwner } = useAuthStore();
+  const getOwners = useAuthStore(state => state.getOwners);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchOwners();
-  }, [currentPage, search, statusFilter]);
+  // }, [currentPage, search, statusFilter]);
+  }, [currentPage, debouncedSearch, statusFilter]);
 
   const fetchOwners = async () => {
     try {
       setLoading(true);
-      const response = await authService.getOwners({
+      // const response = await authService.getOwners({
+      const response = await getOwners({
         page: currentPage,
         limit: 10,
-        search,
+        // search,
+         search: debouncedSearch,
         status: statusFilter,
         sortBy: "createdAt",
         sortOrder: "desc",
@@ -61,6 +67,17 @@ const OwnerManagement: React.FC = () => {
       setLoading(false);
     }
   };
+
+useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 500); 
+
+  return () => {
+    clearTimeout(handler);
+  };
+}, [search]);
+
 
   const limit = 10; 
 
