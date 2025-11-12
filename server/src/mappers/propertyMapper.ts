@@ -78,13 +78,29 @@ export class PropertyMapper {
     };
   }
 
-   static toAdminPropertyListResponse(properties: IProperty[]): AdminPropertyListResponseDto {
-    return {
-      message: "Properties fetched successfully",
-      status: STATUS_CODES.OK,
-      properties: properties.map((p) => this.toPropertyResponse(p)),
-    };
-  }
+  //  static toAdminPropertyListResponse(properties: IProperty[]): AdminPropertyListResponseDto {
+  //   return {
+  //     message: "Properties fetched successfully",
+  //     status: STATUS_CODES.OK,
+  //     properties: properties.map((p) => this.toPropertyResponse(p)),
+  //   };
+  // }
+  static toAdminPropertyListResponse(
+     properties: IProperty[],
+     totalCount: number,
+     totalPages: number,
+     currentPage: number
+): AdminPropertyListResponseDto {
+  return {
+    message: "Properties fetched successfully",
+    status: STATUS_CODES.OK,
+    properties: properties.map((p) => this.toPropertyResponse(p)),
+    totalCount,
+    totalPages,
+    currentPage
+  };
+}
+
 
    static toAdminPropertyActionResponse(property: IProperty, message: string): AdminPropertyActionResponseDto {
     return {

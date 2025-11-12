@@ -15,6 +15,16 @@ interface UserFilters {
   sortOrder?: "asc" | "desc";
 }
 
+interface PropertyFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
+
 interface OwnerProfileUpdateData {
   name?: string;
   phone?: string;
@@ -297,9 +307,16 @@ uploadProfileImage: async (file: File) => {
   return response.data;
 },  
 
-getAllPropertiesAdmin:async()=>{
-  const response = await api.get("/admin/properties");
-  return response.data;
+// getAllPropertiesAdmin:async()=>{
+//   const response = await api.get("/admin/properties");
+//   return response.data;
+// },
+
+getAllPropertiesAdmin: async(params: PropertyFilters = {})=>{
+
+    const response = await api.get("/admin/properties", { params });
+    return response.data;
+
 },
 
 getPropertyByAdmin:async(propertyId:string)=>{

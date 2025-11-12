@@ -8,29 +8,54 @@ import { toast } from 'react-toastify';
 
 
 function AdminProperties() {
-  const { getAllPropertiesAdmin, properties, isLoading, error, approveProperty, rejectProperty, blockPropertyByAdmin, unblockPropertyByAdmin } = useAuthStore();
+  const { getAllPropertiesAdmin, properties, isLoading, error, approveProperty, rejectProperty, blockPropertyByAdmin, unblockPropertyByAdmin} = useAuthStore();
   const navigate = useNavigate();
 
    const [searchQuery, setSearchQuery] = useState("");
+   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
    const [currentPage, setCurrentPage] = useState(1);
    const propertiesPerPage = 10;
 
+  // useEffect(() => {
+  //   getAllPropertiesAdmin();
+  // }, [getAllPropertiesAdmin]); 
   useEffect(() => {
-    getAllPropertiesAdmin();
-  }, [getAllPropertiesAdmin]); 
-
-  const filteredProperties = properties.filter((p) =>
-  p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  p.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  p.state.toLowerCase().includes(searchQuery.toLowerCase())
-);
+  getAllPropertiesAdmin({
+     page: currentPage,
+    limit: 10,
+    search: debouncedSearch,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  }
   
-  const indexOfLastProperty = currentPage * propertiesPerPage;
-  const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
-  //const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
-  //const totalPages = Math.ceil(properties.length / propertiesPerPage);
-  const currentProperties = filteredProperties.slice(indexOfFirstProperty, indexOfLastProperty);
-  const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+  );
+}, [currentPage,  debouncedSearch]);
+
+useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearch(searchQuery); 
+  }, 1000); 
+
+  return () => clearTimeout(handler); 
+}, [searchQuery]);
+
+
+//   const filteredProperties = properties.filter((p) =>
+//   p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//   p.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+//   p.state.toLowerCase().includes(searchQuery.toLowerCase())
+// );
+  
+//   const indexOfLastProperty = currentPage * propertiesPerPage;
+//   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
+//   //const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
+//   //const totalPages = Math.ceil(properties.length / propertiesPerPage);
+//   const currentProperties = filteredProperties.slice(indexOfFirstProperty, indexOfLastProperty);
+//   const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+
+const currentProperties = properties;
+const totalPages = useAuthStore((state) => state.totalPages);
+
 
 
   const handlePageChange = (page: number) => {

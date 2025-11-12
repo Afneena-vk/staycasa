@@ -142,19 +142,66 @@ async deleteOwnerProperty(ownerId: string, propertyId: string): Promise<{ messag
   }
 }
 
-async getAllProperties():Promise<AdminPropertyListResponseDto>{
-  try {
+// async getAllProperties():Promise<AdminPropertyListResponseDto>{
+//   try {
     
-   const properties = await this._propertyRepository.getAllProperties();
-   console.log(" PropertyService returning:", properties.length, "properties");
-   return PropertyMapper.toAdminPropertyListResponse(properties);
+//    const properties = await this._propertyRepository.getAllProperties();
+//    console.log(" PropertyService returning:", properties.length, "properties");
+//    return PropertyMapper.toAdminPropertyListResponse(properties);
 
-  } catch (error:any) {
-    const err:any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+//   } catch (error:any) {
+//     const err:any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+//     err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+//     throw err;
+//   }
+// }
+
+async getAllProperties(filters: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+}): Promise<AdminPropertyListResponseDto> {
+
+  try {
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      sortBy = "createdAt",
+      sortOrder = "desc"
+    } = filters;
+
+    const result = await this._propertyRepository.getAllProperties(
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder
+    );
+
+    // return {
+    //   message: "Properties fetched successfully",
+    //   status: STATUS_CODES.OK,
+    //   properties: result.properties,
+    //   totalCount: result.totalCount,
+    //   totalPages: result.totalPages
+    // };
+     return PropertyMapper.toAdminPropertyListResponse(
+      result.properties,
+      result.totalCount,
+      result.totalPages,
+      page
+    );
+
+  } catch (error: any) {
+    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
     err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
     throw err;
   }
 }
+
 
 async getAdminPropertyById(propertyId: string): Promise<PropertyResponseDto> {
   try {

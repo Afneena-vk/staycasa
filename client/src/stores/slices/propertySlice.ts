@@ -65,13 +65,17 @@ export interface PropertySlice {
   error: string | null;
   selectedProperty: Property | null; 
 
+
+  totalPages: number;
+  totalCount: number;
+  currentPage: number;
   
   addProperty(propertyData: FormData): Promise<void>;
   getOwnerProperties(): Promise<void>;
   getOwnerPropertyById(propertyId: string): Promise<void>;
   updateProperty: (propertyId: string, propertyData: FormData) => Promise<void>;  
   deleteProperty: (propertyId: string) => Promise<void>;
-  getAllPropertiesAdmin(): Promise<void>; 
+  getAllPropertiesAdmin(params?:any): Promise<void>; 
   getPropertyByAdmin(propertyId:string): Promise<void>;
   approveProperty(propertyId:string): Promise<void>;
   rejectProperty(propertyId:string): Promise<void>;
@@ -92,6 +96,10 @@ export const createPropertySlice: StateCreator<
    selectedProperty: null,
   isLoading: false,
   error: null,
+
+  totalPages: 1,
+  totalCount: 0,
+  currentPage: 1,
 
   addProperty: async (propertyData: FormData) => {
     set({ isLoading: true, error: null });
@@ -206,21 +214,40 @@ deleteProperty: async (propertyId: string) => {
   }
 },
 
-getAllPropertiesAdmin: async () =>{
-  set({ isLoading: true, error: null });
+// getAllPropertiesAdmin: async () =>{
+//   set({ isLoading: true, error: null });
+//   try {
+//     const response = await authService.getAllPropertiesAdmin();
+//       set({
+//       properties: response.properties || [],
+//       isLoading: false,
+//       error: null,
+//     });
+//   } catch (error:any) {
+//     const errorMessage =
+//       error.response?.data?.error || error.message || "Failed to fetch all properties";
+//     set({ properties: [], isLoading: false, error: errorMessage });
+//   }
+// },
+getAllPropertiesAdmin: async (params) =>{
+      set({ isLoading: true, error: null });
+
   try {
-    const response = await authService.getAllPropertiesAdmin();
-      set({
-      properties: response.properties || [],
+    const response = await authService.getAllPropertiesAdmin(params);
+     set({
+      properties: response.properties,
+      totalCount: response.totalCount,
+      totalPages: response.totalPages,
+      currentPage: response.currentPage,
       isLoading: false,
       error: null,
     });
-  } catch (error:any) {
-    const errorMessage =
-      error.response?.data?.error || error.message || "Failed to fetch all properties";
-    set({ properties: [], isLoading: false, error: errorMessage });
+     } catch (error:any) {
+       const errorMessage = error.response?.data?.error || error.message || "Failed";
+    set({ isLoading: false, error: error.message });
   }
 },
+
 
 getPropertyByAdmin: async (propertyId:string)=>{
   set({ isLoading: true, error: null });

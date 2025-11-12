@@ -119,17 +119,42 @@ async deleteOwnerProperty(req: Request, res: Response, next: NextFunction): Prom
   }
 }
 
+// async getAllProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
+//   try {
+//     const result = await this._propertyService.getAllProperties();
+//     console.log("properties fetched successfully:", result)
+//     res.status(result.status).json(result);
+//   } catch (error:any) {
+//       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+//       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+//     });
+//   }
+// }
+
 async getAllProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const result = await this._propertyService.getAllProperties();
+
+    const { page, limit, search, sortBy, sortOrder } = req.query;
+
+    const result = await this._propertyService.getAllProperties({
+      page: Number(page),
+      limit: Number(limit),
+      search: search as string,
+      sortBy: sortBy as string,
+      sortOrder: sortOrder as string
+    });
+
     console.log("properties fetched successfully:", result)
+
     res.status(result.status).json(result);
-  } catch (error:any) {
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+
+  } catch (error: any) {
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
     });
   }
 }
+
 
 async getAdminPropertyById(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {

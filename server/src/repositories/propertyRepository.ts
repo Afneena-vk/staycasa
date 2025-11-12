@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 import Property, { IProperty } from '../models/propertyModel';
 import { BaseRepository } from './baseRepository';
-import { IPropertyRepository } from './interfaces/IPropertyRepository';
+import { IPropertyRepository, IPropertyListResult } from './interfaces/IPropertyRepository';
 
 @injectable()
 export class PropertyRepository extends BaseRepository<IProperty> implements IPropertyRepository {
@@ -47,10 +47,60 @@ export class PropertyRepository extends BaseRepository<IProperty> implements IPr
   }).exec();
 }
 
-  async getAllProperties(): Promise<IProperty[]>{
-      console.log(" Fetching properties from database...");
-    return await this.model.find().sort({createdAt:-1}).exec();
-  }
+  // async getAllProperties(): Promise<IProperty[]>{
+  //     console.log(" Fetching properties from database...");
+  //   return await this.model.find().sort({createdAt:-1}).exec();
+  // }
+async getAllProperties(
+  page: number,
+  limit: number,
+  search: string,
+  sortBy: string,
+  sortOrder: string
+    ): Promise<IPropertyListResult> {
+// ): Promise<{
+//   properties: IProperty[];
+//   totalCount: number;
+//   totalPages: number;
+// }> {
+
+  const query: any = {};
+
+  if (search) {
+  query.$or = [
+    { title: { $regex: search, $options: "i" } },
+    { city: { $regex: search, $options: "i" } },
+    { district: { $regex: search, $options: "i" } },
+    { state: { $regex: search, $options: "i" } }
+  ];
+}
+
+  
+  const sortQuery: any = {};
+  sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+  
+  const skip = (page - 1) * limit;
+
+  const [properties, totalCount] = await Promise.all([
+  
+    Property
+      .find(query)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit)
+      .populate("ownerId", "name email phone businessName businessAddress")
+      .exec(),
+
+    this.model.countDocuments(query)
+  ]);
+
+  return {
+    properties,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit)
+  };
+}
 
 
 
