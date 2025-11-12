@@ -102,6 +102,50 @@ async getAllProperties(
   };
 }
 
+async getOwnerProperties(
+  ownerId: string,
+  page: number,
+  limit: number,
+  search: string,
+  sortBy: string,
+  sortOrder: string
+): Promise<IPropertyListResult> {
+
+  const query: any = { ownerId };
+
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { city: { $regex: search, $options: "i" } },
+      { district: { $regex: search, $options: "i" } },
+      { state: { $regex: search, $options: "i" } },
+      { type: { $regex: search, $options: "i" } },
+      { status: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const sortQuery: any = {};
+  sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+  const skip = (page - 1) * limit;
+
+  const [properties, totalCount] = await Promise.all([
+    Property.find(query)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit)
+      .populate("ownerId", "name email phone businessName businessAddress")
+      .exec(),
+    Property.countDocuments(query),
+  ]);
+
+  return {
+    properties,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+  };
+}
+
 
 
 } 

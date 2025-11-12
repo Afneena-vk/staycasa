@@ -270,8 +270,8 @@ addProperty: async (propertyData: FormData) => {
     return response.data;
   },
 
-  getOwnerProperties: async () => {
-    const response = await api.get("/owner/properties");
+  getOwnerProperties: async (params: PropertyFilters = {}) => {
+    const response = await api.get("/owner/properties", { params });
     return response.data;
   },
 

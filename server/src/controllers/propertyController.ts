@@ -36,12 +36,21 @@ export class PropertyController implements IPropertyController {
   async getOwnerProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ownerId = (req as any).userId;
-      const properties = await this._propertyService.getOwnerProperties(ownerId);
-      
-      res.status(STATUS_CODES.OK).json({
-        message: "Properties retrieved successfully",
-        properties
-      });
+      const { page, limit, search, sortBy, sortOrder } = req.query;
+      //const properties = await this._propertyService.getOwnerProperties(ownerId);
+       const result = await this._propertyService.getOwnerProperties({
+      ownerId,
+      page: Number(page),
+      limit: Number(limit),
+      search: search as string,
+      sortBy: sortBy as string,
+      sortOrder: sortOrder as string
+    });
+      // res.status(STATUS_CODES.OK).json({
+      //   message: "Properties retrieved successfully",
+      //   properties
+      // });
+       res.status(result.status).json(result);
     } catch (error: any) {
       console.error("Get properties error:", error);
       logger.error('Get properties error: ' + error.message);

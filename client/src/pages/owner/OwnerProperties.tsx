@@ -38,6 +38,9 @@ interface Property {
 const OwnerProperties = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
+ 
+  const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [currentPage, setCurrentPage] = useState(1);
 
   try {
     // const { userData, getOwnerProperties, properties, isLoading, error } =
@@ -54,7 +57,7 @@ const properties = useAuthStore((state) => state.properties);
 const isLoading = useAuthStore((state) => state.isLoading);
 const error = useAuthStore((state) => state.error);
 const deleteProperty = useAuthStore((state) => state.deleteProperty);
-
+const totalPages = useAuthStore((state) => state.totalPages);
 
 
     const isApproved = userData?.approvalStatus === "approved";
@@ -72,10 +75,29 @@ const deleteProperty = useAuthStore((state) => state.deleteProperty);
     // }, [isApproved, getOwnerProperties]);
     useEffect(() => {
   if (isApproved) {
-    getOwnerProperties?.();
+    // getOwnerProperties?.();
+    getOwnerProperties({
+      page: currentPage,
+      limit: 10,
+      search: searchTerm,
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    });
   }
-}, [isApproved]);
+}, [isApproved, currentPage, debouncedSearch]);   
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm); 
+    }, 1000); 
+  
+    return () => clearTimeout(handler); 
+  }, [searchTerm]);
+  
 
     const handleAddProperty = () => {
       try {
@@ -104,27 +126,27 @@ const handleDelete = async (propertyId: string) => {
   }
 };
 
-    // Safe array handling for properties
+   
     const safeProperties = Array.isArray(properties) ? properties : [];
 
     // Apply search filter with safe property access
-    const filteredProperties = safeProperties.filter((property) => {
-      if (!property) return false;
+    // const filteredProperties = safeProperties.filter((property) => {
+    //   if (!property) return false;
       
-      const title = property.title || "";
-      const city = property.city || "";
-      const status = property.status || "";
-      const type = property.type || "";
+    //   const title = property.title || "";
+    //   const city = property.city || "";
+    //   const status = property.status || "";
+    //   const type = property.type || "";
       
-      return (
-        title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        type.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+    //   return (
+    //     title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //     city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //     status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //     type.toLowerCase().includes(searchTerm.toLowerCase())
+    //   );
+    // });
 
-    // Helper function to get status display text and color
+    
     const getStatusInfo = (status: string) => {
       switch (status) {
         case 'active':
@@ -142,7 +164,7 @@ const handleDelete = async (propertyId: string) => {
       }
     };
 
-    // Safe count function
+    
     const getStatusCount = (statusType: string) => {
       return safeProperties.filter((p) => p && p.status === statusType).length;
     };
@@ -243,8 +265,10 @@ const handleDelete = async (propertyId: string) => {
               </tr>
             </thead>
             <tbody>
-              {filteredProperties.length > 0 ? (
-                filteredProperties.map((property) => {
+              {/* {filteredProperties.length > 0 ? (
+                filteredProperties.map((property) => { */}
+                 {safeProperties.length > 0 ? (
+                     safeProperties.map((property) => {
                   if (!property || !property.id) return null;
                   
                   const statusInfo = getStatusInfo(property.status);
@@ -345,6 +369,35 @@ const handleDelete = async (propertyId: string) => {
             </tbody>
           </table>
         </div>
+        <div className="flex justify-center items-center gap-2 p-4">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="px-3 py-1 border rounded disabled:opacity-50"
+                >
+                  Prev
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i + 1)}
+                    className={`px-3 py-1 border rounded ${
+                      currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="px-3 py-1 border rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
       </OwnerLayout>
     );
 
@@ -362,6 +415,7 @@ const handleDelete = async (propertyId: string) => {
             <pre>{error instanceof Error ? error.message : String(error)}</pre>
           </details>
         </div>
+        
       </OwnerLayout>
     );
   }

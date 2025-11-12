@@ -30,4 +30,11 @@ export interface IPropertyRepository extends IBaseRepository<IProperty> {
 //   totalPages: number;
 // }>;
 
+getOwnerProperties (ownerId: string,
+  page: number,
+  limit: number,
+  search: string,
+  sortBy: string,
+  sortOrder: string): Promise<IPropertyListResult> 
+
 }

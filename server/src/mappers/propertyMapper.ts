@@ -1,7 +1,7 @@
 import { IProperty } from '../models/propertyModel';
 import { PropertyResponseDto, CreatePropertyResponseDto, UpdatePropertyResponseDto } from '../dtos/property.dto';
 import { STATUS_CODES } from '../utils/constants';
-import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto } from '../dtos/property.dto';
+import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto } from '../dtos/property.dto';
 import { IOwner } from '../models/ownerModel';
 export class PropertyMapper {
   static toPropertyResponse(property: IProperty): PropertyResponseDto {
@@ -91,6 +91,24 @@ export class PropertyMapper {
      totalPages: number,
      currentPage: number
 ): AdminPropertyListResponseDto {
+  return {
+    message: "Properties fetched successfully",
+    status: STATUS_CODES.OK,
+    properties: properties.map((p) => this.toPropertyResponse(p)),
+    totalCount,
+    totalPages,
+    currentPage
+  };
+}
+
+
+
+static toOwnerPropertyListResponse(
+  properties: IProperty[],
+  totalCount: number,
+  totalPages: number,
+  currentPage: number
+): OwnerPropertyListResponseDto {
   return {
     message: "Properties fetched successfully",
     status: STATUS_CODES.OK,

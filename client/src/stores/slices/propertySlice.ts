@@ -71,7 +71,7 @@ export interface PropertySlice {
   currentPage: number;
   
   addProperty(propertyData: FormData): Promise<void>;
-  getOwnerProperties(): Promise<void>;
+  getOwnerProperties(params?:any): Promise<void>;
   getOwnerPropertyById(propertyId: string): Promise<void>;
   updateProperty: (propertyId: string, propertyData: FormData) => Promise<void>;  
   deleteProperty: (propertyId: string) => Promise<void>;
@@ -126,14 +126,17 @@ export const createPropertySlice: StateCreator<
     }
   },
 
-  getOwnerProperties: async () => {
+  getOwnerProperties: async (params) => {
     set({ isLoading: true, error: null });
     
     try {
-      const response = await authService.getOwnerProperties();
+      const response = await authService.getOwnerProperties(params);
       
       set({
         properties: response.properties || [],
+        totalCount: response.totalCount || 0,
+        totalPages: response.totalPages || 1,
+        currentPage: response.currentPage || 1,
         isLoading: false,
         error: null,
       });

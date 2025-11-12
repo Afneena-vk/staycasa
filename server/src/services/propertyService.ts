@@ -2,7 +2,7 @@ import { injectable, inject } from 'tsyringe';
 import { IPropertyService } from './interfaces/IPropertyService';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { TOKENS } from '../config/tokens';
-import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto } from '../dtos/property.dto';
+import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto } from '../dtos/property.dto';
 import { PropertyMapper } from '../mappers/propertyMapper';
 import { MESSAGES, STATUS_CODES } from '../utils/constants';
 import { PropertyStatus } from '../models/status/status';
@@ -40,16 +40,57 @@ export class PropertyService implements IPropertyService {
     }
   }
 
-  async getOwnerProperties(ownerId: string): Promise<PropertyResponseDto[]> {
-    try {
-      const properties = await this._propertyRepository.findByOwnerId(ownerId);
-      return properties.map(property => PropertyMapper.toPropertyResponse(property));
-    } catch (error: any) {
-      const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-      err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-      throw err;
-    }
+  // async getOwnerProperties(ownerId: string): Promise<PropertyResponseDto[]> {
+  //   try {
+  //     const properties = await this._propertyRepository.findByOwnerId(ownerId);
+  //     return properties.map(property => PropertyMapper.toPropertyResponse(property));
+  //   } catch (error: any) {
+  //     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+  //     err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+  //     throw err;
+  //   }
+  // }
+
+  async getOwnerProperties(filters: {
+  ownerId: string;
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+}): Promise<OwnerPropertyListResponseDto> {
+  try {
+    const {
+      ownerId,
+      page = 1,
+      limit = 10,
+      search = "",
+      sortBy = "createdAt",
+      sortOrder = "desc"
+    } = filters;
+
+    const result = await this._propertyRepository.getOwnerProperties(
+      ownerId,
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder
+    );
+
+    return PropertyMapper.toAdminPropertyListResponse(
+      result.properties,
+      result.totalCount,
+      result.totalPages,
+      page
+    );
+  } catch (error: any) {
+    const err: any = new Error(error.message || "Server Error");
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
   }
+}
+
 
   async getOwnerPropertyById(ownerId: string, propertyId:string): Promise<PropertyResponseDto>{
     try {
