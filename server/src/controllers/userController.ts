@@ -285,7 +285,24 @@ export class UserController implements IUserController {
       .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
   }
 }
+async changePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = (req as any).userId; 
+    const { currentPassword, newPassword } = req.body;
 
+    if (!currentPassword || !newPassword) {
+      res.status(STATUS_CODES.BAD_REQUEST).json({ error: "All fields are required" });
+      return;
+    }
+
+    const result = await this._userService.changePassword(userId, currentPassword, newPassword);
+
+    res.status(result.status).json(result);
+  } catch (error: any) {
+    logger.error("Change password error: " + error.message);
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: error.message || "Server error" });
+  }
+}
   
 }
 

@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 //import {IOwner} from '../models/ownerModel'
 import { OwnerMapper } from "../mappers/ownerMapper";
-import { OwnerLoginResponseDto, OwnerProfileResponseDto, OwnerProfileUpdateDto } from "../dtos/owner.dto";
+import { OwnerLoginResponseDto, OwnerProfileResponseDto, OwnerProfileUpdateDto, ChangePasswordResponseDto } from "../dtos/owner.dto";
 import { cloudinary } from '../config/cloudinary';
 
 @injectable()
@@ -318,6 +318,46 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
       throw error;
     }
   }
+
+async changePassword(ownerId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto> {
+  
+  const owner = await this._ownerRepository.findById(ownerId);
+  if (!owner) {
+    const error: any = new Error("Owner not found");
+    error.status = STATUS_CODES.NOT_FOUND;
+    throw error;
+  }
+
+  
+  if (!owner.password) {
+    const error: any = new Error("Password not set for this owner");
+    error.status = STATUS_CODES.BAD_REQUEST;
+    throw error;
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, owner.password);
+  if (!isMatch) {
+    const error: any = new Error("Current password is incorrect");
+    error.status = STATUS_CODES.BAD_REQUEST;
+    throw error;
+  }
+
+  
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  
+  const updatedOwner = await this._ownerRepository.update(ownerId, { password: hashedPassword });
+  if (!updatedOwner) {
+    const error: any = new Error("Failed to update password");
+    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw error;
+  }
+
+    return {
+    message: "Password changed successfully",
+    status:  STATUS_CODES.OK,
+  };
+}
 
 
 

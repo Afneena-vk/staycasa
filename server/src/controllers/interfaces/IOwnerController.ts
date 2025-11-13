@@ -16,5 +16,5 @@ export interface IOwnerController {
   updateProfile(req: Request, res: Response, next: NextFunction): Promise<void>;
 
   uploadDocument(req: Request, res: Response, next: NextFunction): Promise<void>;
-
+  changePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

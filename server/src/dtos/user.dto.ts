@@ -61,3 +61,8 @@ export class UserProfileResponseDto {
   //responseStatus!: number; // differentiate from userStatus
   status!:number
 }
+
+export class ChangePasswordResponseDto {
+  message!: string; 
+  status!: number;   
+}

@@ -41,3 +41,7 @@ export class OwnerProfileResponseDto {
   message!: string;
   status!: number;
 }
+export class ChangePasswordResponseDto {
+  message!: string; 
+  status!: number;   
+}

@@ -68,6 +68,15 @@ userRoutes.post(
   userController.uploadProfileImage.bind(userController)
 );
 
+
+userRoutes.put(
+  "/change-password",
+  authMiddleware(["user"]),
+   checkUserStatus,
+  userController.changePassword.bind(userController)
+);
+
+
 export default userRoutes   
 
 

@@ -1,6 +1,6 @@
 
 
-import { UserLoginResponseDto,UserGoogleAuthResponseDto, UserProfileResponseDto, UserProfileUpdateDto } from "../../dtos/user.dto";
+import { UserLoginResponseDto,UserGoogleAuthResponseDto, UserProfileResponseDto, UserProfileUpdateDto, ChangePasswordResponseDto } from "../../dtos/user.dto";
 
 export interface SignupData {
     name: string;
@@ -26,6 +26,7 @@ export interface SignupData {
     resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string; status: number }>;
     getUserProfile(userId: string): Promise<UserProfileResponseDto>;
     updateUserProfile(userId: string, data: UserProfileUpdateDto): Promise<UserProfileResponseDto>;
-     updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto>;
+    updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto>;
+    changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
   }
   

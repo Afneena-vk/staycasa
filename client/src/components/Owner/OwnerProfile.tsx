@@ -3,6 +3,7 @@ import { FaUser, FaEnvelope, FaPhone, FaBuilding, FaMapMarkerAlt, FaUpload, FaSa
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { toast } from "react-toastify";
+import ChangePassword from "../common/ChangePassword";
 
 interface ProfileData {
   name: string;
@@ -11,8 +12,8 @@ interface ProfileData {
   businessName: string;
   businessAddress: string;
   //profileImage: string;
-  approvalStatus: "pending" | "approved" | "rejected"; // ✅ new
-  documents: string[]; // ✅ new
+  approvalStatus: "pending" | "approved" | "rejected"; 
+  documents: string[]; 
 }
 
 const OwnerProfile = () => {
@@ -37,7 +38,7 @@ const OwnerProfile = () => {
   const [documentFile, setDocumentFile] = useState<File | null>(null);
    
   const [uploading, setUploading] = useState(false);
-
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   
   useEffect(() => {
@@ -401,6 +402,32 @@ const handleDocumentUpload = async () => {
               </button>
             </div>
           </form>
+
+          
+<div className="mt-2 flex justify-end">
+  <p
+    className="text-red-600 font-medium cursor-pointer hover:underline"
+    onClick={() => setShowChangePasswordModal(true)}
+  >
+    Change Password?
+  </p>
+</div>
+
+{showChangePasswordModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-50">
+    <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-lg">
+      <button
+        onClick={() => setShowChangePasswordModal(false)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl font-bold"
+      >
+        ✕
+      </button>
+      <h2 className="text-2xl font-bold text-blue-950 mb-4">Change Password</h2>
+      <ChangePassword />
+    </div>
+  </div>
+)}
+
         
         
           {/* 🔹 Verification Section */}

@@ -84,5 +84,12 @@ ownerRoutes.delete(
   propertyController.deleteOwnerProperty.bind(propertyController)
 );
 
+ownerRoutes.put(
+  "/change-password",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  ownerController.changePassword.bind(ownerController)
+);
+
 
 export default ownerRoutes

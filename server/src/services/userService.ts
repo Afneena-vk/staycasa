@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { IUser } from "../models/userModel";
 import { UserMapper } from "../mappers/userMapper";
-import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, UserProfileResponseDto } from "../dtos/user.dto";
+import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, UserProfileResponseDto, ChangePasswordResponseDto } from "../dtos/user.dto";
 
 @injectable()
 export class UserService implements IUserService {
@@ -347,6 +347,45 @@ async updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProf
   }
 
   return UserMapper.toProfileResponse(updatedUser, "Profile image updated successfully");
+}
+
+async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto> {
+  
+  const user = await this._userRepository.findById(userId);
+  if (!user) {
+    const error: any = new Error("User not found");
+    error.status = STATUS_CODES.NOT_FOUND;
+    throw error;
+  }
+
+  
+  if (!user.password) {
+    const error: any = new Error("Password not set for this user");
+    error.status = STATUS_CODES.BAD_REQUEST;
+    throw error;
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    const error: any = new Error("Current password is incorrect");
+    error.status = STATUS_CODES.BAD_REQUEST;
+    throw error;
+  }
+
+  
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  
+  const updatedUser = await this._userRepository.update(userId, { password: hashedPassword });
+  if (!updatedUser) {
+    const error: any = new Error("Failed to update password");
+    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw error;
+  }
+    return {
+    message: "Password changed successfully",
+    status:  STATUS_CODES.OK,
+  };
 }
 
 
