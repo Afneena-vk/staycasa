@@ -146,6 +146,14 @@ async getOwnerProperties(
   };
 }
 
+async getActiveProperties(): Promise<IProperty[]> {
+    return await Property.find({
+      status:"active",
+      isRejected:false,
+    })
+    .sort({createdAt: -1})
+    .exec();
+}
 
 
 } 

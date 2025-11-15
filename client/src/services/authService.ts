@@ -319,6 +319,12 @@ getAllPropertiesAdmin: async(params: PropertyFilters = {})=>{
 
 },
 
+getActiveProperties:async()=>{
+  const response = await api.get(`/user/properties`);
+    return response.data;
+}
+,
+
 getPropertyByAdmin:async(propertyId:string)=>{
   const response = await api.get(`/admin/properties/${propertyId}`);
   return response.data;

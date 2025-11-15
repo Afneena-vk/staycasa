@@ -1,17 +1,19 @@
 import { Router } from "express";
 import { container } from '../config/container';
 import { IUserController } from '../controllers/interfaces/IUserController';
+import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { TOKENS } from '../config/tokens';
 //import userController from "../controllers/userController";
 import passport from "passport";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { cloudinaryUpload } from "../config/cloudinary";
 import { checkUserStatus } from "../middleware/statusCheckingMiddleware";
+import { PropertyController } from "../controllers/propertyController";
 
 const userRoutes = Router();
 
 const userController = container.resolve<IUserController>(TOKENS.IUserController);
-
+const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 
 userRoutes.post("/signup", userController.signup.bind(userController));
 userRoutes.post("/verify-otp", userController.verifyOtp.bind(userController));
@@ -74,6 +76,13 @@ userRoutes.put(
   authMiddleware(["user"]),
    checkUserStatus,
   userController.changePassword.bind(userController)
+);
+
+userRoutes.get(
+  "/properties",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  propertyController.getActiveProperties.bind(propertyController)
 );
 
 

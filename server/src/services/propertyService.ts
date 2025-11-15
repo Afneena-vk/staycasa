@@ -345,4 +345,21 @@ async unblockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionRes
   return PropertyMapper.toAdminPropertyActionResponse(property, "Property unblocked successfully");
 }
 
+async getActiveProperties(): Promise<PropertyResponseDto[]> {
+  try {
+    const properties = await this._propertyRepository.getActiveProperties();
+    if(properties.length===0){
+      const err: any = new Error("No active properties found");
+      err.status = STATUS_CODES.NOT_FOUND;
+      throw err;
+    }
+
+    return properties.map((property)=> PropertyMapper.toPropertyResponse(property))
+  } catch (error: any) {
+    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
+  }
+}
+
 }

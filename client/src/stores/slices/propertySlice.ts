@@ -76,6 +76,7 @@ export interface PropertySlice {
   updateProperty: (propertyId: string, propertyData: FormData) => Promise<void>;  
   deleteProperty: (propertyId: string) => Promise<void>;
   getAllPropertiesAdmin(params?:any): Promise<void>; 
+  getActivePropertiesForUser: () => Promise<void>;
   getPropertyByAdmin(propertyId:string): Promise<void>;
   approveProperty(propertyId:string): Promise<void>;
   rejectProperty(propertyId:string): Promise<void>;
@@ -232,6 +233,30 @@ deleteProperty: async (propertyId: string) => {
 //     set({ properties: [], isLoading: false, error: errorMessage });
 //   }
 // },
+
+getActivePropertiesForUser: async () => {
+  set({ isLoading: true, error: null });
+
+  try {
+    const response = await authService.getActiveProperties(); 
+    set({
+      properties: response.properties || [],
+      isLoading: false,
+      error: null,
+    });
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.error || error.message || "Failed to fetch active properties";
+    set({
+      properties: [],
+      isLoading: false,
+      error: errorMessage,
+    });
+  }
+},
+
+
+
 getAllPropertiesAdmin: async (params) =>{
       set({ isLoading: true, error: null });
 

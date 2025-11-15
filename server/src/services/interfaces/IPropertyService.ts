@@ -27,7 +27,7 @@ export interface IPropertyService {
   deleteOwnerProperty(ownerId: string, propertyId: string): Promise<{ message: string; status: number }>;
   // getAllProperties():Promise<AdminPropertyListResponseDto>
   getAllProperties(filters: PropertyFilters): Promise<AdminPropertyListResponseDto>;
- 
+ getActiveProperties(): Promise<PropertyResponseDto[]>;
 
   getAdminPropertyById(propertyId:string): Promise<PropertyResponseDto>
   approveProperty(propertyId:string):Promise<AdminPropertyActionResponseDto>
