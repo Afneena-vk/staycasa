@@ -37,6 +37,7 @@ import UserOTPVerification from "./pages/user/UserOTPverification";
 import UserResetPassword from "./pages/user/UserResetPassword";
 import UserLanding from "./pages/user/UserLanding.tsx";
 import UserProfile from "./components/User/UserProfile.tsx";
+import ActivePropertiesUser from "./pages/user/ActivePropertiesUser.tsx";
 
 const App = () => {
   return (
@@ -277,6 +278,14 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={["user"]}>
               <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/properties"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <ActivePropertiesUser />
             </ProtectedRoute>
           }
         />

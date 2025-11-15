@@ -241,4 +241,21 @@ async unblockPropertyByAdmin(req: Request, res: Response, next: NextFunction): P
   }
 }
 
+async getActiveProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    
+      const properties = await this._propertyService.getActiveProperties();
+      res.status(STATUS_CODES.OK).json({
+        messsage: "Active properties fetched successfully",
+        status: STATUS_CODES.OK,
+        properties,
+      });
+
+  } catch (error:any) {
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+  }
+}
+
 }

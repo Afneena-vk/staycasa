@@ -2,8 +2,22 @@ import React from "react";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
 const UserLanding: React.FC = () => {
+
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore(); 
+  const handleBookStay = () => {
+    if (isAuthenticated) {
+      
+      navigate("/user/properties");
+    } else {
+     
+      navigate("/user/login"); 
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
      
@@ -29,12 +43,18 @@ const UserLanding: React.FC = () => {
             Explore Now
           </Link> */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Link
+            {/* <Link
               to="/properties"
               className="bg-white text-blue-950 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition"
             >
               Book a Stay
-            </Link>
+            </Link> */}
+            <button
+    onClick={handleBookStay}
+    className="bg-white text-blue-950 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition"
+  >
+    Book a Stay
+  </button>
 
             <Link
               to="/owner/signup"

@@ -23,10 +23,10 @@ const PublicRoute: React.FC<PublicRouteProps> = ({
     });
   }, [isAuthenticated, authType, restrictedFor]);
 
-  // If user is authenticated and this route is restricted for their type
+  
   if (isAuthenticated && authType && restrictedFor.includes(authType)) {
    
-     console.log("✋ User is logged in, redirecting to dashboard");
+     console.log(" User is logged in, redirecting to dashboard");
     return <Navigate to={`/${authType}/dashboard`} replace />;
   }
   console.log(" Public access granted");
