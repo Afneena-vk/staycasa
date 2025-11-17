@@ -1,4 +1,4 @@
-import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto } from '../../dtos/property.dto';
+import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto } from '../../dtos/property.dto';
 
 export interface PropertyFilters {
   page?: number;
@@ -17,6 +17,15 @@ export interface OwnerPropertyFilters {
   sortOrder?: string;
 }
 
+export interface UserPropertyFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  category?: string,
+  facilities?: string[],
+}
 
 export interface IPropertyService {
   createProperty(ownerId: string, data: CreatePropertyDto): Promise<CreatePropertyResponseDto>;
@@ -27,7 +36,7 @@ export interface IPropertyService {
   deleteOwnerProperty(ownerId: string, propertyId: string): Promise<{ message: string; status: number }>;
   // getAllProperties():Promise<AdminPropertyListResponseDto>
   getAllProperties(filters: PropertyFilters): Promise<AdminPropertyListResponseDto>;
- getActiveProperties(): Promise<PropertyResponseDto[]>;
+ getActiveProperties(params: UserPropertyFilters): Promise<UserPropertyListResponseDto>;
 
   getAdminPropertyById(propertyId:string): Promise<PropertyResponseDto>
   approveProperty(propertyId:string):Promise<AdminPropertyActionResponseDto>

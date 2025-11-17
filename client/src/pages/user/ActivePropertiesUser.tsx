@@ -1,27 +1,107 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState} from "react";
 import { useAuthStore } from "../../stores/authStore";
 import { Property } from "../../stores/slices/propertySlice";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import PropertyFilterSidebar from "../../components/Filters/PropertyFilterSidebar";
-import SearchBar from "../../components/common/SearchBar";
+
 
 const ActivePropertiesUser: React.FC = () => {
   const properties = useAuthStore((state) => state.properties);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
+  // const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
+  // const [selectedFacilities, setSelectedFacilities] = React.useState<string[]>([]);
   const getActivePropertiesForUser = useAuthStore(
     (state) => state.getActivePropertiesForUser
   );
 
-  useEffect(() => {
-    getActivePropertiesForUser();
-  }, []);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);  
+   const [page, setPage] = useState(1);
+   const totalPages = useAuthStore((state) => state.totalPages);
+  //const [sortOption, setSortOption] = useState("newest");
 
- const handleSearch = (query: string) => {
-    //getActivePropertiesForUser({ search: query });
+
+
+  const [filters, setFilters] = React.useState({
+  // search: "",
+  sortBy: "createdAt",
+  sortOrder: "desc" as "asc" | "desc",
+  // page: 1,
+  limit:6,
+  category: "", 
+  facilities: [] as string[]
+});
+
+useEffect(() => {
+    const delay = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1); // reset page when search changes
+    }, 1000);
+
+    return () => clearTimeout(delay);
+  }, [searchQuery]);
+  
+  const handlePageChange = (newPage: number) => {
+  setFilters((prev) => ({ ...prev, page: newPage }));
+};
+
+const handleCategoryChange = (category: string) => {
+  setFilters((prev) => ({ 
+    ...prev, 
+    category, 
+    // page: 1 
+  }));
+   setPage(1);  
+};
+
+
+
+
+
+
+
+
+const handleFacilitiesChange = (facilities: string[]) => {
+  setFilters((prev) => ({ 
+    ...prev, 
+    facilities, 
+    // page: 1 
+  }));
+   setPage(1);
+};
+
+
+  useEffect(() => {
+    const query = {
+      search: debouncedSearch,
+      page,
+      limit: filters.limit,
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder,
+      category: filters.category,
+      facilities: filters.facilities,
+    };   
+    console.log("Fetching properties with:", query);
+    getActivePropertiesForUser(query);
+  }, [debouncedSearch, page, filters]);
+
+useEffect(() => {
+  return () => {
+    useAuthStore.getState().resetProperties();
   };
+}, []);
+
+
+
+const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
+    setFilters((prev) => ({ ...prev, sortBy, sortOrder }));
+    setPage(1);
+  };
+
+
 
 
   if (isLoading)
@@ -53,17 +133,74 @@ const ActivePropertiesUser: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
+      
+
       <div className="max-w-7xl mx-auto px-4 mt-10 py-10">
-        {/* <h2 className="text-3xl font-bold mb-8 text-gray-800">
-          Active Properties
-        </h2> */}
-         <div className="mb-8">
-          <SearchBar onSearch={handleSearch} />
-        </div>
+        
+       
+      
+ 
+
+
+<div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+
+  {/* SEARCH BAR */}
+  <div className="relative w-full md:w-1/2">
+    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+      🔍
+    </span>
+
+    <input
+      type="text"
+      placeholder="Search for your perfect stay..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full py-3 pl-12 pr-4 rounded-full bg-white shadow-md focus:ring-2 focus:ring-blue-700 outline-none text-gray-700"
+    />
+  </div>
+
+  {/* SORT DROPDOWN */}
+  <div className="flex items-center gap-2">
+    <label className="text-gray-700 font-medium">Sort:</label>
+
+    <select
+      value={
+        filters.sortBy === "pricePerMonth" && filters.sortOrder === "asc"
+          ? "lowest"
+          : filters.sortBy === "pricePerMonth" && filters.sortOrder === "desc"
+          ? "highest"
+          : filters.sortBy === "createdAt" && filters.sortOrder === "asc"
+          ? "oldest"
+          : "newest"
+      }
+      onChange={(e) => {
+        const value = e.target.value;
+        if (value === "lowest") handleSort("pricePerMonth", "asc");
+        else if (value === "highest") handleSort("pricePerMonth", "desc");
+        else if (value === "oldest") handleSort("createdAt", "asc");
+        else handleSort("createdAt", "desc");
+      }}
+      className="border px-3 py-2 rounded-lg shadow-sm bg-white"
+    >
+      <option value="newest">Newest</option>
+      <option value="oldest">Oldest</option>
+      <option value="lowest">Price: Low → High</option>
+      <option value="highest">Price: High → Low</option>
+    </select>
+  </div>
+</div>
+
+
 
          <div className="flex flex-col lg:flex-row gap-8">
            <div className="w-full lg:w-1/4">
-            <PropertyFilterSidebar />
+            <PropertyFilterSidebar 
+  onCategoryChange={handleCategoryChange}
+  onFacilitiesChange={handleFacilitiesChange}
+  selectedCategory={filters.category}
+  selectedFacilities={filters.facilities}
+/>
+
           </div>
 
            <div className="w-full lg:w-3/4">
@@ -121,7 +258,50 @@ const ActivePropertiesUser: React.FC = () => {
             </div>
           ))}
             </div>
+            {/* After the property grid */}
+{/* {properties.length > 0 && (
+  <div className="flex justify-center items-center gap-4 mt-8">
+    <button
+      onClick={() => handlePageChange(filters.page - 1)}
+      disabled={filters.page === 1}
+      className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-50"
+    >
+      Previous
+    </button>
+    <span className="text-gray-700">
+      Page {filters.page} of {useAuthStore.getState().totalPages}
+    </span>
+    <button
+      onClick={() => handlePageChange(filters.page + 1)}
+      disabled={filters.page >= useAuthStore.getState().totalPages}
+      className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-50"
+    >
+      Next
+    </button>
+  </div>
+)} */}
+<div className="flex justify-center items-center gap-4 mt-8">
+                  <button
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40"
+                  >
+                    Previous
+                  </button>
+
+                  <span>Page {page} of {totalPages}</span>
+
+                  <button
+                    disabled={page >= totalPages}
+                    onClick={() => setPage(page + 1)}
+                    className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
 </>
+
+
             )}
         </div>
       </div>

@@ -24,6 +24,16 @@ interface PropertyFilters {
   sortOrder?: "asc" | "desc";
 }
 
+interface UserPropertyFilters {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  category?: string; // ADD THIS
+  facilities?: string[]; // ADD THIS
+}
+
 
 interface OwnerProfileUpdateData {
   name?: string;
@@ -319,8 +329,12 @@ getAllPropertiesAdmin: async(params: PropertyFilters = {})=>{
 
 },
 
-getActiveProperties:async()=>{
-  const response = await api.get(`/user/properties`);
+getActiveProperties:async(params: UserPropertyFilters= {})=>{
+  const queryParams = {
+    ...params,
+    facilities: params.facilities?.join(',') || undefined
+  };
+  const response = await api.get(`/user/properties`,{params: queryParams});
     return response.data;
 }
 ,

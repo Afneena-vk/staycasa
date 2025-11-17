@@ -146,13 +146,71 @@ async getOwnerProperties(
   };
 }
 
-async getActiveProperties(): Promise<IProperty[]> {
-    return await Property.find({
-      status:"active",
-      isRejected:false,
-    })
-    .sort({createdAt: -1})
-    .exec();
+async getActiveProperties(
+  page:number,
+  limit:number,
+  search?:string,
+  sortBy?:string,
+  sortOrder?:string,
+  category?:string,
+  facilities?:string[]
+): Promise<IPropertyListResult> {
+
+     const query: any = {
+    status: "active",
+    isRejected: false,
+  };
+
+
+   if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { city: { $regex: search, $options: "i" } },
+      { district: { $regex: search, $options: "i" } },
+      { state: { $regex: search, $options: "i" } },
+      { type: { $regex: search, $options: "i" } },
+    ];
+  }
+
+   if (category) {
+    query.type = category;
+  }
+
+   if (facilities && facilities.length > 0) {
+    query.features = { $all: facilities };
+  }
+
+  const sortQuery: any = {};
+   //sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
+if (sortBy) {
+  sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
+} else {
+  sortQuery.createdAt = -1; // ADD DEFAULT SORT
+}
+   const skip = (page - 1) * limit;
+
+
+   const [properties, totalCount] = await Promise.all([
+    Property.find(query)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(limit)
+      .populate("ownerId", "name email phone businessName businessAddress")
+      .exec(),
+    Property.countDocuments(query),
+  ]);
+
+    // return await Property.find({
+    //   status:"active",
+    //   isRejected:false,
+    // })
+    // .sort({createdAt: -1})
+    // .exec(); 
+     return {
+    properties,
+    totalCount,
+    totalPages: Math.ceil(totalCount / limit),
+  };
 }
 
 
