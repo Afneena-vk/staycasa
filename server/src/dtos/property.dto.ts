@@ -108,6 +108,15 @@ export interface OwnerPropertyListResponseDto {
   currentPage: number;
 }
 
+export interface UserPropertyListResponseDto {
+  message: string;
+  status: number;
+  properties: PropertyResponseDto[];
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+}
+
 
 export interface AdminPropertyActionResponseDto {
   message: string;

@@ -37,6 +37,14 @@ getOwnerProperties (ownerId: string,
   sortBy: string,
   sortOrder: string): Promise<IPropertyListResult> 
 
-  getActiveProperties():Promise<IProperty[]>;
+  getActiveProperties(
+     page: number,
+    limit: number,
+   search?: string,
+  sortBy?: string,
+  sortOrder?: string,
+  category?: string,
+  facilities?: string[]
+  ):Promise<IPropertyListResult>;
 
 }

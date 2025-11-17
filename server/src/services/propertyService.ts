@@ -1,8 +1,8 @@
 import { injectable, inject } from 'tsyringe';
-import { IPropertyService } from './interfaces/IPropertyService';
+import { IPropertyService, UserPropertyFilters } from './interfaces/IPropertyService';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { TOKENS } from '../config/tokens';
-import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto } from '../dtos/property.dto';
+import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto } from '../dtos/property.dto';
 import { PropertyMapper } from '../mappers/propertyMapper';
 import { MESSAGES, STATUS_CODES } from '../utils/constants';
 import { PropertyStatus } from '../models/status/status';
@@ -183,19 +183,6 @@ async deleteOwnerProperty(ownerId: string, propertyId: string): Promise<{ messag
   }
 }
 
-// async getAllProperties():Promise<AdminPropertyListResponseDto>{
-//   try {
-    
-//    const properties = await this._propertyRepository.getAllProperties();
-//    console.log(" PropertyService returning:", properties.length, "properties");
-//    return PropertyMapper.toAdminPropertyListResponse(properties);
-
-//   } catch (error:any) {
-//     const err:any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-//     err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-//     throw err;
-//   }
-// }
 
 async getAllProperties(filters: {
   page?: number;
@@ -222,13 +209,6 @@ async getAllProperties(filters: {
       sortOrder
     );
 
-    // return {
-    //   message: "Properties fetched successfully",
-    //   status: STATUS_CODES.OK,
-    //   properties: result.properties,
-    //   totalCount: result.totalCount,
-    //   totalPages: result.totalPages
-    // };
      return PropertyMapper.toAdminPropertyListResponse(
       result.properties,
       result.totalCount,
@@ -345,16 +325,48 @@ async unblockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionRes
   return PropertyMapper.toAdminPropertyActionResponse(property, "Property unblocked successfully");
 }
 
-async getActiveProperties(): Promise<PropertyResponseDto[]> {
-  try {
-    const properties = await this._propertyRepository.getActiveProperties();
-    if(properties.length===0){
-      const err: any = new Error("No active properties found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
-    }
+// async getActiveProperties(): Promise<PropertyResponseDto[]> {
+//   try {
+//     const properties = await this._propertyRepository.getActiveProperties();
+//     if(properties.length===0){
+//       const err: any = new Error("No active properties found");
+//       err.status = STATUS_CODES.NOT_FOUND;
+//       throw err;
+//     }
 
-    return properties.map((property)=> PropertyMapper.toPropertyResponse(property))
+//     return properties.map((property)=> PropertyMapper.toPropertyResponse(property))
+//   } catch (error: any) {
+//     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+//     err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+//     throw err;
+//   }
+// }
+
+async getActiveProperties(params: UserPropertyFilters
+): Promise<UserPropertyListResponseDto> {
+  try {
+
+    const { page = 1, limit = 10, search, sortBy, sortOrder, category, facilities } = params;
+    const result = await this._propertyRepository.getActiveProperties(  
+      page,
+      limit,
+      search,
+      sortBy,
+      sortOrder,
+      category,
+      facilities);
+    //    if (result.properties.length === 0) {
+    //   const err: any = new Error("No active properties found");
+    //   err.status = STATUS_CODES.NOT_FOUND;
+    //   throw err;
+    // }
+
+    return PropertyMapper.toUserPropertyListResponse(
+       result.properties,
+       result.totalCount,
+       result.totalPages,
+       page
+    );
   } catch (error: any) {
     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
     err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
