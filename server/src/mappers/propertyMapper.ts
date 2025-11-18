@@ -27,16 +27,7 @@ export class PropertyMapper {
       images: property.images,
       status: property.status,
       createdAt: property.createdAt,
-      // owner: property.ownerId && typeof property.ownerId === "object" 
-      // ? {
-      //     id: property.ownerId._id.toString(),
-      //     name: property.ownerId.name,
-      //     email: property.ownerId.email,
-      //     phone: property.ownerId.phone,
-      //     businessName: property.ownerId.businessName,
-      //     businessAddress: property.ownerId.businessAddress,
-      //   }
-      // : undefined,
+      
       owner:
   property.ownerId && typeof property.ownerId === "object"
     ? (() => {
@@ -78,13 +69,7 @@ export class PropertyMapper {
     };
   }
 
-  //  static toAdminPropertyListResponse(properties: IProperty[]): AdminPropertyListResponseDto {
-  //   return {
-  //     message: "Properties fetched successfully",
-  //     status: STATUS_CODES.OK,
-  //     properties: properties.map((p) => this.toPropertyResponse(p)),
-  //   };
-  // }
+  
   static toAdminPropertyListResponse(
      properties: IProperty[],
      totalCount: number,

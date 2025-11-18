@@ -4,7 +4,7 @@ import { useEffect, useState} from "react";
 import { FaBuilding, FaCalendarAlt, FaWallet, FaComments, FaCheckCircle, FaClock, FaTimesCircle, FaExclamationTriangle } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
 import { authService } from "../../services/authService";
-//import OwnerStatus from "../../components/Owner/OwnerStaus";
+
 
 const OwnerDashboard = () => {
 

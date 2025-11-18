@@ -16,9 +16,7 @@ function AdminProperties() {
    const [currentPage, setCurrentPage] = useState(1);
    const propertiesPerPage = 10;
 
-  // useEffect(() => {
-  //   getAllPropertiesAdmin();
-  // }, [getAllPropertiesAdmin]); 
+  
   useEffect(() => {
   getAllPropertiesAdmin({
      page: currentPage,
@@ -40,18 +38,7 @@ useEffect(() => {
 }, [searchQuery]);
 
 
-//   const filteredProperties = properties.filter((p) =>
-//   p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//   p.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//   p.state.toLowerCase().includes(searchQuery.toLowerCase())
-// );
-  
-//   const indexOfLastProperty = currentPage * propertiesPerPage;
-//   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
-//   //const currentProperties = properties.slice(indexOfFirstProperty, indexOfLastProperty);
-//   //const totalPages = Math.ceil(properties.length / propertiesPerPage);
-//   const currentProperties = filteredProperties.slice(indexOfFirstProperty, indexOfLastProperty);
-//   const totalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+
 
 const currentProperties = properties;
 const totalPages = useAuthStore((state) => state.totalPages);

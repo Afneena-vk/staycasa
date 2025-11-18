@@ -33,7 +33,7 @@ const OwnerEditProperty: React.FC = () => {
   const [maxGuests, setMaxGuests] = useState<number | "">("");
   const [minLeasePeriod, setMinLeasePeriod] = useState<number | "">("");
   const [maxLeasePeriod, setMaxLeasePeriod] = useState<number | "">("");
-  //const [amenities, setAmenities] = useState<string[]>([]);
+  
   const [features, setFeatures] = useState<string[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -106,15 +106,7 @@ useEffect(() => {
     });
   }
 }, [selectedProperty?.images]); 
-  // 🔹 Amenities handler
-//   const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const { value, checked } = e.target;
-//     if (checked) {
-//       setAmenities([...amenities, value]);
-//     } else {
-//       setAmenities(amenities.filter((a) => a !== value));
-//     }
-//   };
+  
 
 const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const { value, checked } = e.target;
@@ -265,12 +257,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     formData.append("maxLeasePeriod", String(maxLeasePeriod));
     formData.append("description", description);
 
-    // amenities.forEach((a) => formData.append("amenities", a));
-    // existingImages.forEach((img) => formData.append("existingImages", img));
-    // newImages.forEach((img) => formData.append("newImages", img));  
-
     
-        //amenities.forEach((a) => formData.append("amenities", a));
         features.forEach((f) => formData.append("features", f));
         newImages.forEach((img) => formData.append("images", img));
         formData.append("existingImages", JSON.stringify(existingImages));
@@ -476,8 +463,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   <input
                     type="checkbox"
                     value={a}
-                    // checked={amenities.includes(a)}
-                    // onChange={handleAmenitiesChange}
+                    
                     checked={features.includes(a)}
                     onChange={handleFeaturesChange}
 

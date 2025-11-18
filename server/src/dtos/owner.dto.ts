@@ -10,7 +10,7 @@ export class OwnerLoginResponseDto {
   status!: number;
   approvalStatus!: OwnerStatus;
   businessAddress!: string;
-  // documents: string[] = [];
+  
   document?: string;
   isVerified!: boolean;
   isBlocked!: boolean;
@@ -36,7 +36,7 @@ export class OwnerProfileResponseDto {
   businessName!: string;
   businessAddress!: string;
   approvalStatus!: OwnerStatus;  
-  // documents!: string[];  
+    
   document?: string;  
   message!: string;
   status!: number;

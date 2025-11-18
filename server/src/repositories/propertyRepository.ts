@@ -185,7 +185,7 @@ async getActiveProperties(
 if (sortBy) {
   sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
 } else {
-  sortQuery.createdAt = -1; // ADD DEFAULT SORT
+  sortQuery.createdAt = -1; 
 }
    const skip = (page - 1) * limit;
 

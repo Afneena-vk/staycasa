@@ -37,7 +37,7 @@ export class PropertyController implements IPropertyController {
     try {
       const ownerId = (req as any).userId;
       const { page, limit, search, sortBy, sortOrder } = req.query;
-      //const properties = await this._propertyService.getOwnerProperties(ownerId);
+      
        const result = await this._propertyService.getOwnerProperties({
       ownerId,
       page: Number(page),
@@ -90,11 +90,9 @@ async updateOwnerProperty(req: Request, res: Response, next: NextFunction): Prom
     const propertyData = {
       ...req.body,
       features: req.body.amenities || req.body.features || [],
-      //images: req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : []
+      
       images: [
-    // ...(req.body.existingImages ? 
-    //     (Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages]) 
-    //     : []),
+    
     ...(req.body.existingImages ? 
       JSON.parse(req.body.existingImages) : []),
     ...(req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : [])
@@ -128,17 +126,7 @@ async deleteOwnerProperty(req: Request, res: Response, next: NextFunction): Prom
   }
 }
 
-// async getAllProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
-//   try {
-//     const result = await this._propertyService.getAllProperties();
-//     console.log("properties fetched successfully:", result)
-//     res.status(result.status).json(result);
-//   } catch (error:any) {
-//       res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-//       error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-//     });
-//   }
-// }
+
 
 async getAllProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {

@@ -19,7 +19,7 @@ export class AdminService implements IAdminService {
   ) {}
 
     async loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto> {
-    // async loginAdmin(data: AdminLoginData): Promise<{ token: string; message: string; admin: any;status: number }> {
+    
 
         const { email, password } = data;
     
@@ -48,16 +48,12 @@ export class AdminService implements IAdminService {
         const JWT_SECRET = process.env.JWT_SECRET;
           const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
     
-        //  if (!JWT_SECRET) {
-        //     throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
-        //  }
+       
          if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
       throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
     }
     
-        // const token = jwt.sign({ id: admin._id, email: admin.email, type: "admin"}, JWT_SECRET, {
-        //   expiresIn: "7d",
-        // });
+       
     
     const accessToken = jwt.sign(
       { userId: admin._id, email: admin.email, type: "admin" },
@@ -71,14 +67,7 @@ export class AdminService implements IAdminService {
       { expiresIn: "7d" }
     );
 
-        // const { password: _, otp, ...adminData } = admin.toObject(); 
-    
-        // return {
-        //   token,
-        //   admin: adminData,
-        //   message: MESSAGES.SUCCESS.LOGIN,
-        //   status: STATUS_CODES.OK,
-        // };
+        
         return AdminMapper.toLoginResponse(admin, accessToken, refreshToken, MESSAGES.SUCCESS.LOGIN);
       }
 
@@ -97,7 +86,7 @@ export class AdminService implements IAdminService {
 
           
             const validatedPage = Math.max(1, page);
-            const validatedLimit = Math.min(Math.max(1, limit), 100); // Max 100 items per page
+            const validatedLimit = Math.min(Math.max(1, limit), 100); 
 
             const result = await this._adminRepository.findUsersWithPagination({
                 page: validatedPage,

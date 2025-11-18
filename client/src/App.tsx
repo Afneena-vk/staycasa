@@ -109,26 +109,9 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        {/* <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} /> 
-        <Route path="/admin/users" element={<UserManagement />} />
-        <Route path="/admin/users/:userId"  element={<UserDetails />} />
-        <Route path="/admin/owners" element={<OwnerManagement />} />
-        <Route path="/admin/owners/:ownerId" element={<OwnerDetails />} />
-        <Route path="/admin/properties" element={<AdminProperties/>}/>
-        <Route path="/admin/properties/:propertyId" element={<AdminPropertyDetails/>}/> */}
         
-        {/* <Route path="/owner/signup" element={<OwnerSignup />} />
-        <Route path="/owner/login" element={<OwnerLogin />} />
-        <Route path="/owner/forgot-password" element={<OwnerForgotPassword />} />
-        <Route path="/owner/otp-verification" element={<OwnerOTPVerification />} />
-        <Route path="/owner/reset-password" element={<OwnerResetPassword />} />
-        <Route path="/owner/dashboard" element={<OwnerDashboard/>}/>
-        <Route path="/owner/properties" element={<OwnerProperties/>}/>
-        <Route path="/owner/profile" element={<OwnerProfile/>}/>
-        <Route path="/owner/add-property" element={<OwnerAddProperty />} />
-        <Route path="/owner/properties/:propertyId" element={<OwnerPropertyDetails />}/>
-        <Route path="/owner/properties/:propertyId/edit" element={<OwnerEditProperty/>}/> */}
+        
+        
         <Route
   path="/"
   element={

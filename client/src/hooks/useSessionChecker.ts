@@ -20,7 +20,7 @@ const checkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const checkUserStatus = async () => {
       try {
-        // Only checking if enough time has passed (30 seconds)
+        // Only check if enough time has passed (30 seconds)
         const now = Date.now();
         if (now - lastCheckRef.current < 30000) {
           return;

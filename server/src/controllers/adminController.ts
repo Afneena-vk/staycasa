@@ -50,9 +50,7 @@ export class AdminController implements IAdminController{
    refreshToken: result.refreshToken,
 });
           
-        // } catch (error) {
-        //   next(error);
-        // }
+       
       } catch (error: any) {
         console.error("Login error:", error);
         res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({

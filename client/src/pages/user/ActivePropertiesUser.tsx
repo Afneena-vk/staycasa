@@ -11,8 +11,7 @@ const ActivePropertiesUser: React.FC = () => {
   const properties = useAuthStore((state) => state.properties);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
-  // const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null);
-  // const [selectedFacilities, setSelectedFacilities] = React.useState<string[]>([]);
+  
   const getActivePropertiesForUser = useAuthStore(
     (state) => state.getActivePropertiesForUser
   );
@@ -21,7 +20,7 @@ const ActivePropertiesUser: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);  
    const [page, setPage] = useState(1);
    const totalPages = useAuthStore((state) => state.totalPages);
-  //const [sortOption, setSortOption] = useState("newest");
+  
 
 
 
@@ -38,7 +37,7 @@ const ActivePropertiesUser: React.FC = () => {
 useEffect(() => {
     const delay = setTimeout(() => {
       setDebouncedSearch(searchQuery);
-      setPage(1); // reset page when search changes
+      setPage(1); 
     }, 1000);
 
     return () => clearTimeout(delay);
@@ -239,22 +238,11 @@ const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
               </p>
               
 
-              {/* <div className="flex justify-between text-sm text-gray-600 mb-3">
-                <span>Bedrooms: {property.bedrooms}</span>
-                <span>Bathrooms: {property.bathrooms}</span>
-              </div> */}
+              
 
-              {/* <p className="text-sm text-green-600 font-medium mb-3">
-                Status: {property.status}
-              </p> */}
+              
 
-              {/* {property.owner && (
-                <div className="text-sm text-gray-500 mt-2">
-                  <p className="font-semibold">Owner Info:</p>
-                  <p>{property.owner.name}</p>
-                  <p>{property.owner.email}</p>
-                </div>
-              )} */}
+              
             </div>
           ))}
             </div>

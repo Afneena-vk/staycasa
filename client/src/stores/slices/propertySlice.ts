@@ -22,7 +22,7 @@ export interface Property {
   maxLeasePeriod: number;
   features: string[];
   images: string[];
-  // status: "pending" | "approved" | "rejected";
+  
   status: "pending" | "active" | "rejected" |"blocked"|"booked";
   createdAt: Date;
 
@@ -218,21 +218,7 @@ deleteProperty: async (propertyId: string) => {
   }
 },
 
-// getAllPropertiesAdmin: async () =>{
-//   set({ isLoading: true, error: null });
-//   try {
-//     const response = await authService.getAllPropertiesAdmin();
-//       set({
-//       properties: response.properties || [],
-//       isLoading: false,
-//       error: null,
-//     });
-//   } catch (error:any) {
-//     const errorMessage =
-//       error.response?.data?.error || error.message || "Failed to fetch all properties";
-//     set({ properties: [], isLoading: false, error: errorMessage });
-//   }
-// },
+
 
 getActivePropertiesForUser: async (params) => {
   set({ isLoading: true, error: null });

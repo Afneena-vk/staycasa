@@ -40,8 +40,7 @@ function OwnerPropertyDetails() {
   <img
     src={selectedProperty.images?.[0] || "/placeholder.jpg"}
     alt={selectedProperty.title}
-    //className="w-full h-96 object-cover rounded-xl"
-     //className="w-full h-96 object-contain bg-black rounded-xl"
+    
      className="w-full max-h-[600px] object-cover rounded-xl"
   />
 

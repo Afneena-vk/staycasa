@@ -26,35 +26,26 @@ api.interceptors.response.use(
       error.response?.status === 401 &&
       !originalRequest._retry &&
       authType
-      //  authType &&
-      // tokenService.getRefreshToken(authType)
+   
       
     ) {
       originalRequest._retry = true;
 
       try {
         await axios.post(
-        // const refreshResponse = await axios.post(
+       
           `${API_URL}/api/auth/refresh-token`,
           {},
        
-         //{ refreshToken: tokenService.getRefreshToken(authType) },
           { withCredentials: true }
         );
 
-        // const newAccessToken = refreshResponse.data.accessToken;
-       
-        // tokenService.setAccessToken(newAccessToken, authType);
-        
-        // originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+  
         return api(originalRequest);
       } catch (refreshError) {
 
        tokenService.clearAuthType();
-        // tokenService.clearTokens(authType);
-        //const authType = sessionStorage.getItem("auth-type") || "user";
-       // sessionStorage.removeItem("auth-type");
-        // window.location.href = `/${authType}/login`; 
+    
          if (!window.location.pathname.includes("/login")) {
           window.location.href = `/${authType}/login`;
         }

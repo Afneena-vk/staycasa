@@ -10,7 +10,7 @@ import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
-// Define the Property interface to match your backend model
+
 interface Property {
   id: string;
   title: string;
@@ -43,14 +43,7 @@ const OwnerProperties = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   try {
-    // const { userData, getOwnerProperties, properties, isLoading, error } =
-    //   useAuthStore((state) => ({
-    //     userData: state.userData,
-    //     getOwnerProperties: state.getOwnerProperties,
-    //     properties: state.properties,
-    //     isLoading: state.isLoading,
-    //     error: state.error,
-    //   }));
+    
     const userData = useAuthStore((state) => state.userData);
 const getOwnerProperties = useAuthStore((state) => state.getOwnerProperties);
 const properties = useAuthStore((state) => state.properties);
@@ -63,19 +56,10 @@ const totalPages = useAuthStore((state) => state.totalPages);
     const isApproved = userData?.approvalStatus === "approved";
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //   try {
-    //     if (isApproved && getOwnerProperties) {
-    //       getOwnerProperties();
-    //     }
-    //   } catch (err) {
-    //     console.error("Error fetching properties:", err);
-    //     setLocalError("Failed to fetch properties");
-    //   }
-    // }, [isApproved, getOwnerProperties]);
+    
     useEffect(() => {
   if (isApproved) {
-    // getOwnerProperties?.();
+    
     getOwnerProperties({
       page: currentPage,
       limit: 10,
@@ -129,22 +113,7 @@ const handleDelete = async (propertyId: string) => {
    
     const safeProperties = Array.isArray(properties) ? properties : [];
 
-    // Apply search filter with safe property access
-    // const filteredProperties = safeProperties.filter((property) => {
-    //   if (!property) return false;
-      
-    //   const title = property.title || "";
-    //   const city = property.city || "";
-    //   const status = property.status || "";
-    //   const type = property.type || "";
-      
-    //   return (
-    //     title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //     city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //     status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //     type.toLowerCase().includes(searchTerm.toLowerCase())
-    //   );
-    // });
+    
 
     
     const getStatusInfo = (status: string) => {

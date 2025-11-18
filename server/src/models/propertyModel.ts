@@ -5,8 +5,7 @@ import { IOwner } from "./ownerModel";
 export type FurnishingType = "Fully-Furnished" | "Semi-Furnished" | "Not Furnished";
 
 export interface IProperty extends Document {
-  // _id: ObjectId;
-  // ownerId: ObjectId;
+  
    _id: mongoose.Types.ObjectId;     
   ownerId: mongoose.Types.ObjectId| IOwner;  
 

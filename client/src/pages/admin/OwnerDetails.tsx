@@ -15,9 +15,7 @@ interface Owner {
   businessName: string;
   businessAddress: string;
   document?: string;
-  // isBlocked: boolean;
   status: "active" | "blocked";
-  //isVerified: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -42,24 +40,7 @@ const OwnerDetails: React.FC = () => {
     }
   };
 
-  // const handleBlockToggle = async () => {
-  //   if (!owner) return;
-  //   try {
-  //     setActionLoading(true);
-  //     if (owner.isBlocked) {
-  //       await authService.unblockOwner(owner.id);
-  //       toast.success("Owner unblocked");
-  //     } else {
-  //       await authService.blockOwner(owner.id);
-  //       toast.success("Owner blocked");
-  //     }
-  //     fetchOwnerDetails();
-  //   } catch {
-  //     toast.error("Action failed");
-  //   } finally {
-  //     setActionLoading(false);
-  //   }
-  // };
+  
   const handleBlockToggle = async () => {
   if (!owner) return;
   try {
@@ -128,17 +109,7 @@ const OwnerDetails: React.FC = () => {
               <p className="text-sm text-gray-600">Complete information about the owner</p>
             </div>
           </div>
-          {/* <button
-            onClick={handleBlockToggle}
-            disabled={actionLoading}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
-              owner.isBlocked
-                ? "bg-green-100 text-green-700 hover:bg-green-200"
-                : "bg-red-100 text-red-700 hover:bg-red-200"
-            } ${actionLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-          >
-            {actionLoading ? "Processing..." : owner.isBlocked ? "Unblock Owner" : "Block Owner"}
-          </button> */}
+         
           <button
   onClick={handleBlockToggle}
   disabled={actionLoading}
@@ -175,15 +146,7 @@ const OwnerDetails: React.FC = () => {
                 <h2 className="text-2xl font-bold">{owner.name}</h2>
                 <p className="text-purple-100">{owner.email}</p>
                 <div className="flex items-center gap-4 mt-2">
-                  {/* <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      owner.isBlocked
-                        ? "bg-red-100 text-red-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {owner.isBlocked ? "Blocked" : "Active"}
-                  </span> */}
+                 
                   <span
   className={`px-3 py-1 rounded-full text-sm font-semibold ${
     owner.status === "blocked"

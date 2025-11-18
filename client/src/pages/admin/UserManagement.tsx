@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/admin/AdminLayout";
 import { api } from "../../api/api";
-//import { authService } from "../../services/authService";
 import { useAuthStore } from "../../stores/authStore";
 
 interface User {
@@ -13,9 +12,7 @@ interface User {
   email: string;
   phone?: string;
   status: "Active" | "Blocked";
-  //isVerified: boolean;
   profileImage?: string;
-  //createdAt: string;
   updatedAt: string;
 }
 
@@ -53,14 +50,14 @@ const UserManagement = () => {
       setLoading(true);
       setError(null);
 
-  // const data: UsersResponse = await authService.getUsers({
+  
   const data:UsersResponse = await getUsers({
   page: currentPage,
   limit,
   status: statusFilter,
   sortBy,
   sortOrder,
-  // search,
+  
   search: debouncedSearch,
 });
       
@@ -120,9 +117,7 @@ const UserManagement = () => {
     fetchUsers();
   }, [currentPage,debouncedSearch,statusFilter, sortBy, sortOrder]);
 
-  //  useEffect(() => {
-  //   fetchUsers();
-  // }, [currentPage, statusFilter, sortBy, sortOrder]);
+  
 
   
 useEffect(() => {
@@ -134,15 +129,7 @@ useEffect(() => {
 }, [search]);
 
 
-  // useEffect(() => {
-  //   const debounceTimer = setTimeout(() => {
-  //     setCurrentPage(1); 
-  //     fetchUsers();
-  //   }, 500);
-
-  //   return () => clearTimeout(debounceTimer);
-  // }, [search]);
-
+  
   const handlePreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
@@ -290,18 +277,8 @@ useEffect(() => {
                       {user.status}
                     </span>
                   </td>
-                  {/* <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      user.isVerified
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}>
-                      {user.isVerified ? "Verified" : "Pending"}
-                    </span>
-                  </td> */}
-                  {/* <td className="px-6 py-4 text-gray-600">
-                    {formatDate(user.createdAt)}
-                  </td> */}
+                  
+                  
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
                       <button 

@@ -56,16 +56,7 @@ export const createAuthSlice: StateCreator<
           throw new Error("Invalid login type");
       }
 
-      // Clear other auth types
-    //   ["user", "owner", "admin"].forEach((type) => {
-    //     if (type !== authType) {
-    //       tokenService.clearTokens(type as AuthType);
-    //     }
-    //   });
-
-      // tokenService.setAccessToken(response.accessToken, authType);
-      // tokenService.setRefreshToken(response.refreshToken, authType);
-      // sessionStorage.setItem("auth-type", authType);
+      
        tokenService.setAuthType(authType);
 
       set({
@@ -87,8 +78,7 @@ export const createAuthSlice: StateCreator<
   },
 
   logout: async() => {
-    // tokenService.clearAllTokens();
-    // sessionStorage.removeItem("auth-type");
+    
 
     try {
       const authType = tokenService.getAuthType();

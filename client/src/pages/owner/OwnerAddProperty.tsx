@@ -44,14 +44,13 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      // setImages(Array.from(e.target.files));
+      
       const files = Array.from(e.target.files);
-      // setImages(files);
-      // const previews = files.map((file) => URL.createObjectURL(file));
-      // setImagePreviews(previews);
-       setFilesToCrop(files); // put all images in queue
+      
+      
+       setFilesToCrop(files); 
       if (files.length > 0) {
-        setCroppingImage(URL.createObjectURL(files[0])); // start cropping first
+        setCroppingImage(URL.createObjectURL(files[0])); 
       }
     }
   };
@@ -150,9 +149,9 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
 
 
    try {
-   // const response = await authService.addProperty(formData);
+   
       await addProperty(formData);
-    //if (response.status === 201) {
+    
       alert("Property added successfully!");
       
       setTitle("");
@@ -175,9 +174,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
       setImages([]);
       setImagePreviews([]);
       setErrors({});
-    // } else {
-    //   alert("Error: " + (response.message || "Something went wrong"));
-    // }
+    
   } catch (error: any) {
     console.error("Error:", error);
     alert("Failed to add property: " + (error.response?.data?.error || error.message));

@@ -94,11 +94,7 @@ const [uploadingImage, setUploadingImage] = useState(false);
             phone: response.phone || "",
             profileImage: response.profileImage || "",
             address: response.address || {
-    //           name: userData.name || "",
-    // email: userData.email || "",
-    // phone: userData.phone || "",
-    // profileImage: userData.profileImage || "",
-    // address: userData.address || {
+    
               houseNo: "",
               street: "",
               city: "",
