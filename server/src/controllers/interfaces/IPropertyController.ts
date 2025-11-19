@@ -13,4 +13,5 @@ export interface IPropertyController {
   blockPropertyByAdmin(req: Request, res:Response, next:NextFunction):Promise<void>;
   unblockPropertyByAdmin(req: Request, res:Response, next:NextFunction):Promise<void>;
   getActiveProperties(req: Request, res:Response, next:NextFunction):Promise<void>;
+  getActivePropertyById(req: Request, res:Response, next:NextFunction):Promise<void>;
 }

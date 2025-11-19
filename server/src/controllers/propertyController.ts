@@ -251,4 +251,20 @@ async getActiveProperties(req: Request, res: Response, next: NextFunction): Prom
   }
 }
 
+async getActivePropertyById(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const {propertyId} = req.params;
+    const property = await this._propertyService.getActivePropertyById(propertyId);
+    console.log("property detail fetched successfully:", property)
+    res.status(STATUS_CODES.OK).json({
+      message: "Property fetched successfully",
+      property,
+    });
+  } catch (error:any) {
+    
+  }
 }
+
+}
+
+

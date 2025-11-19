@@ -1,5 +1,5 @@
 import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto } from '../../dtos/property.dto';
-
+import { IProperty } from '../../models/propertyModel';
 export interface PropertyFilters {
   page?: number;
   limit?: number;
@@ -37,6 +37,7 @@ export interface IPropertyService {
   // getAllProperties():Promise<AdminPropertyListResponseDto>
   getAllProperties(filters: PropertyFilters): Promise<AdminPropertyListResponseDto>;
  getActiveProperties(params: UserPropertyFilters): Promise<UserPropertyListResponseDto>;
+ getActivePropertyById(propertyId:string):Promise<PropertyResponseDto>
 
   getAdminPropertyById(propertyId:string): Promise<PropertyResponseDto>
   approveProperty(propertyId:string):Promise<AdminPropertyActionResponseDto>

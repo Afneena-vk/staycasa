@@ -5,13 +5,13 @@ import { Property } from "../../stores/slices/propertySlice";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import PropertyFilterSidebar from "../../components/Filters/PropertyFilterSidebar";
-
+import { useNavigate } from "react-router-dom";
 
 const ActivePropertiesUser: React.FC = () => {
   const properties = useAuthStore((state) => state.properties);
   const isLoading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
-  
+  const navigate = useNavigate();
   const getActivePropertiesForUser = useAuthStore(
     (state) => state.getActivePropertiesForUser
   );
@@ -211,6 +211,7 @@ const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.map((property: Property) => (
             <div
+               onClick={() => navigate(`/user/properties/${property.id}`)}
               key={property.id}
               className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5"
             >

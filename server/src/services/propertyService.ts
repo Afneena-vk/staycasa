@@ -7,6 +7,7 @@ import { PropertyMapper } from '../mappers/propertyMapper';
 import { MESSAGES, STATUS_CODES } from '../utils/constants';
 import { PropertyStatus } from '../models/status/status';
 import { Types } from "mongoose";
+import { IProperty } from '../models/propertyModel';
 
 
 @injectable()
@@ -354,5 +355,23 @@ async getActiveProperties(params: UserPropertyFilters
     throw err;
   }
 }
+
+async getActivePropertyById(propertyId: string): Promise<PropertyResponseDto> {
+  try {
+    const result= await this._propertyRepository.findByPropertyIdForAdmin(propertyId); 
+     if(!result){
+      const err: any = new Error("Property not found");
+      err.status = STATUS_CODES.NOT_FOUND;
+      throw err;
+    }
+    return PropertyMapper.toPropertyResponse(result);
+  } catch (error:any) {
+       const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+    throw err;
+  }
+}
+
+
 
 }

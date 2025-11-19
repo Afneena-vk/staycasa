@@ -30,8 +30,8 @@ interface UserPropertyFilters {
   search?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
-  category?: string; // ADD THIS
-  facilities?: string[]; // ADD THIS
+  category?: string; 
+  facilities?: string[]; 
 }
 
 
@@ -338,6 +338,11 @@ getActiveProperties:async(params: UserPropertyFilters= {})=>{
     return response.data;
 }
 ,
+
+getActivePropertyById:async(propertyId:string)=>{
+   const response = await api.get(`/user/properties/${propertyId}`);
+   return response.data;
+},
 
 getPropertyByAdmin:async(propertyId:string)=>{
   const response = await api.get(`/admin/properties/${propertyId}`);

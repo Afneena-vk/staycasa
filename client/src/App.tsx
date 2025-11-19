@@ -38,6 +38,7 @@ import UserResetPassword from "./pages/user/UserResetPassword";
 import UserLanding from "./pages/user/UserLanding.tsx";
 import UserProfile from "./components/User/UserProfile.tsx";
 import ActivePropertiesUser from "./pages/user/ActivePropertiesUser.tsx";
+import UserPropertyDetails from "./pages/user/UserPropertyDetails.tsx";
 
 const App = () => {
   return (
@@ -272,6 +273,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/user/properties/:propertyId"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserPropertyDetails />
+            </ProtectedRoute>
+          }
+        />
+
       </Routes>
     </Router>
   );

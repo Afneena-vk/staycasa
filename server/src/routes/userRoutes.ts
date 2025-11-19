@@ -85,6 +85,13 @@ userRoutes.get(
   propertyController.getActiveProperties.bind(propertyController)
 );
 
+userRoutes.get(
+  "/properties/:propertyId",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  propertyController.getActivePropertyById.bind(propertyController)
+);
+
 
 export default userRoutes   
 
