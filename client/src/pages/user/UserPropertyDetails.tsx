@@ -5,6 +5,7 @@ import { useAuthStore } from "../../stores/authStore";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import { authService } from "../../services/authService";
+import { Button } from "../../components/common/Button";
 
 import {
   FaBed,
@@ -322,13 +323,20 @@ const UserPropertyDetails = () => {
                         </div> */}
 
                         <div className="mt-3">
-                          <button
+                          {/* <button
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow"
                             // TODO: hook up booking flow
                             onClick={() => alert("Booking flow not implemented in this demo")}
                           >
                             Book Now
-                          </button>
+                          </button> */}
+                          <Button
+                              variant="blue"
+                              onClick={() => alert("Booking flow not implemented")}
+                              >
+                                Book Now
+                              </Button>
+
                         </div>
                       </div>
                     </div>
@@ -470,7 +478,8 @@ const UserPropertyDetails = () => {
     />
   </div>
 
-  <button
+  <Button
+    variant="checkBlue"
     onClick={async () => {
       if (!checkIn || !rentalPeriod) {
         alert("check in date and rental Period are needed");
@@ -496,10 +505,10 @@ const UserPropertyDetails = () => {
       );
       }
     }}
-    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
+    //className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
   >
     Check availability
-  </button>
+  </Button>
  {availabilityMessage && (
     <div className="mt-2 text-sm font-medium text-gray-700">
       {availabilityMessage}
