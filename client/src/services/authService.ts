@@ -392,6 +392,16 @@ changePassword: async (
     const response = await api.put(url, data);
     return response.data;
   },
+
+  checkAvailability: async(propertyId:string,
+    checkIn:string,
+    //checkOut:string,
+    rentalPeriod:number,
+    guests:number
+  )=>{
+    const response = await api.get(`/user/properties/${propertyId}/check-availability`,{params:{checkIn,rentalPeriod,guests},});
+    return response.data;
+  }
   
 
 };

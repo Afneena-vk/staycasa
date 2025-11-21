@@ -2,9 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
+import { authService } from "../../services/authService";
 
 import {
   FaBed,
@@ -52,14 +52,18 @@ const UserPropertyDetails = () => {
   );
   const property = useAuthStore((state) => state.selectedProperty);
   const loading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error);
-
+  const error = useAuthStore((state) => state.error); 
+  const [checkIn, setCheckIn] = useState<string>("");
+  const [checkOut, setCheckOut] = useState<string>("");
+  const [guests, setGuests] = useState<number>(1);
+  const [availabilityMessage, setAvailabilityMessage] = useState<string | null>(null);
+  const [rentalPeriod, setRentalPeriod] = useState(property?.minLeasePeriod || 1)
   const fetchedRef = useRef(false);
 
 
   const [mainIndex, setMainIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
-  const [showOwnerPhone, setShowOwnerPhone] = useState(false);
+  //const [showOwnerPhone, setShowOwnerPhone] = useState(false);
 
   useEffect(() => {
     if (!propertyId) return;
@@ -73,7 +77,7 @@ const UserPropertyDetails = () => {
     // reset main image when property changes
     setMainIndex(0);
     setGalleryOpen(false);
-    setShowOwnerPhone(false);
+    //setShowOwnerPhone(false);
   }, [property?.id]);
 
   // safety
@@ -426,20 +430,89 @@ const UserPropertyDetails = () => {
                     </div>
 
                     <div className="mt-4 space-y-2">
-                      <button
-                        onClick={() => alert("Check availability or booking flow")}
-                        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
-                      >
-                        Check availability
-                      </button>
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">Check-in</label>
+    <input
+      type="date"
+      value={checkIn}
+      onChange={(e) => setCheckIn(e.target.value)}
+      className="w-full border px-3 py-2 rounded-lg"
+    />
+  </div>
 
-                      <button
-                        onClick={() => alert("Start booking")}
-                        className="w-full px-4 py-2 border rounded-lg"
-                      >
-                        Message owner
-                      </button>
-                    </div>
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">Rental period</label>
+    {/* <input
+      type="date"
+      value={checkOut}
+      onChange={(e) => setCheckOut(e.target.value)}
+      className="w-full border px-3 py-2 rounded-lg"
+    /> */} 
+    <input
+  type="number"
+  min={property?.minLeasePeriod || 1}
+  max={property?.maxLeasePeriod || 12}
+  value={rentalPeriod}
+  onChange={(e) => setRentalPeriod(Number(e.target.value))}
+  className="w-full border px-3 py-2 rounded-lg"
+/>
+  </div>
+
+  <div className="space-y-2">
+    <label className="block text-sm font-medium text-gray-700">Guests</label>
+    <input
+      type="number"
+      min={1}
+      max={property?.maxGuests ?? 10}
+      value={guests}
+      onChange={(e) => setGuests(Number(e.target.value))}
+      className="w-full border px-3 py-2 rounded-lg"
+    />
+  </div>
+
+  <button
+    onClick={async () => {
+      if (!checkIn || !rentalPeriod) {
+        alert("check in date and rental Period are needed");
+        return;
+      }
+
+      try {
+       
+        //  const response = await api.get(
+        //   `/user/properties/${propertyId}/check-availability?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`
+        // );
+        // const data = await authService.checkAvailability(propertyId!,checkIn,checkOut,guests)
+           const data = await authService.checkAvailability(propertyId!,checkIn,rentalPeriod,guests)
+
+        setAvailabilityMessage(data.message);
+       // alert(data.message);
+      } catch (err:any) {
+        console.error(err);
+        //alert("Error checking availability");
+         //</div></div>setAvailabilityMessage("Error checking availability");
+         setAvailabilityMessage(
+        err.response?.data?.message || "Error checking availability"
+      );
+      }
+    }}
+    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
+  >
+    Check availability
+  </button>
+ {availabilityMessage && (
+    <div className="mt-2 text-sm font-medium text-gray-700">
+      {availabilityMessage}
+    </div>
+  )}
+  <button
+    onClick={() => alert("Start booking")}
+    className="w-full px-4 py-2 border rounded-lg"
+  >
+    Message owner
+  </button>
+</div>
+
 
                     <div className="mt-4 text-sm text-gray-600">
                       <div><strong>Lease:</strong> {property.minLeasePeriod} - {property.maxLeasePeriod} months</div>

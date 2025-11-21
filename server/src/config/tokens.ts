@@ -5,6 +5,7 @@ export const TOKENS = {
   IAdminRepository: Symbol.for("IAdminRepository"),
   IBaseRepository: Symbol.for("IBaseRepository"),
   IPropertyRepository: Symbol.for("IPropertyRepository"),
+  IBookingRepository: Symbol.for("IBookingRepository"),
   
   IUserService: Symbol.for("IUserService"),
   IOwnerService: Symbol.for("IOwnerService"),

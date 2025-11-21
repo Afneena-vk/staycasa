@@ -92,6 +92,13 @@ userRoutes.get(
   propertyController.getActivePropertyById.bind(propertyController)
 );
 
+userRoutes.get(
+  "/properties/:propertyId/check-availability",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  propertyController.checkAvailability.bind(propertyController)
+)
+
 
 export default userRoutes   
 

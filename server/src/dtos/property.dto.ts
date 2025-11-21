@@ -123,3 +123,16 @@ export interface AdminPropertyActionResponseDto {
   status: number;
   property: PropertyResponseDto;
 }
+
+export interface CheckAvailabilityRequestDTO {
+  propertyId: string;
+  checkIn: string;
+  rentalPeriod: number;
+  guests: number;
+}
+
+export interface CheckAvailabilityResponseDTO {
+  available: boolean;
+  message: string;
+}
+

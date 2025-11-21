@@ -44,4 +44,7 @@ export interface IPropertyService {
   rejectProperty(propertyId:string):Promise<AdminPropertyActionResponseDto>
   blockPropertyByAdmin(propertyId:string): Promise<AdminPropertyActionResponseDto>
   unblockPropertyByAdmin(propertyId:string): Promise<AdminPropertyActionResponseDto>
+
+  //checkAvailability(propertyId:string, checkIn:string, checkOut:string, guests:number): Promise<{available: boolean, message: string}>;
+  checkAvailability(propertyId:string, checkIn:string, rentalPeriod:number, guests:number): Promise<{available: boolean, message: string}>;
 }

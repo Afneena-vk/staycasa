@@ -1,7 +1,7 @@
 import { IProperty } from '../models/propertyModel';
 import { PropertyResponseDto, CreatePropertyResponseDto, UpdatePropertyResponseDto } from '../dtos/property.dto';
 import { STATUS_CODES } from '../utils/constants';
-import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto,UserPropertyListResponseDto } from '../dtos/property.dto';
+import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto,UserPropertyListResponseDto, CheckAvailabilityResponseDTO } from '../dtos/property.dto';
 import { IOwner } from '../models/ownerModel';
 export class PropertyMapper {
   static toPropertyResponse(property: IProperty): PropertyResponseDto {
@@ -128,5 +128,10 @@ static toUserPropertyListResponse(
       property: this.toPropertyResponse(property),
     };
   }
+
+  static toCheckAvailabilityResponse(available: boolean, message: string):CheckAvailabilityResponseDTO {
+    return { available, message };
+  }
+
 
 }

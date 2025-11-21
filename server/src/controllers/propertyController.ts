@@ -261,7 +261,35 @@ async getActivePropertyById(req: Request, res: Response, next: NextFunction): Pr
       property,
     });
   } catch (error:any) {
+    res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+  }
+}
+
+async checkAvailability(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
     
+     const {propertyId} = req.params;
+     //const { checkIn, checkOut, guests } = req.query;
+      const { checkIn, rentalPeriod, guests } = req.query;
+
+
+    //  if (!checkIn || !checkOut) {
+    //     res.status(400).json({ message: "Check-in and Check-out dates are required" });
+    //     return;
+    //   }
+
+       if (!checkIn || !rentalPeriod) {
+              res.status(400).json({ message: "Check-in date and rental period are required" });
+         }
+
+      // const result = await this._propertyService.checkAvailability(propertyId, checkIn as string, checkOut as string,  Number(guests)|| 1);
+       const result = await this._propertyService.checkAvailability(propertyId, checkIn as string, Number(rentalPeriod), Number(guests)|| 1);
+      res.json(result);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
   }
 }
 

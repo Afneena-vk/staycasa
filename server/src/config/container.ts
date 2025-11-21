@@ -7,10 +7,12 @@ import { IUserRepository } from "../repositories/interfaces/IUserRepository";
 import { IOwnerRepository } from "../repositories/interfaces/IOwnerRepository";
 import { IAdminRepository } from "../repositories/interfaces/IAdminRepository";
 import { IPropertyRepository } from "../repositories/interfaces/IPropertyRepository";
+import { IBookingRepository } from "../repositories/interfaces/IBookingRepository";
 import { PropertyRepository } from "../repositories/propertyRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { OwnerRepository } from "../repositories/ownerRepository";
 import { AdminRepository } from "../repositories/adminRepository";
+import { BookingRepository } from "../repositories/bookingRepository";
 
 import { IUserService } from "../services/interfaces/IUserService";
 import { IOwnerService } from "../services/interfaces/IOwnerService";
@@ -35,6 +37,7 @@ container.registerSingleton<IUserRepository>(TOKENS.IUserRepository, UserReposit
 container.registerSingleton<IOwnerRepository>(TOKENS.IOwnerRepository, OwnerRepository);
 container.registerSingleton<IAdminRepository>(TOKENS.IAdminRepository, AdminRepository);
 container.registerSingleton<IPropertyRepository>(TOKENS.IPropertyRepository, PropertyRepository);
+container.registerSingleton<IBookingRepository>(TOKENS.IBookingRepository, BookingRepository);
 
 container.registerSingleton<IUserService>(TOKENS.IUserService, UserService);
 container.registerSingleton<IOwnerService>(TOKENS.IOwnerService, OwnerService);

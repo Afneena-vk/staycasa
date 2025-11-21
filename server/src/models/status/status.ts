@@ -6,3 +6,17 @@ export enum PropertyStatus {
   Rejected = "rejected",
   
 }
+
+export enum PaymentStatus {
+  Pending = "pending",
+  Completed = "completed",
+  Failed = "failed",
+  Refunded = "refunded",
+}
+
+export enum BookingStatus {
+  Pending = "pending",
+  Confirmed = "confirmed",
+  Cancelled = "cancelled",
+  Completed = "completed",
+}
