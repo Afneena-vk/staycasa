@@ -2,6 +2,7 @@ import { Router } from "express";
 import { container } from '../config/container';
 import { IUserController } from '../controllers/interfaces/IUserController';
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
+import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { TOKENS } from '../config/tokens';
 //import userController from "../controllers/userController";
 import passport from "passport";
@@ -14,6 +15,7 @@ const userRoutes = Router();
 
 const userController = container.resolve<IUserController>(TOKENS.IUserController);
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
+const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
 
 userRoutes.post("/signup", userController.signup.bind(userController));
 userRoutes.post("/verify-otp", userController.verifyOtp.bind(userController));
@@ -98,6 +100,29 @@ userRoutes.get(
   checkUserStatus,
   propertyController.checkAvailability.bind(propertyController)
 )
+
+userRoutes.post(
+  "/payment/calculate-total",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.calculateTotal.bind(bookingController)
+);
+
+userRoutes.post(
+  "/payment/razorpay-order",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.createRazorpayOrder.bind(bookingController)
+);
+
+userRoutes.post(
+  "/payment/verify",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.verifyPayment.bind(bookingController)
+
+)
+
 
 
 export default userRoutes   

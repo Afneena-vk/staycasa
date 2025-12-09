@@ -1,13 +1,18 @@
-import mongoose, { Schema, Document, ObjectId } from "mongoose";
+//import mongoose, { Schema, Document, ObjectId } from "mongoose";
+import mongoose, {Schema, Document } from "mongoose";
+
 import { v4 as uuidv4 } from "uuid";
 import { BookingStatus, PaymentStatus } from "./status/status";
 
 
 export interface IBooking extends Document {
   bookingId: string;
-  userId: ObjectId;
-  ownerId: ObjectId;
-  propertyId: ObjectId;
+  // userId: ObjectId;
+  // ownerId: ObjectId;
+  // propertyId: ObjectId;
+  userId: mongoose.Types.ObjectId; 
+  ownerId: mongoose.Types.ObjectId;
+  propertyId: mongoose.Types.ObjectId;
   moveInDate: Date;
   rentalPeriod: number; 
   endDate: Date;

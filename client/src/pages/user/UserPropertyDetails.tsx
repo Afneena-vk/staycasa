@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
@@ -47,6 +47,8 @@ const formatDate = (iso?: string | Date | null) => {
 
 const UserPropertyDetails = () => {
   const { propertyId } = useParams<{ propertyId: string }>();
+  const today = new Date().toISOString().split("T")[0];
+
 
   const getActivePropertyById = useAuthStore(
     (state) => state.getActivePropertyById
@@ -60,7 +62,7 @@ const UserPropertyDetails = () => {
   const [availabilityMessage, setAvailabilityMessage] = useState<string | null>(null);
   const [rentalPeriod, setRentalPeriod] = useState(property?.minLeasePeriod || 1)
   const fetchedRef = useRef(false);
-
+  const navigate = useNavigate();
 
   const [mainIndex, setMainIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
@@ -75,14 +77,18 @@ const UserPropertyDetails = () => {
   }, [propertyId]);
 
   useEffect(() => {
-    // reset main image when property changes
+    
     setMainIndex(0);
     setGalleryOpen(false);
     //setShowOwnerPhone(false);
   }, [property?.id]);
 
-  // safety
+  
   const images: string[] = property?.images ?? [];
+
+   const handleBookNow = () => {
+    navigate(`/user/checkout/${propertyId}`);
+  };
 
   return (
     <>
@@ -332,7 +338,7 @@ const UserPropertyDetails = () => {
                           </button> */}
                           <Button
                               variant="blue"
-                              onClick={() => alert("Booking flow not implemented")}
+                              onClick={handleBookNow}
                               >
                                 Book Now
                               </Button>
@@ -443,6 +449,7 @@ const UserPropertyDetails = () => {
     <input
       type="date"
       value={checkIn}
+      min={today}
       onChange={(e) => setCheckIn(e.target.value)}
       className="w-full border px-3 py-2 rounded-lg"
     />
@@ -510,9 +517,18 @@ const UserPropertyDetails = () => {
     Check availability
   </Button>
  {availabilityMessage && (
-    <div className="mt-2 text-sm font-medium text-gray-700">
-      {availabilityMessage}
-    </div>
+    // <div className="mt-2 text-sm font-medium text-gray-700">
+    //   {availabilityMessage}
+    // </div>
+      <div
+    className={`mt-3 p-3 rounded-lg text-sm font-semibold 
+      ${availabilityMessage.toLowerCase().includes("available")
+        ? "bg-green-100 text-green-700 border border-green-300"
+        : "bg-red-100 text-red-700 border border-red-300"
+      }`}
+  >
+    {availabilityMessage}
+  </div>
   )}
   <button
     onClick={() => alert("Start booking")}

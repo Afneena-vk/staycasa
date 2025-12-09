@@ -11,12 +11,14 @@ export const TOKENS = {
   IOwnerService: Symbol.for("IOwnerService"),
   IAdminService: Symbol.for("IAdminService"),
   IPropertyService: Symbol.for("IPropertyService"),
- 
+  IBookingService:Symbol.for("IBookingService"),
+
   IUserController: Symbol.for("IUserController"),
   IOwnerController: Symbol.for("IOwnerController"),
   IAdminController: Symbol.for("IAdminController"),
   IPropertyController: Symbol.for("IPropertyController"),
-  
+  IBookingController: Symbol.for("IBookingController"),
+
   IOTPService: Symbol.for("IOTPService"),
   ILogger: Symbol.for("ILogger"),
 };

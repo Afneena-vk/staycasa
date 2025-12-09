@@ -399,6 +399,14 @@ if (guests > property.maxGuests) {
         );
       }
 const checkInDate = new Date(checkIn);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+if (checkInDate < today) {
+  return PropertyMapper.toCheckAvailabilityResponse(
+    false,
+    "You cannot select a past move-in date."
+  );
+}
 const endDate = new Date(checkInDate);
 endDate.setMonth(endDate.getMonth() + rentalPeriod);
 

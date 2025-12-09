@@ -39,6 +39,9 @@ import UserLanding from "./pages/user/UserLanding.tsx";
 import UserProfile from "./components/User/UserProfile.tsx";
 import ActivePropertiesUser from "./pages/user/ActivePropertiesUser.tsx";
 import UserPropertyDetails from "./pages/user/UserPropertyDetails.tsx";
+import Checkout from "./pages/user/Checkout.tsx"
+import PaymentPage from "./pages/user/Payment.tsx";
+import BookingSuccess from "./pages/user/BookingSuccess.tsx";
 
 const App = () => {
   return (
@@ -278,6 +281,33 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={["user"]}>
               <UserPropertyDetails />
+            </ProtectedRoute>
+          }
+        />
+
+         <Route
+          path="/user/checkout/:propertyId"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <Checkout />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/user/payment"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <PaymentPage />
+            </ProtectedRoute>
+          }
+        />
+
+      <Route
+          path="/user/booking-success"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <BookingSuccess />
             </ProtectedRoute>
           }
         />
