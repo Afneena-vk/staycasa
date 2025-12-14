@@ -23,6 +23,7 @@ const PaymentPage = () => {
 //   const [orderId, setOrderId] = useState<string>("");
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  //const [razorpayInstance, setRazorpayInstance] = useState<any>(null);
   //const user = useAuthStore((state) => state.user);
 
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const PaymentPage = () => {
     //   navigate("/user/checkout");   
     // }
      if (!bookingData?.propertyId) {
-    navigate("/user/checkout");
+    navigate("/user/properties");
     return;
   }
 
@@ -80,30 +81,50 @@ const PaymentPage = () => {
       description: "Property Booking Payment",
       order_id: orderData.razorpayOrderId,
       handler: async function (response: any) {
-        // console.log("Payment Success:", response);
-         await paymentService.verifyPayment({
+        console.log("Payment Success:", response);
+        const result= await paymentService.verifyPayment({
              razorpay_payment_id: response.razorpay_payment_id,
-    razorpay_order_id: response.razorpay_order_id,
-    razorpay_signature: response.razorpay_signature,
+             razorpay_order_id: response.razorpay_order_id,
+             razorpay_signature: response.razorpay_signature,
              propertyId: bookingData.propertyId,
-  moveInDate: bookingData.moveInDate,
-  rentalPeriod: bookingData.rentalPeriod,
-  guests: bookingData.guests,
+             moveInDate: bookingData.moveInDate,
+             rentalPeriod: bookingData.rentalPeriod,
+             guests: bookingData.guests,
          })
+       
+
+ console.log("Backend result:", result);
+  console.log("result.property:", result.property);
+  console.log("result.booking:", result.booking);
+
         //navigate("/user/booking-success");
         navigate("/user/booking-success", {
   state: {
+    booking: result.booking,
+    property: result.property,
     paymentId: response.razorpay_payment_id,
     orderId: response.razorpay_order_id,
   },
 });
+//  clearBookingData();
+
+
 
       },
-    //   prefill: {
-    //     name: bookingData.userName || "",
-    //     email: bookingData.userEmail || "",
-    //     contact: bookingData.userPhone || "",
-    //   },
+
+ modal: {
+    ondismiss: function () {
+      console.log("Razorpay modal closed by user");
+
+      navigate("/user/booking-failure", {
+        state: {
+          reason: "Payment was cancelled ",
+        },
+      });
+    },
+  },
+
+ 
     prefill: {
 //   name: user?.name || "",
 //   email: user?.email || "",
@@ -115,6 +136,14 @@ const PaymentPage = () => {
     };
 
     const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', function (response: any) {
+  console.error("Payment Failed:", response.error);
+  navigate("/user/booking-failure", {
+    state: {
+      reason: response.error.description || "Payment failed. Please try again."
+    }
+  });
+});
     rzp.open();
   };
 
@@ -150,9 +179,11 @@ const PaymentPage = () => {
     )
    openRazorpayCheckout(orderData);
 
-  } catch (error) {
+  } catch (error:any) {
        console.error("Payment error:", error);
-    setErrorMessage("Something went wrong. Please try again.")
+    // setErrorMessage("Something went wrong. Please try again.")
+      const msg = error?.response?.data?.message || "Something went wrong. Please try again.";
+      setErrorMessage(msg);
   } finally {
     setLoadingPayment(false);
    }

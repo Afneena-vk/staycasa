@@ -30,4 +30,11 @@ export class BookingRepository extends BaseRepository<IBooking> implements IBook
        })
   }
 
+  async findById(id: string): Promise<IBooking | null> {
+  return await Booking.findById(id)
+    .populate('propertyId')
+    .populate('userId')
+    .populate('ownerId');
+}
+
 }

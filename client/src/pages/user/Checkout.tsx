@@ -109,7 +109,8 @@ const today = new Date().toISOString().split("T")[0];
     navigate("/user/payment");
 
   } catch (err: any) {
-    setErrors(prev => ({ ...prev, backend: "Server error. Try again later." }));
+    const msg = err?.response?.data?.message || "Server error. Try again later.";
+    setErrors(prev => ({ ...prev, backend: msg }));
   }
 };
 

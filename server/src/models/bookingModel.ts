@@ -6,6 +6,7 @@ import { BookingStatus, PaymentStatus } from "./status/status";
 
 
 export interface IBooking extends Document {
+  _id: mongoose.Types.ObjectId;
   bookingId: string;
   // userId: ObjectId;
   // ownerId: ObjectId;
@@ -16,6 +17,7 @@ export interface IBooking extends Document {
   moveInDate: Date;
   rentalPeriod: number; 
   endDate: Date;
+  guests: number;   
   rentPerMonth: number;
   totalCost: number;
   paymentMethod: string;
@@ -43,6 +45,7 @@ const bookingSchema = new Schema<IBooking>(
     propertyId: { type: Schema.Types.ObjectId, ref: "Property", required: true },
     moveInDate: { type: Date, required: true },
     rentalPeriod: { type: Number, required: true },
+    guests: {type: Number,required: true,min: 1},
     endDate: { type: Date, required: true },
     rentPerMonth: { type: Number, required: true },
     totalCost: { type: Number, required: true },

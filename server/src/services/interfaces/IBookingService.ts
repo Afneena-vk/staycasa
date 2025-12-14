@@ -1,4 +1,5 @@
 import { IBooking } from "../../models/bookingModel";
+import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto} from "../../dtos/booking.dto";
 
 export interface IRazorpayOrderInput {
   propertyId: string;
@@ -27,8 +28,8 @@ export interface IPaymentVerificationInput {
 
 export interface IBookingService {
 
-calculateTotal(propertyId: string, rentalPeriod: number): Promise<number>;   
-createRazorpayOrder(input: IRazorpayOrderInput): Promise<IRazorpayOrderOutput>;
-verifyPayment(input: IPaymentVerificationInput): Promise<IBooking>; 
+calculateTotal(propertyId: string, rentalPeriod: number): Promise<CalculateTotalResponseDto>;   
+createRazorpayOrder(input: IRazorpayOrderInput): Promise<CreateRazorpayOrderResponseDto>;
+verifyPayment(input: IPaymentVerificationInput): Promise<VerifyPaymentResponseDto>; 
 
 }

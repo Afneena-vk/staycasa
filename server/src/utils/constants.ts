@@ -29,6 +29,9 @@ export const ROLES = {
       DOCUMENTS_UPLOADED: "Documents uploaded successfully",
       PROPERTY_CREATED: "Property created successfully",
       PROPERTIES_RETRIEVED: "Properties retrieved successfully",
+      BOOKING_CONFIRMED: "Booking confirmed successfully",
+      TOTAL_CALCULATED: "Total amount calculated successfully",
+      RAZORPAY_ORDER_CREATED: "Razorpay order created successfully",
     },
     ERROR: {
       INVALID_CREDENTIALS: "Invalid credentials",
@@ -51,5 +54,13 @@ export const ROLES = {
       ALREADY_APPROVED: "Cannot upload documents. Owner is already approved.",
       PROPERTY_CREATION_FAILED: "Failed to create property",
       PROPERTIES_NOT_FOUND: "No properties found",
+      PROPERTY_NOT_FOUND: "Property not found",
+      PROPERTY_ALREADY_BOOKED: "Property is already booked for the selected dates",
+      INVALID_PAYMENT_SIGNATURE: "Invalid payment signature",
+      PAYMENT_NOT_COMPLETED: "Payment not completed",
+      INVALID_MOVE_IN_DATE: "Move-in date cannot be in the past",
+      INVALID_GUEST_COUNT: "Guest count exceeds maximum allowed",
+      INVALID_LEASE_PERIOD: "Invalid lease period",
+     
     },
   };

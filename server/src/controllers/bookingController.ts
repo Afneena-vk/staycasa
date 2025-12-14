@@ -15,11 +15,15 @@ import logger from "../utils/logger";
   async calculateTotal(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { propertyId, rentalPeriod } = req.body;
-      const totalAmount = await this._bookingService.calculateTotal(propertyId, rentalPeriod);
-      console.log('total amount is' , totalAmount );
-       res.status(200).json({ totalAmount });
+      const result = await this._bookingService.calculateTotal(propertyId, rentalPeriod);
+      
+       res.status(result.status).json(result);
     } catch (err: any) {
-       res.status(500).json({ message: err.message || 'Server error' });
+      // res.status(500).json({ message: err.message || 'Server error' });
+       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: err.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
     }
   }
 
@@ -40,11 +44,15 @@ import logger from "../utils/logger";
       guests,
       moveInDate,
     });
-    res.status(200).json(orderData);
+    res.status(orderData.status).json(orderData);
 
      } catch (err:any) {
         console.error("Error creating Razorpay order:", err);
-    res.status(400).json({ message: err.message || "Server error" });
+    // res.status(err.status).json({ message: err.message || "Server error" });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: err.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
      } 
   }
 
@@ -69,7 +77,7 @@ import logger from "../utils/logger";
     } = req.body;
     const userId = (req as any).userId;
 
-       const booking = await this._bookingService.verifyPayment({
+       const result = await this._bookingService.verifyPayment({
       razorpay_payment_id,
       razorpay_order_id,
       razorpay_signature,
@@ -81,9 +89,13 @@ import logger from "../utils/logger";
     });
 
 
-    res.status(200).json({ success: true });
+    res.status(result.status).json(result);
   } catch (err: any) {
-    res.status(400).json({ message: err.message || "Payment verification failed" });
+   // res.status(400).json({ message: err.message });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: err.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
   }
 }
 

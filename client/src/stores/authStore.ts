@@ -31,6 +31,7 @@ export const useAuthStore = create<StoreState>()(
         authType: state.authType,
         isAuthenticated: state.isAuthenticated,
        
+        bookingData: state.bookingData,
         properties: [], 
         isLoading: false,
         error: null, 

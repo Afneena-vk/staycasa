@@ -10,6 +10,9 @@ import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto} from '../dtos/booking.dto';
+import { BookingMapper } from '../mappers/bookingMapper';
+import { STATUS_CODES, MESSAGES } from '../utils/constants';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -25,10 +28,13 @@ export class BookingService implements IBookingService {
   ) {}
 
 
-  async calculateTotal(propertyId:string, rentalPeriod:number): Promise<number> {
+  async calculateTotal(propertyId:string, rentalPeriod:number): Promise<CalculateTotalResponseDto> {
     const property = await this._propertyRepository.findByPropertyId(propertyId);
-    if (!property) throw new Error('Property not found');
-    return property.pricePerMonth * rentalPeriod;
+    if (!property) {
+    throw new Error(MESSAGES.ERROR.PROPERTY_NOT_FOUND);
+  }
+     const totalAmount =property.pricePerMonth * rentalPeriod;
+     return BookingMapper.toCalculateTotalResponse(totalAmount)
   }
 
 
@@ -44,9 +50,10 @@ export class BookingService implements IBookingService {
     userId: string;
     guests: number;
     moveInDate: string;
-  }): Promise<{ totalAmount: number; razorpayOrderId: string }> {
+//   }): Promise<{ totalAmount: number; razorpayOrderId: string }> {
+  }): Promise<CreateRazorpayOrderResponseDto> {
        const property = await this._propertyRepository.findByPropertyId(propertyId);
-    if (!property) throw new Error("Property not found");
+    if (!property) throw new Error(MESSAGES.ERROR.PROPERTY_NOT_FOUND);
 
      if (guests > property.maxGuests) {
       throw new Error(`Maximum ${property.maxGuests} guests allowed.`);
@@ -57,7 +64,7 @@ export class BookingService implements IBookingService {
     today.setHours(0, 0, 0, 0);
 
     if (checkInDate < today) {
-      throw new Error("Move-in date cannot be in the past.");
+      throw new Error(MESSAGES.ERROR.INVALID_MOVE_IN_DATE);
     }
 
       if (
@@ -80,7 +87,7 @@ export class BookingService implements IBookingService {
       );
 
     if (conflictBooking) {
-      throw new Error("Property is already booked for the selected dates.");
+      throw new Error(MESSAGES.ERROR.PROPERTY_ALREADY_BOOKED);
     }
  const amount = property.pricePerMonth * rentalPeriod * 100;
 
@@ -92,17 +99,20 @@ export class BookingService implements IBookingService {
 
     });
 
-    return {
-      totalAmount: amount / 100,
-      razorpayOrderId: razorpayOrder.id,
-    };
-
+    // return {
+    //   totalAmount: amount / 100,
+    //   razorpayOrderId: razorpayOrder.id,
+    // };
+return BookingMapper.toCreateOrderResponse(
+   amount / 100,
+    razorpayOrder.id
+)
 
   }
 
  async verifyPayment(
    input: IPaymentVerificationInput
-  ): Promise<IBooking> {
+  ): Promise<VerifyPaymentResponseDto> {
     //const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = input;
      const {
     razorpay_payment_id,
@@ -122,8 +132,17 @@ export class BookingService implements IBookingService {
       .digest("hex");
 
     if (generated !== razorpay_signature) {
-      throw new Error("Invalid payment signature");
+      throw new Error(MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE);
     }
+
+    // AFTER signature verification
+const payment = await razorpay.payments.fetch(razorpay_payment_id);
+
+if (payment.status !== "captured") {
+  throw new Error(MESSAGES.ERROR.PAYMENT_NOT_COMPLETED)
+}
+
+
 
      const property = await this._propertyRepository.findByPropertyId(propertyId);
   if (!property) throw new Error("Property not found");
@@ -154,10 +173,11 @@ export class BookingService implements IBookingService {
      userId: new mongoose.Types.ObjectId(userId),
     ownerId: property.ownerId as any,
     // propertyId,
-     propertyId: new mongoose.Types.ObjectId(propertyId),
+    propertyId: new mongoose.Types.ObjectId(propertyId),
     moveInDate: startDate,
     endDate,
     rentalPeriod,
+    guests,
     rentPerMonth: property.pricePerMonth,
     totalCost,
     paymentMethod: "razorpay",
@@ -172,6 +192,9 @@ export class BookingService implements IBookingService {
 await this._propertyRepository.update(propertyId, { isBooked: true });
 
   
+const populatedBooking = await this._bookingRepository.findById(booking._id.toString());
+
+
   const bookedProperty = await this._propertyRepository.findByPropertyId(propertyId);
 
   
@@ -183,10 +206,10 @@ await this._propertyRepository.update(propertyId, { isBooked: true });
 
 
  
-  await this._propertyRepository.update(propertyId, {
-    isBooked: true
-  });
-  return booking;
+  // await this._propertyRepository.update(propertyId, {
+  //   isBooked: true
+  // });
+  return BookingMapper.toVerifyPaymentResponse( populatedBooking || booking,"Booking confirmed successfully",property);
   }
 
 
