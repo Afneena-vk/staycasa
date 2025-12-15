@@ -1,5 +1,17 @@
 import { api } from "../api/api";
 
+interface BookingQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  paymentStatus?: string;
+  startDate?: string;
+  endDate?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+}
+
 export const paymentService={
      calculateTotal: async (propertyId: string, rentalPeriod: number) => {
       const res = await api.post("user/payment/calculate-total", {
@@ -37,7 +49,13 @@ verifyPayment: async (paymentResponse: {
 }) => {
     const res = await api.post("user/payment/verify", paymentResponse);
     return res.data;
-  }
+  },
+
+
+fetchUserBookings : async (query: BookingQuery) => {
+  const res = await api.post("/user/bookings", query);
+  return res.data; 
+},
 
   
 }

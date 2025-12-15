@@ -43,6 +43,7 @@ import Checkout from "./pages/user/Checkout.tsx"
 import PaymentPage from "./pages/user/Payment.tsx";
 import BookingSuccess from "./pages/user/BookingSuccess.tsx";
 import BookingFailure from "./pages/user/BookingFailure.tsx";
+import BookingList from "./pages/user/BookingList.tsx";
 
 const App = () => {
   return (
@@ -321,6 +322,16 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+          <Route
+          path="/user/bookings"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <BookingList />
+            </ProtectedRoute>
+          }
+        />
+
+
 
       </Routes>
     </Router>

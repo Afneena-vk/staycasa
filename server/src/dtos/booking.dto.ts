@@ -52,3 +52,24 @@ export interface CreateRazorpayOrderResponseDto {
   razorpayOrderId: string;
 }
 
+export interface BookingListItemDto {
+  id: string;
+  bookingId: string;
+
+  moveInDate: Date;
+  endDate: Date;
+  rentalPeriod: number;
+  guests: number;
+  totalCost: number;
+
+  paymentStatus: string;
+  bookingStatus: string;
+
+  property: {
+    id: string;
+    title: string;
+    city: string;
+    images: string[];
+  };
+}
+

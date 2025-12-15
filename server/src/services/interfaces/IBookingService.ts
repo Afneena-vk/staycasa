@@ -1,5 +1,5 @@
 import { IBooking } from "../../models/bookingModel";
-import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto} from "../../dtos/booking.dto";
+import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto} from "../../dtos/booking.dto";
 
 export interface IRazorpayOrderInput {
   propertyId: string;
@@ -25,11 +25,35 @@ export interface IPaymentVerificationInput {
   userId: string;
 }
 
+export interface UserBookingsQueryOptions {
+  // search?: string;
+  // status?: string;
+  // paymentStatus?: string;
+  // startDate?: string; // ISO string from query
+  // endDate?: string;   // ISO string from query
+  // page?: string;      // from query params
+  // limit?: string;     // from query params
+  // sortField?: keyof IBooking;
+  // sortOrder?: "asc" | "desc";
+   page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  paymentStatus?: string;
+  startDate?: Date;
+  endDate?: Date;
+  sortField?: string;
+  sortOrder?: "asc" | "desc";
+}
+
 
 export interface IBookingService {
 
 calculateTotal(propertyId: string, rentalPeriod: number): Promise<CalculateTotalResponseDto>;   
 createRazorpayOrder(input: IRazorpayOrderInput): Promise<CreateRazorpayOrderResponseDto>;
 verifyPayment(input: IPaymentVerificationInput): Promise<VerifyPaymentResponseDto>; 
-
+getUserBookingsWithQuery(    
+    userId: string,
+    query: UserBookingsQueryOptions
+  ): Promise<{ bookings: BookingListItemDto[]; total: number; page: number; limit: number,  totalPages: number }>;
 }

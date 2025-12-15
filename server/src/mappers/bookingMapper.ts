@@ -1,6 +1,6 @@
 import { IBooking } from "../models/bookingModel";
 import { IProperty } from "../models/propertyModel";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto } from "../dtos/booking.dto";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto} from "../dtos/booking.dto";
 import { STATUS_CODES } from "../utils/constants";
 
 export class BookingMapper {
@@ -74,5 +74,38 @@ static toCalculateTotalResponse(totalAmount: number): CalculateTotalResponseDto 
     };
   }
 
+static toDto(booking: IBooking): BookingListItemDto {
+    const property = booking.propertyId as any; 
+
+    return {
+      id: booking._id.toString(),
+      bookingId: booking.bookingId,
+      moveInDate: booking.moveInDate,
+      endDate: booking.endDate,
+      rentalPeriod: booking.rentalPeriod,
+      guests: booking.guests,
+      totalCost: booking.totalCost,
+      paymentStatus: booking.paymentStatus,
+      bookingStatus: booking.bookingStatus,
+      property: property
+        ? {
+            id: property._id.toString(),
+            title: property.title,
+            city: property.city,
+            images: property.images || [],
+          }
+        : {
+            id: "",
+            title: "-",
+            city: "-",
+            images: [],
+          },
+    };
+  }
+
+  static toDtoList(bookings: IBooking[]): BookingListItemDto[] {
+    return bookings.map(this.toDto);
+  }
+  
 
 }

@@ -99,5 +99,39 @@ import logger from "../utils/logger";
   }
 }
 
+async getUserBooking(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+      const userId = (req as any).userId;
+
+       const { 
+        page, 
+        limit, 
+        search, 
+        status, 
+        paymentStatus, 
+        startDate, 
+        endDate, 
+        sortBy, 
+        sortOrder 
+      // } = req.query;
+       } = req.body; 
+      const result = await this._bookingService.getUserBookingsWithQuery(userId, {
+        page: page ? parseInt(page as string) : undefined,
+        limit: limit ? parseInt(limit as string) : undefined,
+        search: search as string,
+        status: status as string,
+        paymentStatus: paymentStatus as string,
+        startDate: startDate ? new Date(startDate as string) : undefined,
+        endDate: endDate ? new Date(endDate as string) : undefined,
+        sortField: sortBy as string,
+        sortOrder: sortOrder === "asc" ? "asc" : "desc",
+      });
+       res.status(200).json(result);
+
+    } catch (error: any) {
+      res.status(500).json({ message: error.message || "Something went wrong" });
+    }
+}
+
 
 }

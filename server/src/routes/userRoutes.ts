@@ -123,6 +123,13 @@ userRoutes.post(
 
 )
 
+userRoutes.post(
+  "/bookings",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.getUserBooking.bind(bookingController)
+
+)
 
 
 export default userRoutes   

@@ -1,6 +1,6 @@
 import { injectable, inject } from 'tsyringe';
 import { TOKENS } from '../config/tokens';
-import {IBookingService, IRazorpayOrderInput, IRazorpayOrderOutput} from './interfaces/IBookingService';
+import {IBookingService, IRazorpayOrderInput, IRazorpayOrderOutput, UserBookingsQueryOptions} from './interfaces/IBookingService';
 import { IPropertyService } from './interfaces/IPropertyService';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
@@ -10,7 +10,7 @@ import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto} from '../dtos/booking.dto';
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 
@@ -113,7 +113,7 @@ return BookingMapper.toCreateOrderResponse(
  async verifyPayment(
    input: IPaymentVerificationInput
   ): Promise<VerifyPaymentResponseDto> {
-    //const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = input;
+    
      const {
     razorpay_payment_id,
     razorpay_order_id,
@@ -135,7 +135,7 @@ return BookingMapper.toCreateOrderResponse(
       throw new Error(MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE);
     }
 
-    // AFTER signature verification
+   
 const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
 if (payment.status !== "captured") {
@@ -147,12 +147,8 @@ if (payment.status !== "captured") {
      const property = await this._propertyRepository.findByPropertyId(propertyId);
   if (!property) throw new Error("Property not found");
     
-    // Payment verified → Save booking
-    // await this.bookingRepo.createBooking({
-    //   razorpay_payment_id,
-    //   razorpay_order_id,
-    //   // other booking info as needed
-    // });
+   
+
 
   const startDate = new Date(moveInDate);
   const endDate = new Date(startDate);
@@ -169,10 +165,9 @@ if (payment.status !== "captured") {
   const totalCost = property.pricePerMonth * rentalPeriod;
 
  const booking = await this._bookingRepository.create({
-    // userId,
-     userId: new mongoose.Types.ObjectId(userId),
+
+    userId: new mongoose.Types.ObjectId(userId),
     ownerId: property.ownerId as any,
-    // propertyId,
     propertyId: new mongoose.Types.ObjectId(propertyId),
     moveInDate: startDate,
     endDate,
@@ -206,11 +201,45 @@ const populatedBooking = await this._bookingRepository.findById(booking._id.toSt
 
 
  
-  // await this._propertyRepository.update(propertyId, {
-  //   isBooked: true
-  // });
+  
   return BookingMapper.toVerifyPaymentResponse( populatedBooking || booking,"Booking confirmed successfully",property);
   }
+
+
+
+  async getUserBookingsWithQuery(
+  userId: string,
+  query: UserBookingsQueryOptions
+): Promise<{ bookings:  BookingListItemDto[]; total: number; page: number; limit: number, totalPages: number }> {
+
+  const page = query.page || 1;
+  const limit = query.limit || 9;
+  //const sortField = query.sortField || "createdAt";
+  const allowedSortFields: (keyof IBooking)[] = ["bookingId", "moveInDate", "paymentStatus", "createdAt"];
+  const sortField = allowedSortFields.includes(query.sortField as keyof IBooking)
+    ? (query.sortField as keyof IBooking)
+    : "createdAt";
+  
+  
+
+  const sortOrder = query.sortOrder === "asc" ? "asc" : "desc";
+ 
+
+  const { bookings, total } = await this._bookingRepository.findByUserWithQuery(userId,  {
+    ...query,
+    page,
+    limit,
+    sortField,
+    sortOrder,
+  }
+
+  );
+
+ // const bookingDtos = bookings.map(BookingMapper.toBookingResponse);
+   const bookingDtos = BookingMapper.toDtoList(bookings);
+
+  return { bookings: bookingDtos, total, page, limit,totalPages: Math.ceil(total / limit)  };
+}
 
 
 }
