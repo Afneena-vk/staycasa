@@ -44,6 +44,7 @@ import PaymentPage from "./pages/user/Payment.tsx";
 import BookingSuccess from "./pages/user/BookingSuccess.tsx";
 import BookingFailure from "./pages/user/BookingFailure.tsx";
 import BookingList from "./pages/user/BookingList.tsx";
+import BookingDetails from "./pages/user/BookingDetails.tsx";
 
 const App = () => {
   return (
@@ -212,10 +213,6 @@ const App = () => {
         {/* <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/user/forgot-password" element={<UserForgotPassword />} />
-        <Route path="/user/otp-verification" element={<UserOTPVerification />} />
-        <Route path="/user/reset-password" element={<UserResetPassword />} />
-        <Route path="/user/auth-success" element={<AuthSuccess />} />
-        <Route path="/user/dashboard" element={<UserLanding />} />
         <Route path='/user/profile' element={<UserProfile/>}/>
          */}
 
@@ -327,6 +324,14 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={["user"]}>
               <BookingList />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/user/bookings/:bookingId"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <BookingDetails />
             </ProtectedRoute>
           }
         />

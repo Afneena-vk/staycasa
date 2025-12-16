@@ -10,7 +10,7 @@ import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto} from '../dtos/booking.dto';
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 
@@ -241,5 +241,18 @@ const populatedBooking = await this._bookingRepository.findById(booking._id.toSt
   return { bookings: bookingDtos, total, page, limit,totalPages: Math.ceil(total / limit)  };
 }
 
+async getBookingDetails(bookingId: string, userId: string): Promise<BookingDetailsDto> {
+    const booking = await this._bookingRepository.findByIdAndUser(
+      bookingId,
+      userId
+    );
+
+    if (!booking) {
+    throw new Error(MESSAGES.ERROR.BOOKING_NOT_FOUND);
+  }
+
+  return BookingMapper.toBookingDetailsDto(booking);
+
+}
 
 }

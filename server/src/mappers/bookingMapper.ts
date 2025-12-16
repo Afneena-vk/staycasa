@@ -1,6 +1,6 @@
 import { IBooking } from "../models/bookingModel";
 import { IProperty } from "../models/propertyModel";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto} from "../dtos/booking.dto";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto} from "../dtos/booking.dto";
 import { STATUS_CODES } from "../utils/constants";
 
 export class BookingMapper {
@@ -107,5 +107,48 @@ static toDto(booking: IBooking): BookingListItemDto {
     return bookings.map(this.toDto);
   }
   
+
+static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
+  const property = booking.propertyId as any;
+
+  return {
+    id: booking._id.toString(),
+    bookingId: booking.bookingId,
+
+    moveInDate: booking.moveInDate,
+    endDate: booking.endDate,
+    rentalPeriod: booking.rentalPeriod,
+    guests: booking.guests,
+
+    rentPerMonth: booking.rentPerMonth,
+    totalCost: booking.totalCost,
+
+    paymentStatus: booking.paymentStatus,
+    bookingStatus: booking.bookingStatus,
+    paymentMethod: booking.paymentMethod,
+
+    createdAt: booking.createdAt,
+
+    property: {
+      id: property._id.toString(),
+      title: property.title,
+      description: property.description,
+      city: property.city,
+      address: `${property.houseNumber}, ${property.street}`,
+      images: property.images || [],
+      pricePerMonth: property.pricePerMonth,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      furnishing: property.furnishing,
+      street:property.street,
+      type: property.type,
+      district:property.district,
+      state:property.state,
+      pincode:property.pincode,
+      houseNumber: property.houseNumber
+      
+    },
+  };
+}
 
 }

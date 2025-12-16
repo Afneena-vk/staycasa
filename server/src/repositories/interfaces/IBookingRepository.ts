@@ -18,4 +18,5 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
     findConflictingBookings(propertyId: string, start: Date, end: Date): Promise<IBooking|null>;
     findById(id: string): Promise<IBooking | null>;
     findByUserWithQuery(userId:string ,options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
+    findByIdAndUser(bookingId:string,userId:string):  Promise<IBooking | null>;
 }

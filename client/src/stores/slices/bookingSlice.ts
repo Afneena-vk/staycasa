@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { BookingDTO } from "../../types/booking";
+import { BookingDTO , BookingDetailsDTO} from "../../types/booking";
 import { paymentService } from "../../services/paymentService";
 
 export interface BookingQuery {
@@ -42,8 +42,12 @@ export interface BookingState {
    isLoading: boolean;
   error: string | null;
 
+
+     selectedBooking: BookingDetailsDTO | null;
+     fetchBookingDetails: (bookingId: string) => Promise<void>;
+
     setFilters: (filters: Partial<BookingState>) => void;
-  setBookings: (data: {
+    setBookings: (data: {
     bookings: BookingDTO[];
     total: number;
     page: number;
@@ -75,6 +79,8 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
 
   isLoading: false,
   error: null,
+
+   selectedBooking: null,
 
   setFilters: (filters) =>
     set((state) => ({
@@ -129,6 +135,17 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
     });
   }
 },
+
+    fetchBookingDetails : async (bookingId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await paymentService. fetchBookingDetails(bookingId);
+      set({ selectedBooking: res.booking, isLoading: false });
+    } catch (error: any) {
+      set({ selectedBooking: null, isLoading: false, error: error.response?.data?.error || error.message || "Failed to fetch booking" });
+    }
+  },
+
 
 
 });

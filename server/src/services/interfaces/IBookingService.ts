@@ -1,12 +1,12 @@
 import { IBooking } from "../../models/bookingModel";
-import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto} from "../../dtos/booking.dto";
+import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto} from "../../dtos/booking.dto";
 
 export interface IRazorpayOrderInput {
   propertyId: string;
   rentalPeriod: number;
   userId: string;
   guests: number;
-  moveInDate: string; // ISO string
+  moveInDate: string; 
 }
 
 export interface IRazorpayOrderOutput {
@@ -56,4 +56,10 @@ getUserBookingsWithQuery(
     userId: string,
     query: UserBookingsQueryOptions
   ): Promise<{ bookings: BookingListItemDto[]; total: number; page: number; limit: number,  totalPages: number }>;
+
+getBookingDetails(
+   bookingId: string,
+   userId:string
+): Promise<BookingDetailsDto>;
+
 }

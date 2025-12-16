@@ -73,3 +73,43 @@ export interface BookingListItemDto {
   };
 }
 
+
+export interface BookingDetailsDto {
+  id: string;
+  bookingId: string;
+
+  moveInDate: Date;
+  endDate: Date;
+  rentalPeriod: number;
+  guests: number;
+
+  rentPerMonth: number;
+  totalCost: number;
+
+  paymentStatus: PaymentStatus;
+  bookingStatus: BookingStatus;
+  paymentMethod: string;
+
+  createdAt: Date;
+
+  property: {
+    id: string;
+    title: string;
+    description: string;
+    city: string;
+    address: string;
+    images: string[];
+    pricePerMonth: number;
+    bedrooms: number;
+    bathrooms: number;
+    furnishing: string;
+    street: string;
+    type: string; 
+    district: string;
+    state: string;
+    pincode: number;
+    houseNumber: string;
+   
+  };
+}
+

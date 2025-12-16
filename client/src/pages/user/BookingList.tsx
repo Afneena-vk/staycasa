@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
+import { useNavigate } from "react-router-dom";
 
 const BookingList = () => {
   const {
@@ -22,6 +23,7 @@ const BookingList = () => {
 
   const [searchQuery, setSearchQuery] = useState(search || "");
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const navigate = useNavigate();
 
 
   // useEffect(() => {
@@ -122,42 +124,62 @@ useEffect(() => {
             </select>
           </div>
         </div>
-
+      
         {/* Booking Cards */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {bookings.map((b) => (
-            <div
-              key={b.id}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5"
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-lg font-semibold text-gray-800">Booking ID: {b.bookingId}</h3>
-                <span
-                  className={`px-2 py-1 rounded text-sm font-medium ${
-                    b.paymentStatus
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {b.paymentStatus}
-                </span>
-              </div>
-              <p className="text-gray-600">
-                <span className="font-medium">Property:</span> {b.property?.title || "-"}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-medium">Move In:</span>{" "}
-                {new Date(b.moveInDate).toLocaleDateString()}
-              </p>
-              <p className="text-gray-600">
-                <span className="font-medium">Guests:</span> {b.guests}
-              </p>
-               <p className="text-gray-600">
-                <span className="font-medium">Total cost:</span> {b.totalCost}
-              </p>
-            </div>
-          ))}
+<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  {bookings.map((b) => (
+    <div
+      key={b.id}
+      onClick={() => navigate(`/user/bookings/${b.id}`)}
+      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 flex gap-4 items-center"
+    >
+      {/* Property Image */}
+      {b.property?.images && b.property.images.length > 0 ? (
+        <img
+          src={b.property.images[0]}
+          alt={b.property.title}
+          className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+        />
+      ) : (
+        <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 flex-shrink-0">
+          No Image
         </div>
+      )}
+
+      {/* Text Content */}
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="flex justify-between items-start">
+          <h3 className="text-md font-semibold text-gray-800">
+            {b.property?.title || "Unnamed Property"}
+          </h3>
+          <span
+            className={`px-2 py-1 rounded text-xs font-medium ${
+              b.paymentStatus === "completed"
+                ? "bg-green-100 text-green-800"
+                : b.paymentStatus === "pending"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
+            {b.paymentStatus || "Pending"}
+          </span>
+        </div>
+
+        <p className="text-gray-600 text-sm">
+          <span className="font-medium">Move In:</span>{" "}
+          {new Date(b.moveInDate).toLocaleDateString()}
+        </p>
+        <p className="text-gray-600 text-sm">
+          <span className="font-medium">Guests:</span> {b.guests}
+        </p>
+        <p className="text-gray-600 text-sm">
+          <span className="font-medium">Total:</span> ${b.totalCost}
+        </p>
+      </div>
+    </div>
+  ))}
+</div>
+
 
         {/* Pagination */}
         <div className="flex justify-center items-center gap-4 mt-8">

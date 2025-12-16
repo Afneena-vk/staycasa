@@ -47,6 +47,9 @@ async findByUserId(userId: string): Promise<IBooking[]> {
 
 
 
+
+
+
 async findByUserWithQuery(
   userId: string,
   options: FindByUserOptions
@@ -95,6 +98,18 @@ async findByUserWithQuery(
 
   return { bookings: filteredBookings, total };
 }
+
+  async findByIdAndUser(
+    bookingId: string,
+    userId: string
+  ): Promise<IBooking | null>{
+    return Booking.findOne({
+      _id: bookingId,
+      userId,
+    })
+       .populate("propertyId")
+       .populate("ownerId");
+  }
 
 
 }

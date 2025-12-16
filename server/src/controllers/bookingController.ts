@@ -134,4 +134,25 @@ async getUserBooking(req: Request, res: Response, next: NextFunction): Promise<v
 }
 
 
+async getBookingDetails(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    
+    const {bookingId}= req.params;
+    const userId = (req as any).userId;
+
+    const booking = await this._bookingService.getBookingDetails(bookingId,userId);
+
+      res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      booking,
+    });
+
+  } catch (error:any) {
+      res.status(STATUS_CODES.NOT_FOUND).json({
+      status: STATUS_CODES.NOT_FOUND,
+      message: error.message || MESSAGES.ERROR.BOOKING_NOT_FOUND,
+    });
+  }
+}
+
 }

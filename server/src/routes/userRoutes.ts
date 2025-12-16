@@ -131,6 +131,14 @@ userRoutes.post(
 
 )
 
+userRoutes.get(
+  "/bookings/:bookingId",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.getBookingDetails.bind(bookingController)
+
+)
+
 
 export default userRoutes   
 

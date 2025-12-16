@@ -1,4 +1,5 @@
 import { api } from "../api/api";
+import BookingDetails from "../pages/user/BookingDetails";
 
 interface BookingQuery {
   page?: number;
@@ -56,6 +57,11 @@ fetchUserBookings : async (query: BookingQuery) => {
   const res = await api.post("/user/bookings", query);
   return res.data; 
 },
+
+fetchBookingDetails: async(bookingId:string)=>{
+  const res = await api.get(`/user/bookings/${bookingId}`);
+  return res.data;
+}
 
   
 }

@@ -61,6 +61,6 @@ export const ROLES = {
       INVALID_MOVE_IN_DATE: "Move-in date cannot be in the past",
       INVALID_GUEST_COUNT: "Guest count exceeds maximum allowed",
       INVALID_LEASE_PERIOD: "Invalid lease period",
-     
+      BOOKING_NOT_FOUND: "Booking not found",
     },
   };

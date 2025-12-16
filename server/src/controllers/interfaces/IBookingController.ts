@@ -5,4 +5,5 @@ export interface IBookingController {
     createRazorpayOrder(req: Request, res: Response, next: NextFunction): Promise<void>;
     verifyPayment(req: Request, res: Response, next: NextFunction): Promise<void>;
     getUserBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getBookingDetails(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
