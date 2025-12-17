@@ -46,10 +46,6 @@ async findByUserId(userId: string): Promise<IBooking[]> {
 }
 
 
-
-
-
-
 async findByUserWithQuery(
   userId: string,
   options: FindByUserOptions

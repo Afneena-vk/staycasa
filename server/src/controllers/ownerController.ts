@@ -275,7 +275,18 @@ async uploadDocument(req: Request, res: Response, next: NextFunction): Promise<v
   }
 }
   
+async getWallet(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId= (req as any).userId;
+    const result = await this._ownerService.getWallet(ownerId);
 
+    res.status(STATUS_CODES.OK).json(result);
+  } catch (error:any) {
+        res.status(error.status || 500).json({
+      message: error.message,
+    });
+  }
+}
 
 }
 

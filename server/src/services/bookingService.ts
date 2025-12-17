@@ -13,6 +13,7 @@ import { BookingStatus, PaymentStatus } from "../models/status/status";
 import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
+import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -24,7 +25,8 @@ export class BookingService implements IBookingService {
   
   constructor(
     @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
-    @inject(TOKENS.IBookingRepository) private _bookingRepository : IBookingRepository
+    @inject(TOKENS.IBookingRepository) private _bookingRepository : IBookingRepository,
+    @inject(TOKENS.IWalletRepository) private _walletRepository : IWalletRepository,
   ) {}
 
 
@@ -185,6 +187,39 @@ if (payment.status !== "captured") {
 
 
 await this._propertyRepository.update(propertyId, { isBooked: true });
+
+
+//const ownerId = property.ownerId as mongoose.Types.ObjectId;
+const ownerId = new mongoose.Types.ObjectId(
+  property.ownerId.toString()
+);
+console.log("OwnerId:", ownerId);
+console.log("OwnerId type:", typeof ownerId);
+console.log("Wallet payload:", {
+  type: "credit",
+  amount: totalCost,
+  bookingId: booking._id,
+});
+ 
+try {
+  await this._walletRepository.creditWallet(
+    ownerId,
+    "owner",
+    {
+      type: "credit",
+      amount: totalCost,
+      description: "Property booking payment received",
+      bookingId: booking._id,
+      paymentMethod: "razorpay",
+      paymentId: razorpay_payment_id,
+      date: new Date()
+    }
+  );
+} catch (error) {
+  console.error(" Wallet credit failed:", error);
+  throw error;
+}
+
 
   
 const populatedBooking = await this._bookingRepository.findById(booking._id.toString());

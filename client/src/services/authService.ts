@@ -401,7 +401,11 @@ changePassword: async (
   )=>{
     const response = await api.get(`/user/properties/${propertyId}/check-availability`,{params:{checkIn,rentalPeriod,guests},});
     return response.data;
-  }
+  },
   
+   getOwnerWallet: async () => {
+    const response = await api.get("/owner/wallet");
+    return response.data;
+  },
 
 };

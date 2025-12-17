@@ -29,6 +29,7 @@ import OwnerAddProperty from "./pages/owner/OwnerAddProperty.tsx";
 import OwnerProfile from "./components/Owner/OwnerProfile.tsx";
 import OwnerPropertyDetails from "./pages/owner/OwnerPropertyDetails.tsx"
 import OwnerEditProperty from "./pages/owner/OwnerEditProperty.tsx";
+import OwnerWallet from "./pages/owner/OwnerWallet.tsx";
 
 import UserSignup from "./pages/user/UserSignup";
 import UserLogin from "./pages/user/UserLogin";
@@ -206,6 +207,15 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={["owner"]}>
               <OwnerEditProperty />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/owner/wallet"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerWallet/>
             </ProtectedRoute>
           }
         />

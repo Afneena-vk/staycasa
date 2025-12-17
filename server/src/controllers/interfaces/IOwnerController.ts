@@ -17,4 +17,6 @@ export interface IOwnerController {
 
   uploadDocument(req: Request, res: Response, next: NextFunction): Promise<void>;
   changePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
+
+  getWallet(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

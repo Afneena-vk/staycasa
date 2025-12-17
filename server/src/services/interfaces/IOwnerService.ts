@@ -1,4 +1,5 @@
 import { OwnerLoginResponseDto,OwnerProfileResponseDto, OwnerProfileUpdateDto, ChangePasswordResponseDto } from "../../dtos/owner.dto";
+import { ITransaction } from "../../models/walletModel";
 
 export interface OwnerSignupData {
     name: string;
@@ -34,5 +35,9 @@ export interface OwnerSignupData {
   updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<OwnerProfileResponseDto>;
 
   uploadDocument(ownerId: string, files: Express.Multer.File): Promise<{ message: string; status: number; document: string }>;
+
   changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
+
+  getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
+
 }

@@ -9,8 +9,10 @@ import { cloudinaryUpload } from "../config/cloudinary";
 import { checkUserStatus } from "../middleware/statusCheckingMiddleware";
 
 const ownerRoutes = Router();
+
 const ownerController = container.resolve<IOwnerController>(TOKENS.IOwnerController);
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
+
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -91,5 +93,11 @@ ownerRoutes.put(
   ownerController.changePassword.bind(ownerController)
 );
 
+ownerRoutes.get(
+  "/wallet",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  ownerController.getWallet.bind(ownerController)
+);
 
 export default ownerRoutes

@@ -1,4 +1,4 @@
-import { Document, Model, ObjectId } from 'mongoose';
+import { Document, Model, ObjectId, FilterQuery } from 'mongoose';
 import { IBaseRepository } from './interfaces/IBaseRepository';
 import { injectable } from 'tsyringe';
 
@@ -31,6 +31,11 @@ export class BaseRepository<T extends Document> implements IBaseRepository<T> {
   async delete(id: string | ObjectId): Promise<T | null> {
     return await this.model.findByIdAndDelete(id).exec();
   }
+
+ async findOne(condition: FilterQuery<T>): Promise<T | null> {
+    return await this.model.findOne(condition).exec();
+  }
+
 }
 
 

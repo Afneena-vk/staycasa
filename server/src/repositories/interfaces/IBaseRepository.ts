@@ -1,6 +1,6 @@
 
 
-import { Document, ObjectId } from 'mongoose';
+import { Document, ObjectId, FilterQuery } from 'mongoose';
 
 export interface IBaseRepository<T extends Document> {
   create(item: Partial<T>): Promise<T>;
@@ -8,4 +8,5 @@ export interface IBaseRepository<T extends Document> {
   findAll(): Promise<T[]>;
   update(id: string | ObjectId, data: Partial<T>): Promise<T | null>;
   delete(id: string | ObjectId): Promise<T | null>;
+  findOne(condition: FilterQuery<T>): Promise<T | null>;
 }

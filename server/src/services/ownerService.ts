@@ -3,6 +3,7 @@ import {injectable, inject } from 'tsyringe';
 import { IOwnerService, OwnerSignupData, OwnerLoginData } from "./interfaces/IOwnerService";
 //import ownerRepository from "../repositories/ownerRepository";
 import { IOwnerRepository } from '../repositories/interfaces/IOwnerRepository';
+import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
 import { TOKENS } from '../config/tokens';
 import OTPService from "../utils/OTPService"
 import bcrypt from "bcryptjs";
@@ -17,7 +18,8 @@ import { cloudinary } from '../config/cloudinary';
 
  export class OwnerService implements IOwnerService {
  constructor(
-    @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository
+    @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository,
+    @inject(TOKENS.IWalletRepository) private _walletRepository: IWalletRepository
   ) {}
 
 
@@ -360,7 +362,23 @@ async changePassword(ownerId: string, currentPassword: string, newPassword: stri
 }
 
 
+async getWallet(ownerId: string) {
+  const wallet = await this._walletRepository.findOne({ userId: ownerId });
 
+  if (!wallet) {
+    return {
+      balance: 0,
+      transactions: [],
+    };
+  }
+
+  return {
+    balance: wallet.balance,
+    transactions: wallet.transactions.sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    ),
+  };
+}
 
 }
 
