@@ -376,12 +376,12 @@ async getActivePropertyById(propertyId: string): Promise<PropertyResponseDto> {
 
 
 
-// async checkAvailability(propertyId: string, checkIn: string, rentalPeriod:number, guests: number): Promise<{ available: boolean; message: string; }> {
+
 async checkAvailability(propertyId: string, checkIn: string, rentalPeriod:number, guests: number): Promise<CheckAvailabilityResponseDTO> {
  try {
   
    const property = await this._propertyRepository.findByPropertyId(propertyId);
-   //if(!property) return {available:false, message:"Property not found"};
+   
    if (!property) {
         return PropertyMapper.toCheckAvailabilityResponse(
           false,
@@ -410,9 +410,7 @@ if (checkInDate < today) {
 const endDate = new Date(checkInDate);
 endDate.setMonth(endDate.getMonth() + rentalPeriod);
 
-// if (rentalPeriod < property.minLeasePeriod || rentalPeriod > property.maxLeasePeriod) {
-//   return { available: false, message: `Lease period must be between ${property.minLeasePeriod} and ${property.maxLeasePeriod} months.` };
-// }
+
  if (
         rentalPeriod < property.minLeasePeriod ||
         rentalPeriod > property.maxLeasePeriod
@@ -435,11 +433,7 @@ endDate.setMonth(endDate.getMonth() + rentalPeriod);
     //   };
     // }
 
-  //  const isOverlapping = bookings.some(b =>
-  //     (checkInDate >= b.moveInDate && checkInDate < b.endDate) ||
-  //     (checkOutDate > b.moveInDate && checkOutDate <= b.endDate) ||
-  //     (checkInDate <= b.moveInDate && checkOutDate >= b.endDate)
-  //   );
+
 
   // const isOverlapping = bookings.some((b) => {
   //     const existingStart = new Date(b.moveInDate);
@@ -458,10 +452,6 @@ endDate.setMonth(endDate.getMonth() + rentalPeriod);
       endDate
   )
 
-    // if(conflictBooking){
-    //   return  { available: false, message: "Property is already booked for selected dates." };
-    // }
-    // return { available: true, message: "Property is available!" };
 
     if (conflictBooking) {
         return PropertyMapper.toCheckAvailabilityResponse(

@@ -67,7 +67,6 @@ export interface BookingDetailsDTO {
     state: string;
     pincode: number;
     houseNumber: string;
-    // rules?: string;
-    // cancellationPolicy?: string;
+  
   };
 }

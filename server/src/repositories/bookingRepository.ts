@@ -46,6 +46,14 @@ async findByUserId(userId: string): Promise<IBooking[]> {
 }
 
 
+// const isBookingIdSearch =
+//     typeof search === "string" && search.startsWith("BK");
+// match:
+// //         !isBookingIdSearch && search
+//   const filteredBookings = isBookingIdSearch
+//     ? bookings
+//     : bookings.filter(b => b.propertyId);
+
 async findByUserWithQuery(
   userId: string,
   options: FindByUserOptions
@@ -106,6 +114,10 @@ async findByUserWithQuery(
        .populate("propertyId")
        .populate("ownerId");
   }
+
+
+
+ 
 
 
 }

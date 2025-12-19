@@ -75,7 +75,7 @@ const PaymentPage = () => {
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: orderData.totalAmount * 100, // in paise
+      amount: orderData.totalAmount * 100, 
       currency: "INR",
       name: "Vacation Home Booking",
       description: "Property Booking Payment",
