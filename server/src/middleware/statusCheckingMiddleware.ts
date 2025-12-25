@@ -19,8 +19,12 @@ export const checkUserStatus = async (
       const user = await userRepository.findById(userId);
 
       if (!user) {
-        res.clearCookie("user-auth-token", { path: "/" });
-        res.clearCookie("user-refresh-token", { path: "/" });
+        // res.clearCookie("user-auth-token", { path: "/" });
+        // res.clearCookie("user-refresh-token", { path: "/" });
+        res.clearCookie("access-token", { path: "/" });
+        res.clearCookie("refresh-token", { path: "/" });
+        res.clearCookie("csrf-token", { path: "/" });
+
         res.status(STATUS_CODES.NOT_FOUND).json({
           error: "User not found",
         });
@@ -28,8 +32,12 @@ export const checkUserStatus = async (
       }
 
       if (user.status === "blocked") {
-        res.clearCookie("user-auth-token", { path: "/" });
-        res.clearCookie("user-refresh-token", { path: "/" });
+        // res.clearCookie("user-auth-token", { path: "/" });
+        // res.clearCookie("user-refresh-token", { path: "/" });
+        res.clearCookie("access-token", { path: "/" });
+        res.clearCookie("refresh-token", { path: "/" });
+        res.clearCookie("csrf-token", { path: "/" });
+
         res.status(STATUS_CODES.FORBIDDEN).json({
           error: "Your account has been blocked",
           blocked: true,
@@ -41,8 +49,12 @@ export const checkUserStatus = async (
       const owner = await ownerRepository.findById(userId);
 
       if (!owner) {
-        res.clearCookie("owner-auth-token", { path: "/" });
-        res.clearCookie("owner-refresh-token", { path: "/" });
+        // res.clearCookie("owner-auth-token", { path: "/" });
+        // res.clearCookie("owner-refresh-token", { path: "/" });
+        res.clearCookie("access-token", { path: "/" });
+        res.clearCookie("refresh-token", { path: "/" });
+        res.clearCookie("csrf-token", { path: "/" });
+
         res.status(STATUS_CODES.NOT_FOUND).json({
           error: "Owner not found",
         });
@@ -50,8 +62,12 @@ export const checkUserStatus = async (
       }
 
       if (owner.isBlocked) {
-        res.clearCookie("owner-auth-token", { path: "/" });
-        res.clearCookie("owner-refresh-token", { path: "/" });
+        // res.clearCookie("owner-auth-token", { path: "/" });
+        // res.clearCookie("owner-refresh-token", { path: "/" });
+        res.clearCookie("access-token", { path: "/" });
+        res.clearCookie("refresh-token", { path: "/" });
+        res.clearCookie("csrf-token", { path: "/" });
+
         res.status(STATUS_CODES.FORBIDDEN).json({
           error: "Your account has been blocked",
           blocked: true,

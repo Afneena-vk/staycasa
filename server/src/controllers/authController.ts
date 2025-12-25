@@ -3,14 +3,19 @@ import { Request, Response, NextFunction } from "express";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
+import crypto from "crypto";
 
  class AuthController implements IAuthController{
     async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
          try {
-    const refreshToken = req.cookies["user-refresh-token"] || 
-                        req.cookies["owner-refresh-token"] || 
-                        req.cookies["admin-refresh-token"] ||
-                        req.body.refreshToken;
+    // const refreshToken = req.cookies["user-refresh-token"] || 
+    //                     req.cookies["owner-refresh-token"] || 
+    //                     req.cookies["admin-refresh-token"] ||
+    //                     req.body.refreshToken;
+      const refreshToken = req.cookies["refresh-token"];
+      const csrfToken = req.headers["x-csrf-token"] as string;
+      const storedCsrfToken = req.cookies["csrf-token"];
+
 
     if (!refreshToken) {
       res.status(STATUS_CODES.UNAUTHORIZED).json({ 
@@ -18,6 +23,13 @@ import logger from "../utils/logger";
       });
       return;
     }
+
+     if (!csrfToken || !storedCsrfToken || csrfToken !== storedCsrfToken) {
+        res.status(STATUS_CODES.FORBIDDEN).json({
+          message: "Invalid CSRF token"
+        });
+        return;
+      }
 
     const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
     if (!JWT_REFRESH_SECRET) {
@@ -44,12 +56,16 @@ import logger from "../utils/logger";
     );
 
     
-    res.cookie(`${decoded.type}-auth-token`, newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 15 * 60 * 1000,
-      path: "/",
-    });
+
+
+      res.cookie("access-token", newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+         sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: 15 * 60 * 1000,
+        path: "/",
+      });
 
     res.status(STATUS_CODES.OK).json({
       accessToken: newAccessToken,

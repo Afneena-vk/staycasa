@@ -38,6 +38,7 @@ const SessionManager: React.FC = () => {
       console.log(" Clearing auth type from tokenService");
 
       tokenService.clearAuthType();
+       tokenService.clearCsrfToken();
     }
   }, [isAuthenticated, authType]);
 

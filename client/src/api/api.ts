@@ -15,6 +15,20 @@ export const api = axios.create({
 });
 
 
+api.interceptors.request.use(
+  (config) => {
+    
+    if (config.url?.includes('/refresh-token')) {
+      const csrfToken = tokenService.getCsrfToken();
+      if (csrfToken) {
+        config.headers['x-csrf-token'] = csrfToken;
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 
 api.interceptors.response.use(
   (response) => response,
@@ -37,7 +51,11 @@ api.interceptors.response.use(
           `${API_URL}/api/auth/refresh-token`,
           {},
        
-          { withCredentials: true }
+          { withCredentials: true,
+            headers: {
+              'x-csrf-token': tokenService.getCsrfToken() || ''
+            }
+           }
         );
 
   
@@ -45,6 +63,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
 
        tokenService.clearAuthType();
+        tokenService.clearCsrfToken();
     
          if (!window.location.pathname.includes("/login")) {
           window.location.href = `/${authType}/login`;
@@ -56,6 +75,7 @@ api.interceptors.response.use(
 if (error.response?.status === 403) {
 
       tokenService.clearAuthType();
+      tokenService.clearCsrfToken();
 
       if (authType && !window.location.pathname.includes("/login")) {
         window.location.href = `/${authType}/login`;

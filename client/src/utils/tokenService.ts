@@ -17,6 +17,19 @@ class TokenService {
   }
 
 
+ 
+  getCsrfToken(): string | null {
+    return sessionStorage.getItem("csrf-token");
+  }
+
+  setCsrfToken(token: string): void {
+    sessionStorage.setItem("csrf-token", token);
+  }
+
+  clearCsrfToken(): void {
+    sessionStorage.removeItem("csrf-token");
+  }
+
 }
 
 export const tokenService = new TokenService();

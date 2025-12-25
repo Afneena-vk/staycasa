@@ -5,15 +5,16 @@ import { MESSAGES, STATUS_CODES } from "../utils/constants";
 export const authMiddleware = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     //const token = req.cookies["auth-token"];
-    let token: string | undefined;
-     if (allowedRoles.includes("admin")) {
-      token = req.cookies["admin-auth-token"];
-    } else if (allowedRoles.includes("owner")) {
-      token = req.cookies["owner-auth-token"];  
-    } else if (allowedRoles.includes("user")) {
-      token = req.cookies["user-auth-token"];
-    }
+    // let token: string | undefined;
+    //  if (allowedRoles.includes("admin")) {
+    //   token = req.cookies["admin-auth-token"];
+    // } else if (allowedRoles.includes("owner")) {
+    //   token = req.cookies["owner-auth-token"];  
+    // } else if (allowedRoles.includes("user")) {
+    //   token = req.cookies["user-auth-token"];
+    // }
 
+     const token = req.cookies["access-token"];
 
     if (!token) {
       res

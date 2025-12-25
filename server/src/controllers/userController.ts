@@ -7,12 +7,17 @@ import { TOKENS } from "../config/tokens";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
+import crypto from "crypto";
 
 @injectable()
 export class UserController implements IUserController {
   constructor(
     @inject(TOKENS.IUserService) private _userService: IUserService
-  ) {}
+  ) {}  
+
+    private generateCsrfToken(): string {
+    return crypto.randomBytes(32).toString("hex");
+  }
 
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -89,22 +94,40 @@ export class UserController implements IUserController {
       const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
       const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
 
-      res.cookie("user-auth-token", result.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        //maxAge: 7 * 24 * 60 * 60 * 1000,
-        // maxAge: 15 * 60 * 1000,
-        maxAge: accessTokenMaxAge,
-        path: "/",
-      });
 
-      res.cookie("user-refresh-token", result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        // maxAge: 7 * 24 * 60 * 60 * 1000,
-        maxAge: refreshTokenMaxAge,
-        path: "/",
-      });
+       const csrfToken = this.generateCsrfToken();
+
+    
+
+       res.cookie("access-token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: accessTokenMaxAge,
+      path: "/",
+    });
+
+   
+
+      res.cookie("refresh-token", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",    
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
+
+     
+    res.cookie("csrf-token", csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
 
       res.status(result.status).json({
         message: result.message,
@@ -118,8 +141,9 @@ export class UserController implements IUserController {
           isVerified: result.isVerified,
         },
 
-        accessToken: result.token,
-        refreshToken: result.refreshToken,
+        // accessToken: result.token,
+        // refreshToken: result.refreshToken,
+        csrfToken: csrfToken,
       });
     } catch (error: any) {
       //console.error("Login error:", error);
@@ -132,8 +156,11 @@ export class UserController implements IUserController {
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      res.clearCookie("user-auth-token", { path: "/" });
-      res.clearCookie("user-refresh-token", { path: "/" });
+      // res.clearCookie("user-auth-token", { path: "/" });
+      // res.clearCookie("user-refresh-token", { path: "/" });
+    res.clearCookie("access-token", { path: "/" });
+    res.clearCookie("refresh-token", { path: "/" });
+    res.clearCookie("csrf-token", { path: "/" });
 
       res
         .status(STATUS_CODES.OK)

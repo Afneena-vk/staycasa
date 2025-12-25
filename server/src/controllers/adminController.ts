@@ -11,6 +11,7 @@ import {
   OwnerListQueryDto,
 } from "../dtos/admin.dto";
 import logger from "../utils/logger";
+import crypto from "crypto"
 
 @injectable()
 export class AdminController implements IAdminController {
@@ -18,26 +19,46 @@ export class AdminController implements IAdminController {
     @inject(TOKENS.IAdminService) private _adminService: IAdminService
   ) {}
 
+  private generateCsrfToken = (): string => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const result = await this._adminService.loginAdmin(req.body);
       const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
       const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
 
-      res.cookie("admin-auth-token", result.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        //maxAge: 7 * 24 * 60 * 60 * 1000,
-        maxAge: accessTokenMaxAge,
-        path: "/",
-      });
+       const csrfToken = this.generateCsrfToken();
 
-      res.cookie("admin-refresh-token", result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: refreshTokenMaxAge,
-        path: "/",
-      });
+     res.cookie("access-token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: accessTokenMaxAge,
+      path: "/",
+    });
+
+
+
+     res.cookie("refresh-token", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
+
+      res.cookie("csrf-token", csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
 
       //res.status(STATUS_CODES.OK).json(result);
 
@@ -50,8 +71,9 @@ export class AdminController implements IAdminController {
           email: result.email,
         },
 
-        accessToken: result.token,
-        refreshToken: result.refreshToken,
+        // accessToken: result.token,
+        // refreshToken: result.refreshToken,
+        csrfToken: csrfToken,
       });
     } catch (error: any) {
       console.error("Login error:", error);
@@ -63,8 +85,13 @@ export class AdminController implements IAdminController {
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      res.clearCookie("admin-auth-token", { path: "/" });
-      res.clearCookie("admin-refresh-token", { path: "/" });
+      // res.clearCookie("admin-auth-token", { path: "/" });
+      // res.clearCookie("admin-refresh-token", { path: "/" });
+
+    res.clearCookie("access-token", { path: "/" });
+    res.clearCookie("refresh-token", { path: "/" });
+    res.clearCookie("csrf-token", { path: "/" });
+
 
       res
         .status(STATUS_CODES.OK)

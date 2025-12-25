@@ -58,6 +58,10 @@ export const createAuthSlice: StateCreator<
 
       
        tokenService.setAuthType(authType);
+        if (response.csrfToken) {
+      tokenService.setCsrfToken(response.csrfToken);
+    }
+       
 
       set({
         userData: response.user || response.owner || response.admin,
@@ -94,6 +98,7 @@ export const createAuthSlice: StateCreator<
       console.error("Logout failed", error);
     } finally {
          tokenService.clearAuthType();
+         tokenService.clearCsrfToken();
     
     const store = get() as any;
     if (store.resetProperties) {
