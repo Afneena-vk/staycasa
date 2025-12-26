@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/admin/AdminLayout";
 import { authService } from "../../services/authService";
+import { adminService } from "../../services/adminService";
 import { toast } from "react-toastify";
 
 interface Owner {
@@ -31,7 +32,7 @@ const OwnerDetails: React.FC = () => {
   const fetchOwnerDetails = async () => {
     try {
       setLoading(true);
-      const data = await authService.getOwnerDetails(ownerId!);
+      const data = await adminService.getOwnerDetails(ownerId!);
       setOwner(data.owner);
     } catch {
       toast.error("Failed to load owner details");
@@ -46,10 +47,10 @@ const OwnerDetails: React.FC = () => {
   try {
     setActionLoading(true);
     if (owner.status === "blocked") {
-      await authService.unblockOwner(owner.id);
+      await adminService.unblockOwner(owner.id);
       toast.success("Owner unblocked");
     } else {
-      await authService.blockOwner(owner.id);
+      await adminService.blockOwner(owner.id);
       toast.success("Owner blocked");
     }
     fetchOwnerDetails();

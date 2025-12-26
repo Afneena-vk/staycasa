@@ -1,4 +1,5 @@
 import { api } from "../api/api";
+import { OWNER_API } from "../constants/apiRoutes";
 
 interface OwnerProfileUpdateData {
   name?: string;
@@ -19,12 +20,12 @@ interface PropertyFilters {
 
 export const ownerService = {
   getOwnerProfile: async () => {
-    const response = await api.get("/owner/profile");
+    const response = await api.get(OWNER_API.PROFILE);
     return response.data;
   },
 
   updateOwnerProfile: async (profileData: OwnerProfileUpdateData) => {
-    const response = await api.put("/owner/profile", profileData);
+    const response = await api.put(OWNER_API.PROFILE, profileData);
     return response.data;
   },
 
@@ -33,7 +34,7 @@ export const ownerService = {
 
     formData.append("document", file);
 
-    const response = await api.post("/owner/upload-document", formData, {
+    const response = await api.post(OWNER_API.UPLOAD_DOCUMENT, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -42,7 +43,7 @@ export const ownerService = {
   },
 
   addProperty: async (propertyData: FormData) => {
-    const response = await api.post("/owner/properties", propertyData, {
+    const response = await api.post(OWNER_API.PROPERTIES, propertyData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -51,18 +52,18 @@ export const ownerService = {
   },
 
   getOwnerProperties: async (params: PropertyFilters = {}) => {
-    const response = await api.get("/owner/properties", { params });
+    const response = await api.get(OWNER_API.PROPERTIES, { params });
     return response.data;
   },
 
   getOwnerPropertyById: async (propertyId: string) => {
-    const response = await api.get(`/owner/properties/${propertyId}`);
+    const response = await api.get(OWNER_API.PROPERTY_BY_ID(propertyId));
     return response.data;
   },
 
   updateProperty: async (propertyId: string, propertyData: FormData) => {
     const response = await api.put(
-      `/owner/properties/${propertyId}`,
+      OWNER_API.PROPERTY_BY_ID(propertyId),
       propertyData,
       {
         headers: {
@@ -74,12 +75,12 @@ export const ownerService = {
   },
 
   deleteOwnerProperty: async (propertyId: string) => {
-    const response = await api.delete(`/owner/properties/${propertyId}`);
+    const response = await api.delete(OWNER_API.PROPERTY_BY_ID(propertyId));
     return response.data;
   },
 
   getOwnerWallet: async () => {
-    const response = await api.get("/owner/wallet");
+    const response = await api.get(OWNER_API.WALLET);
     return response.data;
   },
 };

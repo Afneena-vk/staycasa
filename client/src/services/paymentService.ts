@@ -1,4 +1,5 @@
 import { api } from "../api/api";
+import { USER_API } from "../constants/apiRoutes";
 import BookingDetails from "../pages/user/BookingDetails";
 
 interface BookingQuery {
@@ -15,7 +16,7 @@ interface BookingQuery {
 
 export const paymentService = {
   calculateTotal: async (propertyId: string, rentalPeriod: number) => {
-    const res = await api.post("user/payment/calculate-total", {
+    const res = await api.post(USER_API.CALCULATE_TOTAL, {
       propertyId,
       rentalPeriod,
     });
@@ -28,7 +29,7 @@ export const paymentService = {
     guests: number,
     moveInDate: string
   ) => {
-    const res = await api.post("user/payment/razorpay-order", {
+    const res = await api.post(USER_API.RAZORPAY_ORDER, {
       propertyId,
       rentalPeriod,
       guests,
@@ -48,17 +49,17 @@ export const paymentService = {
     rentalPeriod: number;
     guests: number;
   }) => {
-    const res = await api.post("user/payment/verify", paymentResponse);
+    const res = await api.post(USER_API.VERIFY_PAYMENT, paymentResponse);
     return res.data;
   },
 
   fetchUserBookings: async (query: BookingQuery) => {
-    const res = await api.post("/user/bookings", query);
+    const res = await api.post(USER_API.BOOKINGS, query);
     return res.data;
   },
 
   fetchBookingDetails: async (bookingId: string) => {
-    const res = await api.get(`/user/bookings/${bookingId}`);
+    const res = await api.get(USER_API.BOOKING_BY_ID(bookingId));
     return res.data;
   },
 };

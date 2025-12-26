@@ -1,4 +1,5 @@
 import { api } from "../api/api";
+import { USER_API } from "../constants/apiRoutes";
 
 interface UserProfileUpdateData {
   name?: string;
@@ -26,12 +27,13 @@ interface UserPropertyFilters {
 
 export const userService = {
   getUserProfile: async () => {
-    const response = await api.get("/user/profile");
+   
+    const response = await api.get(USER_API.PROFILE);
     return response.data;
   },
 
   updateUserProfile: async (profileData: UserProfileUpdateData) => {
-    const response = await api.put("/user/profile", profileData);
+    const response = await api.put(USER_API.PROFILE, profileData);
     return response.data;
   },
 
@@ -39,7 +41,7 @@ export const userService = {
     const formData = new FormData();
     formData.append("profileImage", file);
 
-    const response = await api.post("/user/profile/upload-image", formData, {
+    const response = await api.post(USER_API.UPLOAD_PROFILE_IMAGE, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -52,12 +54,12 @@ export const userService = {
       ...params,
       facilities: params.facilities?.join(",") || undefined,
     };
-    const response = await api.get(`/user/properties`, { params: queryParams });
+    const response = await api.get(USER_API.PROPERTIES, { params: queryParams });
     return response.data;
   },
 
   getActivePropertyById: async (propertyId: string) => {
-    const response = await api.get(`/user/properties/${propertyId}`);
+    const response = await api.get(USER_API.PROPERTY_BY_ID(propertyId));
     return response.data;
   },
 
