@@ -1,4 +1,3 @@
-
 import { api } from "../api/api";
 
 interface LoginCredentials {
@@ -6,59 +5,7 @@ interface LoginCredentials {
   password: string;
 }
 
-interface UserFilters {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: "all" | "active" | "blocked";
-  sortBy?: "name" | "email" | "createdAt";
-  sortOrder?: "asc" | "desc";
-}
-
-interface PropertyFilters {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}
-
-interface UserPropertyFilters {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-  category?: string; 
-  facilities?: string[]; 
-}
-
-
-interface OwnerProfileUpdateData {
-  name?: string;
-  phone?: string;
-  businessName?: string;
-  businessAddress?: string;
-  //profileImage?: string;
-}
-
-interface UserProfileUpdateData {
-  name?: string;
-  phone?: string;
-  profileImage?: string;
-  address?: {
-    houseNo?: string;
-    street?: string;
-    city?: string;
-    district?: string;
-    state?: string;
-    pincode?: string;
-  };
-}
-
 export const authService = {
- 
   userSignup: async (userData: any) => {
     const response = await api.post("/user/signup", userData);
     return response.data;
@@ -69,7 +16,6 @@ export const authService = {
     return response.data;
   },
 
-  
   verifyOTP: async (email: string, otp: string, authType: "user" | "owner") => {
     const response = await api.post(`/${authType}/verify-otp`, { email, otp });
     return response.data;
@@ -79,7 +25,6 @@ export const authService = {
     const response = await api.post(`/${authType}/resend-otp`, { email });
     return response.data;
   },
-
 
   userLogin: async (credentials: LoginCredentials) => {
     const response = await api.post("/user/login", credentials);
@@ -97,20 +42,18 @@ export const authService = {
   },
 
   logoutUser: async () => {
-  const response = await api.post("/user/logout");
-  return response.data;
-},
+    const response = await api.post("/user/logout");
+    return response.data;
+  },
   logoutOwner: async () => {
-  const response = await api.post("/owner/logout");
-  return response.data;
-},
+    const response = await api.post("/owner/logout");
+    return response.data;
+  },
   logoutAdmin: async () => {
-  const response = await api.post("/admin/logout");
-  return response.data;
-},
+    const response = await api.post("/admin/logout");
+    return response.data;
+  },
 
-
- 
   userForgotPassword: async (email: string) => {
     const response = await api.post("/user/forgot-password", { email });
     return response.data;
@@ -121,7 +64,6 @@ export const authService = {
     return response.data;
   },
 
-  
   userResetPassword: async (
     email: string,
     otp: string,
@@ -152,230 +94,9 @@ export const authService = {
     return response.data;
   },
 
-getOwnerProfile: async () => {
-    const response = await api.get("/owner/profile");
-    return response.data;
-  },
-
-  updateOwnerProfile: async (profileData: OwnerProfileUpdateData) => {
-    const response = await api.put("/owner/profile", profileData);
-    return response.data;
-  },
-
-  
-uploadDocument: async (file: File) => {
-  const formData = new FormData();
-  
-    formData.append('document', file);
-  
-  
-  const response = await api.post('/owner/upload-document', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data;
-},
-
-   getUserProfile: async () => {
-    const response = await api.get("/user/profile");
-    return response.data;
-  },
-
-  updateUserProfile: async (profileData: UserProfileUpdateData) => {
-    const response = await api.put("/user/profile", profileData);
-    return response.data;
-  },
-
-
-
-   getUsers: async (filters: UserFilters = {}) => {
-    const queryParams = new URLSearchParams();
-    
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        queryParams.append(key, value.toString());
-      }
-    });
-
-    const queryString = queryParams.toString();
-  const url = queryString ? `/admin/users?${queryString}` : "/admin/users";
-
-    //const response = await api.get(`/admin/users?${queryParams.toString()}`);
-     const response = await api.get(url);
-    return response.data;
-  },
-
-
-
-   blockUser: async (userId: string) => { 
-    const response = await api.patch(`/admin/users/${userId}/block`);
-    return response.data;
-  },
-
-
-unblockUser: async (userId: string) => { 
-    const response = await api.patch(`/admin/users/${userId}/unblock`);
-    return response.data;
-  },
-
-
- 
- getUserDetails: async (userId: string) => { 
-    const response = await api.get(`/admin/users/${userId}`);
-    return response.data;
-  },
-
- 
-  getOwners: async (filters: UserFilters = {}) => {
-  const queryParams = new URLSearchParams();
-
-  Object.entries(filters).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      queryParams.append(key, value.toString());
-    }
-  });
-
-  const queryString = queryParams.toString();
-  const url = queryString ? `/admin/owners?${queryString}` : "/admin/owners";
-
-  //const response = await api.get(`/admin/owners?${queryParams.toString()}`);
-  const response = await api.get(url);
-  return response.data;
-},
-
-
-   blockOwner: async (ownerId: string) => { 
-    const response = await api.patch(`/admin/owners/${ownerId}/block`);
-    return response.data;
-  },
-
-
-   unblockOwner: async (ownerId: string) => { 
-    const response = await api.patch(`/admin/owners/${ownerId}/unblock`);
-    return response.data;
-  },
-
-   getOwnerDetails: async (ownerId: string) => { 
-    const response = await api.get(`/admin/owners/${ownerId}`);
-    return response.data;
-  },
-
-approveOwner: async (ownerId: string) => {
-  const response = await api.patch(`/admin/owners/${ownerId}/approve`, { status: "approved" });
-  return response.data;
-},
-
-rejectOwner: async (ownerId: string) => {
-  const response = await api.patch(`/admin/owners/${ownerId}/reject`, { status: "rejected" });
-  return response.data;
-},
-
-addProperty: async (propertyData: FormData) => {
-    const response = await api.post("/owner/properties", propertyData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  },
-
-  getOwnerProperties: async (params: PropertyFilters = {}) => {
-    const response = await api.get("/owner/properties", { params });
-    return response.data;
-  },
-
- getOwnerPropertyById: async (propertyId: string) => {
-  const response = await api.get(`/owner/properties/${propertyId}`);
-  return response.data;
-},
-
-updateProperty: async (propertyId: string, propertyData: FormData) => {
-   const response = await api.put(`/owner/properties/${propertyId}`, propertyData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
-},
-
-
-deleteOwnerProperty: async (propertyId: string) => {
-  const response = await api.delete(`/owner/properties/${propertyId}`);
-  return response.data;
-},
-
-uploadProfileImage: async (file: File) => {
-  const formData = new FormData();
-  formData.append('profileImage', file);
-  
-  const response = await api.post('/user/profile/upload-image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data;
-},  
-
-// getAllPropertiesAdmin:async()=>{
-//   const response = await api.get("/admin/properties");
-//   return response.data;
-// },
-
-getAllPropertiesAdmin: async(params: PropertyFilters = {})=>{
-
-    const response = await api.get("/admin/properties", { params });
-    return response.data;
-
-},
-
-getActiveProperties:async(params: UserPropertyFilters= {})=>{
-  const queryParams = {
-    ...params,
-    facilities: params.facilities?.join(',') || undefined
-  };
-  const response = await api.get(`/user/properties`,{params: queryParams});
-    return response.data;
-}
-,
-
-getActivePropertyById:async(propertyId:string)=>{
-   const response = await api.get(`/user/properties/${propertyId}`);
-   return response.data;
-},
-
-getPropertyByAdmin:async(propertyId:string)=>{
-  const response = await api.get(`/admin/properties/${propertyId}`);
-  return response.data;
-},
-
-approveProperty: async(propertyId:string)=>{
-  const response = await api.patch(`/admin/properties/${propertyId}/approve`)
-  return response.data;
-},
-
-rejectProperty: async(propertyId:string)=>{
-  const response = await api.patch(`/admin/properties/${propertyId}/reject`)
-  return response.data;
-},
-
-blockPropertyByAdmin: async(propertyId:string)=>{
-  const response = await api.patch(`/admin/properties/${propertyId}/block`);
-  return response.data;
-},
-
-unblockPropertyByAdmin: async(propertyId:string)=>{
-  const response = await api.patch(`/admin/properties/${propertyId}/unblock`);
-  return response.data;
-},
-
-// changePassword: async (data: { userId?: string; currentPassword: string; newPassword: string }) => {
-//     const response = await api.put("/user/change-password", data);
-//     return response.data;
-//   },
-changePassword: async (
+  changePassword: async (
     data: { userId?: string; currentPassword: string; newPassword: string },
-    type: "user" | "owner" 
+    type: "user" | "owner"
   ) => {
     let url = "";
 
@@ -386,26 +107,9 @@ changePassword: async (
       case "owner":
         url = "/owner/change-password";
         break;
-      
     }
 
     const response = await api.put(url, data);
     return response.data;
   },
-
-  checkAvailability: async(propertyId:string,
-    checkIn:string,
-    //checkOut:string,
-    rentalPeriod:number,
-    guests:number
-  )=>{
-    const response = await api.get(`/user/properties/${propertyId}/check-availability`,{params:{checkIn,rentalPeriod,guests},});
-    return response.data;
-  },
-  
-   getOwnerWallet: async () => {
-    const response = await api.get("/owner/wallet");
-    return response.data;
-  },
-
 };

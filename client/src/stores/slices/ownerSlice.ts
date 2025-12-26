@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
+import { ownerService } from "../../services/ownerService";
 
 export interface OwnerProfile {
   id: string;
@@ -41,7 +42,7 @@ export const createOwnerSlice: StateCreator<
 > = (set, get) => ({
   getOwnerProfile: async () => {
     try {
-      const response: ProfileResponse = await authService.getOwnerProfile();
+      const response: ProfileResponse = await ownerService.getOwnerProfile();
       return response;
     } catch (error) {
       console.error("Get owner profile failed", error);
@@ -51,7 +52,7 @@ export const createOwnerSlice: StateCreator<
 
   updateOwnerProfile: async (profileData) => {
     try {
-      const response: ProfileResponse = await authService.updateOwnerProfile(profileData);
+      const response: ProfileResponse = await ownerService.updateOwnerProfile(profileData);
 
       const currentState = get();
       if (currentState.userData) {
@@ -72,7 +73,7 @@ export const createOwnerSlice: StateCreator<
 
   uploadDocument: async (file) => {
     try {
-      const response = await authService.uploadDocument(file);
+      const response = await ownerService.uploadDocument(file);
 
       
       const updatedProfile = await get().getOwnerProfile();

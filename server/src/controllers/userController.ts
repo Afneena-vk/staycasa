@@ -189,20 +189,57 @@ export class UserController implements IUserController {
 
       const result = await this._userService.processGoogleAuth(user);
 
-      res.cookie("user-auth-token", result.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 15 * 60 * 1000,
-        path: "/",
-        sameSite: "lax",
-      });
-      res.cookie("user-refresh-token", result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: "/",
-        sameSite: "lax",
-      });
+      const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
+      const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
+
+
+       const csrfToken = this.generateCsrfToken();
+
+
+      // res.cookie("user-auth-token", result.token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production",
+      //   maxAge: 15 * 60 * 1000,
+      //   path: "/",
+      //   sameSite: "lax",
+      // });
+
+    
+       res.cookie("access-token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: accessTokenMaxAge,
+      path: "/",
+    });
+
+      // res.cookie("user-refresh-token", result.refreshToken, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production",
+      //   maxAge: 7 * 24 * 60 * 60 * 1000,
+      //   path: "/",
+      //   sameSite: "lax",
+      // });
+
+      res.cookie("refresh-token", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",    
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
+
+     
+    res.cookie("csrf-token", csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
 
       res.redirect(`${process.env.FRONTEND_URL}/user/auth-success`);
     } catch (error: any) {

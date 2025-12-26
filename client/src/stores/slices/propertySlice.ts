@@ -1,5 +1,8 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
+import { userService } from "../../services/userService";
+import { ownerService } from "../../services/ownerService";
+import { adminService } from "../../services/adminService";
 import { SiTryitonline } from "react-icons/si";
 
 export interface Property {
@@ -107,7 +110,7 @@ export const createPropertySlice: StateCreator<
     set({ isLoading: true, error: null });
     
     try {
-      const response = await authService.addProperty(propertyData);
+      const response = await ownerService.addProperty(propertyData);
       
       if (response.status === 201) {
         
@@ -132,7 +135,7 @@ export const createPropertySlice: StateCreator<
     set({ isLoading: true, error: null });
     
     try {
-      const response = await authService.getOwnerProperties(params);
+      const response = await ownerService.getOwnerProperties(params);
       
       set({
         properties: response.properties || [],
@@ -155,7 +158,7 @@ export const createPropertySlice: StateCreator<
     getOwnerPropertyById: async (propertyId: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await authService.getOwnerPropertyById(propertyId);
+      const response = await ownerService.getOwnerPropertyById(propertyId);
       set({
         selectedProperty: response.property,
         isLoading: false,
@@ -176,7 +179,7 @@ export const createPropertySlice: StateCreator<
     set({ isLoading: true, error: null });
 
   try {
-    const response = await authService.updateProperty(propertyId, propertyData);
+    const response = await ownerService.updateProperty(propertyId, propertyData);
 
     if (response.status === 200) {
       const updatedProperty = response.property;
@@ -206,7 +209,7 @@ export const createPropertySlice: StateCreator<
 deleteProperty: async (propertyId: string) => {
   set({ isLoading: true, error: null });
   try {
-    await authService.deleteOwnerProperty(propertyId);
+    await ownerService.deleteOwnerProperty(propertyId);
     set((state) => ({
       properties: state.properties.filter((p) => p.id !== propertyId),
       isLoading: false,
@@ -225,7 +228,7 @@ getActivePropertiesForUser: async (params) => {
   set({ isLoading: true, error: null });
 
   try {
-    const response = await authService.getActiveProperties(params); 
+    const response = await userService.getActiveProperties(params); 
     set({
       properties: response.properties || [],
       totalPages: response.totalPages,
@@ -250,7 +253,7 @@ getActivePropertiesForUser: async (params) => {
   getActivePropertyById: async (propertyId:string)=>{
     set({ isLoading: true, error: null });
     try {
-      const response = await authService.getActivePropertyById(propertyId);
+      const response = await userService.getActivePropertyById(propertyId);
       set({
       selectedProperty: response.property,
       isLoading: false,
@@ -278,7 +281,7 @@ getAllPropertiesAdmin: async (params) =>{
       set({ isLoading: true, error: null });
 
   try {
-    const response = await authService.getAllPropertiesAdmin(params);
+    const response = await adminService.getAllPropertiesAdmin(params);
      set({
       properties: response.properties,
       totalCount: response.totalCount,
@@ -297,7 +300,7 @@ getAllPropertiesAdmin: async (params) =>{
 getPropertyByAdmin: async (propertyId:string)=>{
   set({ isLoading: true, error: null });
   try {
-    const response = await authService.getPropertyByAdmin(propertyId);
+    const response = await adminService.getPropertyByAdmin(propertyId);
 
     set({
       selectedProperty:response.property,
@@ -318,7 +321,7 @@ getPropertyByAdmin: async (propertyId:string)=>{
 approveProperty: async (propertyId:string)=>{
     set({ isLoading: true, error: null });
     try {
-      const response = await authService.approveProperty(propertyId);
+      const response = await adminService.approveProperty(propertyId);
        set((state) => ({
       properties: state.properties.map((p) =>
         p.id === propertyId ? response.property : p
@@ -345,7 +348,7 @@ rejectProperty: async (propertyId: string) => {
   set({ isLoading: true, error: null });
 
   try {
-    const response = await authService.rejectProperty(propertyId);
+    const response = await adminService.rejectProperty(propertyId);
 
   
     set((state) => ({
@@ -374,7 +377,7 @@ rejectProperty: async (propertyId: string) => {
 blockPropertyByAdmin: async (propertyId: string) => {
   set({ isLoading: true, error: null });
   try {
-    const response = await authService.blockPropertyByAdmin(propertyId);
+    const response = await adminService.blockPropertyByAdmin(propertyId);
     set((state) => ({
       properties: state.properties.map((p) =>
         p.id === propertyId ? response.property : p
@@ -397,7 +400,7 @@ blockPropertyByAdmin: async (propertyId: string) => {
 unblockPropertyByAdmin: async (propertyId: string) => {
   set({ isLoading: true, error: null });
   try {
-    const response = await authService.unblockPropertyByAdmin(propertyId);
+    const response = await adminService.unblockPropertyByAdmin(propertyId);
     set((state) => ({
       properties: state.properties.map((p) =>
         p.id === propertyId ? response.property : p

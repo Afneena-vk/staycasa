@@ -6,6 +6,7 @@ import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 import { paymentService } from "../../services/paymentService";
 import { authService } from "../../services/authService";
+import { userService } from "../../services/userService";
 
 declare global {
   interface Window {
@@ -157,7 +158,7 @@ const PaymentPage = () => {
 
   try {
     
-    const availability = await authService.checkAvailability(
+    const availability = await userService.checkAvailability(
       bookingData.propertyId,
       bookingData.moveInDate,
       bookingData.rentalPeriod,

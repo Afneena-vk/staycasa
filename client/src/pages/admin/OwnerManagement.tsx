@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/admin/AdminLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { authService } from "../../services/authService";
+import { adminService } from "../../services/adminService";
 
 interface Owner {
   id: string;
@@ -125,7 +126,7 @@ const handleNextPage = () => {
 
     try {
       setActionLoading(`block-${ownerId}`);
-      await authService.blockOwner(ownerId);
+      await adminService.blockOwner(ownerId);
       await fetchOwners();
     } finally {
       setActionLoading(null);
@@ -139,7 +140,7 @@ const handleNextPage = () => {
 
     try {
       setActionLoading(`unblock-${ownerId}`);
-      await authService.unblockOwner(ownerId);
+      await adminService.unblockOwner(ownerId);
       await fetchOwners();
     } finally {
       setActionLoading(null);

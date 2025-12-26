@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { authService } from "../../services/authService";
+import { userService } from "../../services/userService";
 import {
   FaUser,
   FaEnvelope,
@@ -145,7 +146,7 @@ const uploadImage = async () => {
 
   try {
     setUploadingImage(true);
-    const response = await authService.uploadProfileImage(imageFile);
+    const response = await userService.uploadProfileImage(imageFile);
 
     const newImageUrl = response.profileImage || response.data?.profileImage;
     if (newImageUrl) {

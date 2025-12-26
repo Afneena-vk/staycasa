@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/admin/AdminLayout";
 import { authService } from "../../services/authService";
+import { adminService } from "../../services/adminService";
+
 
 interface Address {
   houseNo: string;
@@ -44,7 +46,7 @@ const UserDetails = () => {
       setError(null);
       
      
-      const response = await authService.getUserDetails(userId); 
+      const response = await adminService.getUserDetails(userId); 
       setUser(response.user);
     } catch (err: any) {
       console.error('Error fetching user details:', err);
@@ -69,9 +71,9 @@ const UserDetails = () => {
       setActionLoading(true);
       
       if (action === "block") {
-        await authService.blockUser(user.id);
+        await adminService.blockUser(user.id);
       } else {
-        await authService.unblockUser(user.id);
+        await adminService.unblockUser(user.id);
       }
 
      

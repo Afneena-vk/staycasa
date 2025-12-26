@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
+import { adminService } from "../../services/adminService";
 
 interface UserFilters {
   page?: number;
@@ -34,7 +35,7 @@ export const createAdminSlice: StateCreator<
 > = (set, get) => ({
   getUsers: async (filters = {}) => {
     try {
-      const response = await authService.getUsers(filters);
+      const response = await adminService.getUsers(filters);
       return response;
     } catch (error) {
       console.error("Get users failed", error);
@@ -44,7 +45,7 @@ export const createAdminSlice: StateCreator<
 
   blockUser: async (userId) => {
     try {
-      const response = await authService.blockUser(userId);
+      const response = await adminService.blockUser(userId);
       return response;
     } catch (error) {
       console.error("Block user failed", error);
@@ -54,7 +55,7 @@ export const createAdminSlice: StateCreator<
 
   unblockUser: async (userId) => {
     try {
-      const response = await authService.unblockUser(userId);
+      const response = await adminService.unblockUser(userId);
       return response;
     } catch (error) {
       console.error("Unblock user failed", error);
@@ -64,7 +65,7 @@ export const createAdminSlice: StateCreator<
 
   getUserDetails: async (userId) => {
     try {
-      const response = await authService.getUserDetails(userId);
+      const response = await adminService.getUserDetails(userId);
       return response;
     } catch (error) {
       console.error("Get user details failed", error);
@@ -74,7 +75,7 @@ export const createAdminSlice: StateCreator<
 
   getOwners: async (filters = {}) => {
     try {
-      const response = await authService.getOwners(filters);
+      const response = await adminService.getOwners(filters);
       return response;
     } catch (error) {
       console.error("Get owners failed", error);
@@ -84,7 +85,7 @@ export const createAdminSlice: StateCreator<
 
   blockOwner: async (ownerId) => {
     try {
-      const response = await authService.blockOwner(ownerId);
+      const response = await adminService.blockOwner(ownerId);
       return response;
     } catch (error) {
       console.error("Block owner failed", error);
@@ -94,7 +95,7 @@ export const createAdminSlice: StateCreator<
 
   unblockOwner: async (ownerId) => {
     try {
-      const response = await authService.unblockOwner(ownerId);
+      const response = await adminService.unblockOwner(ownerId);
       return response;
     } catch (error) {
       console.error("Unblock owner failed", error);
@@ -104,7 +105,7 @@ export const createAdminSlice: StateCreator<
 
   getOwnerDetails: async (ownerId) => {
     try {
-      const response = await authService.getOwnerDetails(ownerId);
+      const response = await adminService.getOwnerDetails(ownerId);
       return response;
     } catch (error) {
       console.error("Get owner details failed", error);
@@ -114,7 +115,7 @@ export const createAdminSlice: StateCreator<
 
   approveOwner: async (ownerId) => {
     try {
-      const response = await authService.approveOwner(ownerId);
+      const response = await adminService.approveOwner(ownerId);
       return response;
     } catch (error) {
       console.error("Approve owner failed", error);
@@ -124,7 +125,7 @@ export const createAdminSlice: StateCreator<
 
   rejectOwner: async (ownerId) => {
     try {
-      const response = await authService.rejectOwner(ownerId);
+      const response = await adminService.rejectOwner(ownerId);
       return response;
     } catch (error) {
       console.error("Reject owner failed", error);

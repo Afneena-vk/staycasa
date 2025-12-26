@@ -5,6 +5,7 @@ import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import { useAuthStore } from "../../stores/authStore";
 import { authService } from "../../services/authService";
+import { userService } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
@@ -83,7 +84,7 @@ const today = new Date().toISOString().split("T")[0];
     //   return;
     // } 
      try {
-    const response = await authService.checkAvailability(
+    const response = await userService.checkAvailability(
       propertyId,
       moveInDate,
       // rentalPeriod,

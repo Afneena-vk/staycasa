@@ -5,6 +5,7 @@ import { useAuthStore } from "../../stores/authStore";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import { authService } from "../../services/authService";
+import { userService } from "../../services/userService";
 import { Button } from "../../components/common/Button";
 
 import {
@@ -499,7 +500,7 @@ const UserPropertyDetails = () => {
         //   `/user/properties/${propertyId}/check-availability?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`
         // );
         // const data = await authService.checkAvailability(propertyId!,checkIn,checkOut,guests)
-           const data = await authService.checkAvailability(propertyId!,checkIn,rentalPeriod,guests)
+           const data = await userService.checkAvailability(propertyId!,checkIn,rentalPeriod,guests)
 
         setAvailabilityMessage(data.message);
        // alert(data.message);

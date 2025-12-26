@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { authService } from "../../services/authService";
+import { ownerService } from "../../services/ownerService";
 import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
@@ -11,7 +12,7 @@ const OwnerWallet = () => {
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const data = await authService.getOwnerWallet();
+        const data = await ownerService.getOwnerWallet();
         setWallet(data);
       } catch (error) {
         console.error("Failed to fetch wallet", error);

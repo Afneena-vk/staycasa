@@ -1,5 +1,6 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
+import {userService}from "../../services/userService";
 
 export interface UserProfile {
   id: string;
@@ -53,7 +54,7 @@ export const createUserSlice: StateCreator<
 > = (set, get) => ({
   getUserProfile: async () => {
     try {
-      const response = await authService.getUserProfile();
+      const response = await userService.getUserProfile();
       return response;
     } catch (error) {
       console.error("Get user profile failed", error);
@@ -72,7 +73,7 @@ export const createUserSlice: StateCreator<
 
   updateUserProfile: async (profileData) => {
     try {
-      const response = await authService.updateUserProfile(profileData);
+      const response = await userService.updateUserProfile(profileData);
       const currentState = get();
       if (currentState.userData) {
         set({
