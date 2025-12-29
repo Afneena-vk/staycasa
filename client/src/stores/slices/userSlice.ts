@@ -1,53 +1,19 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
 import {userService}from "../../services/userService";
+import { UserProfile,UserProfileResponse } from "../../types/user";
 
-export interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  address?: {
-    houseNo: string;
-    street: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
-  };
-  userStatus: "active" | "blocked";
-  profileImage?: string;
-  isVerified: boolean;
-}
 
-export interface UserProfileResponse {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  address?: {
-    houseNo: string;
-    street: string;
-    city: string;
-    district: string;
-    state: string;
-    pincode: string;
-  };
-  userStatus: "active" | "blocked";
-  isVerified: boolean;
-  status: number;
-  profileImage?: string;
-  message: string;
-  data: UserProfile;
-}
 
 export interface UserSlice {
   getUserProfile(): Promise<UserProfileResponse>;
   updateUserProfile(profileData: Partial<UserProfile>): Promise<UserProfileResponse>;
+
 }
 
 export const createUserSlice: StateCreator<
-  UserSlice & { userData: any },
+  // UserSlice & { userData: any },
+  UserSlice & { userData: UserProfile | null },
   [],
   [],
   UserSlice
@@ -62,7 +28,9 @@ export const createUserSlice: StateCreator<
     }
   },
 
-  updateUserData: (data: any) => {
+
+  updateUserData: (data: Partial<UserProfile>) => {
+  // updateUserData: (data: any) => {
     const currentState = get();
     if (currentState.userData) {
       set({

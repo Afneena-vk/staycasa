@@ -1,65 +1,13 @@
 import { StateCreator } from "zustand";
-import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
+import {PropertyFormData } from "../../types/property";
+import { SiTryitonline } from "react-icons/si";
 import { ownerService } from "../../services/ownerService";
 import { adminService } from "../../services/adminService";
-import { SiTryitonline } from "react-icons/si";
 
-export interface Property {
-  id: string;
-  title: string;
-  type: string;
-  description: string;
-  houseNumber: string;
-  street: string;
-  city: string;
-  district: string;
-  state: string;
-  pincode: number;
-  bedrooms: number;
-  bathrooms: number;
-  furnishing: string;
-  pricePerMonth: number;
-  maxGuests: number;
-  minLeasePeriod: number;
-  maxLeasePeriod: number;
-  features: string[];
-  images: string[];
-  
-  status: "pending" | "active" | "rejected" |"blocked"|"booked";
-  createdAt: Date;
+import { Property } from "../../types/property";
 
-  owner?: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    businessName?: string;
-    businessAddress?: string;
-  };
-}
 
-export interface PropertyFormData {
-  title: string;
-  type: string;
-  description: string;
-  houseNumber: string;
-  street: string;
-  city: string;
-  district: string;
-  state: string;
-  pincode: number;
-  bedrooms: number;
-  bathrooms: number;
-  furnishing: string;
-  pricePerMonth: number;
-  maxGuests: number;
-  minLeasePeriod: number;
-  maxLeasePeriod: number;
-  //amenities: string[];
-    features: string[];
-  images: File[];
-}
 
 
 export interface PropertySlice {

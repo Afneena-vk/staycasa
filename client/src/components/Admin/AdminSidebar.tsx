@@ -19,7 +19,7 @@ import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 
 const navLinks = [
-  { name: "Home", path: "/admin-dashboard", icon: FaHome },
+  { name: "Home", path: "/admin/dashboard", icon: FaHome },
   { name: "Users", path: "/admin/users", icon: FaUsers },
   { name: "Owners", path: "/admin/owners", icon: FaCrown },
   { name: "Properties", path: "/admin/properties", icon: FaBuilding },

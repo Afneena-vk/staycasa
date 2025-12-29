@@ -1,15 +1,9 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
+import { UserFilters } from "../../types/admin";
 
-interface UserFilters {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: "all" | "active" | "blocked";
-  sortBy?: "name" | "email" | "createdAt";
-  sortOrder?: "asc" | "desc";
-}
+
 
 export interface AdminSlice {
   // User management

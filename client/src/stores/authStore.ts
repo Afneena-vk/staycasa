@@ -43,7 +43,7 @@ export const useAuthStore = create<StoreState>()(
 
 
 
-export type { AuthType } from "./slices/authSlice";
-export type { OwnerProfile, ProfileResponse } from "./slices/ownerSlice";
-export type { UserProfile, UserProfileResponse } from "./slices/userSlice";
-export type {PropertySlice,PropertyFormData} from './slices/propertySlice'
+//export type { AuthType } from "./slices/authSlice";
+//export type { OwnerProfile, ProfileResponse } from "./slices/ownerSlice";
+//export type { UserProfile, UserProfileResponse } from "./slices/userSlice";
+export type {PropertySlice} from './slices/propertySlice'

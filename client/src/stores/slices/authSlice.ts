@@ -1,8 +1,8 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
 import { tokenService } from "../../utils/tokenService";
-
-export type AuthType = "user" | "owner" | "admin";
+import { AuthType } from "../../types/auth";
+// export type AuthType = "user" | "owner" | "admin";
 
 export interface AuthSlice {
   userData: any | null;

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import ModernAdminLayout from "../../layouts/admin/AdminLayout";
 import { authService } from "../../services/authService";
+import { adminService } from "../../services/adminService";
 import { FaUsers, FaCrown, FaBuilding, FaCheckCircle, FaTimesCircle, FaClock, FaBan, FaChartLine } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -50,7 +51,7 @@ const AdminDashboard = () => {
   const fetchAllUsers = async () => {
     try {
       
-      const response = await authService.getUsers({ limit: 10000 });
+      const response = await adminService.getUsers({ limit: 10000 });
       return response.users || [];
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -61,7 +62,7 @@ const AdminDashboard = () => {
   const fetchAllOwners = async () => {
     try {
      
-      const response = await authService.getOwners({ limit: 10000 });
+      const response = await adminService.getOwners({ limit: 10000 });
       return response.owners || [];
     } catch (error) {
       console.error("Error fetching owners:", error);
@@ -71,7 +72,7 @@ const AdminDashboard = () => {
 
   const fetchAllProperties = async () => {
     try {
-      const response = await authService.getAllPropertiesAdmin();
+      const response = await adminService.getAllPropertiesAdmin();
       return response.properties || [];
     } catch (error) {
       console.error("Error fetching properties:", error);
