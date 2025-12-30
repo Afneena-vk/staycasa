@@ -71,14 +71,16 @@ export const userService = {
     guests: number
   ) => {
     const response = await api.get(
-      `/user/properties/${propertyId}/check-availability`,
+      // `/user/properties/${propertyId}/check-availability`,
+      USER_API.CHECK_AVAILABILITY(propertyId),
       { params: { checkIn, rentalPeriod, guests } }
     );
     return response.data;
   },
  
   getBlockedDates: async (propertyId: string) => {
-  const response = await api.get(`/user/properties/${propertyId}/blocked-dates`);
+  // const response = await api.get(`/user/properties/${propertyId}/blocked-dates`);
+  const response = await api.get(USER_API.BLOCKED_DATES(propertyId));
   return response.data;
 },
 

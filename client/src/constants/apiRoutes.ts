@@ -38,6 +38,9 @@ export const USER_API = {
   // bookings
   BOOKINGS: "/user/bookings",
   BOOKING_BY_ID: (bookingId: string) => `/user/bookings/${bookingId}`,
+
+  CHECK_AVAILABILITY:(propertyId: string)=>`user/properties/${propertyId}/check-availability`,
+  BLOCKED_DATES: (propertyId: string) =>`/user/properties/${propertyId}/blocked-dates`
 };
 
 export const OWNER_API = {
