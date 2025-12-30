@@ -44,11 +44,14 @@ export interface BookingDetailsDTO {
   rentPerMonth: number;
   totalCost: number;
 
+  paymentId?: string; 
   paymentStatus: PaymentStatus;
   bookingStatus: BookingStatus;
   paymentMethod: string;
 
   createdAt: Date;
+  updatedAt: Date;
+  isCancelled:boolean;
 
   property: {
     id: string;
@@ -69,4 +72,16 @@ export interface BookingDetailsDTO {
     houseNumber: string;
   
   };
+}
+
+export interface BookingQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  paymentStatus?: string;
+  startDate?: string;
+  endDate?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }

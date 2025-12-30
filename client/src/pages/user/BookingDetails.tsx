@@ -27,9 +27,40 @@ const BookingDetails = () => {
 
   const moveInDate = new Date(b.moveInDate);
   const endDate = new Date(b.endDate);
+  const createdAt = new Date(b.createdAt);
+  const updatedAt = new Date(b.updatedAt || b.createdAt);
   const today = new Date();
 
-  const canCancel = today < moveInDate;
+  // const canCancel = today < moveInDate;
+    const canCancel = !b.isCancelled && b.bookingStatus !== "cancelled" && today < moveInDate;
+
+      const getStatusColor = (status: string, type: "booking" | "payment") => {
+    if (type === "booking") {
+      switch (status) {
+        case "confirmed":
+          return "bg-green-100 text-green-800";
+        case "pending":
+          return "bg-yellow-100 text-yellow-800";
+        case "cancelled":
+          return "bg-red-100 text-red-800";
+        default:
+          return "bg-gray-100 text-gray-800";
+      }
+    } else {
+      switch (status) {
+        case "completed":
+          return "bg-green-100 text-green-800";
+        case "pending":
+          return "bg-yellow-100 text-yellow-800";
+        case "failed":
+          return "bg-red-100 text-red-800";
+        case "refunded":
+          return "bg-blue-100 text-blue-800";
+        default:
+          return "bg-gray-100 text-gray-800";
+      }
+    }
+  };
 
   return (
     <>
@@ -45,13 +76,18 @@ const BookingDetails = () => {
               <h2 className="font-semibold text-lg">{b.bookingId}</h2>
 
               <div className="flex gap-2 mt-2">
-                {/* <span className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
+                <span className="px-3 py-1 text-xs rounded bg-blue-100 text-blue-800 capitalize">
                  Booking is {b.bookingStatus}
                 </span>
                 <span className="px-3 py-1 text-xs rounded bg-green-100 text-green-800 capitalize">
-                 Payment {b.paymentStatus}
-                </span> */}
+                 Payment is {b.paymentStatus}
+                </span>
               </div>
+                 {b.paymentId && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Payment ID: {b.paymentId}
+                </p>
+              )}
             </div>
 
             {canCancel && (
@@ -107,8 +143,16 @@ const BookingDetails = () => {
             <h3 className="font-semibold mb-4">Booking Information</h3>
 
             <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+               <div>
+                <p className="text-gray-500">Booked On</p>
+                <p className="font-medium">{createdAt.toLocaleString()}</p>
+              </div>
               <div>
-                <p className="text-gray-500">Move-in</p>
+                <p className="text-gray-500">Last Updated</p>
+                <p className="font-medium">{updatedAt.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Move-in Date</p>
                 <p className="font-medium">{moveInDate.toLocaleDateString()}</p>
               </div>
               <div>

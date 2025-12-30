@@ -1,18 +1,19 @@
 import { StateCreator } from "zustand";
-import { BookingDTO , BookingDetailsDTO} from "../../types/booking";
+import { BookingDTO , BookingDetailsDTO, BookingQuery} from "../../types/booking";
 import { paymentService } from "../../services/paymentService";
+import { bookingService } from "../../services/bookingService";
 
-export interface BookingQuery {
-  page?: number;
-  limit?: number;
-  search?: string;
-  status?: string;
-  paymentStatus?: string;
-  startDate?: string;
-  endDate?: string;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-}
+// export interface BookingQuery {
+//   page?: number;
+//   limit?: number;
+//   search?: string;
+//   status?: string;
+//   paymentStatus?: string;
+//   startDate?: string;
+//   endDate?: string;
+//   sortBy?: string;
+//   sortOrder?: "asc" | "desc";
+// }
 
 export interface BookingState {
       bookingData: {
@@ -115,7 +116,7 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
 
   try {
     // const response = await paymentService.fetchUserBookings(params|| {});
-     const response = await paymentService.fetchUserBookings(query);
+     const response = await bookingService.fetchUserBookings(query);
     set({
       bookings: response.bookings || [],
       total: response.total,
@@ -139,7 +140,7 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
     fetchBookingDetails : async (bookingId: string) => {
     set({ isLoading: true, error: null });
     try {
-      const res = await paymentService. fetchBookingDetails(bookingId);
+      const res = await bookingService. fetchBookingDetails(bookingId);
       set({ selectedBooking: res.booking, isLoading: false });
     } catch (error: any) {
       set({ selectedBooking: null, isLoading: false, error: error.response?.data?.error || error.message || "Failed to fetch booking" });
