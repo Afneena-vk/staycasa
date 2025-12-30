@@ -7,6 +7,9 @@ import Footer from "../../components/User/Footer";
 import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import { Button } from "../../components/common/Button";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 import {
   FaBed,
@@ -58,15 +61,20 @@ const UserPropertyDetails = () => {
   const loading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error); 
   const [checkIn, setCheckIn] = useState<string>("");
+   //const [checkInDate, setCheckInDate] = useState<Date | null>(null);
   const [checkOut, setCheckOut] = useState<string>("");
   const [guests, setGuests] = useState<number>(1);
   const [availabilityMessage, setAvailabilityMessage] = useState<string | null>(null);
   const [rentalPeriod, setRentalPeriod] = useState(property?.minLeasePeriod || 1)
+  const [blockedDates, setBlockedDates] = useState<{ moveInDate: string; endDate: string }[]>([]);
   const fetchedRef = useRef(false);
   const navigate = useNavigate();
 
   const [mainIndex, setMainIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
+ 
+ 
+
   //const [showOwnerPhone, setShowOwnerPhone] = useState(false);
 
   useEffect(() => {
@@ -75,6 +83,21 @@ const UserPropertyDetails = () => {
     fetchedRef.current = true;
     getActivePropertyById(propertyId);
     
+  }, [propertyId]);
+
+    useEffect(() => {
+    if (!propertyId) return;
+
+    const fetchBlockedDates = async () => {
+      try {
+        const res = await userService.getBlockedDates(propertyId);
+        setBlockedDates(res.blockedDates);
+      } catch (err) {
+        console.error("Failed to fetch blocked dates", err);
+      }
+    };
+
+    fetchBlockedDates();
   }, [propertyId]);
 
   useEffect(() => {
@@ -89,6 +112,25 @@ const UserPropertyDetails = () => {
 
    const handleBookNow = () => {
     navigate(`/user/checkout/${propertyId}`);
+  };
+
+    const isStartDateValid = (date: Date) => {
+    if (!rentalPeriod) return true;
+
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setMonth(end.getMonth() + rentalPeriod);
+
+    return !blockedDates.some(({ moveInDate, endDate }) => {
+      const bookedStart = new Date(moveInDate);
+      const bookedEnd = new Date(endDate);
+      bookedStart.setHours(0, 0, 0, 0);
+      bookedEnd.setHours(0, 0, 0, 0);
+
+      return start <= bookedEnd && end >= bookedStart;
+    });
   };
 
   return (
@@ -447,13 +489,25 @@ const UserPropertyDetails = () => {
                     <div className="mt-4 space-y-2">
   <div className="space-y-2">
     <label className="block text-sm font-medium text-gray-700">Check-in</label>
-    <input
+    {/* <input
       type="date"
       value={checkIn}
       min={today}
       onChange={(e) => setCheckIn(e.target.value)}
       className="w-full border px-3 py-2 rounded-lg"
-    />
+    /> */}
+    <ReactDatePicker
+  selected={checkIn ? new Date(checkIn) : null}
+  onChange={(date: Date | null) =>
+    setCheckIn(date ? date.toISOString().split("T")[0] : "")
+  }
+  minDate={new Date()}
+  filterDate={isStartDateValid}
+  className="w-full border px-3 py-2 rounded-lg"
+  placeholderText="Select check-in date"
+  dateFormat="yyyy-MM-dd"
+/>
+
   </div>
 
   <div className="space-y-2">

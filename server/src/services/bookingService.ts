@@ -290,4 +290,13 @@ async getBookingDetails(bookingId: string, userId: string): Promise<BookingDetai
 
 }
 
+async getBlockedDates(propertyId: string): Promise<{ moveInDate: string; endDate: string }[]> {
+  const bookings = await this._bookingRepository.getConfirmedBookingsByPropertyId(propertyId);
+  return bookings.map(b => ({
+    moveInDate: b.moveInDate.toISOString().split("T")[0],
+    endDate: b.endDate.toISOString().split("T")[0],
+  }));
+}
+
+
 }

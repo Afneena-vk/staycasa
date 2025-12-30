@@ -108,6 +108,14 @@ userRoutes.post(
   bookingController.calculateTotal.bind(bookingController)
 );
 
+userRoutes.get(
+  "/properties/:propertyId/blocked-dates",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.getBlockedDates.bind(bookingController)
+);
+
+
 userRoutes.post(
   "/payment/razorpay-order",
   authMiddleware(["user"]),

@@ -116,6 +116,13 @@ async findByUserWithQuery(
   }
 
 
+// async getBookedRanges(propertyId: string) {
+//   return Booking.find({
+//     propertyId,
+//     bookingStatus: BookingStatus.Confirmed,
+//     isCancelled: false,
+//   }).select("moveInDate endDate -_id");
+// }
 
  
 

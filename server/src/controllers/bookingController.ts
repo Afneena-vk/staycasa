@@ -155,4 +155,16 @@ async getBookingDetails(req: Request, res: Response, next: NextFunction): Promis
   }
 }
 
+async getBlockedDates(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { propertyId } = req.params;
+    const blockedDates = await this._bookingService.getBlockedDates(propertyId);
+    console.log("the blocked dates are:",blockedDates )
+    res.status(200).json({ status: 200, blockedDates });
+  } catch (err: any) {
+    res.status(500).json({ status: 500, message: err.message || "Server error" });
+  }
+}
+
+
 }

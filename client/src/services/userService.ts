@@ -76,4 +76,11 @@ export const userService = {
     );
     return response.data;
   },
+ 
+  getBlockedDates: async (propertyId: string) => {
+  const response = await api.get(`/user/properties/${propertyId}/blocked-dates`);
+  return response.data;
+},
+
+
 };
