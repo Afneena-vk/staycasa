@@ -2,17 +2,19 @@ import { Router } from "express";
 import { container } from '../config/container'
 import { IOwnerController } from "../controllers/interfaces/IOwnerController";
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
+import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { cloudinaryUpload } from "../config/cloudinary";
 import { checkUserStatus } from "../middleware/statusCheckingMiddleware";
+import { BookingController } from "../controllers/bookingController";
 
 const ownerRoutes = Router();
 
 const ownerController = container.resolve<IOwnerController>(TOKENS.IOwnerController);
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
-
+const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -98,6 +100,13 @@ ownerRoutes.get(
   authMiddleware(["owner"]),
   checkUserStatus,
   ownerController.getWallet.bind(ownerController)
+);
+
+ownerRoutes.get(
+  "/bookings",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  bookingController.getOwnerBookings.bind(bookingController)
 );
 
 export default ownerRoutes

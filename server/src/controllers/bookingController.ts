@@ -112,7 +112,8 @@ async getUserBooking(req: Request, res: Response, next: NextFunction): Promise<v
         startDate, 
         endDate, 
         sortBy, 
-        sortOrder 
+        sortOrder,
+        bookingType,
       // } = req.query;
        } = req.body; 
       const result = await this._bookingService.getUserBookingsWithQuery(userId, {
@@ -125,6 +126,9 @@ async getUserBooking(req: Request, res: Response, next: NextFunction): Promise<v
         endDate: endDate ? new Date(endDate as string) : undefined,
         sortField: sortBy as string,
         sortOrder: sortOrder === "asc" ? "asc" : "desc",
+       bookingType: bookingType
+       ? (bookingType as "past" | "ongoing" | "upcoming")
+       : undefined
       });
        res.status(200).json(result);
 
@@ -165,6 +169,56 @@ async getBlockedDates(req: Request, res: Response, next: NextFunction): Promise<
     res.status(500).json({ status: 500, message: err.message || "Server error" });
   }
 }
+
+async getOwnerBookings(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const ownerId = (req as any).userId;
+    console.log("Owner ID:", ownerId);
+
+    const {
+      page,
+      limit,
+      search,
+      status,
+      paymentStatus,
+      startDate,
+      endDate,
+      sortBy,
+      sortOrder,
+      bookingType,
+    } = req.query;
+    
+
+    const result =
+      await this._bookingService.getOwnerBookingsWithQuery(ownerId, {
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+        search: search as string,
+        status: status as string,
+        paymentStatus: paymentStatus as string,
+        startDate: startDate as any,
+        endDate: endDate as any,
+        sortField: sortBy as string,
+        sortOrder: sortOrder === "asc" ? "asc" : "desc",
+       // bookingType: bookingType as "past" | "ongoing" | "upcoming" 
+       bookingType: bookingType
+  ? (bookingType as "past" | "ongoing" | "upcoming")
+  : undefined
+
+      });
+
+    res.status(200).json(result);
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || "Failed to fetch owner bookings",
+    });
+  }
+}
+
 
 
 }

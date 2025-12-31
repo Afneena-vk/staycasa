@@ -19,6 +19,7 @@ const BookingList = () => {
     endDate,
     setFilters,
     fetchBookings,
+    bookingType
   } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState(search || "");
@@ -47,7 +48,7 @@ const BookingList = () => {
 }, [searchQuery]);
 useEffect(() => {
   fetchBookings();
-}, [page, search, sortBy, sortOrder, status, startDate, endDate]);
+}, [page, search, sortBy, sortOrder, status, startDate, endDate,bookingType]);
 
 
 
@@ -105,7 +106,7 @@ useEffect(() => {
             </select>
 
             {/* Past / Upcoming */}
-            <select
+            {/* <select
               onChange={(e) => {
                 const type = e.target.value;
                 if (type === "upcoming") {
@@ -121,7 +122,19 @@ useEffect(() => {
               <option value="">All Bookings</option>
               <option value="upcoming">Upcoming</option>
               <option value="past">Past</option>
-            </select>
+            </select> */}
+             <select
+            value={bookingType}
+            //onChange={(e) => { setFilters({ paymentStatus: e.target.value, page: 1 }); fetchOwnerBookings(); }}
+             onChange={(e) => setFilters({ bookingType: e.target.value ? (e.target.value as "upcoming" | "past" | "ongoing") : undefined, page: 1 })}
+            className="border px-3 py-2 rounded"
+          >
+            <option value="">All Bookings</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+            <option value="ongoing">Ongoing</option>
+            
+          </select>
           </div>
         </div>
       

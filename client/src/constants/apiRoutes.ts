@@ -50,6 +50,8 @@ export const OWNER_API = {
 
   PROPERTIES: "/owner/properties",
   PROPERTY_BY_ID: (propertyId: string) => `/owner/properties/${propertyId}`,
+
+  BOOKINGS: "/owner/bookings",
 };
 
 export const ADMIN_API = {

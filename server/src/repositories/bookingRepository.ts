@@ -64,6 +64,7 @@ async findByUserWithQuery(
     paymentStatus,
     startDate,
     endDate,
+    bookingType,
     page = 1,
     limit = 9,
     sortField = "createdAt",
@@ -76,12 +77,30 @@ async findByUserWithQuery(
   if (paymentStatus) query.paymentStatus = paymentStatus;
 
  
-  if (startDate) {
-    query.endDate = { $gte: new Date(startDate) };
+  // if (startDate) {
+  //   query.endDate = { $gte: new Date(startDate) };
+  // }
+  // if (endDate) {
+  //   query.endDate = { $lt: new Date(endDate) };
+  // }
+
+  const today= new Date();
+today.setHours(0,0,0,0);
+
+  if (bookingType === "past") {
+    query.endDate = { $lt: today };
   }
-  if (endDate) {
-    query.endDate = { $lt: new Date(endDate) };
+
+
+  if (bookingType === "ongoing") {
+    query.moveInDate = { $lte: today };
+    query.endDate = { $gte: today };
   }
+
+   if (bookingType === "upcoming") {
+    query.moveInDate = { $gt: today };
+  }
+
 
   const total = await Booking.countDocuments(query);
 
@@ -116,15 +135,99 @@ async findByUserWithQuery(
   }
 
 
-// async getBookedRanges(propertyId: string) {
-//   return Booking.find({
-//     propertyId,
-//     bookingStatus: BookingStatus.Confirmed,
-//     isCancelled: false,
-//   }).select("moveInDate endDate -_id");
+async getBookedRanges(propertyId: string) {
+  return Booking.find({
+    propertyId,
+    bookingStatus: BookingStatus.Confirmed,
+    isCancelled: false,
+  }).select("moveInDate endDate -_id");
+}
+
+ async findByOwnerWithQuery(
+  ownerId: string,
+  options: FindByUserOptions
+) {
+  const {
+    search,
+    status,
+    paymentStatus,
+    startDate,
+    endDate,
+    bookingType,
+    page = 1,
+    limit = 10,
+    sortField = "createdAt",
+    sortOrder = "desc",
+  } = options;
+
+  const query: any = { ownerId };
+
+  if (status) query.bookingStatus = status;
+  if (paymentStatus) query.paymentStatus = paymentStatus;
+
+// if (startDate || endDate) {
+//   query.endDate = {};
+
+//   if (startDate) {
+//     query.endDate.$gte = new Date(startDate);
+//   }
+
+//   if (endDate) {
+//     const end = new Date(endDate);
+//     end.setHours(23, 59, 59, 999);
+//     query.endDate.$lte = end;
+//   }
 // }
 
- 
+
+const today= new Date();
+today.setHours(0,0,0,0);
+
+  if (bookingType === "past") {
+    query.endDate = { $lt: today };
+  }
+
+
+  if (bookingType === "ongoing") {
+    query.moveInDate = { $lte: today };
+    query.endDate = { $gte: today };
+  }
+
+   if (bookingType === "upcoming") {
+    query.moveInDate = { $gt: today };
+  }
+
+  const total = await Booking.countDocuments(query);
+
+  const bookings = await Booking.find(query)
+    .populate({
+      path: "propertyId",
+      match: search
+        ? { title: { $regex: search, $options: "i" } }
+        : {},
+    })
+    .populate({
+      path: "userId",
+      match: search
+        ? {
+            $or: [
+              { name: { $regex: search, $options: "i" } },
+              { email: { $regex: search, $options: "i" } },
+            ],
+          }
+        : {},
+    })
+    .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  
+  const filteredBookings = bookings.filter(
+    (b) => b.propertyId && b.userId
+  );
+
+  return { bookings: filteredBookings, total };
+}
 
 
 }

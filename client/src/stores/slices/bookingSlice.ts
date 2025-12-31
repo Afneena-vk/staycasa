@@ -39,6 +39,7 @@ export interface BookingState {
   endDate?: string;
   sortBy: string;
   sortOrder: "asc" | "desc";
+   bookingType?: "upcoming" | "past" | "ongoing";
 
    isLoading: boolean;
   error: string | null;
@@ -58,6 +59,8 @@ export interface BookingState {
 
 
   fetchBookings: (query?: BookingQuery) => Promise<void>;
+  fetchOwnerBookings: () => Promise<void>;
+
 
 }
 
@@ -77,6 +80,7 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
   paymentStatus: "",
   sortBy: "createdAt",
   sortOrder: "desc",
+  bookingType: undefined,
 
   isLoading: false,
   error: null,
@@ -111,6 +115,7 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
       endDate: state.endDate,
       sortBy: state.sortBy,
       sortOrder: state.sortOrder,
+      bookingType: state.bookingType, 
     };
   set({ isLoading: true, error: null });
 
@@ -147,6 +152,47 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
     }
   },
 
+fetchOwnerBookings: async () => {
+  const state = get();
+
+  const query: BookingQuery = {
+    page: state.page,
+    limit: state.limit,
+    search: state.search || undefined,
+    status: state.status || undefined,
+    paymentStatus: state.paymentStatus || undefined,
+    startDate: state.startDate,
+    endDate: state.endDate,
+    sortBy: state.sortBy,
+    sortOrder: state.sortOrder,
+    bookingType: state.bookingType,
+  };
+
+  set({ isLoading: true, error: null });
+
+  try {
+    const response = await bookingService.fetchOwnerBookings(query);
+
+    set({
+      bookings: response.bookings || [],
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      isLoading: false,
+      error: null,
+    });
+  } catch (error: any) {
+    set({
+      bookings: [],
+      isLoading: false,
+      error:
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch owner bookings",
+    });
+  }
+},
 
 
 });

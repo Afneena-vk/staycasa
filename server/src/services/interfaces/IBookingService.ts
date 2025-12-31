@@ -44,6 +44,7 @@ export interface UserBookingsQueryOptions {
   endDate?: Date;
   sortField?: string;
   sortOrder?: "asc" | "desc";
+  bookingType?: "past" | "ongoing" | "upcoming";
 }
 
 
@@ -64,4 +65,10 @@ getBookingDetails(
 
 getBlockedDates(propertyId: string): Promise<{ moveInDate: string; endDate: string }[]> 
 
+getOwnerBookingsWithQuery(
+  ownerId: string,
+  query: UserBookingsQueryOptions
+) : Promise<{ bookings: BookingListItemDto[]; total: number; page: number; limit: number,  totalPages: number }>;
+
+   
 }

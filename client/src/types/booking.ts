@@ -84,4 +84,5 @@ export interface BookingQuery {
   endDate?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
+  bookingType?: "upcoming" | "past" | "ongoing"
 }

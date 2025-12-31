@@ -298,5 +298,46 @@ async getBlockedDates(propertyId: string): Promise<{ moveInDate: string; endDate
   }));
 }
 
+async getOwnerBookingsWithQuery(
+  ownerId: string,
+  query: UserBookingsQueryOptions
+) {
+  const page = query.page || 1;
+  const limit = query.limit || 10;
+
+  const allowedSortFields: (keyof IBooking)[] = [
+    "bookingId",
+    "moveInDate",
+    "paymentStatus",
+    "createdAt",
+  ];
+
+  const sortField = allowedSortFields.includes(query.sortField as keyof IBooking)
+    ? (query.sortField as keyof IBooking)
+    : "createdAt";
+
+  const sortOrder = query.sortOrder === "asc" ? "asc" : "desc";
+
+  const { bookings, total } =
+    await this._bookingRepository.findByOwnerWithQuery(ownerId, {
+      ...query,
+      page,
+      limit,
+      sortField,
+      sortOrder,
+    });
+
+  const bookingDtos = BookingMapper.toDtoList(bookings);
+
+  return {
+    bookings: bookingDtos,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
+}
+
+
 
 }

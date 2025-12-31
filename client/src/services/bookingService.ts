@@ -1,5 +1,5 @@
 import { api } from "../api/api";
-import { USER_API } from "../constants/apiRoutes";
+import { OWNER_API, USER_API } from "../constants/apiRoutes";
 
 interface BookingQuery {
   page?: number;
@@ -8,6 +8,7 @@ interface BookingQuery {
   status?: string;
   paymentStatus?: string;
   startDate?: string;
+  bookingType?: "upcoming" | "past" | "ongoing"
   endDate?: string;
   sortBy?: string;
   sortOrder?: "asc" | "desc";
@@ -23,4 +24,13 @@ export const bookingService = {
         const res = await api.get(USER_API.BOOKING_BY_ID(bookingId));
         return res.data;
       },
+   
+     fetchOwnerBookings: async (query: BookingQuery) => {
+        // const res = await api.post(OWNER_API.BOOKINGS, query);
+      const res = await api.get(OWNER_API.BOOKINGS, {
+      params: query,
+    });
+        return res.data;
+      },
+
 }
