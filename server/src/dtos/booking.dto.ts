@@ -71,6 +71,11 @@ export interface BookingListItemDto {
     city: string;
     images: string[];
   };
+    user?: {               
+    id: string;
+    name: string;
+    email?: string;
+  };
 }
 
 

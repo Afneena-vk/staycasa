@@ -3,6 +3,7 @@ import Booking,{IBooking} from '../models/bookingModel';
 import { BaseRepository } from "./baseRepository";
 import { IBookingRepository, FindByUserOptions } from "./interfaces/IBookingRepository";  
 import { BookingStatus } from "../models/status/status";
+import mongoose from "mongoose";
 
 @injectable()
 export class BookingRepository extends BaseRepository<IBooking> implements IBookingRepository {
@@ -143,7 +144,99 @@ async getBookedRanges(propertyId: string) {
   }).select("moveInDate endDate -_id");
 }
 
- async findByOwnerWithQuery(
+//  async findByOwnerWithQuery(
+//   ownerId: string,
+//   options: FindByUserOptions
+// ) {
+//   const {
+//     search,
+//     status,
+//     paymentStatus,
+//     startDate,
+//     endDate,
+//     bookingType,
+//     page = 1,
+//     limit = 10,
+//     sortField = "createdAt",
+//     sortOrder = "desc",
+//   } = options;
+
+//   const query: any = { ownerId };
+
+//   if (status) query.bookingStatus = status;
+//   if (paymentStatus) query.paymentStatus = paymentStatus;
+
+// // if (startDate || endDate) {
+// //   query.endDate = {};
+
+// //   if (startDate) {
+// //     query.endDate.$gte = new Date(startDate);
+// //   }
+
+// //   if (endDate) {
+// //     const end = new Date(endDate);
+// //     end.setHours(23, 59, 59, 999);
+// //     query.endDate.$lte = end;
+// //   }
+// // }
+
+
+// const today= new Date();
+// today.setHours(0,0,0,0);
+
+//   if (bookingType === "past") {
+//     query.endDate = { $lt: today };
+//   }
+
+
+//   if (bookingType === "ongoing") {
+//     query.moveInDate = { $lte: today };
+//     query.endDate = { $gte: today };
+//   }
+
+//    if (bookingType === "upcoming") {
+//     query.moveInDate = { $gt: today };
+//   }
+
+//   const total = await Booking.countDocuments(query);
+
+//   const bookings = await Booking.find(query)
+//     .populate({
+//       path: "propertyId",
+//       match: search
+//         ? { title: { $regex: search, $options: "i" } }
+//         : {},
+//     })
+//     .populate({
+//       path: "userId",
+//       match: search
+//         ? {
+//             $or: [
+//               { name: { $regex: search, $options: "i" } },
+//               { email: { $regex: search, $options: "i" } },
+//             ],
+//           }
+//         : {},
+//     })
+//     .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
+//     .skip((page - 1) * limit)
+//     .limit(limit);
+
+  
+//   const filteredBookings = bookings.filter(
+//     //(b) => b.propertyId && b.userId
+//       (b) => {
+//   if (!search) return true;
+
+//   return Boolean(b.propertyId || b.userId);
+  
+//     }
+  
+//   );
+
+//   return { bookings: filteredBookings, total };
+// }
+async findByOwnerWithQuery(
   ownerId: string,
   options: FindByUserOptions
 ) {
@@ -160,74 +253,78 @@ async getBookedRanges(propertyId: string) {
     sortOrder = "desc",
   } = options;
 
-  const query: any = { ownerId };
+  const matchStage: any = { ownerId: new mongoose.Types.ObjectId(ownerId) };
 
-  if (status) query.bookingStatus = status;
-  if (paymentStatus) query.paymentStatus = paymentStatus;
+  if (status) matchStage.bookingStatus = status;
+  if (paymentStatus) matchStage.paymentStatus = paymentStatus;
 
-// if (startDate || endDate) {
-//   query.endDate = {};
-
-//   if (startDate) {
-//     query.endDate.$gte = new Date(startDate);
-//   }
-
-//   if (endDate) {
-//     const end = new Date(endDate);
-//     end.setHours(23, 59, 59, 999);
-//     query.endDate.$lte = end;
-//   }
-// }
-
-
-const today= new Date();
-today.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   if (bookingType === "past") {
-    query.endDate = { $lt: today };
+    matchStage.endDate = { $lt: today };
   }
-
 
   if (bookingType === "ongoing") {
-    query.moveInDate = { $lte: today };
-    query.endDate = { $gte: today };
+    matchStage.moveInDate = { $lte: today };
+    matchStage.endDate = { $gte: today };
   }
 
-   if (bookingType === "upcoming") {
-    query.moveInDate = { $gt: today };
+  if (bookingType === "upcoming") {
+    matchStage.moveInDate = { $gt: today };
   }
 
-  const total = await Booking.countDocuments(query);
+  const pipeline: any[] = [
+    { $match: matchStage },
+    {
+      $lookup: {
+        from: "properties",
+        localField: "propertyId",
+        foreignField: "_id",
+        as: "propertyId",
+      },
+    },
+    { $unwind: "$propertyId" },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userId",
+      },
+    },
+    { $unwind: "$userId" },
+  ];
 
-  const bookings = await Booking.find(query)
-    .populate({
-      path: "propertyId",
-      match: search
-        ? { title: { $regex: search, $options: "i" } }
-        : {},
-    })
-    .populate({
-      path: "userId",
-      match: search
-        ? {
-            $or: [
-              { name: { $regex: search, $options: "i" } },
-              { email: { $regex: search, $options: "i" } },
-            ],
-          }
-        : {},
-    })
-    .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
-    .skip((page - 1) * limit)
-    .limit(limit);
+  // Add search filter after lookups
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { "propertyId.title": { $regex: search, $options: "i" } },
+          { "userId.name": { $regex: search, $options: "i" } },
+          { "userId.email": { $regex: search, $options: "i" } },
+          { bookingId: { $regex: search, $options: "i" } },
+        ],
+      },
+    });
+  }
 
-  
-  const filteredBookings = bookings.filter(
-    (b) => b.propertyId && b.userId
+  // Count total matching documents
+  const countPipeline = [...pipeline, { $count: "total" }];
+  const countResult = await Booking.aggregate(countPipeline);
+  const total = countResult.length > 0 ? countResult[0].total : 0;
+
+  // Add sorting and pagination
+  pipeline.push(
+    { $sort: { [sortField]: sortOrder === "asc" ? 1 : -1 } },
+    { $skip: (page - 1) * limit },
+    { $limit: limit }
   );
 
-  return { bookings: filteredBookings, total };
-}
+  const bookings = await Booking.aggregate(pipeline);
 
+  return { bookings, total };
+}
 
 }

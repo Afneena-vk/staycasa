@@ -76,6 +76,7 @@ static toCalculateTotalResponse(totalAmount: number): CalculateTotalResponseDto 
 
 static toDto(booking: IBooking): BookingListItemDto {
     const property = booking.propertyId as any; 
+    const user = booking.userId as any; 
 
     return {
       id: booking._id.toString(),
@@ -100,6 +101,15 @@ static toDto(booking: IBooking): BookingListItemDto {
             city: "-",
             images: [],
           },
+          
+      user: user
+      ? {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+        }
+      : undefined,
+  
     };
   }
 

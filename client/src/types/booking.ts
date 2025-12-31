@@ -29,7 +29,14 @@ export interface BookingDTO {
   cancellationReason?: string;
   refundAmount: number;
 
-  createdAt: string;          
+  createdAt: string; 
+  
+   user?: {              
+    id: string;
+    name: string;
+    email?: string;
+  };
+  
 }
 
 export interface BookingDetailsDTO {

@@ -1,7 +1,4 @@
 
-
-
-
 import { useEffect, useState } from "react";
 import { FaCheck, FaTimes, FaEye, FaSearch } from "react-icons/fa";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
@@ -44,7 +41,7 @@ const OwnerBookings = () => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm);
       setFilters({ search: searchTerm, page: 1 });
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(handler);
   }, [searchTerm]);
@@ -187,7 +184,7 @@ const OwnerBookings = () => {
             <thead className="bg-slate-100 dark:bg-slate-700">
               <tr>
                 <th className="px-4 py-2">Booking ID</th>
-                {/* <th className="px-4 py-2">User</th> */}
+                <th className="px-4 py-2">User</th>
                 <th className="px-4 py-2">Property</th>
                 <th className="px-4 py-2">Move-In</th>
                 <th className="px-4 py-2">End Date</th>
@@ -204,7 +201,7 @@ const OwnerBookings = () => {
                   return (
                     <tr key={b.id} className="border-t dark:border-slate-700">
                       <td className="px-4 py-2">{b.bookingId}</td>
-                      {/* <td className="px-4 py-2">{b.user?.name || "N/A"}</td> */}
+                      <td className="px-4 py-2">{b.user?.name || "N/A"}</td>
                       <td className="px-4 py-2 flex items-center gap-2 min-w-[200px]">
                         <img
                           src={b.property.images?.[0] || "https://via.placeholder.com/50"}
