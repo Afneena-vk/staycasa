@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FaCheck, FaTimes, FaEye, FaSearch } from "react-icons/fa";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 const OwnerBookings = () => {
   const {
@@ -29,6 +30,8 @@ const OwnerBookings = () => {
 
   const [searchTerm, setSearchTerm] = useState(search);
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const navigate = useNavigate();
+
 
   // useEffect(() => {
   //   fetchOwnerBookings();
@@ -246,7 +249,7 @@ const OwnerBookings = () => {
                           <FaTimes />
                         </button>
                         <button
-                          onClick={() => alert("View booking details")}
+                          onClick={() =>  navigate(`/owner/bookings/${b.id}`)}
                           className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
                           title="View"
                         >

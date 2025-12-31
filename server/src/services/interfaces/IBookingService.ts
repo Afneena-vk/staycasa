@@ -63,6 +63,11 @@ getBookingDetails(
    userId:string
 ): Promise<BookingDetailsDto>;
 
+getOwnerBookingDetails(
+   bookingId: string,
+   ownerId:string
+): Promise<BookingDetailsDto>;
+
 getBlockedDates(propertyId: string): Promise<{ moveInDate: string; endDate: string }[]> 
 
 getOwnerBookingsWithQuery(

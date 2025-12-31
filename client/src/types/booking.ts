@@ -55,6 +55,7 @@ export interface BookingDetailsDTO {
   paymentStatus: PaymentStatus;
   bookingStatus: BookingStatus;
   paymentMethod: string;
+  refundAmount: number;
 
   createdAt: Date;
   updatedAt: Date;
@@ -79,6 +80,21 @@ export interface BookingDetailsDTO {
     houseNumber: string;
   
   };
+   user?: {  
+    id: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    address?: {
+      houseNo: string;
+      street: string;
+      city: string;
+      district: string;
+      state: string;
+      pincode: string;
+    };
+  };
+  
 }
 
 export interface BookingQuery {

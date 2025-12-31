@@ -33,4 +33,9 @@ export const bookingService = {
         return res.data;
       },
 
+      fetchBookingDetailsForOwner: async (bookingId: string) => {
+        const res = await api.get(OWNER_API.BOOKING_BY_ID(bookingId));
+        return res.data;
+      },
+
 }

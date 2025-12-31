@@ -135,6 +135,19 @@ today.setHours(0,0,0,0);
        .populate("ownerId");
   }
 
+  async findByIdAndOwner(
+    bookingId: string,
+    ownerId: string,
+  ): Promise<IBooking | null>{
+    return Booking.findOne({
+     _id: bookingId,
+     ownerId,     
+    })
+    .populate("propertyId")
+    .populate("userId")
+    .populate("ownerId");
+  }
+
 
 async getBookedRanges(propertyId: string) {
   return Booking.find({
@@ -236,6 +249,7 @@ async getBookedRanges(propertyId: string) {
 
 //   return { bookings: filteredBookings, total };
 // }
+
 async findByOwnerWithQuery(
   ownerId: string,
   options: FindByUserOptions
@@ -296,7 +310,6 @@ async findByOwnerWithQuery(
     { $unwind: "$userId" },
   ];
 
-  // Add search filter after lookups
   if (search) {
     pipeline.push({
       $match: {
@@ -310,12 +323,12 @@ async findByOwnerWithQuery(
     });
   }
 
-  // Count total matching documents
+
   const countPipeline = [...pipeline, { $count: "total" }];
   const countResult = await Booking.aggregate(countPipeline);
   const total = countResult.length > 0 ? countResult[0].total : 0;
 
-  // Add sorting and pagination
+ 
   pipeline.push(
     { $sort: { [sortField]: sortOrder === "asc" ? 1 : -1 } },
     { $skip: (page - 1) * limit },

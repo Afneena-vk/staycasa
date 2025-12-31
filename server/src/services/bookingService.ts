@@ -338,6 +338,20 @@ async getOwnerBookingsWithQuery(
   };
 }
 
+async getOwnerBookingDetails(
+  bookingId: string,
+  ownerId: string
+): Promise<BookingDetailsDto> {
+    const booking = await this._bookingRepository.findByIdAndOwner(
+    bookingId,
+    ownerId
+  );
 
+  if (!booking) {
+    throw new Error(MESSAGES.ERROR.BOOKING_NOT_FOUND);
+  }
+
+  return BookingMapper.toBookingDetailsDto(booking);
+}
 
 }

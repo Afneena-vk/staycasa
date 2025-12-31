@@ -219,6 +219,27 @@ async getOwnerBookings(
   }
 }
 
+async getOwnerBookingDetails(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { bookingId } = req.params;
+    const ownerId = (req as any).userId;
+
+    const booking = await this._bookingService.getOwnerBookingDetails(
+    bookingId,
+    ownerId
+    );
+
+      res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      booking,
+    });
+  } catch (error:any) {
+      res.status(STATUS_CODES.NOT_FOUND).json({
+      status: STATUS_CODES.NOT_FOUND,
+      message: error.message || MESSAGES.ERROR.BOOKING_NOT_FOUND,
+    });
+  }
+}
 
 
 }

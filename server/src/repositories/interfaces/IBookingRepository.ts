@@ -26,6 +26,7 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
     findById(id: string): Promise<IBooking | null>;
     findByUserWithQuery(userId:string ,options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
     findByIdAndUser(bookingId:string,userId:string):  Promise<IBooking | null>;
+    findByIdAndOwner(bookingId:string,ownerId:string):  Promise<IBooking | null>;
     //getBookedRanges(propertyId:string):Promise<BookedRange[]>
     findByOwnerWithQuery(ownerId: string,options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
 }

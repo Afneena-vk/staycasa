@@ -101,7 +101,7 @@ static toDto(booking: IBooking): BookingListItemDto {
             city: "-",
             images: [],
           },
-          
+
       user: user
       ? {
           id: user._id.toString(),
@@ -120,6 +120,7 @@ static toDto(booking: IBooking): BookingListItemDto {
 
 static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
   const property = booking.propertyId as any;
+  const user = booking.userId as any;
 
   return {
     id: booking._id.toString(),
@@ -136,6 +137,7 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
     paymentStatus: booking.paymentStatus,
     bookingStatus: booking.bookingStatus,
     paymentMethod: booking.paymentMethod,
+    refundAmount: booking.refundAmount,
 
     createdAt: booking.createdAt,
 
@@ -158,6 +160,26 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
       houseNumber: property.houseNumber
       
     },
+
+    user: user
+        ? {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            address: user.address
+              ? {
+                  houseNo: user.address.houseNo,
+                  street: user.address.street,
+                  city: user.address.city,
+                  district: user.address.district,
+                  state: user.address.state,
+                  pincode: user.address.pincode,
+                }
+              : undefined,
+          }
+        : undefined,
+    
   };
 }
 

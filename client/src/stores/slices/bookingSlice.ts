@@ -60,6 +60,7 @@ export interface BookingState {
 
   fetchBookings: (query?: BookingQuery) => Promise<void>;
   fetchOwnerBookings: () => Promise<void>;
+  fetchBookingDetailsForOwner: (bookingId: string) => Promise<void>;
 
 
 }
@@ -194,5 +195,14 @@ fetchOwnerBookings: async () => {
   }
 },
 
+    fetchBookingDetailsForOwner : async (bookingId: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await bookingService. fetchBookingDetailsForOwner(bookingId);
+      set({ selectedBooking: res.booking, isLoading: false });
+    } catch (error: any) {
+      set({ selectedBooking: null, isLoading: false, error: error.response?.data?.error || error.message || "Failed to fetch booking" });
+    }
+  },
 
 });

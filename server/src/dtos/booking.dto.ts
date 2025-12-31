@@ -94,6 +94,7 @@ export interface BookingDetailsDto {
   paymentStatus: PaymentStatus;
   bookingStatus: BookingStatus;
   paymentMethod: string;
+  refundAmount: number;
 
   createdAt: Date;
 
@@ -115,6 +116,21 @@ export interface BookingDetailsDto {
     pincode: number;
     houseNumber: string;
    
+  };
+
+    user?: {
+    id: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    address?: {
+      houseNo: string;
+      street: string;
+      city: string;
+      district: string;
+      state: string;
+      pincode: string;
+    };
   };
 }
 
