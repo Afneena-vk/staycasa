@@ -53,6 +53,7 @@ export const OWNER_API = {
 
   BOOKINGS: "/owner/bookings",
   BOOKING_BY_ID: (bookingId: string) => `/owner/bookings/${bookingId}`,
+  BOOKING_STATS: "/owner/dashboard/stats"
 };
 
 export const ADMIN_API = {

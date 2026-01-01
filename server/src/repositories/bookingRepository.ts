@@ -2,7 +2,7 @@ import { injectable } from "tsyringe";
 import Booking,{IBooking} from '../models/bookingModel';
 import { BaseRepository } from "./baseRepository";
 import { IBookingRepository, FindByUserOptions } from "./interfaces/IBookingRepository";  
-import { BookingStatus } from "../models/status/status";
+import { BookingStatus,PaymentStatus } from "../models/status/status";
 import mongoose from "mongoose";
 
 @injectable()
@@ -338,6 +338,65 @@ async findByOwnerWithQuery(
   const bookings = await Booking.aggregate(pipeline);
 
   return { bookings, total };
+}
+
+
+async findAllByOwner(ownerId:string): Promise<IBooking[]> {
+  return Booking.find({
+    ownerId: new mongoose.Types.ObjectId(ownerId),
+  })
+}
+
+async findOwnerBookingsByDate(
+  ownerId: string,
+  type: "upcoming" | "ongoing" | "past"
+): Promise<IBooking[]> {
+  const today= new Date();
+  today.setHours(0,0,0,0);
+
+
+ const query: any ={
+    ownerId: new mongoose.Types.ObjectId(ownerId),
+ };
+
+   if (type === "upcoming") {
+     query.moveInDate= {$gt: today}
+   }
+
+     if (type === "ongoing") {
+     query.moveInDate= { $lte: today };
+     query.endDate = { $gte: today };
+   }
+ 
+   if (type === "past") {
+     query.endDate= {$lt: today}
+   }   
+
+   return Booking.find(query);
+
+}
+
+async findConfirmedPaidBookingsByOwner(
+  ownerId: string
+): Promise<IBooking[]> {
+
+return Booking.find({
+  ownerId: new mongoose.Types.ObjectId(ownerId),
+  bookingStatus: BookingStatus.Confirmed,
+  paymentStatus: PaymentStatus.Completed,
+  isCancelled: false,
+
+})
+
+}
+
+async findCancelledBookingsByOwner(
+  ownerId:string
+): Promise<IBooking[]> {
+  return Booking.find({
+    ownerId: new mongoose.Types.ObjectId(ownerId),
+    isCancelled: true,
+  });
 }
 
 }

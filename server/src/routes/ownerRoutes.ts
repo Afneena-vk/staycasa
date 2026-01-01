@@ -116,5 +116,12 @@ ownerRoutes.get(
   bookingController.getOwnerBookingDetails.bind(bookingController)
 );
 
+ownerRoutes.get(
+  "/dashboard/stats",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  bookingController.getOwnerBookingStats.bind(bookingController)
+);
+
 
 export default ownerRoutes

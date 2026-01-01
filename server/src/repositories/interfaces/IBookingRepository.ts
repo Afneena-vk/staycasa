@@ -11,7 +11,7 @@ export interface FindByUserOptions {
   page?: number;
   bookingType?: "past" | "ongoing" | "upcoming"; 
   limit?: number;
-  sortField?: keyof IBooking; // safer than string
+  sortField?: keyof IBooking; 
   sortOrder?: "asc" | "desc";
 }
 
@@ -29,4 +29,9 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
     findByIdAndOwner(bookingId:string,ownerId:string):  Promise<IBooking | null>;
     //getBookedRanges(propertyId:string):Promise<BookedRange[]>
     findByOwnerWithQuery(ownerId: string,options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
+    findAllByOwner(ownerId: string): Promise<IBooking[]> ;
+    findOwnerBookingsByDate(ownerId: string,type: "upcoming" | "ongoing" | "past"): Promise<IBooking[]>;
+    findConfirmedPaidBookingsByOwner(ownerId: string): Promise<IBooking[]> ;
+    findCancelledBookingsByOwner(ownerId: string): Promise<IBooking[]>;
+    
 }

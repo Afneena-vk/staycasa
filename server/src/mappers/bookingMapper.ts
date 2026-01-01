@@ -1,7 +1,8 @@
 import { IBooking } from "../models/bookingModel";
 import { IProperty } from "../models/propertyModel";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto} from "../dtos/booking.dto";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto} from "../dtos/booking.dto";
 import { STATUS_CODES } from "../utils/constants";
+import { BookingStatus, PaymentStatus } from "../models/status/status";
 
 export class BookingMapper {
   static toBookingResponse(booking: IBooking): BookingResponseDto {
@@ -182,5 +183,30 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
     
   };
 }
+
+ static toOwnerBookingStatsDto(stats: {
+    totalBookings: number;
+    bookingsByStatus: Record<BookingStatus, number>;
+    bookingsByTimeline: { upcoming: number; ongoing: number; past: number };
+    revenue: { totalRevenue: number; refundedAmount: number };
+    paymentStats: Record<PaymentStatus, number>;
+  }): OwnerBookingStatsDto {
+    return {
+      totalBookings: stats.totalBookings,
+      bookingsByStatus: {
+        pending: stats.bookingsByStatus[BookingStatus.Pending] || 0,
+        confirmed: stats.bookingsByStatus[BookingStatus.Confirmed] || 0,
+        cancelled: stats.bookingsByStatus[BookingStatus.Cancelled] || 0,
+        completed: stats.bookingsByStatus[BookingStatus.Completed] || 0,
+      },
+      bookingsByTimeline: stats.bookingsByTimeline,
+      revenue: stats.revenue,
+      paymentStats: {
+        paid: stats.paymentStats[PaymentStatus.Completed] || 0,
+        pending: stats.paymentStats[PaymentStatus.Pending] || 0,
+        failed: stats.paymentStats[PaymentStatus.Failed] || 0,
+      },
+    };
+  }
 
 }

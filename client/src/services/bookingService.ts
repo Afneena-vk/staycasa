@@ -38,4 +38,9 @@ export const bookingService = {
         return res.data;
       },
 
+      fetchOwnerBookingStats: async () => {
+        const res = await api.get(OWNER_API.BOOKING_STATS);
+        return res.data.stats;
+      }
+
 }

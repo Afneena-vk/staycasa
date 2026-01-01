@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { BookingDTO , BookingDetailsDTO, BookingQuery} from "../../types/booking";
+import { BookingDTO , BookingDetailsDTO, BookingQuery, OwnerBookingStatsDto} from "../../types/booking";
 import { paymentService } from "../../services/paymentService";
 import { bookingService } from "../../services/bookingService";
 
@@ -61,12 +61,13 @@ export interface BookingState {
   fetchBookings: (query?: BookingQuery) => Promise<void>;
   fetchOwnerBookings: () => Promise<void>;
   fetchBookingDetailsForOwner: (bookingId: string) => Promise<void>;
-
-
+  ownerBookingStats: OwnerBookingStatsDto | null;
+  fetchOwnerBookingStats: () => Promise<void>;  
 }
 
 export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
   bookingData: null,
+  ownerBookingStats: null,
 
   setBookingData: (data) => set({ bookingData: data }),
   clearBookingData: () => set({ bookingData: null }),
@@ -204,5 +205,20 @@ fetchOwnerBookings: async () => {
       set({ selectedBooking: null, isLoading: false, error: error.response?.data?.error || error.message || "Failed to fetch booking" });
     }
   },
+
+   fetchOwnerBookingStats: async() =>{
+       set({ isLoading: true, error: null });
+       try {
+        
+          const stats = await bookingService.fetchOwnerBookingStats();
+           set({ ownerBookingStats: stats, isLoading: false });
+       } catch (err:any) {
+        set({
+        ownerBookingStats: null,
+        isLoading: false,
+        error: err.response?.data?.message || err.message || "Failed to fetch stats",
+      });
+    }
+  }
 
 });

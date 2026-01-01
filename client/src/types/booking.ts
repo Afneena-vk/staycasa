@@ -109,3 +109,31 @@ export interface BookingQuery {
   sortOrder?: "asc" | "desc";
   bookingType?: "upcoming" | "past" | "ongoing"
 }
+
+export interface OwnerBookingStatsDto {
+  totalBookings: number;
+
+  bookingsByStatus: {
+    pending: number;
+    confirmed: number;
+    cancelled: number;
+    completed: number;
+  };
+
+  bookingsByTimeline: {
+    upcoming: number;
+    ongoing: number;
+    past: number;
+  };
+
+  revenue: {
+    totalRevenue: number;
+    refundedAmount: number;
+  };
+
+  paymentStats: {
+    paid: number;
+    pending: number;
+    failed: number;
+  };
+}
