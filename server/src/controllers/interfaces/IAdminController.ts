@@ -12,4 +12,5 @@ export interface IAdminController {
     getOwnerById(req: Request, res: Response, next: NextFunction): Promise<void>;
     approveOwner(req: Request, res: Response, next: NextFunction): Promise<void>;
     rejectOwner(req: Request, res: Response, next: NextFunction): Promise<void>;
+    adminUserStatistics(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

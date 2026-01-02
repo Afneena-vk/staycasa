@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
-import { UserFilters } from "../../types/admin";
+import { UserFilters,UserStatistics } from "../../types/admin";
 
 
 
@@ -19,6 +19,8 @@ export interface AdminSlice {
   getOwnerDetails(ownerId: string): Promise<any>;
   approveOwner(ownerId: string): Promise<any>;
   rejectOwner(ownerId: string): Promise<any>;
+  adminUserStatistics: UserStatistics | null;
+  fetchAdminUserStatistics: () => Promise<void>;
 }
 
 export const createAdminSlice: StateCreator<
@@ -27,6 +29,9 @@ export const createAdminSlice: StateCreator<
   [],
   AdminSlice
 > = (set, get) => ({
+
+    adminUserStatistics: null,
+
   getUsers: async (filters = {}) => {
     try {
       const response = await adminService.getUsers(filters);
@@ -126,4 +131,16 @@ export const createAdminSlice: StateCreator<
       throw error;
     }
   },
+
+ fetchAdminUserStatistics: async()=> {
+   try {
+     const stats = await adminService.adminUserStatistics();
+     set({ adminUserStatistics: stats });
+   } catch (error) {
+      console.error("Fetch admin user statistics failed", error);
+      set({ adminUserStatistics: null });
+
+   }
+ },
+
 });

@@ -132,3 +132,10 @@ export class OwnerDetailResponseDto {
   message!: string;
   status!: number;
 }
+
+export class UserStatisticsDto {
+  totalUsers!: number;
+  activeUsers!: number;
+  blockedUsers!: number;
+}
+

@@ -1,15 +1,18 @@
 import { Router } from "express";
 import {container} from '../config/container';
 import { IAdminController } from "../controllers/interfaces/IAdminController";
+import { IBookingController } from "../controllers/interfaces/IBookingController";
 //import adminController from '../controllers/adminController'
 import {TOKENS} from '../config/tokens'
 import { authMiddleware } from "../middleware/authMiddleware";
 import { PropertyController } from "../controllers/propertyController";
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
+import { BookingController } from "../controllers/bookingController";
 
 const adminRoutes = Router();
 const adminController = container.resolve<IAdminController>(TOKENS.IAdminController);
-const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController)
+const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
+const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController)
 
 adminRoutes.post("/login", adminController.login.bind(adminController));
 adminRoutes.post(
@@ -119,5 +122,18 @@ adminRoutes.patch(
     propertyController.unblockPropertyByAdmin.bind(propertyController)
 )
 
+adminRoutes.get(
+    "/bookings-overview",
+    authMiddleware(["admin"]),
+    bookingController.getBookingOverview.bind(bookingController)
+    
+)
+
+adminRoutes.get(
+    "/statistics",
+    authMiddleware(["admin"]),
+    adminController.adminUserStatistics.bind(adminController)
+    
+)
 
 export default adminRoutes;

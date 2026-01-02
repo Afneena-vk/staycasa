@@ -400,5 +400,10 @@ const bookingsByStatus = allBookings.reduce((acc, b)=>{
 
 }
 
+async getBookingOverview(): Promise<number> {
+  const totalCount= await this._bookingRepository.countAllConfirmedBookings();
+  return totalCount;
+}
+
 
 }

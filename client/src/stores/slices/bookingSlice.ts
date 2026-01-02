@@ -63,11 +63,15 @@ export interface BookingState {
   fetchBookingDetailsForOwner: (bookingId: string) => Promise<void>;
   ownerBookingStats: OwnerBookingStatsDto | null;
   fetchOwnerBookingStats: () => Promise<void>;  
+  adminTotalBookingsCount: number | null; 
+  fetchAdminTotalBookingsCount: () => Promise<void>;
+
 }
 
 export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
   bookingData: null,
   ownerBookingStats: null,
+  adminTotalBookingsCount: null,
 
   setBookingData: (data) => set({ bookingData: data }),
   clearBookingData: () => set({ bookingData: null }),
@@ -219,6 +223,20 @@ fetchOwnerBookings: async () => {
         error: err.response?.data?.message || err.message || "Failed to fetch stats",
       });
     }
-  }
+  },
+
+  fetchAdminTotalBookingsCount: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const totalBookings = await bookingService.fetchAdminBookingOverview(); 
+      set({ adminTotalBookingsCount: totalBookings, isLoading: false });
+    } catch (err: any) {
+      set({
+        adminTotalBookingsCount: null,
+        isLoading: false,
+        error: err.response?.data?.message || err.message || "Failed to fetch admin bookings",
+      });
+    }
+  },
 
 });

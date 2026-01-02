@@ -1,5 +1,5 @@
 import { api } from "../api/api";
-import { OWNER_API, USER_API } from "../constants/apiRoutes";
+import { OWNER_API, USER_API, ADMIN_API } from "../constants/apiRoutes";
 
 interface BookingQuery {
   page?: number;
@@ -41,6 +41,11 @@ export const bookingService = {
       fetchOwnerBookingStats: async () => {
         const res = await api.get(OWNER_API.BOOKING_STATS);
         return res.data.stats;
-      }
+      },
+    
+      fetchAdminBookingOverview: async () => {
+    const res = await api.get(ADMIN_API.BOOKING_COUNT); 
+    return res.data.totalCount; 
+  },
 
 }

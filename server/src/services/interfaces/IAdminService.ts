@@ -13,6 +13,13 @@ export interface AdminLoginData {
   //        status: number;
   //      }>;
   // }
+export interface UserStatistics {
+  totalUsers: number;
+  activeUsers: number;
+  blockedUsers: number;
+}
+
+
   export interface IAdminService {
       loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto>;
 
@@ -29,5 +36,6 @@ export interface AdminLoginData {
       approveOwner(ownerId: string): Promise<{ message: string; status: number }>;
       rejectOwner(ownerId: string): Promise<{ message: string; status: number }>;
 
+      adminUserStatistics(): Promise<UserStatistics>
 
     }

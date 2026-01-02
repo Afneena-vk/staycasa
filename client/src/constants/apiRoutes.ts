@@ -79,4 +79,6 @@ export const ADMIN_API = {
     `/admin/properties/${propertyId}/block`,
   UNBLOCK_PROPERTY: (propertyId: string) =>
     `/admin/properties/${propertyId}/unblock`,
+  BOOKING_COUNT: "/admin/bookings-overview",
+  USER_STATISTICS:"/admin/statistics"
 };

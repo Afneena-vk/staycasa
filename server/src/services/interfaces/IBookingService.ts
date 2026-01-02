@@ -76,5 +76,7 @@ getOwnerBookingsWithQuery(
 ) : Promise<{ bookings: BookingListItemDto[]; total: number; page: number; limit: number,  totalPages: number }>;
 
 getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto>
+
+getBookingOverview(): Promise<number> 
    
 }

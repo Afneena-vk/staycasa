@@ -373,6 +373,24 @@ export class AdminController implements IAdminController {
       });
     }
   }
+  async adminUserStatistics(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+
+      const stats = await this._adminService.adminUserStatistics();
+
+      res.status(STATUS_CODES.OK).json({
+        status: STATUS_CODES.OK,
+        data: stats, 
+      });
+    } catch (error:any) {
+      console.error(error);
+
+      res.status(500).json({
+        status: 500,
+        message: error.message || "Failed to fetch user statistics",
+      });
+    }
+  }
 }
 
 //export default new AdminController();

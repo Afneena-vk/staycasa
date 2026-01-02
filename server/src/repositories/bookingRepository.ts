@@ -399,4 +399,15 @@ async findCancelledBookingsByOwner(
   });
 }
 
+
+
+async countAllConfirmedBookings(): Promise<number> {
+  return Booking.countDocuments({
+    bookingStatus: BookingStatus.Confirmed,
+    isCancelled: false,
+  });
+}
+
+
+
 }

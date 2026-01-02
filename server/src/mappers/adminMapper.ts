@@ -2,7 +2,7 @@ import { IAdmin } from "../models/adminModel";
 import { IUser } from "../models/userModel";
 import { IOwner } from "../models/ownerModel";
 import { AdminLoginResponseDto, AdminBasicDetailsDto ,UserListItemDto, 
-  UsersListResponseDto, UserDetailDto, UserDetailResponseDto, OwnersListResponseDto,OwnerListItemDto, OwnerDetailDto, OwnerDetailResponseDto } from "../dtos/admin.dto";
+  UsersListResponseDto, UserDetailDto, UserDetailResponseDto, OwnersListResponseDto,OwnerListItemDto, OwnerDetailDto, OwnerDetailResponseDto, UserStatisticsDto } from "../dtos/admin.dto";
 
 
 export class AdminMapper {
@@ -156,5 +156,16 @@ static toOwnerDetail(owner: IOwner): OwnerDetailDto {
     };
   }
 
+static toUserStatisticsDto(stats:{
+    totalUsers: number;
+    activeUsers: number;
+    blockedUsers: number; 
+}):UserStatisticsDto {
+    return {
+      totalUsers: stats.totalUsers,
+      activeUsers: stats.activeUsers,
+      blockedUsers: stats.blockedUsers,
+    };
+  }
 
 }

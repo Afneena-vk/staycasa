@@ -263,4 +263,16 @@ async getOwnerBookingStats(req: Request, res: Response, next: NextFunction): Pro
   }
 }
 
+async getBookingOverview(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const totalCount = await this._bookingService.getBookingOverview();
+    res.status(STATUS_CODES.OK).json({
+        status: STATUS_CODES.OK,
+        totalCount
+      });
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong" });
+  } 
+}
+
 }

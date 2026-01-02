@@ -132,4 +132,9 @@ export const adminService = {
     const response = await api.patch(ADMIN_API.UNBLOCK_PROPERTY(propertyId));
     return response.data;
   },
+
+  adminUserStatistics: async()=> {
+  const response = await api.get(ADMIN_API.USER_STATISTICS);
+  return response.data.data;
+  }
 };

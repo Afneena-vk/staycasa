@@ -6,3 +6,9 @@ export interface UserFilters {
   sortBy?: "name" | "email" | "createdAt";
   sortOrder?: "asc" | "desc";
 }
+
+export interface UserStatistics {
+  totalUsers: number;
+  activeUsers: number;
+  blockedUsers: number;
+}
