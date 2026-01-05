@@ -135,8 +135,8 @@ export class OwnerController implements IOwnerController {
           approvalStatus: result.approvalStatus,
         },
 
-        // accessToken: result.token,
-        // refreshToken: result.refreshToken,
+        accessToken: result.token,
+        refreshToken: result.refreshToken,
         csrfToken: csrfToken,
       });
 

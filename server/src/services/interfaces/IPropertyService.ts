@@ -27,6 +27,21 @@ export interface UserPropertyFilters {
   facilities?: string[],
 }
 
+
+export interface DestinationDto {
+  district: string;
+  propertyCount: number;
+  image: string; 
+}
+
+export interface PaginatedDestinations {
+  data: DestinationDto[];
+  total: number;      
+  page: number;       
+  totalPages: number; 
+}
+
+
 export interface IPropertyService {
   createProperty(ownerId: string, data: CreatePropertyDto): Promise<CreatePropertyResponseDto>;
   //getOwnerProperties(ownerId: string): Promise<PropertyResponseDto[]>;
@@ -47,4 +62,9 @@ export interface IPropertyService {
 
   //checkAvailability(propertyId:string, checkIn:string, checkOut:string, guests:number): Promise<{available: boolean, message: string}>;
   checkAvailability(propertyId:string, checkIn:string, rentalPeriod:number, guests:number): Promise<{available: boolean, message: string}>;
+  // getDestinations(): Promise<DestinationDto[]> 
+  getDestinations(    
+    search?: string,
+    page?: number,
+    limit?: number): Promise<PaginatedDestinations> 
 }

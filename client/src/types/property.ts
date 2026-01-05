@@ -53,3 +53,9 @@ export interface PropertyFormData {
     features: string[];
   images: File[];
 }
+
+export interface DestinationDto {
+  district: string;
+  propertyCount: number;
+  image: string; 
+}

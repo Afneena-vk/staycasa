@@ -7,6 +7,20 @@ export interface IPropertyListResult {
   totalPages: number;
 }
 
+export interface DestinationDto {
+  district: string;
+  propertyCount: number;
+  image: string;
+}
+
+export interface PaginatedDestinations {
+  data: DestinationDto[];
+  total: number;       
+  page: number;        
+  totalPages: number;  
+}
+
+
 export interface IPropertyRepository extends IBaseRepository<IProperty> {
   findByOwnerId(ownerId: string): Promise<IProperty[]>;
   findByStatus(status: string): Promise<IProperty[]>;
@@ -47,4 +61,10 @@ getOwnerProperties (ownerId: string,
   facilities?: string[]
   ):Promise<IPropertyListResult>;
 
+  //  getDestinations(): Promise<DestinationDto[]>
+  getDestinations(
+    search?: string,
+    page?: number,
+    limit?: number
+  ): Promise<PaginatedDestinations>
 }

@@ -15,4 +15,5 @@ export interface IPropertyController {
   getActiveProperties(req: Request, res:Response, next:NextFunction):Promise<void>;
   getActivePropertyById(req: Request, res:Response, next:NextFunction):Promise<void>;
   checkAvailability(req: Request, res:Response, next:NextFunction):Promise<void>
+  getDestinations(req: Request, res:Response, next:NextFunction):Promise<void>
 }

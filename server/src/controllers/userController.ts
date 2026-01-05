@@ -141,8 +141,8 @@ export class UserController implements IUserController {
           isVerified: result.isVerified,
         },
 
-        // accessToken: result.token,
-        // refreshToken: result.refreshToken,
+        accessToken: result.token,
+        refreshToken: result.refreshToken,
         csrfToken: csrfToken,
       });
     } catch (error: any) {

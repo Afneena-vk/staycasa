@@ -3,8 +3,10 @@ import Property, { IProperty } from "../models/propertyModel";
 import { BaseRepository } from "./baseRepository";
 import {
   IPropertyRepository,
-  IPropertyListResult,
+  IPropertyListResult,DestinationDto
 } from "./interfaces/IPropertyRepository";
+
+
 
 @injectable()
 export class PropertyRepository
@@ -231,6 +233,110 @@ export class PropertyRepository
       totalCount,
       totalPages: Math.ceil(totalCount / limit),
     };
+  }
+
+// async getDestinations(): Promise<DestinationDto[]> { 
+//  const result= await Property.aggregate([
+//     {
+//       $match: {
+//         isRejected: false,
+//         status: "active", 
+//       },
+//     },
+//     {
+//       $group: {
+//         _id: "$district",
+//         propertyCount: { $sum: 1 },
+//         image: { $first: "$images" },
+//       },
+//     },
+//     {
+//       $project: {
+//         _id: 0,
+//         district: "$_id",
+//         propertyCount: 1,
+//         image: { $arrayElemAt: ["$image", 0] },
+//       },
+//     },
+//     {
+//       $sort: { propertyCount: -1 },
+//     },
+//   ]);
+
+//     return result.map((r: any) => ({
+//       district: r.district,
+//       propertyCount: r.propertyCount,
+//       image: r.image || "",
+//     }));
+  
+// }
+
+async getDestinations(
+  search?: string,
+  page: number = 1,
+  limit: number = 10
+): Promise<{ data: DestinationDto[]; total: number; page: number; totalPages: number }> {
+
+  
+  const matchCondition: any = {
+    isRejected: false,
+    status: "active",
+  };
+
+  if (search) {
+    matchCondition.district = { $regex: search, $options: "i" };
+  }
+
+  
+  const totalResult = await Property.aggregate([
+    { $match: matchCondition },
+    { $group: { _id: "$district" } },
+  ]);
+  const total = totalResult.length;
+  const totalPages = Math.ceil(total / limit);
+  const skip = (page - 1) * limit;
+
+
+  const result = await Property.aggregate([
+    { $match: matchCondition },
+    {
+      $group: {
+        _id: "$district",
+        propertyCount: { $sum: 1 },
+        image: { $first: "$images" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        district: "$_id",
+        propertyCount: 1,
+        image: { $arrayElemAt: ["$image", 0] },
+      },
+    },
+    { $sort: { propertyCount: -1 } }, 
+    { $skip: skip },
+    { $limit: limit },
+  ]);
+
+  return {
+    data: result.map((r: any) => ({
+      district: r.district,
+      propertyCount: r.propertyCount,
+      image: r.image || "",
+    })),
+    total,
+    page,
+    totalPages,
+  };
+}
+
+  async getPropertiesByDistrict(district: string) {
+    return Property.find({
+      district,
+      isRejected: false,
+      status:"active" 
+    }).populate("ownerId");
   }
 
 

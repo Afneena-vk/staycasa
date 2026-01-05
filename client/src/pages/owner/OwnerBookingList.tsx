@@ -166,18 +166,20 @@ const OwnerBookings = () => {
               <h2 className="text-sm text-slate-500">Total Bookings</h2>
               <p className="text-xl font-bold">{total}</p>
             </div>
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
+            {/* <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
               <h2 className="text-sm text-slate-500">Pending</h2>
               <p className="text-xl font-bold">{bookings.filter(b => b.bookingStatus === "pending").length}</p>
             </div>
             <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
               <h2 className="text-sm text-slate-500">Confirmed</h2>
               <p className="text-xl font-bold">{bookings.filter(b => b.bookingStatus === "confirmed").length}</p>
+      
+
             </div>
             <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
               <h2 className="text-sm text-slate-500">Cancelled</h2>
               <p className="text-xl font-bold">{bookings.filter(b => b.bookingStatus === "cancelled").length}</p>
-            </div>
+            </div> */}
           </div>
         )}
 
@@ -232,22 +234,22 @@ const OwnerBookings = () => {
                         </span>
                       </td>
                       <td className="px-4 py-2 flex gap-2">
-                        <button
+                        {/* <button
                           //onClick={() => handleBookingAction(b.id, "confirm")}
                           className="p-2 bg-green-500 hover:bg-green-600 text-white rounded"
                           disabled={b.bookingStatus !== "pending"}
                           title="Confirm"
                         >
                           <FaCheck />
-                        </button>
-                        <button
+                        </button> */}
+                        {/* <button
                           //onClick={() => handleBookingAction(b.id, "cancel")}
                           className="p-2 bg-red-500 hover:bg-red-600 text-white rounded"
                           disabled={b.bookingStatus !== "pending"}
                           title="Cancel"
                         >
                           <FaTimes />
-                        </button>
+                        </button> */}
                         <button
                           onClick={() =>  navigate(`/owner/bookings/${b.id}`)}
                           className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded"

@@ -84,5 +84,10 @@ export const userService = {
   return response.data;
 },
 
+getDestinations: async (params?: { search?: string; page?: number; limit?: number }) => {
+  const response = await api.get("/user/destinations",{ params }); 
+  return response.data; 
+},
+
 
 };

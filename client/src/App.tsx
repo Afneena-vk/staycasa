@@ -48,6 +48,7 @@ import BookingSuccess from "./pages/user/BookingSuccess.tsx";
 import BookingFailure from "./pages/user/BookingFailure.tsx";
 import BookingList from "./pages/user/BookingList.tsx";
 import BookingDetails from "./pages/user/BookingDetails.tsx";
+import Destination from "./pages/user/Destination.tsx";
 
 const App = () => {
   return (
@@ -366,6 +367,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+          <Route
+          path="/user/destination"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <Destination />
+            </ProtectedRoute>
+          }
+        />       
 
 
 

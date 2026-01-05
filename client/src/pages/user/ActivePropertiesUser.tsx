@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState} from "react";
 import { useAuthStore } from "../../stores/authStore";
-import { Property } from "../../stores/slices/propertySlice";
+//import { Property } from "../../stores/slices/propertySlice";
+import { Property } from "../../types/property";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import PropertyFilterSidebar from "../../components/Filters/PropertyFilterSidebar";

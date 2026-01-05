@@ -5,7 +5,7 @@ import { SiTryitonline } from "react-icons/si";
 import { ownerService } from "../../services/ownerService";
 import { adminService } from "../../services/adminService";
 
-import { Property } from "../../types/property";
+import { Property, DestinationDto } from "../../types/property";
 
 
 
@@ -15,7 +15,7 @@ export interface PropertySlice {
   isLoading: boolean;
   error: string | null;
   selectedProperty: Property | null; 
-
+  destinations:DestinationDto[]; 
 
   totalPages: number;
   totalCount: number;
@@ -34,6 +34,8 @@ export interface PropertySlice {
   rejectProperty(propertyId:string): Promise<void>;
   blockPropertyByAdmin(propertyId:string): Promise<void>;
   unblockPropertyByAdmin(propertyId:string): Promise<void>;
+  getDestinations(params?: { search?: string; page?: number; limit?: number }): Promise<void>;
+
   clearError(): void;
   setLoading(loading: boolean): void;
   resetProperties(): void;
@@ -47,6 +49,7 @@ export const createPropertySlice: StateCreator<
 > = (set, get) => ({
   properties: [],
    selectedProperty: null,
+   destinations: [],
   isLoading: false,
   error: null,
 
@@ -368,8 +371,25 @@ unblockPropertyByAdmin: async (propertyId: string) => {
   }
 },
 
-
-
+getDestinations: async (params?: { search?: string; page?: number; limit?: number }) => {
+  set({ isLoading: true, error: null });
+  try {
+    const response = await userService.getDestinations(params); 
+    
+    set({
+      properties: [], 
+      isLoading: false,
+      error: null,
+      destinations: response.data, 
+      totalPages: response.totalPages,      
+      totalCount: response.total,          
+      currentPage: response.page,
+    });
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.error || error.message || "Failed to fetch destinations";
+    set({ isLoading: false, error: errorMessage });
+  }
+},
 
 
   clearError: () => {

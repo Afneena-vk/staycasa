@@ -71,8 +71,8 @@ export class AdminController implements IAdminController {
           email: result.email,
         },
 
-        // accessToken: result.token,
-        // refreshToken: result.refreshToken,
+        accessToken: result.token,
+        refreshToken: result.refreshToken,
         csrfToken: csrfToken,
       });
     } catch (error: any) {

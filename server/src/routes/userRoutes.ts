@@ -147,6 +147,14 @@ userRoutes.get(
 
 )
 
+userRoutes.get(
+  "/destinations",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  propertyController.getDestinations.bind(propertyController)
+
+)
+
 
 export default userRoutes   
 

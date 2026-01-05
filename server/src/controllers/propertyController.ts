@@ -293,6 +293,33 @@ async checkAvailability(req: Request, res: Response, next: NextFunction): Promis
   }
 }
 
+ async getDestinations(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const search = req.query.search as string | undefined;
+    const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+     const destinations = await this._propertyService.getDestinations(      search,
+      page,
+      limit);
+
+    res.status(200).json({
+      status: 200,
+      message: "Destinations retrieved successfully",
+      data: destinations.data,
+      total: destinations.total,    
+      page: destinations.page,      
+      totalPages: destinations.totalPages,
+    });
+  } catch (error) {
+    console.error(error);
+     res.status(500).json({
+      status: 500,
+      message: "Failed to retrieve destinations",
+    });
+  }
+}
+
 }
 
 

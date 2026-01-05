@@ -1,5 +1,5 @@
 import { injectable, inject } from 'tsyringe';
-import { IPropertyService, UserPropertyFilters } from './interfaces/IPropertyService';
+import { DestinationDto, IPropertyService, UserPropertyFilters, PaginatedDestinations } from './interfaces/IPropertyService';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
 import { TOKENS } from '../config/tokens';
@@ -471,6 +471,16 @@ endDate.setMonth(endDate.getMonth() + rentalPeriod);
     err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
     throw err;
  }
+
+}
+
+async getDestinations(
+    search?: string,
+    page: number = 1,
+    limit: number = 10
+): Promise< PaginatedDestinations> {
+  const destinations = await this._propertyRepository.getDestinations(search, page, limit);
+  return destinations;
 
 }
 
