@@ -37,7 +37,11 @@ useEffect(() => {
   return () => clearTimeout(handler); 
 }, [searchQuery]);
 
-
+const handleClearSearch = () => {
+  setSearchQuery("");
+   setDebouncedSearch("");
+    setCurrentPage(1);
+}
 
 
 const currentProperties = properties;
@@ -136,7 +140,8 @@ const handleUnblock = async (propertyId: string) => {
               Total Properties: {properties.length}
             </p>
           </div>
-          <div>
+          {/* <div> */}
+          <div className="relative w-full md:w-64">
     <input
       type="text"
       placeholder="Search properties..."
@@ -145,8 +150,19 @@ const handleUnblock = async (propertyId: string) => {
         setSearchQuery(e.target.value);
         setCurrentPage(1); 
       }}
-      className="border px-3 py-1 rounded w-full md:w-64"
+      // className="border px-3 py-1 rounded w-full md:w-64"
+      className="w-full border px-3 py-1 rounded pr-8" 
     />
+     {searchQuery && (
+    <button
+      onClick={handleClearSearch}
+      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+      aria-label="Clear search"
+    >
+      ❌
+    </button>
+  )}
+    
   </div>
         </div>
 

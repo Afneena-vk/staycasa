@@ -128,6 +128,11 @@ useEffect(() => {
   return () => clearTimeout(handler);
 }, [search]);
 
+const handleClearSearch = () => {
+  setSearch("");          
+  setDebouncedSearch(""); 
+  setCurrentPage(1);    
+};
 
   
   const handlePreviousPage = () => {
@@ -176,7 +181,7 @@ useEffect(() => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4">
-           
+            <div className="relative w-full sm:w-64">
             <input
               type="text"
               placeholder="Search by name or email"
@@ -184,8 +189,16 @@ useEffect(() => {
               onChange={(e) => setSearch(e.target.value)}
               className="w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
             />
-            
-         
+           {search && (
+      <button
+        onClick={handleClearSearch}
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+        aria-label="Clear search"
+      >
+        ❌
+      </button>
+    )}  
+         </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "blocked")}

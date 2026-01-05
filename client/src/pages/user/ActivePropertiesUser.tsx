@@ -48,6 +48,13 @@ useEffect(() => {
   setFilters((prev) => ({ ...prev, page: newPage }));
 };
 
+const handleClearSearch = () => {
+  setSearchQuery("");
+  setDebouncedSearch("");
+  setPage(1);
+};
+
+
 const handleCategoryChange = (category: string) => {
   setFilters((prev) => ({ 
     ...prev, 
@@ -118,16 +125,22 @@ const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
       </div>
     );
 
-  if (!properties || properties.length === 0)
-    return (
-      <div>
-        <Header />
-        <div className="flex justify-center items-center min-h-[50vh] text-gray-500">
-          No active properties found.
-        </div>
-        <Footer />
-      </div>
-    );
+  // if (!properties || properties.length === 0)
+  //   return (
+  //     <div>
+  //       <Header />
+  //       <div className="flex justify-center items-center min-h-[50vh] text-gray-500">
+  //         No active properties found.
+  //       </div>
+  //       <Footer />
+  //     </div>
+  //   );
+
+  const isFilterApplied =
+  searchQuery.trim() !== "" ||
+  filters.category !== "" ||
+  filters.facilities.length > 0;
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -157,6 +170,16 @@ const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
       onChange={(e) => setSearchQuery(e.target.value)}
       className="w-full py-3 pl-12 pr-4 rounded-full bg-white shadow-md focus:ring-2 focus:ring-blue-700 outline-none text-gray-700"
     />
+
+    {searchQuery && (
+    <button
+      onClick={handleClearSearch}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+      aria-label="Clear search"
+    >
+      ❌
+    </button>
+  )}
   </div>
 
   {/* SORT DROPDOWN */}
@@ -203,10 +226,45 @@ const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
 
           </div>
 
-           <div className="w-full lg:w-3/4">
+           {/* <div className="w-full lg:w-3/4">
             {(!properties || properties.length === 0) ? (
               <p className="text-gray-500 text-center">No active properties found.</p>
-            ) : (
+            ) : ( */}
+<div className="w-full lg:w-3/4">
+  {properties.length === 0 ? (
+    <div className="flex flex-col items-center justify-center bg-white rounded-xl shadow-md p-12 text-center min-h-[300px]">
+      <div className="text-6xl mb-4">🏠</div>
+
+      {!isFilterApplied ? (
+        <>
+          {/* INITIAL LOAD – NO ACTIVE PROPERTIES */}
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+            No active properties available
+          </h2>
+          <p className="text-gray-500">
+            Properties will appear here once they are listed.
+          </p>
+        </>
+      ) : (
+        <>
+          {/* SEARCH / FILTER – NO RESULTS */}
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+            No results found
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Try changing or clearing your search filters.
+          </p>
+
+          <button
+            onClick={handleClearSearch}
+            className="px-6 py-2 bg-blue-950 text-white rounded-full hover:bg-blue-900 transition"
+          >
+            Clear Search
+          </button>
+        </>
+      )}
+    </div>
+  ) : (
 
          <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

@@ -15,14 +15,26 @@ const Destinations = () => {
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [hasSearched, setHasSearched] = useState(false);
   const navigate = useNavigate();
 
  
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedSearch(search), 1000);
-    return () => clearTimeout(handler);
-  }, [search]);
 
+  useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearch(search);
+    setHasSearched(search.trim().length > 0);
+  }, 1000);
+
+  return () => clearTimeout(handler);
+}, [search]);
+
+
+const handleClearSearch = () => {
+  setSearch("");            
+  setDebouncedSearch("");   
+  setHasSearched(false);    
+};
   useEffect(() => {
     getDestinations({ search: debouncedSearch, page: 1, limit: 10 });
   }, [debouncedSearch]);
@@ -63,14 +75,46 @@ const Destinations = () => {
                          focus:ring-2 focus:ring-blue-600 outline-none text-gray-700
                          transition-all duration-200 hover:shadow-lg"
             />
+              {search && (
+                 <button
+                  // onClick={() => setSearch("")}
+                     onClick={handleClearSearch}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+             >
+                ❌
+               </button>
+             )}
           </div>
         </div>
 
         {isLoading ? (
           <p className="text-center text-gray-500 mt-10">Loading destinations...</p>
-        ) : destinations.length === 0 ? (
-          <p className="text-center text-gray-500 mt-10">No destinations found.</p>
-        ) : (
+        ) : 
+        // destinations.length === 0 ? (
+        //   <p className="text-center text-gray-500 mt-10">No destinations found.</p>
+        // )
+destinations.length === 0 ? (
+  <div className="text-center text-gray-500 mt-10">
+    {hasSearched ? (
+      <>
+        <p>No results found for "{debouncedSearch}"</p>
+        <button
+          // onClick={() => setSearch("")}
+             onClick={handleClearSearch}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          Clear Search
+        </button>
+      </>
+    ) : (
+      <p>No destinations available right now.</p>
+    )}
+  </div>
+)
+
+
+
+         : (
           <>
             {/* Destination Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">

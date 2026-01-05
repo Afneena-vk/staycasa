@@ -79,6 +79,12 @@ useEffect(() => {
   };
 }, [search]);
 
+const handleClearSearch = () => {
+  setSearch("");
+  setDebouncedSearch("");
+  setCurrentPage(1); 
+};
+
 
   const limit = 10; 
 
@@ -177,6 +183,7 @@ const handleNextPage = () => {
             <p className="text-sm text-gray-600 mt-1">Total Owners: {totalCount}</p>
           </div>
           <div className="flex gap-3">
+             <div className="relative w-full sm:w-64">
             <input
               type="text"
               placeholder="Search..."
@@ -184,6 +191,16 @@ const handleNextPage = () => {
               onChange={(e) => setSearch(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md"
             />
+    {search && (
+      <button
+        onClick={handleClearSearch}
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+        aria-label="Clear search"
+      >
+        ❌
+      </button>
+    )}            
+            </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "blocked")}
