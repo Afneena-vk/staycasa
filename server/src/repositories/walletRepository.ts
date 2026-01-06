@@ -52,4 +52,17 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
 }
 
 
+async getWalletWithBookings(
+  userId:Types.ObjectId,
+  userType: "user" | "owner"
+): Promise<IWallet | null> {
+  return await this.model
+  .findOne({userId,userType})
+  .populate({
+    path: "transactions.bookingId",
+    select: "bookingId propertyId totalCost bookingStatus createdAt"
+  })
+  .exec();
+}
+
 }

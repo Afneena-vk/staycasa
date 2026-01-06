@@ -174,7 +174,12 @@ const BookingDetails = () => {
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold mb-4">Payment Details</h3>
 
-            <div className="grid sm:grid-cols-3 gap-4 text-sm">
+            {/* <div className="grid sm:grid-cols-3 gap-4 text-sm"> */}
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <p className="text-gray-500">PaymentId:</p>
+                <p className="font-medium">{b.paymentId}</p>
+              </div>
               <div>
                 <p className="text-gray-500">Rent / Month</p>
                 <p className="font-medium">₹{b.rentPerMonth}</p>

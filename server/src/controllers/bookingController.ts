@@ -145,6 +145,7 @@ async getBookingDetails(req: Request, res: Response, next: NextFunction): Promis
     const userId = (req as any).userId;
 
     const booking = await this._bookingService.getBookingDetails(bookingId,userId);
+    console.log("bookingDetails is:", booking);
 
       res.status(STATUS_CODES.OK).json({
       status: STATUS_CODES.OK,

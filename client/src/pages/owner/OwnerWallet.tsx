@@ -74,6 +74,11 @@ const OwnerWallet = () => {
                     <p className="text-sm text-gray-500">
                       {new Date(tx.date).toLocaleString()}
                     </p>
+                      {tx.bookingId && (
+                    <p className="text-xs text-gray-400">
+                       Booking: {tx.bookingId.bookingId}
+                    </p>
+                       )}
                   </div>
                   <div className="flex items-center gap-2 mt-2 md:mt-0">
                     {tx.type === "credit" ? (

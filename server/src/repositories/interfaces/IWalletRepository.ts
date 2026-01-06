@@ -16,5 +16,12 @@ export interface IWalletRepository extends IBaseRepository<IWallet> {
     userType: "user" | "owner",
     transaction: ITransaction
   ): Promise<IWallet>;
+
+
+  getWalletWithBookings(
+  userId: Types.ObjectId,
+  userType: "user" | "owner"
+): Promise<IWallet | null>;
+
           
 }

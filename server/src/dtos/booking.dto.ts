@@ -93,6 +93,7 @@ export interface BookingDetailsDto {
 
   paymentStatus: PaymentStatus;
   bookingStatus: BookingStatus;
+  paymentId?: string;   
   paymentMethod: string;
   refundAmount: number;
 

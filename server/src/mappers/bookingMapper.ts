@@ -135,6 +135,7 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
     rentPerMonth: booking.rentPerMonth,
     totalCost: booking.totalCost,
 
+    paymentId: booking.paymentId,
     paymentStatus: booking.paymentStatus,
     bookingStatus: booking.bookingStatus,
     paymentMethod: booking.paymentMethod,
