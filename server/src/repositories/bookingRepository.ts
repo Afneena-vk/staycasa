@@ -409,5 +409,21 @@ async countAllConfirmedBookings(): Promise<number> {
 }
 
 
+async cancellBooking(
+     bookingId: string,
+     refundAmount: number,
+): Promise<IBooking | null> {
+    return Booking.findByIdAndUpdate(
+      bookingId,
+       {
+      bookingStatus: BookingStatus.Cancelled,
+      isCancelled: true,
+      refundAmount,
+     
+    },
+    { new: true }
+  );
+}
+
 
 }

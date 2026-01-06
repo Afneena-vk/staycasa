@@ -163,5 +163,12 @@ export interface OwnerBookingStatsDto {
   };
 }
 
+export interface CancelBookingResult {
+  message: string;
+  refundAmount?: number;
+  bookingId?: string;
+}
+
+
 
 

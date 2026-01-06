@@ -33,5 +33,9 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
     findOwnerBookingsByDate(ownerId: string,type: "upcoming" | "ongoing" | "past"): Promise<IBooking[]>;
     findConfirmedPaidBookingsByOwner(ownerId: string): Promise<IBooking[]> ;
     findCancelledBookingsByOwner(ownerId: string): Promise<IBooking[]>;
-    countAllConfirmedBookings(): Promise<number> 
+    countAllConfirmedBookings(): Promise<number>;
+    cancellBooking(
+     bookingId: string,
+     refundAmount: number,
+      ): Promise<IBooking | null>
 }

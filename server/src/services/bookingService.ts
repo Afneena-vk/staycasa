@@ -10,7 +10,7 @@ import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto} from '../dtos/booking.dto';
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
@@ -405,5 +405,87 @@ async getBookingOverview(): Promise<number> {
   return totalCount;
 }
 
+async userCancellBooking(
+  bookingId:string,
+  userId:string,
+  
+): Promise<CancelBookingResult> {
+
+ const booking= await this._bookingRepository.findById(bookingId);
+
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+    if (booking.userId._id.toString() !== userId) {
+    throw new Error("Unauthorized");
+  }
+
+    if (
+    booking.bookingStatus !== BookingStatus.Confirmed ||
+    booking.paymentStatus !== PaymentStatus.Completed
+  ) {
+    throw new Error("Only confirmed and paid bookings can be cancelled");
+  }
+
+    if (booking.isCancelled) {
+    throw new Error("Booking already cancelled");
+  }
+
+  const today = new Date();
+  const moveInDate = new Date(booking.moveInDate);
+
+  const diffInDays =  (moveInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
+
+    if (diffInDays < 5) {
+    throw new Error("Cancellation allowed only 5 days before move-in");
+  }
+
+   const refundAmount = booking.totalCost;
+
+   const cancelledBooking = await this._bookingRepository.cancellBooking(
+     booking._id.toString(),
+    refundAmount,
+   );
+
+   if (!cancelledBooking) {
+  throw new Error("Failed to cancel booking");
+}
+
+   await this._walletRepository.creditWallet(
+      booking.userId._id,
+    "user",  
+    {
+        type: "credit",
+      amount: refundAmount,
+      bookingId: booking._id,
+      description: "Refund for cancelled booking",
+      paymentMethod: booking.paymentMethod as "razorpay",
+      paymentId: booking.paymentId,
+      date: new Date(),    
+    }
+   );
+   
+     await this._walletRepository.debitWallet(booking.ownerId._id, "owner", {
+      type: "debit",
+      amount: refundAmount,
+      bookingId: booking._id,
+      description: "Deducted due to booking cancellation",
+      paymentMethod: "wallet",
+      date: new Date(),
+    });
+
+    
+
+  // return {
+  //   message: "Booking cancelled successfully. Refund credited to wallet.",
+  //   refundAmount,
+  //   bookingId: booking.bookingId,
+  // };
+  return BookingMapper.toCancelBookingResult(
+   cancelledBooking,
+  "Booking cancelled successfully. Refund credited to wallet."
+  )
+}
 
 }

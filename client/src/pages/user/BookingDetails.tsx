@@ -9,7 +9,7 @@ import Footer from "../../components/User/Footer";
 const BookingDetails = () => {
   const { bookingId } = useParams();
 //   const { selectedBooking, fetchBookingDetails, cancelBooking } =
- const { selectedBooking, fetchBookingDetails} = useAuthStore();
+ const { selectedBooking, fetchBookingDetails, fetchCancelBooking} = useAuthStore();
  const navigate = useNavigate();
 
 
@@ -32,7 +32,26 @@ const BookingDetails = () => {
   const today = new Date();
 
   // const canCancel = today < moveInDate;
-    const canCancel = !b.isCancelled && b.bookingStatus !== "cancelled" && today < moveInDate;
+  const diffInDays = Math.ceil((moveInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const canCancel = 
+         !b.isCancelled &&            
+         b.bookingStatus === "confirmed" &&  
+         b.paymentStatus === "completed" &&  
+         diffInDays >= 5;        
+
+const handleCancelBooking = async () => {
+  if (!b) return;
+
+  if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+
+  try {
+    const res = await fetchCancelBooking(b.id);
+    alert(res.message);
+  } catch (err: any) {
+    alert(err.response?.data?.error || err.message || "Cancellation failed");
+  }
+};
+
 
       const getStatusColor = (status: string, type: "booking" | "payment") => {
     if (type === "booking") {
@@ -92,7 +111,7 @@ const BookingDetails = () => {
 
             {canCancel && (
               <button
-                // onClick={() => cancelBooking(b.id)}
+                onClick={handleCancelBooking}
                 className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
               >
                 Cancel Booking

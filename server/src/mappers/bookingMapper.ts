@@ -1,6 +1,6 @@
 import { IBooking } from "../models/bookingModel";
 import { IProperty } from "../models/propertyModel";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto} from "../dtos/booking.dto";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult} from "../dtos/booking.dto";
 import { STATUS_CODES } from "../utils/constants";
 import { BookingStatus, PaymentStatus } from "../models/status/status";
 
@@ -209,5 +209,17 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
       },
     };
   }
+
+  static toCancelBookingResult(
+  booking: IBooking,
+  message: string
+): CancelBookingResult {
+  return {
+    message,
+    refundAmount: booking.refundAmount,
+    bookingId: booking.bookingId,
+  };
+}
+
 
 }

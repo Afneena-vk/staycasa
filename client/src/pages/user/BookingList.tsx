@@ -174,7 +174,7 @@ useEffect(() => {
                 : "bg-red-100 text-red-800"
             }`}
           >
-            {b.paymentStatus || "Pending"}
+            {b.bookingStatus || "Pending"}
           </span>
         </div>
 

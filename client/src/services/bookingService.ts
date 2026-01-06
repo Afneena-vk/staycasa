@@ -48,4 +48,9 @@ export const bookingService = {
     return res.data.totalCount; 
   },
 
+    cancelBooking: async (bookingId: string) => {
+    const res = await api.post(USER_API.CANCEL_BOOKING(bookingId));
+    return res.data.data; 
+  },
+
 }

@@ -47,6 +47,11 @@ export interface BookingState {
 
      selectedBooking: BookingDetailsDTO | null;
      fetchBookingDetails: (bookingId: string) => Promise<void>;
+     fetchCancelBooking: (bookingId: string) => Promise<{
+       message: string;
+       refundAmount?: number;
+       bookingId?: string;
+    }>;
 
     setFilters: (filters: Partial<BookingState>) => void;
     setBookings: (data: {
@@ -238,5 +243,35 @@ fetchOwnerBookings: async () => {
       });
     }
   },
+
+fetchCancelBooking: async (bookingId: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    const res = await bookingService.cancelBooking(bookingId);
+  
+    const currentBooking = get().selectedBooking;
+    if (currentBooking && currentBooking.bookingId === res.bookingId) {
+      set({
+        selectedBooking: {
+          ...currentBooking,
+          bookingStatus: "cancelled",
+          isCancelled: true,
+          refundAmount: res.refundAmount,
+        },
+        isLoading: false,
+      });
+    }
+    return res; 
+  } catch (err: any) {
+    set({
+      isLoading: false,
+      error: err.response?.data?.error || err.message || "Failed to cancel booking",
+    });
+    throw err;
+  }
+},
+
+
+
 
 });

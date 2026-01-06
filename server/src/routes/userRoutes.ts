@@ -155,6 +155,15 @@ userRoutes.get(
 
 )
 
+userRoutes.post(
+  "/bookings/:bookingId/cancel",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.userCancelBooking.bind(bookingController)
+
+)
+
+
 
 export default userRoutes   
 

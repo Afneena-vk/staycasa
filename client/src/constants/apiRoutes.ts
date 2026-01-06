@@ -38,6 +38,7 @@ export const USER_API = {
   // bookings
   BOOKINGS: "/user/bookings",
   BOOKING_BY_ID: (bookingId: string) => `/user/bookings/${bookingId}`,
+  CANCEL_BOOKING:  (bookingId: string) => `/user/bookings/${bookingId}/cancel`,
 
   CHECK_AVAILABILITY:(propertyId: string)=>`user/properties/${propertyId}/check-availability`,
   BLOCKED_DATES: (propertyId: string) =>`/user/properties/${propertyId}/blocked-dates`

@@ -276,4 +276,30 @@ async getBookingOverview(req: Request, res: Response, next: NextFunction): Promi
   } 
 }
 
+async userCancelBooking(req: Request, res: Response, next: NextFunction): Promise<void> {
+try {
+  const { bookingId } = req.params;
+  const userId = (req as any).userId;
+
+  
+  const result = await this._bookingService.userCancellBooking(
+    bookingId,
+    userId,
+  
+  );
+      res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      data: result,
+    });
+
+} catch (error: unknown) {  
+    console.error(error);
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error instanceof Error ? error.message : "Failed to cancel booking",
+    });
+  }
+
+}
+
+
 }
