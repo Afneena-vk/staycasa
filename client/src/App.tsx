@@ -40,6 +40,7 @@ import UserOTPVerification from "./pages/user/UserOTPverification";
 import UserResetPassword from "./pages/user/UserResetPassword";
 import UserLanding from "./pages/user/UserLanding.tsx";
 import UserProfile from "./components/User/UserProfile.tsx";
+import UserWallet from "./pages/user/UserWallet.tsx";
 import ActivePropertiesUser from "./pages/user/ActivePropertiesUser.tsx";
 import UserPropertyDetails from "./pages/user/UserPropertyDetails.tsx";
 import Checkout from "./pages/user/Checkout.tsx"
@@ -377,6 +378,15 @@ const App = () => {
           }
         />       
 
+
+          <Route
+          path="/user/wallet"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <UserWallet />
+            </ProtectedRoute>
+          }
+        /> 
 
 
       </Routes>

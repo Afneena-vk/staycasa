@@ -81,11 +81,17 @@ const Header: React.FC = () => {
                   My Profile
                 </Link>
                 <Link
+                  to="/user/wallet"
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                >
+                 Wallet
+                </Link>                
+                {/* <Link
                   to="/user/settings"
                   className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
                 >
                   Settings
-                </Link>
+                </Link> */}
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"

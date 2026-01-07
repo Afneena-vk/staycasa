@@ -163,6 +163,12 @@ userRoutes.post(
 
 )
 
+userRoutes.get(
+  "/wallet",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  userController.getWallet.bind(userController)
+);
 
 
 export default userRoutes   

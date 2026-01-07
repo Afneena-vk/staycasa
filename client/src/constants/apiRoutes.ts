@@ -26,6 +26,7 @@ export const AUTH_API = {
 export const USER_API = {
   PROFILE: "/user/profile",
   UPLOAD_PROFILE_IMAGE: "/user/profile/upload-image",
+   WALLET: "/user/wallet",
 
   PROPERTIES: "/user/properties",
   PROPERTY_BY_ID: (propertyId: string) => `/user/properties/${propertyId}`,

@@ -1,6 +1,7 @@
 
 
 import { UserLoginResponseDto,UserGoogleAuthResponseDto, UserProfileResponseDto, UserProfileUpdateDto, ChangePasswordResponseDto } from "../../dtos/user.dto";
+import { ITransaction } from "../../models/walletModel";
 
 export interface SignupData {
     name: string;
@@ -28,5 +29,6 @@ export interface SignupData {
     updateUserProfile(userId: string, data: UserProfileUpdateDto): Promise<UserProfileResponseDto>;
     updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto>;
     changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
+    getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
   }
   

@@ -18,4 +18,5 @@ export interface IUserController {
 
   uploadProfileImage(req: Request, res: Response, next: NextFunction): Promise<void>
   changePassword(req: Request, res: Response, next: NextFunction): Promise<void>
+  getWallet(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

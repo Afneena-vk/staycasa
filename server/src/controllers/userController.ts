@@ -418,6 +418,24 @@ export class UserController implements IUserController {
         .json({ error: error.message || "Server error" });
     }
   }
+
+    async getWallet(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const ownerId = (req as any).userId;
+      const result = await this._userService.getWallet(ownerId);
+
+      res.status(STATUS_CODES.OK).json(result);
+    } catch (error: any) {
+      res.status(error.status || 500).json({
+        message: error.message,
+      });
+    }
+  }
+
 }
 
 //export default new UserController();

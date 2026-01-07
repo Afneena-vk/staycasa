@@ -1,6 +1,7 @@
 import { injectable, inject } from 'tsyringe';
 import { IUserService, SignupData,LoginData  } from "./interfaces/IUserService";
 import { IUserRepository } from "../repositories/interfaces/IUserRepository";
+import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
 //import userRepository from "../repositories/userRepository";
 import { TOKENS } from "../config/tokens";
 import OTPService from "../utils/OTPService";
@@ -10,11 +11,13 @@ import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { IUser } from "../models/userModel";
 import { UserMapper } from "../mappers/userMapper";
 import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, UserProfileResponseDto, ChangePasswordResponseDto } from "../dtos/user.dto";
+import { Types } from 'mongoose';
 
 @injectable()
 export class UserService implements IUserService {
      constructor(
-    @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository
+    @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository,
+    @inject(TOKENS.IWalletRepository) private _walletRepository: IWalletRepository
   ) {}
 
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
@@ -388,6 +391,24 @@ async changePassword(userId: string, currentPassword: string, newPassword: strin
   };
 }
 
+async getWallet(userId: string) {
+  
+const wallet = await this._walletRepository.getWalletWithBookings(new Types.ObjectId(userId),"user");
+
+  if (!wallet) {
+    return {
+      balance: 0,
+      transactions: [],
+    };
+  }
+
+  return {
+    balance: wallet.balance,
+    transactions: wallet.transactions.sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    ),
+  };
+}
 
    
 }
