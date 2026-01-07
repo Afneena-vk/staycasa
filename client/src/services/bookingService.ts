@@ -53,4 +53,9 @@ export const bookingService = {
     return res.data.data; 
   },
 
+    ownerCancelBooking: async (bookingId: string) => {
+    const res = await api.post(OWNER_API.CANCEL_BOOKING(bookingId));
+    return res.data.data; 
+  },
+
 }

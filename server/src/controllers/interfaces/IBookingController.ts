@@ -12,4 +12,5 @@ export interface IBookingController {
     getOwnerBookingStats(req: Request, res: Response, next: NextFunction): Promise<void>;
     getBookingOverview(req: Request, res: Response, next: NextFunction): Promise<void>;
     userCancelBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+    ownerCancelBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

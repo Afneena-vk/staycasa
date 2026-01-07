@@ -301,5 +301,31 @@ try {
 
 }
 
+async ownerCancelBooking(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    
+    const { bookingId } = req.params;
+    const ownerId = (req as any).userId;
+
+
+    const result = await this._bookingService.ownerCancelBooking(
+      bookingId,
+      ownerId,
+    );
+
+    res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      data: result,
+    });
+
+
+
+  } catch (error:unknown) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error instanceof Error ? error.message : "Failed to cancel booking",
+    });    
+  }
+}
+
 
 }

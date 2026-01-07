@@ -123,5 +123,12 @@ ownerRoutes.get(
   bookingController.getOwnerBookingStats.bind(bookingController)
 );
 
+ownerRoutes.post(
+  "/bookings/:bookingId/cancel",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  bookingController.ownerCancelBooking.bind(bookingController)
+
+)
 
 export default ownerRoutes

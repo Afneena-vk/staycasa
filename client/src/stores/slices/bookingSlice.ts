@@ -53,6 +53,9 @@ export interface BookingState {
        bookingId?: string;
     }>;
 
+    fetchOwnerCancelBooking: (bookingId: string) => Promise<void>;
+
+
     setFilters: (filters: Partial<BookingState>) => void;
     setBookings: (data: {
     bookings: BookingDTO[];
@@ -255,6 +258,7 @@ fetchCancelBooking: async (bookingId: string) => {
         selectedBooking: {
           ...currentBooking,
           bookingStatus: "cancelled",
+          paymentStatus: "refunded",
           isCancelled: true,
           refundAmount: res.refundAmount,
         },
@@ -271,6 +275,36 @@ fetchCancelBooking: async (bookingId: string) => {
   }
 },
 
+fetchOwnerCancelBooking: async (bookingId: string) => {
+  set({ isLoading: true, error: null });
+
+  try {
+    const res = await bookingService.ownerCancelBooking(bookingId);
+
+   
+    set((state) => ({
+      bookings: state.bookings.map((b) =>
+        b.id === bookingId
+          ? {
+              ...b,
+              bookingStatus: "cancelled",
+              isCancelled: true,
+            }
+          : b
+      ),
+      isLoading: false,
+    }));
+  } catch (err: any) {
+    set({
+      isLoading: false,
+      error:
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to cancel booking",
+    });
+    throw err;
+  }
+},
 
 
 

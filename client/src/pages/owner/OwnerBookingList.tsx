@@ -24,7 +24,7 @@ const OwnerBookings = () => {
     error,
     setFilters,
     fetchOwnerBookings,
-    
+    fetchOwnerCancelBooking
     // updateBookingStatus,
   } = useAuthStore();
 
@@ -73,6 +73,19 @@ const OwnerBookings = () => {
         return { text: status || "Unknown", color: "bg-gray-100 text-gray-600" };
     }
   };
+
+  const handleOwnerCancel = async (bookingId: string) => {
+  const confirm = window.confirm(
+    "Are you sure you want to cancel this booking?"
+  );
+  if (!confirm) return;
+
+  try {
+    await fetchOwnerCancelBooking(bookingId);
+  } catch (err) {
+    alert("Failed to cancel booking");
+  }
+};
 
   return (
     <OwnerLayout>
@@ -242,14 +255,14 @@ const OwnerBookings = () => {
                         >
                           <FaCheck />
                         </button> */}
-                        {/* <button
-                          //onClick={() => handleBookingAction(b.id, "cancel")}
+                        <button
+                          onClick= {() => handleOwnerCancel(b.id)}
                           className="p-2 bg-red-500 hover:bg-red-600 text-white rounded"
-                          disabled={b.bookingStatus !== "pending"}
+                          disabled={b.bookingStatus !== "confirmed"}
                           title="Cancel"
                         >
                           <FaTimes />
-                        </button> */}
+                        </button>
                         <button
                           onClick={() =>  navigate(`/owner/bookings/${b.id}`)}
                           className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded"

@@ -26,7 +26,7 @@ export const AUTH_API = {
 export const USER_API = {
   PROFILE: "/user/profile",
   UPLOAD_PROFILE_IMAGE: "/user/profile/upload-image",
-   WALLET: "/user/wallet",
+  WALLET: "/user/wallet",
 
   PROPERTIES: "/user/properties",
   PROPERTY_BY_ID: (propertyId: string) => `/user/properties/${propertyId}`,
@@ -55,7 +55,8 @@ export const OWNER_API = {
 
   BOOKINGS: "/owner/bookings",
   BOOKING_BY_ID: (bookingId: string) => `/owner/bookings/${bookingId}`,
-  BOOKING_STATS: "/owner/dashboard/stats"
+  BOOKING_STATS: "/owner/dashboard/stats",
+  CANCEL_BOOKING:  (bookingId: string) => `/owner/bookings/${bookingId}/cancel`,
 };
 
 export const ADMIN_API = {

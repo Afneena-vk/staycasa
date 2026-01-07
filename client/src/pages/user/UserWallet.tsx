@@ -65,12 +65,12 @@ const UserWallet = () => {
               >
                 <div>
                   <p className="text-gray-900 font-semibold text-lg">{tx.description || tx.type}</p>
-                  <p className="text-gray-400 text-sm mt-1">
+                  <p className="text-gray-700 text-sm mt-1">
                     {new Date(tx.date).toLocaleString()}
                   </p>
                   {tx.bookingId && (
-                    <p className="text-gray-300 text-xs mt-1">
-                      Booking: {tx.bookingId.bookingId}
+                    <p className="text-gray-600 text-xs mt-1">
+                      BookingId: {tx.bookingId.bookingId}
                     </p>
                   )}
                 </div>

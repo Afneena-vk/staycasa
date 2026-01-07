@@ -79,10 +79,7 @@ getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto>
 
 getBookingOverview(): Promise<number> 
 
-userCancellBooking(
-  bookingId:string,
-  userId:string,
-  
-): Promise<CancelBookingResult>
+userCancellBooking(bookingId:string,userId:string): Promise<CancelBookingResult>
+ownerCancelBooking(bookingId: string,ownerId: string): Promise<CancelBookingResult>
    
 }

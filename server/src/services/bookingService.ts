@@ -475,7 +475,8 @@ async userCancellBooking(
       date: new Date(),
     });
 
-    
+      cancelledBooking.paymentStatus = PaymentStatus.Refunded;
+     await cancelledBooking.save();
 
   // return {
   //   message: "Booking cancelled successfully. Refund credited to wallet.",
@@ -487,5 +488,63 @@ async userCancellBooking(
   "Booking cancelled successfully. Refund credited to wallet."
   )
 }
+
+async ownerCancelBooking(bookingId: string, ownerId: string): Promise<CancelBookingResult> {
+  const booking = await this._bookingRepository.findByIdAndOwner(bookingId,ownerId);
+    if (!booking) throw new Error("Booking not found or unauthorized");
+
+    if (booking.isCancelled) throw new Error("Booking already cancelled");
+
+     
+
+  const cancelledBooking  = await this._bookingRepository.cancellBooking(
+    booking._id.toString(),
+    0
+    // refundAmount
+    
+  );
+  if (!cancelledBooking) throw new Error("Failed to cancel booking");
+
+
+    if (booking.bookingStatus === BookingStatus.Confirmed &&
+      booking.paymentStatus === PaymentStatus.Completed){
+         const refundAmount = booking.totalCost;
+       await this._walletRepository.creditWallet(booking.userId._id, "user", {
+        type: "credit",
+        amount: refundAmount,
+        bookingId: booking._id,
+        description: "Refund due to owner cancellation",
+        paymentMethod: booking.paymentMethod as "razorpay",
+        paymentId: booking.paymentId,
+        date: new Date(),
+  });
+
+       await this._walletRepository.debitWallet(booking.ownerId, "owner", {
+        type: "debit",
+        amount: refundAmount,
+        bookingId: booking._id,
+        description: "Booking cancelled by owner",
+        paymentMethod: "wallet",
+        date: new Date(),
+      });
+
+             cancelledBooking.refundAmount = refundAmount;
+             cancelledBooking.paymentStatus = PaymentStatus.Refunded;
+             await cancelledBooking.save();
+
+      }
+
+
+
+   
+
+    return BookingMapper.toCancelBookingResult(
+    cancelledBooking,
+    "Booking cancelled by owner. Refund credited to user wallet."
+  );
+
+}
+
+
 
 }
