@@ -38,4 +38,6 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
      bookingId: string,
      refundAmount: number,
       ): Promise<IBooking | null>
+
+    findAllWithQuery(options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
 }

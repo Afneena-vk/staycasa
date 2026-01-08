@@ -1,6 +1,6 @@
 import { IBooking } from "../models/bookingModel";
 import { IProperty } from "../models/propertyModel";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult} from "../dtos/booking.dto";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto} from "../dtos/booking.dto";
 import { STATUS_CODES } from "../utils/constants";
 import { BookingStatus, PaymentStatus } from "../models/status/status";
 
@@ -78,6 +78,7 @@ static toCalculateTotalResponse(totalAmount: number): CalculateTotalResponseDto 
 static toDto(booking: IBooking): BookingListItemDto {
     const property = booking.propertyId as any; 
     const user = booking.userId as any; 
+    const owner = booking.ownerId as any;
 
     return {
       id: booking._id.toString(),
@@ -110,7 +111,15 @@ static toDto(booking: IBooking): BookingListItemDto {
           email: user.email,
         }
       : undefined,
-  
+     owner: owner
+      ? {
+          id: owner._id.toString(),
+          name: owner.name,
+          email: owner.email,
+          phone: owner.phone,
+          businessName: owner.businessName,
+        }
+      : undefined, 
     };
   }
 
@@ -220,6 +229,24 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
     bookingId: booking.bookingId,
   };
 }
+
+ static toBookingListForAdmin(
+    bookings: IBooking[],
+    total: number,
+    page: number,
+    limit: number
+  ): BookingListForAdminDto {
+    const bookingDtos = BookingMapper.toDtoList(bookings); // reuse existing mapper
+
+    return {
+      bookings: bookingDtos,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
 
 
 }

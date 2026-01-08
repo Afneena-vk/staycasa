@@ -73,6 +73,7 @@ export interface BookingState {
   fetchOwnerBookingStats: () => Promise<void>;  
   adminTotalBookingsCount: number | null; 
   fetchAdminTotalBookingsCount: () => Promise<void>;
+  fetchAdminBookings: () => Promise<void>;
 
 }
 
@@ -303,6 +304,47 @@ fetchOwnerCancelBooking: async (bookingId: string) => {
         "Failed to cancel booking",
     });
     throw err;
+  }
+},
+
+fetchAdminBookings: async () => {
+  const state = get();
+
+  const query: BookingQuery = {
+    page: state.page,
+    limit: state.limit,
+    search: state.search || undefined,
+    status: state.status || undefined,
+    paymentStatus: state.paymentStatus || undefined,
+    startDate: state.startDate,
+    endDate: state.endDate,
+    sortBy: state.sortBy,
+    sortOrder: state.sortOrder,
+    bookingType: state.bookingType,
+  };
+
+  set({ isLoading: true, error: null });
+
+  try {
+    const response = await bookingService.fetchAdminBookings(query);
+
+    set({
+      bookings: response.bookings,
+      total: response.total,
+      page: response.page,
+      limit: response.limit,
+      totalPages: response.totalPages,
+      isLoading: false,
+    });
+  } catch (err: any) {
+    set({
+      bookings: [],
+      isLoading: false,
+      error:
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to fetch admin bookings",
+    });
   }
 },
 

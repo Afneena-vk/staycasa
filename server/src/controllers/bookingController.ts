@@ -212,7 +212,7 @@ async getOwnerBookings(
 
       });
 
-    res.status(200).json(result);
+    res.status(STATUS_CODES.OK).json(result);
   } catch (error: any) {
     res.status(500).json({
       message: error.message || "Failed to fetch owner bookings",
@@ -327,5 +327,47 @@ async ownerCancelBooking(req: Request, res: Response, next: NextFunction): Promi
   }
 }
 
+async getAllBookings(req: Request, res: Response, next: NextFunction): Promise<void> {
+   try {
+     const {
+      page,
+      limit,
+      search,
+      status,
+      paymentStatus,
+      startDate,
+      endDate,
+      sortBy,
+      sortOrder,
+      bookingType,
+    } = req.query; 
+
+       const result = await this._bookingService.getAllBookingsWithQuery({
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+      search: search as string,
+      status: status as string,
+      paymentStatus: paymentStatus as string,
+      startDate: startDate ? new Date(startDate as string) : undefined,
+      endDate: endDate ? new Date(endDate as string) : undefined,
+      sortField: sortBy as string,
+      sortOrder: sortOrder === "asc" ? "asc" : "desc",
+      bookingType: bookingType
+        ? (bookingType as "past" | "ongoing" | "upcoming")
+        : undefined,
+    });
+
+  res.status(STATUS_CODES.OK).json({
+        status: STATUS_CODES.OK,
+        data: result,
+  });
+
+
+   }catch (error: unknown) {
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error instanceof Error ? error.message : "Failed to fetch bookings",
+      });
+   }
+}
 
 }

@@ -426,4 +426,102 @@ async cancellBooking(
 }
 
 
+async findAllWithQuery(options: FindByUserOptions) {
+  const {
+    search,
+    status,
+    paymentStatus,
+    startDate,
+    endDate,
+    bookingType,
+    page = 1,
+    limit = 10,
+    sortField = "createdAt",
+    sortOrder = "desc",
+  } = options;
+
+  const matchStage: any = {};
+
+  if (status) matchStage.bookingStatus = status;
+  if (paymentStatus) matchStage.paymentStatus = paymentStatus;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (bookingType === "past") {
+    matchStage.endDate = { $lt: today };
+  } else if (bookingType === "ongoing") {
+    matchStage.moveInDate = { $lte: today };
+    matchStage.endDate = { $gte: today };
+  } else if (bookingType === "upcoming") {
+    matchStage.moveInDate = { $gt: today };
+  }
+
+  if (startDate || endDate) {
+    matchStage.moveInDate = matchStage.moveInDate || {};
+    if (startDate) matchStage.moveInDate.$gte = startDate;
+    if (endDate) matchStage.moveInDate.$lte = endDate;
+  }
+
+  const pipeline: any[] = [
+    { $match: matchStage },
+    {
+      $lookup: {
+        from: "properties",
+        localField: "propertyId",
+        foreignField: "_id",
+        as: "propertyId",
+      },
+    },
+    { $unwind: "$propertyId" },
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "userId",
+      },
+    },
+    { $unwind: "$userId" },
+    {
+      $lookup: {
+        from: "owners",
+        localField: "ownerId",
+        foreignField: "_id",
+        as: "ownerId",
+      },
+    },
+    { $unwind: "$ownerId" },
+  ];
+
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          { "propertyId.title": { $regex: search, $options: "i" } },
+          { "userId.name": { $regex: search, $options: "i" } },
+          { "userId.email": { $regex: search, $options: "i" } },
+          { "ownerId.name": { $regex: search, $options: "i" } },
+          { bookingId: { $regex: search, $options: "i" } },
+        ],
+      },
+    });
+  }
+
+  const countPipeline = [...pipeline, { $count: "total" }];
+  const countResult = await Booking.aggregate(countPipeline);
+  const total = countResult.length > 0 ? countResult[0].total : 0;
+
+  pipeline.push(
+    { $sort: { [sortField]: sortOrder === "asc" ? 1 : -1 } },
+    { $skip: (page - 1) * limit },
+    { $limit: limit }
+  );
+
+  const bookings = await Booking.aggregate(pipeline);
+
+  return { bookings, total };
+}
+
+
 }

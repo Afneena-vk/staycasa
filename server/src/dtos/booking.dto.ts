@@ -76,6 +76,15 @@ export interface BookingListItemDto {
     name: string;
     email?: string;
   };
+
+    owner?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    businessName: string;
+  };
+
 }
 
 
@@ -167,6 +176,14 @@ export interface CancelBookingResult {
   message: string;
   refundAmount?: number;
   bookingId?: string;
+}
+
+export interface BookingListForAdminDto {
+  bookings: BookingListItemDto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 

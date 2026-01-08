@@ -10,7 +10,7 @@ import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult} from '../dtos/booking.dto';
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
@@ -545,6 +545,46 @@ async ownerCancelBooking(bookingId: string, ownerId: string): Promise<CancelBook
 
 }
 
+
+// async getAllBookingsWithQuery(query: UserBookingsQueryOptions): Promise<{ bookings: BookingListItemDto[]; total: number; page: number; limit: number; totalPages: number; }> {
+async getAllBookingsWithQuery(query: UserBookingsQueryOptions): Promise<BookingListForAdminDto> {
+  
+
+    const page = query.page || 1;
+  const limit = query.limit || 10;
+
+  const allowedSortFields: (keyof IBooking)[] = [
+    "bookingId",
+    "moveInDate",
+    "paymentStatus",
+    "createdAt",
+  ];
+  const sortField = allowedSortFields.includes(query.sortField as keyof IBooking)
+    ? (query.sortField as keyof IBooking)
+    : "createdAt";
+
+  const sortOrder = query.sortOrder === "asc" ? "asc" : "desc";
+
+  const { bookings, total } = await this._bookingRepository.findAllWithQuery({
+    ...query,
+    page,
+    limit,
+    sortField,
+    sortOrder,
+  });
+
+  const bookingDtos = BookingMapper.toDtoList(bookings);
+  
+  return BookingMapper.toBookingListForAdmin(bookings,total,page,limit)
+
+  // return {
+  //   bookings: bookingDtos,
+  //   total,
+  //   page,
+  //   limit,
+  //   totalPages: Math.ceil(total / limit),
+  // };
+}
 
 
 }

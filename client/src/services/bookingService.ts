@@ -58,4 +58,11 @@ export const bookingService = {
     return res.data.data; 
   },
 
+  fetchAdminBookings: async (query: BookingQuery) => {
+  const res = await api.get(ADMIN_API.BOOKINGS, {
+    params: query,
+  });
+  return res.data.data;
+},
+
 }

@@ -16,6 +16,7 @@ import UserDetails from "./pages/admin/UserDetails.tsx";
 import OwnerDetails from "./pages/admin/OwnerDetails.tsx";
 import AdminProperties from "./pages/admin/AdminProperties.tsx";
 import AdminPropertyDetails from "./pages/admin/AdminPropertyDetails.tsx";
+import AdminBookings from "./pages/admin/AdminBookings.tsx";
 
 import OwnerSignup from "./pages/owner/OwnerSignup";
 import OwnerLogin from "./pages/owner/OwnerLogin.tsx";
@@ -121,7 +122,15 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        
+
+         <Route
+          path="/admin/bookings"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminBookings/>
+            </ProtectedRoute>
+          }
+        />       
         
         
         <Route

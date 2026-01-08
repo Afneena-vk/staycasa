@@ -1,5 +1,5 @@
 import { IBooking } from "../../models/bookingModel";
-import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult} from "../../dtos/booking.dto";
+import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto} from "../../dtos/booking.dto";
 
 export interface IRazorpayOrderInput {
   propertyId: string;
@@ -81,5 +81,9 @@ getBookingOverview(): Promise<number>
 
 userCancellBooking(bookingId:string,userId:string): Promise<CancelBookingResult>
 ownerCancelBooking(bookingId: string,ownerId: string): Promise<CancelBookingResult>
+
+getAllBookingsWithQuery(
+  query: UserBookingsQueryOptions
+): Promise<BookingListForAdminDto>
    
 }
