@@ -53,6 +53,9 @@ import BookingList from "./pages/user/BookingList.tsx";
 import BookingDetails from "./pages/user/BookingDetails.tsx";
 import Destination from "./pages/user/Destination.tsx";
 
+import NotFound from "./components/common/NotFound.tsx";
+
+
 const App = () => {
   return (
     <Router>
@@ -407,6 +410,11 @@ const App = () => {
             </ProtectedRoute>
           }
         /> 
+
+
+
+         <Route path="*" element={<NotFound />} />
+
 
 
       </Routes>
