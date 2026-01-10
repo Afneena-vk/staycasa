@@ -15,19 +15,22 @@ function AdminProperties() {
    const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
    const [currentPage, setCurrentPage] = useState(1);
    const propertiesPerPage = 10;
-
+   const [sortOption, setSortOption] = useState("createdAt-desc");
   
   useEffect(() => {
+    const [sortByField, sortOrderDir] = sortOption.split("-");
   getAllPropertiesAdmin({
      page: currentPage,
     limit: 10,
     search: debouncedSearch,
-    sortBy: "createdAt",
-    sortOrder: "desc",
+    // sortBy: "createdAt",
+    // sortOrder: "desc",
+    sortBy: sortByField,      
+    sortOrder: sortOrderDir,
   }
   
   );
-}, [currentPage,  debouncedSearch]);
+}, [currentPage,  debouncedSearch, sortOption]);
 
 useEffect(() => {
   const handler = setTimeout(() => {
@@ -136,9 +139,9 @@ const handleUnblock = async (propertyId: string) => {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold text-gray-800">Property Management</h1>
-            <p className="text-sm text-gray-600 mt-1">
+            {/* <p className="text-sm text-gray-600 mt-1">
               Total Properties: {properties.length}
-            </p>
+            </p> */}
           </div>
           {/* <div> */}
           <div className="relative w-full md:w-64">
@@ -162,8 +165,23 @@ const handleUnblock = async (propertyId: string) => {
       ❌
     </button>
   )}
+
     
   </div>
+  <select
+  value={sortOption}
+  onChange={(e) => setSortOption(e.target.value)}
+  className="px-4 py-2 border rounded-lg bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700"
+>
+  {/* Sorting by Date */}
+  <option value="createdAt-desc">Newest</option>
+  <option value="createdAt-asc">Oldest</option>
+
+  {/* Sorting by Price */}
+  <option value="pricePerMonth-asc">Price: Low → High</option>
+  <option value="pricePerMonth-desc">Price: High → Low</option>
+</select>
+
         </div>
 
         {/* Table */}
@@ -192,6 +210,10 @@ const handleUnblock = async (propertyId: string) => {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+  Created At
+</th>
+
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
@@ -218,7 +240,7 @@ const handleUnblock = async (propertyId: string) => {
                       {p.title}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {p.city}, {p.state}
+                      {p.district}, {p.state}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       ₹{p.pricePerMonth}
@@ -252,6 +274,10 @@ const handleUnblock = async (propertyId: string) => {
 </span>
 
                     </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+  {p.createdAt ? new Date(p.createdAt).toLocaleDateString() : "N/A"}
+</td>
+
                     <td className="px-6 py-4 text-sm text-gray-700">
   <div className="flex items-center gap-3">
                         {p.status === 'pending' &&(

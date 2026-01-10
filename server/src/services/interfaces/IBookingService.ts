@@ -82,8 +82,9 @@ getBookingOverview(): Promise<number>
 userCancellBooking(bookingId:string,userId:string): Promise<CancelBookingResult>
 ownerCancelBooking(bookingId: string,ownerId: string): Promise<CancelBookingResult>
 
-getAllBookingsWithQuery(
-  query: UserBookingsQueryOptions
-): Promise<BookingListForAdminDto>
+getAllBookingsWithQuery(query: UserBookingsQueryOptions): Promise<BookingListForAdminDto>
+
+getBookingDetailsForAdmin(bookingId: string): Promise<BookingDetailsDto>
+
    
 }

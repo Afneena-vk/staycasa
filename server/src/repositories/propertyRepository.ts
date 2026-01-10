@@ -290,7 +290,12 @@ async getDestinations(
   
   const totalResult = await Property.aggregate([
     { $match: matchCondition },
-    { $group: { _id: "$district" } },
+    // { $group: { _id: "$district" } },
+        {
+      $group: {
+        _id: { $toLower: "$district" }
+      }
+    }
   ]);
   const total = totalResult.length;
   const totalPages = Math.ceil(total / limit);
@@ -301,15 +306,18 @@ async getDestinations(
     { $match: matchCondition },
     {
       $group: {
-        _id: "$district",
+        // _id: "$district",
+        _id: { $toLower: "$district" },
         propertyCount: { $sum: 1 },
         image: { $first: "$images" },
+        originalDistrict: { $first: "$district" } 
       },
     },
     {
       $project: {
         _id: 0,
-        district: "$_id",
+        // district: "$_id",
+         district: "$originalDistrict",
         propertyCount: 1,
         image: { $arrayElemAt: ["$image", 0] },
       },

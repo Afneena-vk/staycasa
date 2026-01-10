@@ -65,4 +65,10 @@ export const bookingService = {
   return res.data.data;
 },
 
+fetchBookingDetailsForAdmin: async (bookingId: string) => {
+  const res = await api.get(ADMIN_API.BOOKING_BY_ID(bookingId));
+  return res.data.data;
+},
+
+
 }

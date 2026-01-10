@@ -402,9 +402,15 @@ const wallet = await this._walletRepository.getWalletWithBookings(new Types.Obje
     };
   }
 
+    const validTransactions = wallet.transactions.filter(
+    (tx) => tx.bookingId !== null
+  );
+const balance = validTransactions.reduce((sum, tx) => sum + tx.amount, 0);
   return {
-    balance: wallet.balance,
-    transactions: wallet.transactions.sort(
+    // balance: wallet.balance,
+    balance,
+    // transactions: wallet.transactions.sort(
+      transactions: validTransactions.sort(
       (a, b) => b.date.getTime() - a.date.getTime()
     ),
   };

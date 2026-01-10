@@ -143,4 +143,12 @@ adminRoutes.get(
     
 )
 
+
+adminRoutes.get(
+    "/bookings/:bookingId",
+    authMiddleware(["admin"]),
+    bookingController.getBookingDetailsForAdmin.bind(bookingController)
+    
+)
+
 export default adminRoutes;

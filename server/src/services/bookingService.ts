@@ -586,5 +586,14 @@ async getAllBookingsWithQuery(query: UserBookingsQueryOptions): Promise<BookingL
   // };
 }
 
+async getBookingDetailsForAdmin(bookingId: string): Promise<BookingDetailsDto> {
+  const booking = await this._bookingRepository.findById(bookingId);
+
+  if (!booking) {
+    throw new Error("Booking not found");
+  }
+
+  return BookingMapper.toBookingDetailsDto(booking);
+}
 
 }

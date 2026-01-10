@@ -74,6 +74,8 @@ export interface BookingState {
   adminTotalBookingsCount: number | null; 
   fetchAdminTotalBookingsCount: () => Promise<void>;
   fetchAdminBookings: () => Promise<void>;
+  fetchBookingDetailsForAdmin: (bookingId: string) => Promise<void>;
+
 
 }
 
@@ -348,6 +350,19 @@ fetchAdminBookings: async () => {
   }
 },
 
+fetchBookingDetailsForAdmin: async (bookingId: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    const res = await bookingService.fetchBookingDetailsForAdmin(bookingId);
+    set({ selectedBooking: res, isLoading: false }); 
+  } catch (error: any) {
+    set({
+      selectedBooking: null,
+      isLoading: false,
+      error: error.response?.data?.error || error.message || "Failed to fetch booking details",
+    });
+  }
+},
 
 
 });

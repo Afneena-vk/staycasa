@@ -131,6 +131,7 @@ static toDto(booking: IBooking): BookingListItemDto {
 static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
   const property = booking.propertyId as any;
   const user = booking.userId as any;
+  const owner = booking.ownerId as any;
 
   return {
     id: booking._id.toString(),
@@ -191,6 +192,16 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
           }
         : undefined,
     
+     owner: owner
+      ? {
+          id: owner._id.toString(),
+          name: owner.name,
+          email: owner.email,
+          phone: owner.phone,
+          businessName: owner.businessName,
+        }
+      : undefined,
+
   };
 }
 

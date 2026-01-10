@@ -102,6 +102,14 @@ export interface BookingDetailsDTO {
       pincode: string;
     };
   };
+
+   owner?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    businessName: string;
+  };
   
 }
 

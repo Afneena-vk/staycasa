@@ -70,6 +70,18 @@ useEffect(() => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full py-3 pl-12 pr-4 rounded-full bg-white shadow-md focus:ring-2 focus:ring-blue-700 outline-none text-gray-700"
             />
+             {searchQuery && (
+    <button
+      onClick={() => {
+        setSearchQuery("");                   
+        setFilters({ search: "", page: 1 });  
+      }}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+      aria-label="Clear search"
+    >
+      ❌
+    </button>
+  )}
           </div>
 
           {/* Filters */}

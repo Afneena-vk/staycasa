@@ -41,6 +41,7 @@ const OwnerProperties = () => {
  
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortOption, setSortOption] = useState("createdAt-desc");
 
   try {
     
@@ -59,16 +60,20 @@ const totalPages = useAuthStore((state) => state.totalPages);
     
     useEffect(() => {
   if (isApproved) {
-    
+     const [sortByField, sortOrderDir] = sortOption.split("-");
+       console.log("Sorting by:", sortByField, "Order:", sortOrderDir);
+
     getOwnerProperties({
       page: currentPage,
       limit: 10,
       search: searchTerm,
-      sortBy: "createdAt",
-      sortOrder: "desc",
+      // sortBy: "createdAt",
+      sortBy: sortByField,
+      // sortOrder: "desc",
+      sortOrder: sortOrderDir,
     });
   }
-}, [isApproved, currentPage, debouncedSearch]);   
+}, [isApproved, currentPage, debouncedSearch, sortOption]);   
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -199,6 +204,16 @@ const handleDelete = async (propertyId: string) => {
     </button>
   )}
           </div>
+           <select
+    value={sortOption}
+    onChange={(e) => setSortOption(e.target.value)}
+    className="px-4 py-2 border rounded-lg bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700"
+  >
+    <option value="createdAt-desc">Newest</option>
+    <option value="createdAt-asc">Oldest</option>
+    <option value="pricePerMonth-asc">Price: Low → High</option>
+    <option value="pricePerMonth-desc">Price: High → Low</option>
+  </select>
         </div>
 
         {/* Loading & Error States */}
@@ -217,6 +232,7 @@ const handleDelete = async (propertyId: string) => {
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
             <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
               <h2 className="text-sm text-slate-500">Total Properties</h2>
+              {/* <p className="text-xl font-bold">{safeProperties.length}</p> */}
               <p className="text-xl font-bold">{safeProperties.length}</p>
             </div>
             <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
@@ -227,10 +243,10 @@ const handleDelete = async (propertyId: string) => {
               <h2 className="text-sm text-slate-500">Pending</h2>
               <p className="text-xl font-bold">{getStatusCount("pending")}</p>
             </div>
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
+            {/* <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
               <h2 className="text-sm text-slate-500">Booked</h2>
               <p className="text-xl font-bold">{getStatusCount("booked")}</p>
-            </div>
+            </div> */}
           </div>
         )}
 
@@ -245,6 +261,7 @@ const handleDelete = async (propertyId: string) => {
                 <th className="px-4 py-2 text-left">Location</th>
                 <th className="px-4 py-2 text-left">Status</th>
                 <th className="px-4 py-2 text-left">Price/Month</th>
+                <th className="px-4 py-2 text-left">CreatedAt</th>
                 <th className="px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
@@ -295,6 +312,7 @@ const handleDelete = async (propertyId: string) => {
                         </span>
                       </td>
                       <td className="px-4 py-2">₹{priceFormatted}</td>
+                           <td className="px-4 py-2"> {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : "N/A"}</td> 
                       <td className="px-4 py-2 flex gap-2">
                         <button
                           disabled={!isApproved}
