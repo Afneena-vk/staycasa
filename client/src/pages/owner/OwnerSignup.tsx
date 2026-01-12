@@ -37,8 +37,25 @@ const OwnerSignup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      {/* <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"> */}
+      <div className="flex w-full max-w-5xl bg-white rounded-xl shadow-lg overflow-hidden">
+
+
+      <div className="hidden md:flex md:w-1/2 flex-col items-center justify-center p-10 bg-white">
+        <img
+          src="/images/images.png"
+          alt="STACASA Homestay"
+          className="w-auto max-w-full h-auto rounded-xl shadow-lg"
+        />
+        <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2>
+        <p className="text-gray-700 text-sm mt-2 text-center px-4">
+          List your property and start hosting guests from around the world
+        </p>
+      </div>
+       
+       <div className="w-full md:w-1/2 p-8 md:p-10">
         <h2 className="text-2xl font-bold mb-6 text-center">Create Owner Account</h2>
 
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -159,6 +176,8 @@ const OwnerSignup = () => {
         </div>
       </div>
     </div>
+    </div>
+
   );
 };
 

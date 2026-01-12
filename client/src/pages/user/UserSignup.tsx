@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuthStore } from '../../stores/authStore';
+import Header from '../../components/User/Header';
+import Footer from '../../components/User/Footer';
 
 type SignupFormData = {
   name: string;
@@ -34,8 +36,10 @@ const UserSignup = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+  return ( 
+       <>
+      <Header />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-28 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Create User Account</h2>
         
@@ -154,6 +158,8 @@ const UserSignup = () => {
         </div>
       </div>
     </div>
+          <Footer />
+    </>
   );
 };
 

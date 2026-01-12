@@ -21,7 +21,7 @@ const Header: React.FC = () => {
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-blue-950">
-          VacayStay
+          Staycasa
         </Link>
 
         {/* Navigation */}
