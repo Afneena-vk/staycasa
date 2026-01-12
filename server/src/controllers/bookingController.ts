@@ -155,6 +155,44 @@ export class BookingController implements IBookingController {
     }
   }
 
+async createPendingBooking(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const {
+      razorpay_order_id,
+      propertyId,
+      moveInDate,
+      rentalPeriod,
+      guests,
+      errorCode,
+      errorDescription
+    } = req.body;
+    
+    const userId = (req as any).userId;
+
+    const result = await this._bookingService.createPendingBooking({
+      razorpay_order_id,
+      propertyId,
+      moveInDate,
+      rentalPeriod,
+      guests,
+      userId,
+      errorCode,
+      errorDescription
+    });
+
+    res.status(result.status).json(result);
+  } catch (err: any) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      message: err.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}  
+
   async getBookingDetails(
     req: Request,
     res: Response,

@@ -48,18 +48,18 @@ const BookingFailure: React.FC = () => {
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
-            <button
+            {/* <button
               onClick={() => navigate("/user/payment")}
               className="w-full rounded-xl bg-red-600 py-3 text-white font-medium hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
             >
               Try Payment Again
-            </button>
+            </button> */}
 
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/user/bookings")}
               className="w-full rounded-xl border border-gray-300 py-3 text-gray-700 font-medium hover:bg-gray-100 transition"
             >
-              Go to Home
+              View Bookings
             </button>
           </div>
 

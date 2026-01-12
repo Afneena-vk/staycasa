@@ -35,6 +35,7 @@ export const USER_API = {
   CALCULATE_TOTAL: "/user/payment/calculate-total",
   RAZORPAY_ORDER: "/user/payment/razorpay-order",
   VERIFY_PAYMENT: "/user/payment/verify",
+  PAYMENT_FAILED: "/user/payment/failed",
 
   // bookings
   BOOKINGS: "/user/bookings",

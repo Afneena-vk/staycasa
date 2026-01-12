@@ -170,6 +170,12 @@ userRoutes.get(
   userController.getWallet.bind(userController)
 );
 
+userRoutes.post(
+  "/payment/failed",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.createPendingBooking.bind(bookingController)
+);
 
 export default userRoutes   
 

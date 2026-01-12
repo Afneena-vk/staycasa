@@ -86,5 +86,15 @@ getAllBookingsWithQuery(query: UserBookingsQueryOptions): Promise<BookingListFor
 
 getBookingDetailsForAdmin(bookingId: string): Promise<BookingDetailsDto>
 
-   
+createPendingBooking(input: {
+  razorpay_order_id: string;
+  propertyId: string;
+  moveInDate: string;
+  rentalPeriod: number;
+  guests: number;
+  userId: string;
+  errorCode?: string;
+  errorDescription?: string;
+}): Promise<any>;
+
 }

@@ -114,8 +114,20 @@ const PaymentPage = () => {
       },
 
  modal: {
-    ondismiss: function () {
+    ondismiss: async function () {
       console.log("Razorpay modal closed by user");
+ try {
+          await paymentService.handleFailedPayment({
+            razorpay_order_id: orderData.razorpayOrderId,
+            propertyId: bookingData.propertyId,
+            moveInDate: bookingData.moveInDate,
+            rentalPeriod: bookingData.rentalPeriod,
+            guests: bookingData.guests,
+            errorDescription: "Payment cancelled by user"
+          });
+        } catch (error) {
+          console.error("Failed to create pending booking:", error);
+        }
 
       navigate("/user/booking-failure", {
         state: {
@@ -137,13 +149,38 @@ const PaymentPage = () => {
     };
 
     const rzp = new window.Razorpay(options);
-    rzp.on('payment.failed', function (response: any) {
+    rzp.on('payment.failed', async function (response: any) {
   console.error("Payment Failed:", response.error);
+
+ try {
+      const result = await paymentService.handleFailedPayment({
+        razorpay_order_id: orderData.razorpayOrderId,
+        propertyId: bookingData.propertyId,
+        moveInDate: bookingData.moveInDate,
+        rentalPeriod: bookingData.rentalPeriod,
+        guests: bookingData.guests,
+        errorCode: response.error.code,
+        errorDescription: response.error.description
+      });
+      
+      console.log("Pending booking created:", result);
+
   navigate("/user/booking-failure", {
     state: {
-      reason: response.error.description || "Payment failed. Please try again."
+      reason: response.error.description || "Payment failed. Please try again.",
+       bookingId: result.booking.bookingId,
+          canRetry: true
     }
   });
+  } catch (error) {
+      console.error("Failed to create pending booking:", error);
+      navigate("/user/booking-failure", {
+        state: {
+          reason: "Payment failed. Please contact support."
+        }
+      });
+    }
+
 });
     rzp.open();
   };
@@ -325,6 +362,12 @@ alt={property?.title || "Property"}
             </div>
 
             {/* Pay Button */}
+            {errorMessage && (
+  <div className="mt-4 p-4 rounded-lg bg-red-50 text-red-600 text-sm">
+    {errorMessage}
+  </div>
+)}
+
             <button
               disabled={!paymentMethod || loadingPayment}
               onClick={handlePaySecurely}

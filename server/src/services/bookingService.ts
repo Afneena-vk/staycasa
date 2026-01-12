@@ -126,6 +126,8 @@ return BookingMapper.toCreateOrderResponse(
     guests,
     userId
   } = input;
+    try {
+
     const secret = process.env.RAZORPAY_KEY_SECRET!;
 
     const generated = crypto
@@ -201,7 +203,7 @@ console.log("Wallet payload:", {
   bookingId: booking._id,
 });
  
-try {
+// try {
   await this._walletRepository.creditWallet(
     ownerId,
     "owner",
@@ -215,32 +217,121 @@ try {
       date: new Date()
     }
   );
-} catch (error) {
-  console.error(" Wallet credit failed:", error);
-  throw error;
-}
+// } catch (error) {
+//   console.error(" Wallet credit failed:", error);
+//   throw error;
+// }
 
 
   
 const populatedBooking = await this._bookingRepository.findById(booking._id.toString());
+ return BookingMapper.toVerifyPaymentResponse(
+      populatedBooking || booking,
+      "Booking confirmed successfully",
+      property
+    );
 
+  } catch (error: any) {
 
-  const bookedProperty = await this._propertyRepository.findByPropertyId(propertyId);
+    console.error("Payment verification failed:", error.message);
+
+    const property = await this._propertyRepository.findByPropertyId(propertyId);
+    if (!property) throw error;
+
+    const startDate = new Date(moveInDate);
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + rentalPeriod);
+
+    const totalCost = property.pricePerMonth * rentalPeriod;
+
+    const pendingBooking = await this._bookingRepository.create({
+      userId: new mongoose.Types.ObjectId(userId),
+      ownerId: property.ownerId as any,
+      propertyId: new mongoose.Types.ObjectId(propertyId),
+      moveInDate: startDate,
+      endDate,
+      rentalPeriod,
+      guests,
+      rentPerMonth: property.pricePerMonth,
+      totalCost,
+      paymentMethod: "razorpay",
+      paymentId: razorpay_payment_id,
+      paymentStatus: PaymentStatus.Failed,
+      bookingStatus: BookingStatus.Pending,
+      isCancelled: false,
+      refundAmount: 0
+    });
+
+    throw {
+      status: 400,
+      bookingId: pendingBooking._id,
+      message: "Payment failed. Booking saved as pending."
+    };
+
+  // const bookedProperty = await this._propertyRepository.findByPropertyId(propertyId);
 
   
-  if (bookedProperty?.isBooked) {
-    console.log("Property is booked:", bookedProperty);
-  } else {
-    console.log("Property is not booked yet:", bookedProperty);
-  }
+  // if (bookedProperty?.isBooked) {
+  //   console.log("Property is booked:", bookedProperty);
+  // } else {
+  //   console.log("Property is not booked yet:", bookedProperty);
+  // }
 
 
  
   
-  return BookingMapper.toVerifyPaymentResponse( populatedBooking || booking,"Booking confirmed successfully",property);
+ // return BookingMapper.toVerifyPaymentResponse( populatedBooking || booking,"Booking confirmed successfully",property);
+  }
   }
 
 
+  async createPendingBooking(input: {
+  razorpay_order_id: string;
+  propertyId: string;
+  moveInDate: string;
+  rentalPeriod: number;
+  guests: number;
+  userId: string;
+  errorCode?: string;
+  errorDescription?: string;
+}): Promise<any> {
+  const { razorpay_order_id, propertyId, moveInDate, rentalPeriod, guests, userId, errorCode, errorDescription } = input;
+
+  const property = await this._propertyRepository.findByPropertyId(propertyId);
+  if (!property) throw new Error("Property not found");
+
+  const startDate = new Date(moveInDate);
+  const endDate = new Date(startDate);
+  endDate.setMonth(endDate.getMonth() + rentalPeriod);
+  
+  const totalCost = property.pricePerMonth * rentalPeriod;
+
+  // Create booking with pending status and failed payment
+  const booking = await this._bookingRepository.create({
+    userId: new mongoose.Types.ObjectId(userId),
+    ownerId: property.ownerId as any,
+    propertyId: new mongoose.Types.ObjectId(propertyId),
+    moveInDate: startDate,
+    endDate,
+    rentalPeriod,
+    guests,
+    rentPerMonth: property.pricePerMonth,
+    totalCost,
+    paymentMethod: "razorpay",
+    paymentId: razorpay_order_id, // Store the order ID
+    paymentStatus: PaymentStatus.Failed,
+    bookingStatus: BookingStatus.Pending,
+    isCancelled: false,
+    refundAmount: 0
+  });
+
+  return {
+    status: STATUS_CODES.OK,
+    message: "Booking created with pending status due to payment failure",
+    booking: BookingMapper.toBookingResponse(booking),
+    canRetry: true
+  };
+}
 
   async getUserBookingsWithQuery(
   userId: string,

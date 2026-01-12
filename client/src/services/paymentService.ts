@@ -42,4 +42,18 @@ export const paymentService = {
     return res.data;
   },
 
+
+  handleFailedPayment: async (paymentData: {
+  razorpay_order_id: string;
+  propertyId: string;
+  moveInDate: string;
+  rentalPeriod: number;
+  guests: number;
+  errorCode?: string;
+  errorDescription?: string;
+}) => {
+  const res = await api.post(USER_API.PAYMENT_FAILED, paymentData);
+  return res.data;
+},
+
 };
