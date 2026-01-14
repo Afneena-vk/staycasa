@@ -23,6 +23,7 @@ export interface IPaymentVerificationInput {
   guests: number;
   moveInDate: string;
   userId: string;
+  bookingId?: string; 
 }
 
 export interface UserBookingsQueryOptions {
@@ -96,5 +97,7 @@ createPendingBooking(input: {
   errorCode?: string;
   errorDescription?: string;
 }): Promise<any>;
+
+retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrderResponseDto>
 
 }

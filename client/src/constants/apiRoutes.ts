@@ -36,6 +36,7 @@ export const USER_API = {
   RAZORPAY_ORDER: "/user/payment/razorpay-order",
   VERIFY_PAYMENT: "/user/payment/verify",
   PAYMENT_FAILED: "/user/payment/failed",
+  RETRY_PAYMENT: (bookingId: string) => `/user/bookings/${bookingId}/retry-payment`,
 
   // bookings
   BOOKINGS: "/user/bookings",

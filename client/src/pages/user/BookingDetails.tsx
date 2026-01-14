@@ -1,16 +1,101 @@
 
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
+import { paymentService } from "../../services/paymentService";
 
 const BookingDetails = () => {
   const { bookingId } = useParams();
 //   const { selectedBooking, fetchBookingDetails, cancelBooking } =
  const { selectedBooking, fetchBookingDetails, fetchCancelBooking} = useAuthStore();
+ const fetchRetryPayment = useAuthStore((state) => state.fetchRetryPayment);
+ const bookingData = useAuthStore((state) => state.bookingData);
+
+ const [loadingPayment, setLoadingPayment] = useState(false);
+ const [errorMessage, setErrorMessage] = useState("");
  const navigate = useNavigate();
+
+
+ const handleRetryPayment = async () => {
+    if (!selectedBooking) return;
+    
+    try {
+      setLoadingPayment(true);
+      setErrorMessage("");
+      
+      
+      const orderData = await fetchRetryPayment(selectedBooking.bookingId);
+      
+      
+      openRazorpayCheckout(orderData);
+
+        } catch (error: any) {
+      setErrorMessage(error?.message || "Failed to retry payment");
+    } finally {
+      setLoadingPayment(false);
+    }
+  };
+
+  const openRazorpayCheckout = (orderData: { totalAmount: number; razorpayOrderId: string }) => {
+    if (!selectedBooking) return;
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: orderData.totalAmount * 100,
+      currency: "INR",
+      name: "Vacation Home Booking",
+      description: "Retry Property Booking Payment",
+      order_id: orderData.razorpayOrderId,
+
+
+            handler: async function (response: any) {
+        console.log("Payment Success:", response);
+        
+        const result = await paymentService.verifyPayment({
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+          bookingId: selectedBooking.bookingId,
+        });
+
+             navigate("/user/booking-success", {
+          state: {
+            booking: result.booking,
+            property: result.property,
+            paymentId: response.razorpay_payment_id,
+            orderId: response.razorpay_order_id,
+            isRetry: true
+          },
+        });
+      },
+
+       modal: {
+        ondismiss: function () {
+          console.log("Razorpay modal closed by user during retry");
+          setErrorMessage("Payment cancelled. You can try again.");
+        },
+      },
+
+      prefill: {
+        contact: "9999999999",
+      },
+
+
+      theme: { color: "#3399cc" },
+    };
+
+    const rzp = new window.Razorpay(options);
+    
+    rzp.on('payment.failed', function (response: any) {
+      console.error("Retry Payment Failed:", response.error);
+      setErrorMessage(response.error.description || "Payment failed. Please try again.");
+    });
+    
+    rzp.open();
+  };
 
 
   useEffect(() => {
@@ -51,6 +136,8 @@ const handleCancelBooking = async () => {
     alert(err.response?.data?.error || err.message || "Cancellation failed");
   }
 };
+
+
 
 
       const getStatusColor = (status: string, type: "booking" | "payment") => {
@@ -117,6 +204,14 @@ const handleCancelBooking = async () => {
                 Cancel Booking
               </button>
             )}
+                {b.paymentStatus === "failed" && b.bookingStatus === "pending" && (
+      <button
+        onClick={handleRetryPayment}
+        className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+      >
+        Retry Payment
+      </button>
+    )}
           </div>
 
           {/* PROPERTY SUMMARY */}

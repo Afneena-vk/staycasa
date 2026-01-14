@@ -75,7 +75,7 @@ export interface BookingState {
   fetchAdminTotalBookingsCount: () => Promise<void>;
   fetchAdminBookings: () => Promise<void>;
   fetchBookingDetailsForAdmin: (bookingId: string) => Promise<void>;
-
+  fetchRetryPayment: (bookingId: string) => Promise<any>;
 
 }
 
@@ -297,15 +297,17 @@ fetchOwnerCancelBooking: async (bookingId: string) => {
       ),
       isLoading: false,
     }));
+    
   } catch (err: any) {
+        const message =
+      err.response?.data?.message || err.message || "Failed to cancel booking";
     set({
       isLoading: false,
-      error:
-        err.response?.data?.error ||
-        err.message ||
-        "Failed to cancel booking",
+      error:message,
+
     });
-    throw err;
+    // throw err;
+     throw { message };
   }
 },
 
@@ -364,5 +366,22 @@ fetchBookingDetailsForAdmin: async (bookingId: string) => {
   }
 },
 
+
+fetchRetryPayment: async (bookingId: string) => {
+  set({ isLoading: true, error: null });
+  try {
+    const response = await paymentService.retryPayment(bookingId);
+    set({ isLoading: false });
+    return response; 
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message || error.message || "Failed to retry payment";
+    set({
+      isLoading: false,
+      error: errorMessage,
+    });
+    throw error;
+  }
+},
 
 });

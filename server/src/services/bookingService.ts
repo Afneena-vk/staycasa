@@ -124,9 +124,10 @@ return BookingMapper.toCreateOrderResponse(
     moveInDate,
     rentalPeriod,
     guests,
-    userId
+    userId,
+    bookingId
   } = input;
-    try {
+   
 
     const secret = process.env.RAZORPAY_KEY_SECRET!;
 
@@ -146,7 +147,59 @@ if (payment.status !== "captured") {
   throw new Error(MESSAGES.ERROR.PAYMENT_NOT_COMPLETED)
 }
 
+if (bookingId) {
+    
+    const existingBooking = await this._bookingRepository.findOne({
+      bookingId,
+      userId: new mongoose.Types.ObjectId(userId),
+      paymentStatus: PaymentStatus.Failed,
+      bookingStatus: BookingStatus.Pending
+    });
 
+    if (!existingBooking) {
+      throw new Error("Booking not found or not eligible for retry");
+    }
+
+    const updatedBooking = await this._bookingRepository.update(
+      existingBooking._id.toString(),
+      {
+        paymentId: razorpay_payment_id,
+        paymentStatus: PaymentStatus.Completed,
+        bookingStatus: BookingStatus.Confirmed,
+      }
+    );
+
+    await this._propertyRepository.update(
+      existingBooking.propertyId.toString(),
+      { isBooked: true }
+    );
+
+    const property = await this._propertyRepository.findByPropertyId(
+      existingBooking.propertyId.toString()
+    );
+
+    const ownerId = new mongoose.Types.ObjectId(property!.ownerId.toString());
+
+     await this._walletRepository.creditWallet(ownerId, "owner", {
+      type: "credit",
+      amount: existingBooking.totalCost,
+      description: "Property booking payment received (retry)",
+      bookingId: existingBooking._id,
+      paymentMethod: "razorpay",
+      paymentId: razorpay_payment_id,
+      date: new Date()
+    });
+
+    const populatedBooking = await this._bookingRepository.findById(
+      updatedBooking!._id.toString()
+    );
+
+    return BookingMapper.toVerifyPaymentResponse(
+      populatedBooking || updatedBooking!,
+      "Payment successful. Booking confirmed!",
+      property!
+    );
+  }
 
      const property = await this._propertyRepository.findByPropertyId(propertyId);
   if (!property) throw new Error("Property not found");
@@ -203,7 +256,7 @@ console.log("Wallet payload:", {
   bookingId: booking._id,
 });
  
-// try {
+
   await this._walletRepository.creditWallet(
     ownerId,
     "owner",
@@ -231,57 +284,7 @@ const populatedBooking = await this._bookingRepository.findById(booking._id.toSt
       property
     );
 
-  } catch (error: any) {
-
-    console.error("Payment verification failed:", error.message);
-
-    const property = await this._propertyRepository.findByPropertyId(propertyId);
-    if (!property) throw error;
-
-    const startDate = new Date(moveInDate);
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + rentalPeriod);
-
-    const totalCost = property.pricePerMonth * rentalPeriod;
-
-    const pendingBooking = await this._bookingRepository.create({
-      userId: new mongoose.Types.ObjectId(userId),
-      ownerId: property.ownerId as any,
-      propertyId: new mongoose.Types.ObjectId(propertyId),
-      moveInDate: startDate,
-      endDate,
-      rentalPeriod,
-      guests,
-      rentPerMonth: property.pricePerMonth,
-      totalCost,
-      paymentMethod: "razorpay",
-      paymentId: razorpay_payment_id,
-      paymentStatus: PaymentStatus.Failed,
-      bookingStatus: BookingStatus.Pending,
-      isCancelled: false,
-      refundAmount: 0
-    });
-
-    throw {
-      status: 400,
-      bookingId: pendingBooking._id,
-      message: "Payment failed. Booking saved as pending."
-    };
-
-  // const bookedProperty = await this._propertyRepository.findByPropertyId(propertyId);
-
   
-  // if (bookedProperty?.isBooked) {
-  //   console.log("Property is booked:", bookedProperty);
-  // } else {
-  //   console.log("Property is not booked yet:", bookedProperty);
-  // }
-
-
- 
-  
- // return BookingMapper.toVerifyPaymentResponse( populatedBooking || booking,"Booking confirmed successfully",property);
-  }
   }
 
 
@@ -331,6 +334,46 @@ const populatedBooking = await this._bookingRepository.findById(booking._id.toSt
     booking: BookingMapper.toBookingResponse(booking),
     canRetry: true
   };
+}
+
+async retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrderResponseDto> {
+  const booking = await this._bookingRepository.findOne({ 
+    bookingId, 
+    userId: new mongoose.Types.ObjectId(userId),
+    paymentStatus: PaymentStatus.Failed,
+    bookingStatus: BookingStatus.Pending 
+  });
+
+  if (!booking) {
+    throw new Error("Booking not found or not eligible for retry");
+  }
+
+  const property = await this._propertyRepository.findByPropertyId(
+    booking.propertyId.toString()
+  );
+  
+  if (!property) throw new Error("Property not found");
+
+  
+  const conflict = await this._bookingRepository.findConflictingBookings(
+    booking.propertyId.toString(),
+    booking.moveInDate,
+    booking.endDate
+  );
+  
+  if (conflict) {
+    throw new Error("Property no longer available for selected dates");
+  }
+
+  const amount = booking.totalCost * 100;
+
+  const razorpayOrder = await razorpay.orders.create({
+    amount,
+    currency: "INR",
+    receipt: `retry_${bookingId}_${Date.now()}`
+  });
+
+  return BookingMapper.toCreateOrderResponse(amount / 100, razorpayOrder.id);
 }
 
   async getUserBookingsWithQuery(

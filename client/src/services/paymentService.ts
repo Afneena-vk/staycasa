@@ -33,10 +33,11 @@ export const paymentService = {
     razorpay_order_id: string;
     razorpay_signature: string;
 
-    propertyId: string;
-    moveInDate: string;
-    rentalPeriod: number;
-    guests: number;
+    propertyId?: string;
+    moveInDate?: string;
+    rentalPeriod?: number;
+    guests?: number;
+    bookingId?: string;
   }) => {
     const res = await api.post(USER_API.VERIFY_PAYMENT, paymentResponse);
     return res.data;
@@ -53,6 +54,11 @@ export const paymentService = {
   errorDescription?: string;
 }) => {
   const res = await api.post(USER_API.PAYMENT_FAILED, paymentData);
+  return res.data;
+},
+
+retryPayment: async (bookingId: string) => {
+  const res = await api.post(USER_API.RETRY_PAYMENT(bookingId));
   return res.data;
 },
 

@@ -177,6 +177,13 @@ userRoutes.post(
   bookingController.createPendingBooking.bind(bookingController)
 );
 
+userRoutes.post(
+  "/bookings/:bookingId/retry-payment",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  bookingController.retryPayment.bind(bookingController)
+);
+
 export default userRoutes   
 
 
