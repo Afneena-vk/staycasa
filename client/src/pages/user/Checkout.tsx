@@ -7,6 +7,8 @@ import { useAuthStore } from "../../stores/authStore";
 import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Checkout = () => {
   //const { propertyId } = useParams();
@@ -20,12 +22,26 @@ const today = new Date().toISOString().split("T")[0];
   const loading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error);
   const bookingStore = useAuthStore();
-  
+  const [blockedDates, setBlockedDates] = useState<{ moveInDate: string; endDate: string }[]>([]);
   useEffect(() => {
     if (!propertyId) return;
     getActivePropertyById(propertyId);
   }, [propertyId]);
 
+  useEffect(() => {
+  if (!propertyId) return;
+
+  const fetchBlockedDates = async () => {
+    try {
+      const res = await userService.getBlockedDates(propertyId);
+      setBlockedDates(res.blockedDates);
+    } catch (err) {
+      console.error("Failed to fetch blocked dates", err);
+    }
+  };
+
+  fetchBlockedDates();
+}, [propertyId]);
 
   const [moveInDate, setMoveInDate] = useState("");
   // const [rentalPeriod, setRentalPeriod] = useState<number | "">("");
@@ -64,6 +80,25 @@ const today = new Date().toISOString().split("T")[0];
   return valid;
 };
 
+
+const isStartDateValid = (dateString: string) => {
+  if (!rentalPeriod) return true;
+
+  const start = new Date(dateString);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setMonth(end.getMonth() + rentalPeriod);
+
+  return !blockedDates.some(({ moveInDate, endDate }) => {
+    const bookedStart = new Date(moveInDate);
+    const bookedEnd = new Date(endDate);
+    bookedStart.setHours(0, 0, 0, 0);
+    bookedEnd.setHours(0, 0, 0, 0);
+
+    return start <= bookedEnd && end >= bookedStart;
+  });
+};
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,7 +232,7 @@ const today = new Date().toISOString().split("T")[0];
             <form onSubmit={handleBooking} className="grid grid-cols-1 md:grid-cols-2 gap-6" noValidate>
 
               {/* Move-in Date */}
-              <div>
+              {/* <div>
                 <label className="block mb-1 text-gray-700 font-medium">Move-in Date</label>
                 <input
                   type="date"
@@ -209,10 +244,28 @@ const today = new Date().toISOString().split("T")[0];
                 {errors.moveInDate && (
   <p className="text-red-600 text-sm mt-1">{errors.moveInDate}</p>
 )}
-              </div>
+              </div> */}
+              {/* Move-in Date */}
+<div>
+  <label className="block mb-1 text-gray-700 font-medium">Move-in Date</label>
+  <ReactDatePicker
+    selected={moveInDate ? new Date(moveInDate) : null}
+    onChange={(date: Date | null) =>
+      setMoveInDate(date ? date.toISOString().split("T")[0] : "")
+    }
+    minDate={new Date()}
+    filterDate={(date) => isStartDateValid(date.toISOString().split("T")[0])}
+    className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+    placeholderText="Select move-in date"
+    dateFormat="yyyy-MM-dd"
+  />
+  {errors.moveInDate && (
+    <p className="text-red-600 text-sm mt-1">{errors.moveInDate}</p>
+  )}
+</div>
 
               {/* Rental Period */}
-              <div>
+              {/* <div>
                 <label className="block mb-1 text-gray-700 font-medium">Rental Period (months)</label>
                 <input
                   type="number"
@@ -229,7 +282,28 @@ const today = new Date().toISOString().split("T")[0];
   <p className="text-red-600 text-sm mt-1">{errors.rentalPeriod}</p>
 )}
 
-              </div>
+              </div> */}
+              {/* Rental Period */}
+<div>
+  <label className="block mb-1 text-gray-700 font-medium">Rental Period (months)</label>
+  <input
+    type="number"
+    min={property.minLeasePeriod}
+    max={property.maxLeasePeriod}
+    className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+    value={rentalPeriod ?? ""}
+    onChange={(e) => {
+      setRentalPeriod(e.target.value ? Number(e.target.value) : null);
+      // Clear move-in date when rental period changes to force reselection
+      if (moveInDate) {
+        setMoveInDate("");
+      }
+    }}
+  />
+  {errors.rentalPeriod && (
+    <p className="text-red-600 text-sm mt-1">{errors.rentalPeriod}</p>
+  )}
+</div>
 
               {/* Guests */}
               <div>

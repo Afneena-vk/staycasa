@@ -100,4 +100,6 @@ createPendingBooking(input: {
 
 retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrderResponseDto>
 
+completeExpiredBookings(): Promise<void>
+
 }

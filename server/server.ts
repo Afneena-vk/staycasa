@@ -8,14 +8,17 @@ import app from "./src/app";
 
 import connectDB from "./src/config/db";
 import http from "http";
-
+import { startBookingCompletionJob } from './src/jobs/bookingCompletion.job';
 
 //const PORT = process.env.PORT || 5000;
 const PORT = process.env.PORT;
 
 const startServer = async () => {
   try {
-await connectDB(); 
+    await connectDB();
+
+    startBookingCompletionJob();
+
     const server = http.createServer(app); 
 
     

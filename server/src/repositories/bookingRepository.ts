@@ -523,5 +523,22 @@ async findAllWithQuery(options: FindByUserOptions) {
   return { bookings, total };
 }
 
+async markCompletedBookings(today: Date): Promise<number> {
+  const result = await Booking.updateMany(
+    {
+      bookingStatus: BookingStatus.Confirmed,
+      endDate: { $lt: today },
+      isCancelled: false,
+    },
+    {
+      $set: {
+        bookingStatus: BookingStatus.Completed,
+      },
+    }
+  );
+
+  return result.modifiedCount || 0;
+}
+
 
 }

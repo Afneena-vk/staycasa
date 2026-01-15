@@ -40,4 +40,5 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
       ): Promise<IBooking | null>
 
     findAllWithQuery(options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
+    markCompletedBookings(today: Date): Promise<number>
 }

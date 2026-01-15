@@ -730,4 +730,17 @@ async getBookingDetailsForAdmin(bookingId: string): Promise<BookingDetailsDto> {
   return BookingMapper.toBookingDetailsDto(booking);
 }
 
+async completeExpiredBookings(): Promise<void> {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const completedCount =
+    await this._bookingRepository.markCompletedBookings(today);
+
+  if (completedCount > 0) {
+    console.log(` ${completedCount} bookings marked as COMPLETED`);
+  }
+}
+
+
 }
