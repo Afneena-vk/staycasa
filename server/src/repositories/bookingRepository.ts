@@ -552,6 +552,8 @@ async getBookingStatusStatsByOwner(ownerId: string) {
       $group: {
         _id: "$bookingStatus",
         count: { $sum: 1 },
+        totalRevenue: { $sum: "$totalCost" },
+        refundedAmount: { $sum: "$refundAmount" } 
       },
     },
   ]);

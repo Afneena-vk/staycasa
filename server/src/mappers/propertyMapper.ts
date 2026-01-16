@@ -1,7 +1,7 @@
 import { IProperty } from '../models/propertyModel';
 import { PropertyResponseDto, CreatePropertyResponseDto, UpdatePropertyResponseDto } from '../dtos/property.dto';
 import { STATUS_CODES } from '../utils/constants';
-import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto,UserPropertyListResponseDto, CheckAvailabilityResponseDTO } from '../dtos/property.dto';
+import { AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto,UserPropertyListResponseDto, CheckAvailabilityResponseDTO, OwnerPropertyStatsDto } from '../dtos/property.dto';
 import { IOwner } from '../models/ownerModel';
 export class PropertyMapper {
   static toPropertyResponse(property: IProperty): PropertyResponseDto {
@@ -133,5 +133,21 @@ static toUserPropertyListResponse(
     return { available, message };
   }
 
+   static toOwnerPropertyStatsDto(stats: { _id: string; count: number }[]): OwnerPropertyStatsDto {
+    const result: OwnerPropertyStatsDto = {
+      active: 0,
+      pending: 0,
+      blocked: 0,
+      rejected: 0,
+    };
+
+    for (const item of stats) {
+      if (item._id in result) {
+        result[item._id as keyof OwnerPropertyStatsDto] = item.count;
+      }
+    }
+
+    return result;
+  }
 
 }

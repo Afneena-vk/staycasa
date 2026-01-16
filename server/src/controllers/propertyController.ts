@@ -320,6 +320,25 @@ async checkAvailability(req: Request, res: Response, next: NextFunction): Promis
   }
 }
 
+
+async getOwnerPropertyStats(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId = (req as any).userId;
+    const stats = await this._propertyService.getOwnerPropertyStats(ownerId);
+
+    res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      data: stats,
+    });
+  } catch (err: any) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      message: err.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+
 }
 
 

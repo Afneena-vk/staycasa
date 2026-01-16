@@ -201,6 +201,10 @@ export interface OwnerBookingStatsDTo {
   pending: number;
   cancelled: number;
   completed: number;
+    revenue: {
+    totalRevenue: number;
+    refundedAmount: number;
+  };
 }
 
 

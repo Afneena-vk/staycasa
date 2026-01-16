@@ -83,4 +83,11 @@ export const ownerService = {
     const response = await api.get(OWNER_API.WALLET);
     return response.data;
   },
+
+
+   fetchOwnerPropertyStats: async () => {
+    const res = await api.get(OWNER_API.PROPERTY_STATIS); 
+    return res.data.data; 
+  },
+
 };

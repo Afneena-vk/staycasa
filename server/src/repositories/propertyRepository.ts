@@ -5,6 +5,7 @@ import {
   IPropertyRepository,
   IPropertyListResult,DestinationDto
 } from "./interfaces/IPropertyRepository";
+import { Types } from "mongoose";
 
 
 
@@ -347,6 +348,14 @@ async getDestinations(
     }).populate("ownerId");
   }
 
+  
+
+async getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]> {
+  return this.model.aggregate([
+    { $match: { ownerId: new Types.ObjectId(ownerId) } },
+    { $group: { _id: "$status", count: { $sum: 1 } } }
+  ]);
+}
 
 
 }

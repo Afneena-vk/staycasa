@@ -20,6 +20,9 @@ export interface PropertySlice {
   totalPages: number;
   totalCount: number;
   currentPage: number;
+
+  ownerPropertyStats: { pending: number; active: number; blocked: number; rejected: number } | null;
+  fetchOwnerPropertyStats: () => Promise<void>;
   
   addProperty(propertyData: FormData): Promise<void>;
   getOwnerProperties(params?:any): Promise<void>;
@@ -56,6 +59,8 @@ export const createPropertySlice: StateCreator<
   totalPages: 1,
   totalCount: 0,
   currentPage: 1,
+
+  ownerPropertyStats: null,
 
   addProperty: async (propertyData: FormData) => {
     set({ isLoading: true, error: null });
@@ -390,6 +395,19 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
     set({ isLoading: false, error: errorMessage });
   }
 },
+
+
+  fetchOwnerPropertyStats: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const stats = await ownerService.fetchOwnerPropertyStats();
+      set({ ownerPropertyStats: stats, isLoading: false });
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.error || error.message || "Failed to fetch property stats";
+      set({ isLoading: false, error: errorMessage });
+    }
+  },
+
 
 
   clearError: () => {

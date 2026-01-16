@@ -12,12 +12,13 @@ import { useAuthStore } from "../../stores/authStore";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const COLORS = ["#38a169", "#ecc94b", "#e53e3e", "#4299e1"];
+const PROPERTY_COLORS = ["#ecc94b", "#38a169", "#e53e3e", "#718096"]; 
 
 const OwnerDashboard = () => {
   // const { userData, fetchOwnerBookingStats, ownerBookingStats } =
   //   useAuthStore();
 
-    const { userData, fetchOwnerBookingStatis, ownerBookingStatis } =
+    const { userData, fetchOwnerBookingStatis, ownerBookingStatis, ownerPropertyStats, fetchOwnerPropertyStats } =
     useAuthStore();
 
   const [loadingStats, setLoadingStats] = useState(false);
@@ -35,6 +36,7 @@ const OwnerDashboard = () => {
        // await fetchOwnerBookingStats();
            // full stats
         await fetchOwnerBookingStatis(); 
+        await fetchOwnerPropertyStats(); 
       } finally {
         if (mounted) setLoadingStats(false);
       }
@@ -80,6 +82,23 @@ const totalBookings = useMemo(() => {
   return confirmed + pending + cancelled + completed;
 }, [ownerBookingStatis]);
 
+const propertyPieData = useMemo(() => {
+  if (!ownerPropertyStats) {
+    return [
+      { name: "Pending", value: 0 },
+      { name: "Active", value: 0 },
+      { name: "Blocked", value: 0 },
+      { name: "Rejected", value: 0 },
+    ];
+  }
+
+  return [
+    { name: "Pending", value: ownerPropertyStats.pending },
+    { name: "Active", value: ownerPropertyStats.active },
+    { name: "Blocked", value: ownerPropertyStats.blocked },
+    { name: "Rejected", value: ownerPropertyStats.rejected },
+  ];
+}, [ownerPropertyStats]);
 
  
   // const stats = useMemo(() => {
@@ -208,10 +227,31 @@ const totalBookings = useMemo(() => {
       <FaCalendarAlt className="text-indigo-500 text-2xl" />
     </div>
   </div>
-          {/* Stats Cards */}
+       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
+  <div className="flex items-center justify-between">
+    <div>
+      <p className="text-sm text-slate-500">Total Revenue</p>
+      <p className="text-2xl font-bold">₹{ownerBookingStatis?.revenue?.totalRevenue || 0}</p>
+    </div>
+    <FaWallet className="text-purple-500 text-2xl" />
+  </div>
+</div>
+
+<div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
+  <div className="flex items-center justify-between">
+    <div>
+      <p className="text-sm text-slate-500">Refunded Amount</p>
+      <p className="text-2xl font-bold">₹{ownerBookingStatis?.revenue?.refundedAmount || 0}</p>
+    </div>
+    <FaWallet className="text-orange-500 text-2xl" />
+  </div>
+</div>
+  
 
         </div>
-         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 mb-8">
+          <div className="flex flex-col md:flex-row gap-6 mb-8">
+         {/* <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 mb-8"> */}
+           <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
           <h2 className="text-lg font-bold mb-4">Booking Status Overview</h2>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -234,6 +274,31 @@ const totalBookings = useMemo(() => {
             </PieChart>
           </ResponsiveContainer>
         </div>
+        {/* <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 mb-8"> */}
+        <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
+  <h2 className="text-lg font-bold mb-4">Property Status Overview</h2>
+  <ResponsiveContainer width="100%" height={300}>
+    <PieChart>
+      <Pie
+        data={propertyPieData}
+        dataKey="value"
+        nameKey="name"
+        cx="50%"
+        cy="50%"
+        outerRadius={100}
+        fill="#8884d8"
+        label
+      >
+        {propertyPieData.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={PROPERTY_COLORS[index % PROPERTY_COLORS.length]} />
+        ))}
+      </Pie>
+      <Tooltip />
+      <Legend verticalAlign="bottom" height={36} />
+    </PieChart>
+  </ResponsiveContainer>
+</div>
+</div>
       </div>
     </OwnerLayout>
   );

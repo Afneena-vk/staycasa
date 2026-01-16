@@ -1,4 +1,4 @@
-import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto } from '../../dtos/property.dto';
+import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto, OwnerPropertyStatsDto } from '../../dtos/property.dto';
 import { IProperty } from '../../models/propertyModel';
 export interface PropertyFilters {
   page?: number;
@@ -67,4 +67,6 @@ export interface IPropertyService {
     search?: string,
     page?: number,
     limit?: number): Promise<PaginatedDestinations> 
+
+    getOwnerPropertyStats(ownerId: string): Promise<OwnerPropertyStatsDto>
 }

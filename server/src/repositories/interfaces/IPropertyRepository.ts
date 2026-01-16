@@ -67,4 +67,7 @@ getOwnerProperties (ownerId: string,
     page?: number,
     limit?: number
   ): Promise<PaginatedDestinations>
+
+   getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]>;
+   
 }

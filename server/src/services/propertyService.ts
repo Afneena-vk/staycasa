@@ -3,7 +3,7 @@ import { DestinationDto, IPropertyService, UserPropertyFilters, PaginatedDestina
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
 import { TOKENS } from '../config/tokens';
-import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto, CheckAvailabilityRequestDTO, CheckAvailabilityResponseDTO } from '../dtos/property.dto';
+import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto, CheckAvailabilityRequestDTO, CheckAvailabilityResponseDTO, OwnerPropertyStatsDto } from '../dtos/property.dto';
 import { PropertyMapper } from '../mappers/propertyMapper';
 import { MESSAGES, STATUS_CODES } from '../utils/constants';
 import { PropertyStatus } from '../models/status/status';
@@ -483,5 +483,12 @@ async getDestinations(
   return destinations;
 
 }
+
+
+async getOwnerPropertyStats(ownerId: string): Promise<OwnerPropertyStatsDto> {
+  const stats = await this._propertyRepository.getPropertyStatusStatsByOwner(ownerId);
+  return PropertyMapper.toOwnerPropertyStatsDto(stats);
+}
+
 
 }

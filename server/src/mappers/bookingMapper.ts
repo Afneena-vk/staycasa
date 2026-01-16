@@ -4,6 +4,20 @@ import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto
 import { STATUS_CODES } from "../utils/constants";
 import { BookingStatus, PaymentStatus } from "../models/status/status";
 
+
+type AggregationResult = {
+  _id: string;
+  count: number;
+  totalRevenue?: number;
+  refundedAmount?: number;
+};
+
+type BookingStatusKey =
+  | "confirmed"
+  | "pending"
+  | "cancelled"
+  | "completed";
+
 export class BookingMapper {
   static toBookingResponse(booking: IBooking): BookingResponseDto {
     return {
@@ -259,7 +273,8 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
   }
 
   static toOwnerBookingStatsDTo(
-    stats: { _id: string; count: number }[]
+    // stats: { _id: string; count: number; totalRevenue?: number; refundedAmount?: number }[]
+    stats: AggregationResult[]
   ): OwnerBookingStatsDTo {
 
     const result: OwnerBookingStatsDTo = {
@@ -267,12 +282,28 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
       pending: 0,
       cancelled: 0,
       completed: 0,
+      revenue: {
+      totalRevenue: 0,
+      refundedAmount: 0,
+    },
     };
 
     for (const item of stats) {
-      if (item._id in result) {
-        result[item._id as keyof OwnerBookingStatsDTo] = item.count;
+      // if (item._id in result) {
+      //   result[item._id as keyof OwnerBookingStatsDTo] = item.count;
+      // }
+      if (
+        item._id === "confirmed" ||
+        item._id === "pending" ||
+        item._id === "cancelled" ||
+        item._id === "completed"
+      ) {
+        result[item._id as BookingStatusKey] = item.count;
       }
+
+      result.revenue.totalRevenue += item.totalRevenue || 0;
+      result.revenue.refundedAmount += item.refundedAmount || 0; 
+
     }
 
     return result;

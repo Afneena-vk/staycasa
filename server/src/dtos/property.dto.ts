@@ -136,3 +136,17 @@ export interface CheckAvailabilityResponseDTO {
   message: string;
 }
 
+export interface OwnerPropertyStatsDto {
+  active: number;
+  pending: number;
+  blocked: number;
+  rejected: number;
+}
+
+export interface OwnerPropertyStatsDto {
+  active: number;
+  pending: number;
+  blocked: number;
+  rejected: number;
+}
+
