@@ -196,6 +196,12 @@ export interface BookingListForAdminDto {
   totalPages: number;
 }
 
+export interface OwnerBookingStatsDTo {
+  confirmed: number;
+  pending: number;
+  cancelled: number;
+  completed: number;
+}
 
 
 

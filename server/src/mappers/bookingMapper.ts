@@ -1,6 +1,6 @@
 import { IBooking } from "../models/bookingModel";
 import { IProperty } from "../models/propertyModel";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto} from "../dtos/booking.dto";
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto , BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto, OwnerBookingStatsDTo} from "../dtos/booking.dto";
 import { STATUS_CODES } from "../utils/constants";
 import { BookingStatus, PaymentStatus } from "../models/status/status";
 
@@ -258,6 +258,24 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
     };
   }
 
+  static toOwnerBookingStatsDTo(
+    stats: { _id: string; count: number }[]
+  ): OwnerBookingStatsDTo {
 
+    const result: OwnerBookingStatsDTo = {
+      confirmed: 0,
+      pending: 0,
+      cancelled: 0,
+      completed: 0,
+    };
+
+    for (const item of stats) {
+      if (item._id in result) {
+        result[item._id as keyof OwnerBookingStatsDTo] = item.count;
+      }
+    }
+
+    return result;
+  }
 
 }

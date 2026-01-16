@@ -116,12 +116,6 @@ ownerRoutes.get(
   bookingController.getOwnerBookingDetails.bind(bookingController)
 );
 
-ownerRoutes.get(
-  "/dashboard/stats",
-  authMiddleware(["owner"]),
-  checkUserStatus,
-  bookingController.getOwnerBookingStats.bind(bookingController)
-);
 
 ownerRoutes.post(
   "/bookings/:bookingId/cancel",
@@ -130,5 +124,13 @@ ownerRoutes.post(
   bookingController.ownerCancelBooking.bind(bookingController)
 
 )
+
+ownerRoutes.get(
+  "/dashboard/statis",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  bookingController.getOwnerBookingStats.bind(bookingController)
+);
+
 
 export default ownerRoutes

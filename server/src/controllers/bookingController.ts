@@ -334,30 +334,7 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     }
   }
 
-  async getOwnerBookingStats(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const ownerId = (req as any).userId;
 
-      const stats = await this._bookingService.getOwnerBookingStatistics(
-        ownerId
-      );
-
-      res.status(STATUS_CODES.OK).json({
-        status: STATUS_CODES.OK,
-        stats,
-      });
-    } catch (err: any) {
-      console.error("Error fetching owner booking stats:", err);
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        message: err.message || "Failed to fetch owner booking statistics",
-      });
-    }
-  }
 
   async getBookingOverview(
     req: Request,
@@ -504,4 +481,28 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
       });
     }
   }
+
+async getOwnerBookingStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const ownerId = (req as any).userId;
+
+    const stats = await this._bookingService.getOwnerBookingStats(ownerId);
+
+    res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      data: stats,
+    });
+  } catch (err: any) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      message: err.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
+
 }

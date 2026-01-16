@@ -1,5 +1,5 @@
 import { IBooking } from "../../models/bookingModel";
-import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto} from "../../dtos/booking.dto";
+import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto, OwnerBookingStatsDTo} from "../../dtos/booking.dto";
 
 export interface IRazorpayOrderInput {
   propertyId: string;
@@ -49,6 +49,8 @@ export interface UserBookingsQueryOptions {
 }
 
 
+
+
 export interface IBookingService {
 
 calculateTotal(propertyId: string, rentalPeriod: number): Promise<CalculateTotalResponseDto>;   
@@ -76,7 +78,7 @@ getOwnerBookingsWithQuery(
   query: UserBookingsQueryOptions
 ) : Promise<{ bookings: BookingListItemDto[]; total: number; page: number; limit: number,  totalPages: number }>;
 
-getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto>
+// getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto>
 
 getBookingOverview(): Promise<number> 
 
@@ -101,5 +103,8 @@ createPendingBooking(input: {
 retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrderResponseDto>
 
 completeExpiredBookings(): Promise<void>
+
+getOwnerBookingStats(ownerId: string): Promise<OwnerBookingStatsDTo>;
+
 
 }

@@ -9,9 +9,15 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
+const COLORS = ["#38a169", "#ecc94b", "#e53e3e", "#4299e1"];
 
 const OwnerDashboard = () => {
-  const { userData, fetchOwnerBookingStats, ownerBookingStats } =
+  // const { userData, fetchOwnerBookingStats, ownerBookingStats } =
+  //   useAuthStore();
+
+    const { userData, fetchOwnerBookingStatis, ownerBookingStatis } =
     useAuthStore();
 
   const [loadingStats, setLoadingStats] = useState(false);
@@ -26,7 +32,9 @@ const OwnerDashboard = () => {
     const loadStats = async () => {
       setLoadingStats(true);
       try {
-        await fetchOwnerBookingStats();
+       // await fetchOwnerBookingStats();
+           // full stats
+        await fetchOwnerBookingStatis(); 
       } finally {
         if (mounted) setLoadingStats(false);
       }
@@ -39,61 +47,96 @@ const OwnerDashboard = () => {
     };
   }, [userData]);
 
- 
-  const stats = useMemo(() => {
-    if (!ownerBookingStats) return [];
-
+  //   const pieData = useMemo(() => {
+  //   if (!ownerBookingStatis) return [];
+  //   return [
+  //     { name: "Confirmed", value: ownerBookingStatis.confirmed },
+  //     { name: "Pending", value: ownerBookingStatis.pending },
+  //     { name: "Cancelled", value: ownerBookingStatis.cancelled },
+  //     { name: "Completed", value: ownerBookingStatis.completed },
+  //   ];
+  // }, [ownerBookingStatis]);
+const pieData = useMemo(() => {
+  if (!ownerBookingStatis) {
     return [
-      {
-        title: "Total Bookings",
-        value: ownerBookingStats.totalBookings,
-        icon: <FaCalendarAlt />,
-        color: "from-indigo-500 to-indigo-700",
-      },
-      {
-        title: "Upcoming Bookings",
-        value: ownerBookingStats.bookingsByTimeline.upcoming,
-        icon: <FaClock />,
-        color: "from-blue-500 to-blue-700",
-      },
-      {
-        title: "Ongoing Bookings",
-        value: ownerBookingStats.bookingsByTimeline.ongoing,
-        icon: <FaCalendarAlt />,
-        color: "from-emerald-500 to-emerald-700",
-      },
-      {
-        title: "Past Bookings",
-        value: ownerBookingStats.bookingsByTimeline.past,
-        icon: <FaCalendarAlt />,
-        color: "from-slate-500 to-slate-700",
-      },
-      {
-        title: "Confirmed Bookings",
-        value: ownerBookingStats.bookingsByStatus.confirmed,
-        icon: <FaCheckCircle />,
-        color: "from-green-500 to-green-700",
-      },
-      {
-        title: "Cancelled Bookings",
-        value: ownerBookingStats.bookingsByStatus.cancelled,
-        icon: <FaTimesCircle />,
-        color: "from-red-500 to-red-700",
-      },
-      {
-        title: "Total Revenue",
-        value: `₹${ownerBookingStats.revenue.totalRevenue}`,
-        icon: <FaWallet />,
-        color: "from-purple-500 to-purple-700",
-      },
-      {
-        title: "Refunded Amount",
-        value: `₹${ownerBookingStats.revenue.refundedAmount}`,
-        icon: <FaWallet />,
-        color: "from-orange-500 to-orange-700",
-      },
+      { name: "Confirmed", value: 0 },
+      { name: "Pending", value: 0 },
+      { name: "Cancelled", value: 0 },
+      { name: "Completed", value: 0 },
     ];
-  }, [ownerBookingStats]);
+  }
+  return [
+    { name: "Confirmed", value: ownerBookingStatis.confirmed },
+    { name: "Pending", value: ownerBookingStatis.pending },
+    { name: "Cancelled", value: ownerBookingStatis.cancelled },
+    { name: "Completed", value: ownerBookingStatis.completed },
+  ];
+}, [ownerBookingStatis]);
+
+const totalBookings = useMemo(() => {
+  if (!ownerBookingStatis) return 0;
+
+  const { confirmed, pending, cancelled, completed } = ownerBookingStatis;
+  return confirmed + pending + cancelled + completed;
+}, [ownerBookingStatis]);
+
+
+ 
+  // const stats = useMemo(() => {
+  //   // if (!ownerBookingStats) return [];
+  //      if (!ownerBookingStatis) return [];
+
+  //   return [
+  //     {
+  //       title: "Total Bookings",
+  //       value: ownerBookingStats.totalBookings,
+  //       icon: <FaCalendarAlt />,
+  //       color: "from-indigo-500 to-indigo-700",
+  //     },
+  //     {
+  //       title: "Upcoming Bookings",
+  //       value: ownerBookingStats.bookingsByTimeline.upcoming,
+  //       icon: <FaClock />,
+  //       color: "from-blue-500 to-blue-700",
+  //     },
+  //     {
+  //       title: "Ongoing Bookings",
+  //       value: ownerBookingStats.bookingsByTimeline.ongoing,
+  //       icon: <FaCalendarAlt />,
+  //       color: "from-emerald-500 to-emerald-700",
+  //     },
+  //     {
+  //       title: "Past Bookings",
+  //       value: ownerBookingStats.bookingsByTimeline.past,
+  //       icon: <FaCalendarAlt />,
+  //       color: "from-slate-500 to-slate-700",
+  //     },
+  //     {
+  //       title: "Confirmed Bookings",
+  //       value: ownerBookingStats.bookingsByStatus.confirmed,
+  //       icon: <FaCheckCircle />,
+  //       color: "from-green-500 to-green-700",
+  //     },
+  //     {
+  //       title: "Cancelled Bookings",
+  //       value: ownerBookingStats.bookingsByStatus.cancelled,
+  //       icon: <FaTimesCircle />,
+  //       color: "from-red-500 to-red-700",
+  //     },
+  //     {
+  //       title: "Total Revenue",
+  //       value: `₹${ownerBookingStats.revenue.totalRevenue}`,
+  //       icon: <FaWallet />,
+  //       color: "from-purple-500 to-purple-700",
+  //     },
+  //     {
+  //       title: "Refunded Amount",
+  //       value: `₹${ownerBookingStats.revenue.refundedAmount}`,
+  //       icon: <FaWallet />,
+  //       color: "from-orange-500 to-orange-700",
+  //     },
+  //   ];
+  // }, [ownerBookingStats]);
 
   return (
     <OwnerLayout>
@@ -156,28 +199,40 @@ const OwnerDashboard = () => {
               )}
             </div>
           </div>
-
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-slate-500">Total Bookings</p>
+        <p className="text-2xl font-bold">{totalBookings}</p>
+      </div>
+      <FaCalendarAlt className="text-indigo-500 text-2xl" />
+    </div>
+  </div>
           {/* Stats Cards */}
-          {stats.map((stat, idx) => (
-            <div
-              key={idx}
-              className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-5 flex items-center space-x-4 border border-slate-200 dark:border-slate-700"
-            >
-              <div
-                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center text-white`}
+
+        </div>
+         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-6 mb-8">
+          <h2 className="text-lg font-bold mb-4">Booking Status Overview</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label
               >
-                {stat.icon}
-              </div>
-              <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {stat.title}
-                </p>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {loadingStats ? "—" : stat.value}
-                </h2>
-              </div>
-            </div>
-          ))}
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </OwnerLayout>

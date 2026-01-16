@@ -541,4 +541,21 @@ async markCompletedBookings(today: Date): Promise<number> {
 }
 
 
+async getBookingStatusStatsByOwner(ownerId: string) {
+  return Booking.aggregate([
+    {
+      $match: {
+        ownerId: new mongoose.Types.ObjectId(ownerId),
+      },
+    },
+    {
+      $group: {
+        _id: "$bookingStatus",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+}
+
+
 }

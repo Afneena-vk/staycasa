@@ -153,3 +153,12 @@ export interface OwnerBookingStatsDto {
     failed: number;
   };
 }
+
+
+export interface OwnerBookingStatisDTo {
+  confirmed: number;
+  pending: number;
+  cancelled: number;
+  completed: number;
+}
+

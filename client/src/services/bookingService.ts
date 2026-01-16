@@ -38,9 +38,14 @@ export const bookingService = {
         return res.data;
       },
 
-      fetchOwnerBookingStats: async () => {
-        const res = await api.get(OWNER_API.BOOKING_STATS);
-        return res.data.stats;
+      // fetchOwnerBookingStats: async () => {
+      //   const res = await api.get(OWNER_API.BOOKING_STATS);
+      //   return res.data.stats;
+      // },
+
+       fetchOwnerBookingStatis: async () => {
+        const res = await api.get(OWNER_API.BOOKING_STATIS);
+        return res.data.data;
       },
     
       fetchAdminBookingOverview: async () => {

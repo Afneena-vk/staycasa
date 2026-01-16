@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { BookingDTO , BookingDetailsDTO, BookingQuery, OwnerBookingStatsDto} from "../../types/booking";
+import { BookingDTO , BookingDetailsDTO, BookingQuery, OwnerBookingStatsDto,OwnerBookingStatisDTo} from "../../types/booking";
 import { paymentService } from "../../services/paymentService";
 import { bookingService } from "../../services/bookingService";
 
@@ -69,8 +69,11 @@ export interface BookingState {
   fetchBookings: (query?: BookingQuery) => Promise<void>;
   fetchOwnerBookings: () => Promise<void>;
   fetchBookingDetailsForOwner: (bookingId: string) => Promise<void>;
-  ownerBookingStats: OwnerBookingStatsDto | null;
-  fetchOwnerBookingStats: () => Promise<void>;  
+  // ownerBookingStats: OwnerBookingStatsDto | null;
+  ownerBookingStatis: OwnerBookingStatisDTo | null;
+
+  // fetchOwnerBookingStats: () => Promise<void>;  
+  fetchOwnerBookingStatis: () => Promise<void>;  
   adminTotalBookingsCount: number | null; 
   fetchAdminTotalBookingsCount: () => Promise<void>;
   fetchAdminBookings: () => Promise<void>;
@@ -81,8 +84,10 @@ export interface BookingState {
 
 export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
   bookingData: null,
-  ownerBookingStats: null,
+  // ownerBookingStats: null,
+  ownerBookingStatis: null,
   adminTotalBookingsCount: null,
+
 
   setBookingData: (data) => set({ bookingData: data }),
   clearBookingData: () => set({ bookingData: null }),
@@ -221,20 +226,7 @@ fetchOwnerBookings: async () => {
     }
   },
 
-   fetchOwnerBookingStats: async() =>{
-       set({ isLoading: true, error: null });
-       try {
-        
-          const stats = await bookingService.fetchOwnerBookingStats();
-           set({ ownerBookingStats: stats, isLoading: false });
-       } catch (err:any) {
-        set({
-        ownerBookingStats: null,
-        isLoading: false,
-        error: err.response?.data?.message || err.message || "Failed to fetch stats",
-      });
-    }
-  },
+
 
   fetchAdminTotalBookingsCount: async () => {
     set({ isLoading: true, error: null });
@@ -383,5 +375,20 @@ fetchRetryPayment: async (bookingId: string) => {
     throw error;
   }
 },
+
+fetchOwnerBookingStatis: async() =>{
+  set({ isLoading: true, error: null });
+  try {
+    const stats = await bookingService.fetchOwnerBookingStatis();
+    set({ ownerBookingStatis: stats, isLoading: false });
+  } catch (err:any) {
+    set({
+      ownerBookingStatis: null,
+      isLoading: false,
+      error: err.response?.data?.message || err.message || "Failed to fetch stats",
+    });
+  }
+},
+
 
 });

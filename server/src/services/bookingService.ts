@@ -10,7 +10,7 @@ import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
-import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto} from '../dtos/booking.dto';
+import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto, OwnerBookingStatsDTo} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
@@ -488,51 +488,51 @@ async getOwnerBookingDetails(
   return BookingMapper.toBookingDetailsDto(booking);
 }
 
-async getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto> {
+// async getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto> {
 
-  const [allBookings,upcoming,ongoing,past,confirmedPaid,cancelled] = await Promise.all([
+//   const [allBookings,upcoming,ongoing,past,confirmedPaid,cancelled] = await Promise.all([
 
-       this._bookingRepository.findAllByOwner(ownerId),
-       this._bookingRepository.findOwnerBookingsByDate(ownerId, "upcoming"),
-       this._bookingRepository.findOwnerBookingsByDate(ownerId, "ongoing"),
-       this._bookingRepository.findOwnerBookingsByDate(ownerId, "past"),
-       this._bookingRepository.findConfirmedPaidBookingsByOwner(ownerId),
-       this._bookingRepository.findCancelledBookingsByOwner(ownerId)
-  ])
+//        this._bookingRepository.findAllByOwner(ownerId),
+//        this._bookingRepository.findOwnerBookingsByDate(ownerId, "upcoming"),
+//        this._bookingRepository.findOwnerBookingsByDate(ownerId, "ongoing"),
+//        this._bookingRepository.findOwnerBookingsByDate(ownerId, "past"),
+//        this._bookingRepository.findConfirmedPaidBookingsByOwner(ownerId),
+//        this._bookingRepository.findCancelledBookingsByOwner(ownerId)
+//   ])
 
-const bookingsByStatus = allBookings.reduce((acc, b)=>{
-   acc[b.bookingStatus] = (acc[b.bookingStatus] || 0) + 1;
-   return acc;
-},{} as Record<BookingStatus, number>);
+// const bookingsByStatus = allBookings.reduce((acc, b)=>{
+//    acc[b.bookingStatus] = (acc[b.bookingStatus] || 0) + 1;
+//    return acc;
+// },{} as Record<BookingStatus, number>);
 
 
-  const revenue = {
-    totalRevenue: confirmedPaid.reduce((sum,b)=>sum+b.totalCost,0),
-    refundedAmount: cancelled.reduce((sum, b) => sum + (b.refundAmount || 0), 0),
+//   const revenue = {
+//     totalRevenue: confirmedPaid.reduce((sum,b)=>sum+b.totalCost,0),
+//     refundedAmount: cancelled.reduce((sum, b) => sum + (b.refundAmount || 0), 0),
 
-  }
+//   }
 
-  const paymentStats = allBookings.reduce((acc,b)=>{
-    acc[b.paymentStatus] =(acc[b.paymentStatus] || 0)+1;
-    return acc;
+//   const paymentStats = allBookings.reduce((acc,b)=>{
+//     acc[b.paymentStatus] =(acc[b.paymentStatus] || 0)+1;
+//     return acc;
 
-  }, {} as Record<PaymentStatus, number>)
+//   }, {} as Record<PaymentStatus, number>)
 
-    const stats = {
-    totalBookings: allBookings.length,
-    bookingsByStatus,
-    bookingsByTimeline: {
-      upcoming: upcoming.length,
-      ongoing: ongoing.length,
-      past: past.length,
-    },
-    revenue,
-    paymentStats,
-  };
+//     const stats = {
+//     totalBookings: allBookings.length,
+//     bookingsByStatus,
+//     bookingsByTimeline: {
+//       upcoming: upcoming.length,
+//       ongoing: ongoing.length,
+//       past: past.length,
+//     },
+//     revenue,
+//     paymentStats,
+//   };
  
-  return BookingMapper.toOwnerBookingStatsDto(stats);
+//   return BookingMapper.toOwnerBookingStatsDto(stats);
 
-}
+// }
 
 async getBookingOverview(): Promise<number> {
   const totalCount= await this._bookingRepository.countAllConfirmedBookings();
@@ -740,6 +740,13 @@ async completeExpiredBookings(): Promise<void> {
   if (completedCount > 0) {
     console.log(` ${completedCount} bookings marked as COMPLETED`);
   }
+}
+
+async getOwnerBookingStats(ownerId: string): Promise<OwnerBookingStatsDTo> {
+  const stats =
+    await this._bookingRepository.getBookingStatusStatsByOwner(ownerId);
+
+  return BookingMapper.toOwnerBookingStatsDTo(stats);
 }
 
 
