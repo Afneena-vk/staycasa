@@ -12,6 +12,7 @@ import { IUser } from "../models/userModel";
 import { UserMapper } from "../mappers/userMapper";
 import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, UserProfileResponseDto, ChangePasswordResponseDto } from "../dtos/user.dto";
 import { Types } from 'mongoose';
+import { ITransaction } from '../models/walletModel';
 
 @injectable()
 export class UserService implements IUserService {
@@ -391,30 +392,69 @@ async changePassword(userId: string, currentPassword: string, newPassword: strin
   };
 }
 
-async getWallet(userId: string) {
+// async getWallet(userId: string) {
   
-const wallet = await this._walletRepository.getWalletWithBookings(new Types.ObjectId(userId),"user");
+// const wallet = await this._walletRepository.getWalletWithBookings(new Types.ObjectId(userId),"user");
+
+//   if (!wallet) {
+//     return {
+//       balance: 0,
+//       transactions: [],
+//     };
+//   }
+
+//     const validTransactions = wallet.transactions.filter(
+//     (tx) => tx.bookingId !== null
+//   );
+// const balance = validTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+//   return {
+//     // balance: wallet.balance,
+//     balance,
+//     // transactions: wallet.transactions.sort(
+//       transactions: validTransactions.sort(
+//       (a, b) => b.date.getTime() - a.date.getTime()
+//     ),
+//   };
+// }
+
+
+async getWallet(ownerId: string, page: number, limit: number): Promise<{
+  balance: number;
+  transactions: ITransaction[];
+  totalTransactions: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> {
+  const wallet = await this._walletRepository.getWalletWithBookings(
+    new Types.ObjectId(ownerId),
+    "user",
+    page,
+    limit
+  );
 
   if (!wallet) {
     return {
       balance: 0,
       transactions: [],
+      totalTransactions: 0,
+      page,
+      limit,
+      totalPages: 0,
     };
   }
 
-    const validTransactions = wallet.transactions.filter(
-    (tx) => tx.bookingId !== null
-  );
-const balance = validTransactions.reduce((sum, tx) => sum + tx.amount, 0);
   return {
-    // balance: wallet.balance,
-    balance,
-    // transactions: wallet.transactions.sort(
-      transactions: validTransactions.sort(
-      (a, b) => b.date.getTime() - a.date.getTime()
-    ),
+    balance: wallet.balance,
+    transactions: wallet.transactions,
+    totalTransactions: wallet.totalTransactions,
+    page,
+    limit,
+    totalPages: Math.ceil(wallet.totalTransactions / limit),
   };
 }
+
+
 
    
 }

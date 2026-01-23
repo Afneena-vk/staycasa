@@ -1,7 +1,8 @@
 
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import { AuthType } from "../../stores/slices/authSlice";
+//import { AuthType } from "../../stores/slices/authSlice";
+import { AuthType } from "../../types/auth";
 import { useEffect } from "react";  
 
 interface ProtectedRouteProps {

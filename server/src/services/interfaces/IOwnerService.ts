@@ -38,6 +38,14 @@ export interface OwnerSignupData {
 
   changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
 
-  getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
+  //getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
 
+  getWallet(ownerId: string, page: number, limit: number): Promise<{
+  balance: number;
+  transactions: ITransaction[];
+  totalTransactions: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}>
 }

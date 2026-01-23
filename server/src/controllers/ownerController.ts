@@ -346,8 +346,11 @@ export class OwnerController implements IOwnerController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const ownerId = (req as any).userId;
-      const result = await this._ownerService.getWallet(ownerId);
+    const ownerId = (req as any).userId;
+    const page = parseInt(req.query.page as string) || 1; 
+    const limit = parseInt(req.query.limit as string) || 10;
+    const result = await this._ownerService.getWallet(ownerId, page, limit);
+      // const result = await this._ownerService.getWallet(ownerId);
 
       res.status(STATUS_CODES.OK).json(result);
     } catch (error: any) {

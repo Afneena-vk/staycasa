@@ -79,10 +79,15 @@ export const ownerService = {
     return response.data;
   },
 
-  getOwnerWallet: async () => {
-    const response = await api.get(OWNER_API.WALLET);
-    return response.data;
-  },
+  // getOwnerWallet: async () => {
+  //   const response = await api.get(OWNER_API.WALLET);
+  //   return response.data;
+  // },
+
+getOwnerWallet: async (page = 1, limit = 10) => {
+  const response = await api.get(OWNER_API.WALLET, { params: { page, limit } });
+  return response.data;
+},
 
 
    fetchOwnerPropertyStats: async () => {

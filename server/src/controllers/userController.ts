@@ -425,10 +425,16 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const ownerId = (req as any).userId;
-      const result = await this._userService.getWallet(ownerId);
+      // const ownerId = (req as any).userId;
+      // const result = await this._userService.getWallet(ownerId);
+    const userId = (req as any).userId;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 6;
 
-      res.status(STATUS_CODES.OK).json(result);
+    const result = await this._userService.getWallet(userId, page, limit);
+      
+    res.status(STATUS_CODES.OK).json(result);
+
     } catch (error: any) {
       res.status(error.status || 500).json({
         message: error.message,

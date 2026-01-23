@@ -7,18 +7,22 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const UserWallet = () => {
   const [wallet, setWallet] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(6);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const data = await userService.getUserWallet();
+        const data = await userService.getUserWallet(page, limit);
         setWallet(data);
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Failed to fetch wallet", error);
       }
     };
     fetchWallet();
-  }, []);
+  }, [page]);
 
   if (!wallet)
     return (
@@ -93,6 +97,24 @@ const UserWallet = () => {
             ))
           )}
         </div>
+        <div className="flex justify-center mt-6 gap-2">
+  <button
+    disabled={page <= 1}
+    onClick={() => setPage(prev => prev - 1)}
+    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Previous
+  </button>
+  <span className="px-2 py-2">{page} / {totalPages}</span>
+  <button
+    disabled={page >= totalPages}
+    onClick={() => setPage(prev => prev + 1)}
+    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
       </main>
 
       <Footer />
@@ -101,112 +123,3 @@ const UserWallet = () => {
 };
 
 export default UserWallet;
-
-// import { useEffect, useState } from "react";
-// import { userService } from "../../services/userService";
-// import Header from "../../components/User/Header";
-// import Footer from "../../components/User/Footer";
-// import { FaArrowUp, FaArrowDown } from "react-icons/fa";
-
-// const UserWallet = () => {
-//   const [wallet, setWallet] = useState<any>(null);
-
-//   useEffect(() => {
-//     const fetchWallet = async () => {
-//       try {
-//         const data = await userService.getUserWallet();
-//         setWallet(data);
-//       } catch (error) {
-//         console.error("Failed to fetch wallet", error);
-//       }
-//     };
-//     fetchWallet();
-//   }, []);
-
-//   if (!wallet)
-//     return (
-//       <div className="min-h-screen flex flex-col">
-//         <Header />
-//         <div className="flex-1 flex items-center justify-center text-gray-500">
-//           Loading Wallet...
-//         </div>
-//         <Footer />
-//       </div>
-//     );
-
-//   return (
-//     <div className="flex flex-col min-h-screen bg-gray-50">
-//       <Header />
-
-//       {/* Main Content */}
-//       <main className="flex-1 p-4 md:p-10 max-w-6xl mx-auto">
-//         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
-//           My Wallet
-//         </h1>
-
-//         {/* Wallet Balance */}
-//         <div className="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl p-8 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-//           <div>
-//             <p className="text-sm font-medium uppercase opacity-75">Current Balance</p>
-//             <h2 className="text-3xl md:text-4xl font-bold mt-2">₹{wallet.balance}</h2>
-//           </div>
-//           <div className="mt-4 md:mt-0 text-sm opacity-75">Updated just now</div>
-//         </div>
-
-//         {/* Transactions */}
-//         <div className="bg-white rounded-xl shadow-lg p-6">
-//           <h2 className="text-xl md:text-2xl font-semibold text-gray-700 mb-4">
-//             Transactions
-//           </h2>
-
-//           {wallet.transactions.length === 0 ? (
-//             <p className="text-gray-500 text-center py-10">
-//               No transactions yet
-//             </p>
-//           ) : (
-//             <ul className="divide-y divide-gray-200">
-//               {wallet.transactions.map((tx: any) => (
-//                 <li
-//                   key={tx._id}
-//                   className="flex flex-col md:flex-row justify-between items-start md:items-center py-4 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-//                 >
-//                   <div className="flex flex-col">
-//                     <p className="font-medium text-gray-800">
-//                       {tx.description || tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
-//                     </p>
-//                     <p className="text-sm text-gray-500">
-//                       {new Date(tx.date).toLocaleString()}
-//                     </p>
-//                     {tx.bookingId && (
-//                       <p className="text-xs text-gray-400">
-//                         Booking: {tx.bookingId.bookingId}
-//                       </p>
-//                     )}
-//                   </div>
-//                   <div className="flex items-center gap-2 mt-2 md:mt-0">
-//                     {tx.type === "credit" ? (
-//                       <FaArrowDown className="text-green-500" />
-//                     ) : (
-//                       <FaArrowUp className="text-red-500" />
-//                     )}
-//                     <span
-//                       className={`font-semibold ${
-//                         tx.type === "credit" ? "text-green-600" : "text-red-600"
-//                       }`}
-//                     >
-//                       {tx.type === "credit" ? "+" : "-"}₹{tx.amount}
-//                     </span>
-//                   </div>
-//                 </li>
-//               ))}
-//             </ul>
-//           )}
-//         </div>
-//       </main>
-
-//       <Footer />
-//     </div>
-//   );
-// };
-
-// export default UserWallet;

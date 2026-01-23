@@ -29,6 +29,14 @@ export interface SignupData {
     updateUserProfile(userId: string, data: UserProfileUpdateDto): Promise<UserProfileResponseDto>;
     updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto>;
     changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
-    getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
+    //getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
+    getWallet(ownerId: string, page: number, limit: number): Promise<{
+      balance: number;
+      transactions: ITransaction[];
+      totalTransactions: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+     }>
   }
   

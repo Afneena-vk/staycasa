@@ -8,18 +8,23 @@ import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const OwnerWallet = () => {
   const [wallet, setWallet] = useState<any>(null);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(6); 
+const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchWallet = async () => {
       try {
-        const data = await ownerService.getOwnerWallet();
+        // const data = await ownerService.getOwnerWallet();
+         const data = await ownerService.getOwnerWallet(page, limit);
         setWallet(data);
+         setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Failed to fetch wallet", error);
       }
     };
     fetchWallet();
-  }, []);
+  }, [page]);
 
   if (!wallet)
     return <p className="p-6 text-gray-500 text-center">Loading...</p>;
@@ -99,6 +104,24 @@ const OwnerWallet = () => {
             </ul>
           )}
         </div>
+        <div className="flex justify-center mt-4 gap-2">
+  <button
+    disabled={page <= 1}
+    onClick={() => setPage(prev => prev - 1)}
+    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Previous
+  </button>
+  <span className="px-2 py-2">{page} / {totalPages}</span>
+  <button
+    disabled={page >= totalPages}
+    onClick={() => setPage(prev => prev + 1)}
+    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+  >
+    Next
+  </button>
+</div>
+
       </div>
     </div>
   );

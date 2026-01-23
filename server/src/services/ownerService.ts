@@ -14,6 +14,7 @@ import { OwnerMapper } from "../mappers/ownerMapper";
 import { OwnerLoginResponseDto, OwnerProfileResponseDto, OwnerProfileUpdateDto, ChangePasswordResponseDto } from "../dtos/owner.dto";
 import { cloudinary } from '../config/cloudinary';
 import { Types } from "mongoose";
+import { ITransaction } from '../models/walletModel';
 
 @injectable()
 
@@ -363,24 +364,44 @@ async changePassword(ownerId: string, currentPassword: string, newPassword: stri
 }
 
 
-async getWallet(ownerId: string) {
-  //const wallet = await this._walletRepository.findOne({ userId: ownerId });
-const wallet = await this._walletRepository.getWalletWithBookings(new Types.ObjectId(ownerId),"owner");
+
+
+async getWallet(ownerId: string, page: number, limit: number): Promise<{
+  balance: number;
+  transactions: ITransaction[];
+  totalTransactions: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}> {
+  const wallet = await this._walletRepository.getWalletWithBookings(
+    new Types.ObjectId(ownerId),
+    "owner",
+    page,
+    limit
+  );
 
   if (!wallet) {
     return {
       balance: 0,
       transactions: [],
+      totalTransactions: 0,
+      page,
+      limit,
+      totalPages: 0,
     };
   }
 
   return {
     balance: wallet.balance,
-    transactions: wallet.transactions.sort(
-      (a, b) => b.date.getTime() - a.date.getTime()
-    ),
+    transactions: wallet.transactions,
+    totalTransactions: wallet.totalTransactions,
+    page,
+    limit,
+    totalPages: Math.ceil(wallet.totalTransactions / limit),
   };
 }
+
 
 }
 

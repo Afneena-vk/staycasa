@@ -52,17 +52,51 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
 }
 
 
+// async getWalletWithBookings(
+//   userId:Types.ObjectId,
+//   userType: "user" | "owner"
+// ): Promise<IWallet | null> {
+//   return await this.model
+//   .findOne({userId,userType})
+//   .populate({
+//     path: "transactions.bookingId",
+//     select: "bookingId propertyId totalCost bookingStatus createdAt"
+//   })
+//   .exec();
+// }
+
 async getWalletWithBookings(
-  userId:Types.ObjectId,
-  userType: "user" | "owner"
-): Promise<IWallet | null> {
-  return await this.model
-  .findOne({userId,userType})
-  .populate({
-    path: "transactions.bookingId",
-    select: "bookingId propertyId totalCost bookingStatus createdAt"
-  })
-  .exec();
+  userId: Types.ObjectId,
+  userType: "user" | "owner",
+  page: number,
+  limit: number
+): Promise<{ balance: number; transactions: ITransaction[]; totalTransactions: number } | null> {
+  
+  
+  const wallet = await this.model
+    .findOne({ userId, userType })
+    .populate({
+      path: "transactions.bookingId",
+      select: "bookingId propertyId totalCost bookingStatus createdAt",
+    })
+    .lean(); 
+
+  if (!wallet) return null;
+
+  
+  const sortedTransactions = wallet.transactions.sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  const start = (page - 1) * limit;
+  const paginatedTransactions = sortedTransactions.slice(start, start + limit);
+
+  return {
+    balance: wallet.balance,
+    transactions: paginatedTransactions,
+    totalTransactions: wallet.transactions.length,
+  };
 }
+
 
 }

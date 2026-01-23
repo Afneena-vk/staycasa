@@ -89,8 +89,8 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
   return response.data; 
 },
 
-  getUserWallet: async () => {
-    const response = await api.get(USER_API.WALLET);
+  getUserWallet: async (page = 1, limit = 6) => {
+    const response = await api.get(USER_API.WALLET, { params: { page, limit } });
     return response.data;
   },
 
