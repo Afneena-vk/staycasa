@@ -534,10 +534,10 @@ async getOwnerBookingDetails(
 
 // }
 
-async getBookingOverview(): Promise<number> {
-  const totalCount= await this._bookingRepository.countAllConfirmedBookings();
-  return totalCount;
-}
+// async getBookingOverview(): Promise<number> {
+//   const totalCount= await this._bookingRepository.countAllConfirmedBookings();
+//   return totalCount;
+// }
 
 async userCancellBooking(
   bookingId:string,

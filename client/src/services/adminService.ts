@@ -133,8 +133,13 @@ export const adminService = {
     return response.data;
   },
 
-  adminUserStatistics: async()=> {
-  const response = await api.get(ADMIN_API.USER_STATISTICS);
+
+
+adminDashboardStats: async () => {
+  const response = await api.get(ADMIN_API.DASHBOARD_STATS);
   return response.data.data;
-  }
+}
+
+
+
 };

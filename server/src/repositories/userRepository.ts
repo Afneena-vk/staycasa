@@ -33,6 +33,17 @@ async getUserStatistics(): Promise<UserStatistics>{
   };
 }
 
+  async getUserStatusCounts(): Promise<{ _id: string; count: number }[]> {
+    return await User.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+  }
+
 }
 
 //export default new UserRepository();

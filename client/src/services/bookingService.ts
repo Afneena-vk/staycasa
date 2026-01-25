@@ -48,10 +48,10 @@ export const bookingService = {
         return res.data.data;
       },
     
-      fetchAdminBookingOverview: async () => {
-    const res = await api.get(ADMIN_API.BOOKING_COUNT); 
-    return res.data.totalCount; 
-  },
+  //     fetchAdminBookingOverview: async () => {
+  //   const res = await api.get(ADMIN_API.BOOKING_COUNT); 
+  //   return res.data.totalCount; 
+  // },
 
     cancelBooking: async (bookingId: string) => {
     const res = await api.post(USER_API.CANCEL_BOOKING(bookingId));

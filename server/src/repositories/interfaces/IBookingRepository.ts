@@ -1,6 +1,6 @@
 import { IBaseRepository } from './IBaseRepository';
 import { IBooking } from "../../models/bookingModel";
-
+import { BookingStatus } from '../../models/status/status';
 
 export interface FindByUserOptions {
   search?: string;
@@ -14,6 +14,8 @@ export interface FindByUserOptions {
   sortField?: keyof IBooking; 
   sortOrder?: "asc" | "desc";
 }
+
+
 
 // export interface BookedRange {
 //   moveInDate: Date;
@@ -42,5 +44,5 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
     findAllWithQuery(options: FindByUserOptions): Promise<{ bookings: IBooking[]; total: number }>;
     markCompletedBookings(today: Date): Promise<number>
     getBookingStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]>;
-
+    getBookingStatusCounts(): Promise<{ _id: string; count: number }[]>;
 }

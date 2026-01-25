@@ -2,6 +2,9 @@ import { injectable,inject } from 'tsyringe';
 import {AdminLoginData, IAdminService} from './interfaces/IAdminService'
 import { IAdminRepository } from '../repositories/interfaces/IAdminRepository';
 import { IUserRepository } from '../repositories/interfaces/IUserRepository';
+import { IOwnerRepository } from '../repositories/interfaces/IOwnerRepository';
+import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
+import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
 import { TOKENS } from '../config/tokens';
 import { UserStatistics } from './interfaces/IAdminService';
 //import adminRepository from '../repositories/adminRepository'
@@ -10,7 +13,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { AdminMapper } from '../mappers/adminMapper';
-import { AdminLoginResponseDto, UsersListResponseDto, UserListQueryDto, UserDetailResponseDto, OwnerListQueryDto, OwnersListResponseDto, OwnerDetailResponseDto, UserStatisticsDto } from '../dtos/admin.dto';
+import { AdminLoginResponseDto, UsersListResponseDto, UserListQueryDto, UserDetailResponseDto, OwnerListQueryDto, OwnersListResponseDto, OwnerDetailResponseDto, UserStatisticsDto, AdminDashboardDTO } from '../dtos/admin.dto';
 
 
 @injectable()
@@ -18,7 +21,10 @@ export class AdminService implements IAdminService {
 
    constructor(
     @inject(TOKENS.IAdminRepository) private _adminRepository: IAdminRepository,
-    @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository
+    @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository,
+    @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository,
+    @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
+     @inject(TOKENS.IBookingRepository) private _bookingRepository: IBookingRepository,
   ) {}
 
     async loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto> {
@@ -418,19 +424,44 @@ async rejectOwner(ownerId: string): Promise<{ message: string; status: number }>
   }
 }
 
-async adminUserStatistics(): Promise<UserStatisticsDto> {
-  try {
-    //const { totalUsers, activeUsers, blockedUsers } = await this._userRepository.getUserStatistics();
-    // return { totalUsers, activeUsers, blockedUsers };
-    const stats = await this._userRepository.getUserStatistics();
+// async adminUserStatistics(): Promise<UserStatisticsDto> {
+//   try {
+//     //const { totalUsers, activeUsers, blockedUsers } = await this._userRepository.getUserStatistics();
+//     // return { totalUsers, activeUsers, blockedUsers };
+//     const stats = await this._userRepository.getUserStatistics();
     
-    return AdminMapper.toUserStatisticsDto(stats)
-  } catch (err) {
-    throw new Error("Failed to fetch user statistics");
-  }
+//     return AdminMapper.toUserStatisticsDto(stats)
+//   } catch (err) {
+//     throw new Error("Failed to fetch user statistics");
+//   }
+// }
+
+
+async getAdminDashboardStats(): Promise<AdminDashboardDTO>{
+    const [
+    userStats,
+    ownerStats,
+    propertyStats,
+    bookingStats
+  ] = await Promise.all([
+    this._userRepository.getUserStatusCounts(),
+    this._ownerRepository.getOwnerStatusCounts(),
+    this._propertyRepository.getPropertyStatusCounts(),
+    this._bookingRepository.getBookingStatusCounts()
+  ]);
+  
+  return AdminMapper.toDashboardDTO(
+    userStats,
+    ownerStats,
+    propertyStats,
+    bookingStats
+  );
 }
+
       
  }
 
+
+ 
 
 //export default new AdminService();

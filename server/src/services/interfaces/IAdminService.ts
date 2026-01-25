@@ -1,4 +1,4 @@
-import { AdminLoginResponseDto,UsersListResponseDto, UserListQueryDto, UserDetailResponseDto,OwnerListQueryDto,OwnersListResponseDto, OwnerDetailResponseDto } from "../../dtos/admin.dto";
+import { AdminLoginResponseDto,UsersListResponseDto, UserListQueryDto, UserDetailResponseDto,OwnerListQueryDto,OwnersListResponseDto, OwnerDetailResponseDto,AdminDashboardDTO } from "../../dtos/admin.dto";
 
 export interface AdminLoginData {
     email: string;
@@ -36,6 +36,6 @@ export interface UserStatistics {
       approveOwner(ownerId: string): Promise<{ message: string; status: number }>;
       rejectOwner(ownerId: string): Promise<{ message: string; status: number }>;
 
-      adminUserStatistics(): Promise<UserStatistics>
-
+     // adminUserStatistics(): Promise<UserStatistics>
+      getAdminDashboardStats(): Promise<AdminDashboardDTO>
     }

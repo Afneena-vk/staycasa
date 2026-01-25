@@ -35,8 +35,12 @@ const OwnerDashboard = () => {
       try {
        // await fetchOwnerBookingStats();
            // full stats
-        await fetchOwnerBookingStatis(); 
-        await fetchOwnerPropertyStats(); 
+        // await fetchOwnerBookingStatis(); 
+        // await fetchOwnerPropertyStats(); 
+              await Promise.all([
+        fetchOwnerBookingStatis(),
+        fetchOwnerPropertyStats(),
+      ]);
       } finally {
         if (mounted) setLoadingStats(false);
       }

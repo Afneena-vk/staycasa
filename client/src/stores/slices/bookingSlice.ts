@@ -74,8 +74,8 @@ export interface BookingState {
 
   // fetchOwnerBookingStats: () => Promise<void>;  
   fetchOwnerBookingStatis: () => Promise<void>;  
-  adminTotalBookingsCount: number | null; 
-  fetchAdminTotalBookingsCount: () => Promise<void>;
+  //adminTotalBookingsCount: number | null; 
+ // fetchAdminTotalBookingsCount: () => Promise<void>;
   fetchAdminBookings: () => Promise<void>;
   fetchBookingDetailsForAdmin: (bookingId: string) => Promise<void>;
   fetchRetryPayment: (bookingId: string) => Promise<any>;
@@ -86,7 +86,7 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
   bookingData: null,
   // ownerBookingStats: null,
   ownerBookingStatis: null,
-  adminTotalBookingsCount: null,
+  //adminTotalBookingsCount: null,
 
 
   setBookingData: (data) => set({ bookingData: data }),
@@ -228,19 +228,19 @@ fetchOwnerBookings: async () => {
 
 
 
-  fetchAdminTotalBookingsCount: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const totalBookings = await bookingService.fetchAdminBookingOverview(); 
-      set({ adminTotalBookingsCount: totalBookings, isLoading: false });
-    } catch (err: any) {
-      set({
-        adminTotalBookingsCount: null,
-        isLoading: false,
-        error: err.response?.data?.message || err.message || "Failed to fetch admin bookings",
-      });
-    }
-  },
+  // fetchAdminTotalBookingsCount: async () => {
+  //   set({ isLoading: true, error: null });
+  //   try {
+  //     const totalBookings = await bookingService.fetchAdminBookingOverview(); 
+  //     set({ adminTotalBookingsCount: totalBookings, isLoading: false });
+  //   } catch (err: any) {
+  //     set({
+  //       adminTotalBookingsCount: null,
+  //       isLoading: false,
+  //       error: err.response?.data?.message || err.message || "Failed to fetch admin bookings",
+  //     });
+  //   }
+  // },
 
 fetchCancelBooking: async (bookingId: string) => {
   set({ isLoading: true, error: null });

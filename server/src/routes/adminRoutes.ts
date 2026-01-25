@@ -122,19 +122,19 @@ adminRoutes.patch(
     propertyController.unblockPropertyByAdmin.bind(propertyController)
 )
 
-adminRoutes.get(
-    "/bookings-overview",
-    authMiddleware(["admin"]),
-    bookingController.getBookingOverview.bind(bookingController)
+// adminRoutes.get(
+//     "/bookings-overview",
+//     authMiddleware(["admin"]),
+//     bookingController.getBookingOverview.bind(bookingController)
     
-)
+// )
 
-adminRoutes.get(
-    "/statistics",
-    authMiddleware(["admin"]),
-    adminController.adminUserStatistics.bind(adminController)
+// adminRoutes.get(
+//     "/statistics",
+//     authMiddleware(["admin"]),
+//     adminController.adminUserStatistics.bind(adminController)
     
-)
+// )
 
 adminRoutes.get(
     "/bookings",
@@ -150,5 +150,11 @@ adminRoutes.get(
     bookingController.getBookingDetailsForAdmin.bind(bookingController)
     
 )
+
+adminRoutes.get(
+  "/dashboard",
+  authMiddleware(["admin"]), 
+  adminController.getDashboardStats.bind(adminController)
+);
 
 export default adminRoutes;

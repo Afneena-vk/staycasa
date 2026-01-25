@@ -10,7 +10,7 @@ export interface IBookingController {
     getBlockedDates(req: Request, res: Response, next: NextFunction): Promise<void>;
     getOwnerBookings(req: Request, res: Response, next: NextFunction): Promise<void>;
     //getOwnerBookingStatistics(req: Request, res: Response, next: NextFunction): Promise<void>;
-    getBookingOverview(req: Request, res: Response, next: NextFunction): Promise<void>;
+    //getBookingOverview(req: Request, res: Response, next: NextFunction): Promise<void>;
     userCancelBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
     ownerCancelBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
     getAllBookings(req: Request, res: Response, next: NextFunction): Promise<void>;

@@ -139,3 +139,14 @@ export class UserStatisticsDto {
   blockedUsers!: number;
 }
 
+export interface StatusCountDTO {
+  status: string;
+  count: number;
+}
+
+export interface AdminDashboardDTO {
+  users: StatusCountDTO[];
+  owners: StatusCountDTO[];
+  properties: StatusCountDTO[];
+  bookings: StatusCountDTO[];
+}

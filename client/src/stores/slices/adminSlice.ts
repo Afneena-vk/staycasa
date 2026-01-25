@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
-import { UserFilters,UserStatistics } from "../../types/admin";
+import { UserFilters,UserStatistics, AdminDashboardStats } from "../../types/admin";
 
 
 
@@ -19,8 +19,10 @@ export interface AdminSlice {
   getOwnerDetails(ownerId: string): Promise<any>;
   approveOwner(ownerId: string): Promise<any>;
   rejectOwner(ownerId: string): Promise<any>;
-  adminUserStatistics: UserStatistics | null;
-  fetchAdminUserStatistics: () => Promise<void>;
+  //adminUserStatistics: UserStatistics | null;
+ // fetchAdminUserStatistics: () => Promise<void>;
+  dashboardStats: AdminDashboardStats | null;
+  fetchAdminDashboardStats: () => Promise<void>;
 }
 
 export const createAdminSlice: StateCreator<
@@ -30,7 +32,8 @@ export const createAdminSlice: StateCreator<
   AdminSlice
 > = (set, get) => ({
 
-    adminUserStatistics: null,
+    //adminUserStatistics: null,
+    dashboardStats: null,
 
   getUsers: async (filters = {}) => {
     try {
@@ -132,15 +135,26 @@ export const createAdminSlice: StateCreator<
     }
   },
 
- fetchAdminUserStatistics: async()=> {
-   try {
-     const stats = await adminService.adminUserStatistics();
-     set({ adminUserStatistics: stats });
-   } catch (error) {
-      console.error("Fetch admin user statistics failed", error);
-      set({ adminUserStatistics: null });
+//  fetchAdminUserStatistics: async()=> {
+//    try {
+//      const stats = await adminService.adminUserStatistics();
+//      set({ adminUserStatistics: stats });
+//    } catch (error) {
+//       console.error("Fetch admin user statistics failed", error);
+//       set({ adminUserStatistics: null });
 
-   }
- },
+//    }
+//  },
+
+  fetchAdminDashboardStats: async () => {
+    try {
+      const stats = await adminService.adminDashboardStats();
+      set({ dashboardStats: stats });
+    } catch (error) {
+      console.error("Fetch admin dashboard failed", error);
+      set({ dashboardStats: null });
+    }
+  },
+
 
 });

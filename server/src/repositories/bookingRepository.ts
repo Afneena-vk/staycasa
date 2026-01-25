@@ -560,4 +560,15 @@ async getBookingStatusStatsByOwner(ownerId: string) {
 }
 
 
+ async getBookingStatusCounts(): Promise<{ _id: string; count: number }[]> {
+    return await Booking.aggregate([
+      {
+        $group: {
+          _id: '$bookingStatus',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+  }
+
 }

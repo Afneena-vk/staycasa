@@ -1,5 +1,6 @@
 import { IBaseRepository } from './IBaseRepository';
 import { IProperty } from '../../models/propertyModel';
+import { PropertyStatus } from '../../models/status/status';
 
 export interface IPropertyListResult {
   properties: IProperty[];
@@ -19,7 +20,6 @@ export interface PaginatedDestinations {
   page: number;        
   totalPages: number;  
 }
-
 
 export interface IPropertyRepository extends IBaseRepository<IProperty> {
   findByOwnerId(ownerId: string): Promise<IProperty[]>;
@@ -69,5 +69,5 @@ getOwnerProperties (ownerId: string,
   ): Promise<PaginatedDestinations>
 
    getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]>;
-   
+   getPropertyStatusCounts(): Promise<{ _id: string; count: number }[]>;
 }

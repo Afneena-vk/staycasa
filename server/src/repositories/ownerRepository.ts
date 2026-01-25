@@ -5,6 +5,7 @@ import Owner, { IOwner } from '../models/ownerModel';
 import { BaseRepository } from './baseRepository';
 import { IOwnerRepository } from './interfaces/IOwnerRepository';
 
+
 @injectable()
 export class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRepository {
   constructor() {
@@ -26,6 +27,29 @@ export class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRep
       { new: true }
     ).exec();
    }
+
+   async getOwnerStatusCounts(): Promise<{ _id: string; count: number }[]> {
+    return await Owner.aggregate([
+      {
+        $project: {
+          status: {
+            $cond: [
+              { $eq: ['$isBlocked', true] },
+              'blocked',
+              '$approvalStatus'
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+  }
+
 
 }
 

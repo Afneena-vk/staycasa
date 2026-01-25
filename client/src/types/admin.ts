@@ -12,3 +12,16 @@ export interface UserStatistics {
   activeUsers: number;
   blockedUsers: number;
 }
+
+export interface StatusCountDTO {
+  status: string;
+  count: number;
+}
+
+export interface AdminDashboardStats {
+  users: StatusCountDTO[];
+  owners: StatusCountDTO[];
+  properties: StatusCountDTO[];
+  bookings: StatusCountDTO[];
+}
+

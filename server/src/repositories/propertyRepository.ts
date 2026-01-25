@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import Property, { IProperty } from "../models/propertyModel";
 import { BaseRepository } from "./baseRepository";
+
 import {
   IPropertyRepository,
   IPropertyListResult,DestinationDto
@@ -357,5 +358,16 @@ async getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; cou
   ]);
 }
 
+
+  async getPropertyStatusCounts(): Promise<{ _id: string; count: number }[]> {
+    return await Property.aggregate([
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+  }
 
 }

@@ -1,9 +1,15 @@
 import { IAdmin } from "../models/adminModel";
 import { IUser } from "../models/userModel";
 import { IOwner } from "../models/ownerModel";
-import { AdminLoginResponseDto, AdminBasicDetailsDto ,UserListItemDto, 
-  UsersListResponseDto, UserDetailDto, UserDetailResponseDto, OwnersListResponseDto,OwnerListItemDto, OwnerDetailDto, OwnerDetailResponseDto, UserStatisticsDto } from "../dtos/admin.dto";
+import { AdminLoginResponseDto, AdminBasicDetailsDto ,UserListItemDto, UsersListResponseDto, UserDetailDto, UserDetailResponseDto, OwnersListResponseDto,OwnerListItemDto, 
+  OwnerDetailDto, OwnerDetailResponseDto, UserStatisticsDto, AdminDashboardDTO, StatusCountDTO  } from "../dtos/admin.dto";
 
+
+
+interface RawStatusCount {
+  _id: string;   // status
+  count: number;
+}  
 
 export class AdminMapper {
   static toLoginResponse(admin: IAdmin, accessToken: string, refreshToken: string, message: string): AdminLoginResponseDto {
@@ -167,5 +173,28 @@ static toUserStatisticsDto(stats:{
       blockedUsers: stats.blockedUsers,
     };
   }
+
+  static mapStatusCounts(rawData: RawStatusCount[]): StatusCountDTO[] {
+    return rawData.map(item => ({
+      status: item._id,
+      count: item.count
+    }));
+  }
+
+    static toDashboardDTO(
+    users: RawStatusCount[],
+    owners: RawStatusCount[],
+    properties: RawStatusCount[],
+    bookings: RawStatusCount[]
+  ): AdminDashboardDTO {
+    return {
+      users: this.mapStatusCounts(users),
+      owners: this.mapStatusCounts(owners),
+      properties: this.mapStatusCounts(properties),
+      bookings: this.mapStatusCounts(bookings)
+    };
+  }
+
+
 
 }
