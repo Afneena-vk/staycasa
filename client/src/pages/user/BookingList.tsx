@@ -114,6 +114,7 @@ useEffect(() => {
             >
               <option value="">All Status</option>
               <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
               <option value="pending">Pending</option>
             </select>

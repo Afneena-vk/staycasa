@@ -62,5 +62,6 @@ export const ROLES = {
       INVALID_GUEST_COUNT: "Guest count exceeds maximum allowed",
       INVALID_LEASE_PERIOD: "Invalid lease period",
       BOOKING_NOT_FOUND: "Booking not found",
+      REVIEW_ALREADY_EXISTS: 'Review already exists for this booking',
     },
   };

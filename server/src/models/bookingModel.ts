@@ -27,6 +27,7 @@ export interface IBooking extends Document {
   isCancelled: boolean;
   cancellationReason?: string;
   refundAmount: number;
+  reviewSubmitted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -64,6 +65,10 @@ const bookingSchema = new Schema<IBooking>(
     isCancelled: { type: Boolean, default: false },
     cancellationReason: { type: String },
     refundAmount: { type: Number, default: 0 },
+        reviewSubmitted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

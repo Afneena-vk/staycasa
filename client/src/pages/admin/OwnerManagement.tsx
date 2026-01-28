@@ -281,6 +281,7 @@ const handleNextPage = () => {
                           onClick={() => handleReject(owner.id)}
                           disabled={actionLoading === `reject-${owner.id}`}
                           className="text-red-600 hover:text-red-800"
+                           title="Reject"
                         >
                           <XCircle size={18} />
                         </button>
@@ -310,11 +311,11 @@ const handleNextPage = () => {
                     )}
 
                     {owner.status === "active" ? (
-                      <button onClick={() => handleBlock(owner.id)} className="text-red-600 hover:text-red-800">
+                      <button onClick={() => handleBlock(owner.id)} className="text-red-600 hover:text-red-800"  title="Block">
                         <Ban size={18} />
                       </button>
                     ) : (
-                      <button onClick={() => handleUnblock(owner.id)} className="text-green-600 hover:text-green-800">
+                      <button onClick={() => handleUnblock(owner.id)} className="text-green-600 hover:text-green-800"  title="Unblock">
                         <Ban size={18} />
                       </button>
                     )}

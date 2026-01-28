@@ -3,6 +3,7 @@ import { container } from '../config/container';
 import { IUserController } from '../controllers/interfaces/IUserController';
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { IBookingController } from "../controllers/interfaces/IBookingController";
+import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { TOKENS } from '../config/tokens';
 //import userController from "../controllers/userController";
 import passport from "passport";
@@ -16,6 +17,7 @@ const userRoutes = Router();
 const userController = container.resolve<IUserController>(TOKENS.IUserController);
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
+const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
 
 userRoutes.post("/signup", userController.signup.bind(userController));
 userRoutes.post("/verify-otp", userController.verifyOtp.bind(userController));
@@ -182,6 +184,13 @@ userRoutes.post(
   authMiddleware(["user"]),
   checkUserStatus,
   bookingController.retryPayment.bind(bookingController)
+);
+
+userRoutes.post(
+  "/bookings/:bookingId/review",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  reviewController.createReview.bind(reviewController)
 );
 
 export default userRoutes   

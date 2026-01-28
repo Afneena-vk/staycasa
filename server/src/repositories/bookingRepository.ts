@@ -135,6 +135,16 @@ today.setHours(0,0,0,0);
        .populate("ownerId");
   }
 
+  async findByBookingIdAndUser(bookingId: string, userId: string): Promise<IBooking | null> {
+  return await this.model
+    .findOne({ 
+      _id: bookingId, 
+      userId: userId 
+    })
+    // .populate('propertyId', 'title images ownerId')
+    .exec();
+}
+
   async findByIdAndOwner(
     bookingId: string,
     ownerId: string,

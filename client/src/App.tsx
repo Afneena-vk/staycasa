@@ -52,6 +52,7 @@ import BookingFailure from "./pages/user/BookingFailure.tsx";
 import BookingList from "./pages/user/BookingList.tsx";
 import BookingDetails from "./pages/user/BookingDetails.tsx";
 import Destination from "./pages/user/Destination.tsx";
+import ReviewPage from "./pages/user/ReviewPage.tsx";
 
 import NotFound from "./components/common/NotFound.tsx";
 
@@ -410,6 +411,15 @@ const App = () => {
             </ProtectedRoute>
           }
         /> 
+
+      <Route
+          path="/user/bookings/:bookingId/review"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <ReviewPage/>
+            </ProtectedRoute>
+          }
+        />
 
 
 

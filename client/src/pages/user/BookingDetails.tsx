@@ -109,6 +109,13 @@ const BookingDetails = () => {
   }
 
   const b = selectedBooking;
+  const canReview =
+  b.bookingStatus === "completed" &&
+  b.paymentStatus === "completed" &&
+  !b.isCancelled 
+  // &&
+  // !b.reviewSubmitted;
+
 
   const moveInDate = new Date(b.moveInDate);
   const endDate = new Date(b.endDate);
@@ -212,6 +219,17 @@ const handleCancelBooking = async () => {
         Retry Payment
       </button>
     )}
+
+{canReview && (
+  <button
+    onClick={() => navigate(`/user/bookings/${b.id}/review`)}
+    className="px-4 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition flex items-center gap-2"
+  >
+    ⭐ Rate your stay
+  </button>
+)}
+
+
           </div>
 
           {/* PROPERTY SUMMARY */}

@@ -44,7 +44,8 @@ export const USER_API = {
   CANCEL_BOOKING:  (bookingId: string) => `/user/bookings/${bookingId}/cancel`,
 
   CHECK_AVAILABILITY:(propertyId: string)=>`user/properties/${propertyId}/check-availability`,
-  BLOCKED_DATES: (propertyId: string) =>`/user/properties/${propertyId}/blocked-dates`
+  BLOCKED_DATES: (propertyId: string) =>`/user/properties/${propertyId}/blocked-dates`,
+  SUBMIT_REVIEW: (bookingId: string) =>`/user/bookings/${bookingId}/review`,
 };
 
 export const OWNER_API = {
