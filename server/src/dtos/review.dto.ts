@@ -16,3 +16,16 @@ export interface ReviewResponseDto {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface PropertyReviewDto {
+  id: string;
+  rating: number;
+  reviewText?: string;
+  createdAt: Date;
+
+  user: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+}

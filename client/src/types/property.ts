@@ -22,6 +22,9 @@ export interface Property {
   status: "pending" | "active" | "rejected" |"blocked"|"booked";
   createdAt: Date;
 
+  averageRating: number;
+  totalReviews: number;
+
   owner?: {
     id: string;
     name: string;

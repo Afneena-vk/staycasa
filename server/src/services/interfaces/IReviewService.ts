@@ -1,6 +1,6 @@
 
 
-import { CreateReviewDto, ReviewResponseDto } from '../../dtos/review.dto';
+import { CreateReviewDto, PropertyReviewDto, ReviewResponseDto } from '../../dtos/review.dto';
 
 export interface IReviewService {
   createReview(
@@ -8,4 +8,9 @@ export interface IReviewService {
     userId: string,
     data: CreateReviewDto
   ): Promise<ReviewResponseDto>;
+
+ getReviewsByPropertyId(
+  propertyId: string
+): Promise<PropertyReviewDto[]>
+
 }

@@ -1,7 +1,8 @@
 
 
 import { IReview } from '../models/reviewModel';
-import { ReviewResponseDto } from '../dtos/review.dto';
+import { ReviewResponseDto, PropertyReviewDto } from '../dtos/review.dto';
+import { IUser } from '../models/userModel';
 
 export class ReviewMapper {
   static toResponseDto(review: IReview): ReviewResponseDto {
@@ -18,4 +19,21 @@ export class ReviewMapper {
       updatedAt: review.updatedAt,
     };
   }
+
+ static toPropertyReviewDto(review: IReview): PropertyReviewDto {
+    const user = review.userId as unknown as IUser;
+
+    return {
+      id: review._id.toString(),
+      rating: review.rating,
+      reviewText: review.reviewText,
+      createdAt: review.createdAt,
+      user: {
+        id: user._id.toString(),
+        name: user.name,
+        avatar: user.profileImage,
+      },
+    };
+  }
+  
 }

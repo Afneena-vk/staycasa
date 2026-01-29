@@ -6,4 +6,10 @@ export interface IReviewController {
     res: Response,
     next: NextFunction
   ): Promise<void>;
+
+  getReviewsByProperty(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;  
 }

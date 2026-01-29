@@ -193,6 +193,14 @@ userRoutes.post(
   reviewController.createReview.bind(reviewController)
 );
 
+
+userRoutes.get(
+  "/properties/:propertyId/reviews",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  reviewController.getReviewsByProperty.bind(reviewController)
+);
+
 export default userRoutes   
 
 

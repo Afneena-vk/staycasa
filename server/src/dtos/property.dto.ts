@@ -54,6 +54,8 @@ export interface PropertyResponseDto {
   status: PropertyStatus;
   createdAt: Date;
   owner?: OwnerInfoDto;
+  averageRating: number;
+  totalReviews: number;
 }
 
 export interface CreatePropertyResponseDto {

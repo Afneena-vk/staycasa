@@ -5,7 +5,7 @@ import { IReviewService } from './interfaces/IReviewService';
 import { IReviewRepository } from '../repositories/interfaces/IReviewRepository';
 import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
-import { CreateReviewDto, ReviewResponseDto } from '../dtos/review.dto';
+import { CreateReviewDto, ReviewResponseDto, PropertyReviewDto} from '../dtos/review.dto';
 import { ReviewMapper } from '../mappers/reviewMapper';
 import { BookingStatus, PaymentStatus } from '../models/status/status';
 import { MESSAGES } from '../utils/constants';
@@ -106,4 +106,15 @@ export class ReviewService implements IReviewService {
 
     return ReviewMapper.toResponseDto(review);
   }
+
+
+  async getReviewsByPropertyId(
+  propertyId: string
+): Promise<PropertyReviewDto[]> {
+  const reviews = await this._reviewRepository.findByPropertyId(propertyId);
+    return reviews.map(review =>
+    ReviewMapper.toPropertyReviewDto(review)
+  );
+}
+
 }

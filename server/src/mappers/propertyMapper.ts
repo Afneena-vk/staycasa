@@ -27,6 +27,8 @@ export class PropertyMapper {
       images: property.images,
       status: property.status,
       createdAt: property.createdAt,
+      averageRating: property.averageRating,
+      totalReviews: property.totalReviews,
       
       owner:
   property.ownerId && typeof property.ownerId === "object"

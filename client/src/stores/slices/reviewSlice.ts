@@ -1,15 +1,18 @@
 import { StateCreator } from "zustand";
 import { reviewService} from "../../services/reviewService";
-import { SubmitReviewDTO } from "../../types/review";
+import { SubmitReviewDTO, ReviewResponseDTO } from "../../types/review";
 
 export interface ReviewSlice {
   reviewLoading: boolean;
   reviewError: string | null;
+  reviews: ReviewResponseDTO[];
+
 
   submitReview: (
     bookingId: string,
     data: SubmitReviewDTO
   ) => Promise<void>;
+  fetchReviews: (propertyId: string) => Promise<void>;
 }
 
 export const createReviewSlice: StateCreator<
@@ -20,6 +23,7 @@ export const createReviewSlice: StateCreator<
 > = (set) => ({
   reviewLoading: false,
   reviewError: null,
+  reviews: [],
 
   
    submitReview: async (bookingId, data) => {
@@ -38,4 +42,17 @@ export const createReviewSlice: StateCreator<
       set({ reviewLoading: false });
     }
   },
+
+  fetchReviews: async (propertyId) => {
+    set({ reviewLoading: true, reviewError: null });
+    try {
+      const reviews = await reviewService.getReviewsByPropertyId(propertyId);
+      set({ reviews });
+    } catch (err: any) {
+      set({ reviewError: err.response?.data?.error || err.message || "Failed to fetch reviews" });
+    } finally {
+      set({ reviewLoading: false });
+    }
+  },
+
 });

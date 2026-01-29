@@ -9,6 +9,8 @@ import { userService } from "../../services/userService";
 import { Button } from "../../components/common/Button";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Review from "./Review";
+import StarRating from "../../components/common/StarRating";
 
 
 import {
@@ -51,6 +53,8 @@ const formatDate = (iso?: string | Date | null) => {
 
 const UserPropertyDetails = () => {
   const { propertyId } = useParams<{ propertyId: string }>();
+ 
+
   const today = new Date().toISOString().split("T")[0];
 
 
@@ -60,6 +64,12 @@ const UserPropertyDetails = () => {
   const property = useAuthStore((state) => state.selectedProperty);
   const loading = useAuthStore((state) => state.isLoading);
   const error = useAuthStore((state) => state.error); 
+
+ // review slice
+  const fetchReviews = useAuthStore((state) => state.fetchReviews);
+  const reviews = useAuthStore((state) => state.reviews);
+  const reviewLoading = useAuthStore((state) => state.reviewLoading);
+
   const [checkIn, setCheckIn] = useState<string>("");
    //const [checkInDate, setCheckInDate] = useState<Date | null>(null);
   const [checkOut, setCheckOut] = useState<string>("");
@@ -73,6 +83,14 @@ const UserPropertyDetails = () => {
   const [mainIndex, setMainIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
  
+const PREVIEW_COUNT = 2;
+const [showAllReviews, setShowAllReviews] = useState(false);
+
+const visibleReviews = showAllReviews
+  ? reviews
+  : reviews.slice(0, PREVIEW_COUNT);
+
+
  
 
   //const [showOwnerPhone, setShowOwnerPhone] = useState(false);
@@ -82,6 +100,7 @@ const UserPropertyDetails = () => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
     getActivePropertyById(propertyId);
+    fetchReviews(propertyId);
     
   }, [propertyId]);
 
@@ -249,6 +268,22 @@ const UserPropertyDetails = () => {
                       </span>
                       {/* rating (if available) */}
                       {/* If you have rating fields, show them here */}
+{property.totalReviews > 0 ? (
+  <div className="flex items-center gap-2">
+    <StarRating rating={property.averageRating} />
+
+  </div>
+) : (
+  // <span className="text-sm text-gray-400">New · No rating yet</span>
+  <div className="flex items-center gap-1 text-gray-300">
+  {[...Array(5)].map((_, i) => (
+    <FaStar key={i} />
+  ))}
+</div>
+
+)}
+
+
                     </div>
                   </div>
 
@@ -613,6 +648,32 @@ const UserPropertyDetails = () => {
                 </div>
               </div>
             </div>
+                        <section className="bg-white rounded-xl p-5 shadow mt-6">
+              <h3 className="text-xl font-semibold mb-3">Reviews</h3>
+
+              {reviewLoading && <div>Loading reviews...</div>}
+
+              {!reviewLoading && reviews.length === 0 && (
+                <div className="text-gray-600">No reviews yet.</div>
+              )}
+
+  <div className="space-y-3">
+    {visibleReviews.map((review) => (
+      <Review key={review.id} review={review} />
+    ))}
+  </div>
+
+    {reviews.length > PREVIEW_COUNT && (
+    <button
+      onClick={() => setShowAllReviews((prev) => !prev)}
+      className="mt-4 text-blue-600 font-medium hover:underline"
+    >
+      {showAllReviews
+        ? "Show less reviews"
+        : `View all ${reviews.length} reviews`}
+    </button>
+  )}
+            </section>
           </div>
         )}
 
@@ -670,28 +731,4 @@ const UserPropertyDetails = () => {
 };
 
 export default UserPropertyDetails;
-
-
-
-// import { useEffect } from "react";
-// import { useParams } from "react-router-dom";
-// import { useAuthStore } from "../../stores/authStore";
-
-// const UserPropertyDetails= () => {
-//   const { propertyId } = useParams();
-// //   const getPropertyById = useAuthStore((state) => state.getPropertyById);
-// const getActivePropertyById = useAuthStore((state)=> state.getActivePropertyById)
-//   const property = useAuthStore((state) => state.selectedProperty);
-
-//   useEffect(() => {
-//     console.log("Fetching property with ID:", propertyId);
-//     getActivePropertyById(propertyId!);
-//   }, [propertyId]);
-
-//   console.log("Backend response:", property);
-
-//   return <div>Check console...</div>;
-// };
-
-// export default UserPropertyDetails;  
 

@@ -7,6 +7,9 @@ import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
 import PropertyFilterSidebar from "../../components/Filters/PropertyFilterSidebar";
 import { useNavigate } from "react-router-dom";
+import StarRating from "../../components/common/StarRating";
+import { FaStar } from "react-icons/fa";
+
 
 const ActivePropertiesUser: React.FC = () => {
   const properties = useAuthStore((state) => state.properties);
@@ -291,7 +294,28 @@ const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
 
               <p className="text-gray-500 text-sm mb-2">
                 {property.city}, {property.district}, {property.state}
-              </p>
+              </p>  
+
+              {/* Rating */}
+<div className="flex items-center gap-2 mb-2">
+  {property.totalReviews > 0 ? (
+    <>
+      <StarRating rating={property.averageRating} />
+      <span className="text-sm text-gray-500">
+        ({property.totalReviews})
+      </span>
+    </>
+  ) : (
+    // <span className="text-sm text-gray-400">No rating yet</span>
+    <div className="flex items-center gap-1 text-gray-300">
+  {[...Array(5)].map((_, i) => (
+    <FaStar key={i} />
+  ))}
+</div>
+
+  )}
+</div>
+
 
               <p className="text-gray-900 font-bold text-lg mb-3">
                 ₹{property.pricePerMonth}/month
