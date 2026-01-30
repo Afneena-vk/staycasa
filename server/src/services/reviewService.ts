@@ -116,5 +116,33 @@ async getReviewsByPropertyId(
   );
 }
 
+async getReviewsByPropertyForAdmin(
+  propertyId: string
+): Promise<PropertyReviewDto[]> {
+    const reviews = await this._reviewRepository.findByPropertyIdForAdmin(propertyId);
+    return reviews.map(review =>
+    ReviewMapper.toPropertyReviewDto(review)
+  );
+}
+
+async toggleReviewVisibility(reviewId: string, hide: boolean): Promise<ReviewResponseDto> {
+  const review = await this._reviewRepository.toggleVisibility(reviewId, hide);
+
+  if (!review) {
+    throw new Error('Review not found');
+  }
+
+  const { averageRating, totalReviews } = await this._reviewRepository.calculatePropertyRating(
+    review.propertyId
+  );
+
+    await this._propertyRepository.update(review.propertyId.toString(), {
+    averageRating,
+    totalReviews,
+  } as any);
+
+  return ReviewMapper.toResponseDto(review);
+}
+
 
 }

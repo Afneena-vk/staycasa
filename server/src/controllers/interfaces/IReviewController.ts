@@ -12,9 +12,17 @@ export interface IReviewController {
     res: Response,
     next: NextFunction
   ): Promise<void>; 
+
   getReviewsByPropertyForAdmin(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void>; 
+  
+toggleReviewVisibility(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>; 
+
 }

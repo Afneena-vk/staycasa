@@ -1,11 +1,11 @@
 import { StateCreator } from "zustand";
 import { reviewService} from "../../services/reviewService";
-import { SubmitReviewDTO, ReviewResponseDTO } from "../../types/review";
+import { SubmitReviewDTO, ReviewResponseDTO, PropertyReviewDTO } from "../../types/review";
 
 export interface ReviewSlice {
   reviewLoading: boolean;
   reviewError: string | null;
-  reviews: ReviewResponseDTO[];
+  reviews: PropertyReviewDTO[];
 
 
   submitReview: (
@@ -14,6 +14,7 @@ export interface ReviewSlice {
   ) => Promise<void>;
   fetchReviews: (propertyId: string) => Promise<void>;
   fetchReviewsForAdmin: (propertyId: string) => Promise<void>;
+  toggleReviewVisibility: (reviewId: string, hide: boolean) => Promise<void>;
 }
 
 export const createReviewSlice: StateCreator<
@@ -73,6 +74,30 @@ export const createReviewSlice: StateCreator<
     set({ reviewLoading: false });
   }
 },
+
+toggleReviewVisibility: async (reviewId: string, hide: boolean) => {
+  set({ reviewLoading: true, reviewError: null });
+  try {
+    const updatedReview = await reviewService.toggleReviewVisibility(reviewId, hide);
+
+    
+    set((state) => ({
+      reviews: state.reviews.map((r) =>
+        r.id === updatedReview.id
+          ? { ...r, isHidden: updatedReview.isHidden }
+          : r
+      ),
+    }));
+  } catch (err: unknown) {
+    let errorMessage = "Failed to toggle review visibility";
+    if (err instanceof Error) errorMessage = err.message;
+    set({ reviewError: errorMessage });
+  } finally {
+    set({ reviewLoading: false });
+  }
+}
+
+
 
 
 });

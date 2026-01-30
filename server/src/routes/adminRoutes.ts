@@ -166,4 +166,10 @@ adminRoutes.get(
   reviewController.getReviewsByPropertyForAdmin.bind(reviewController)
 );
 
+adminRoutes.patch(
+  "/reviews/:reviewId/toggle-visibility",
+  authMiddleware(["admin"]),
+  reviewController.toggleReviewVisibility.bind(reviewController)
+);
+
 export default adminRoutes;

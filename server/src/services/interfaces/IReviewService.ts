@@ -13,4 +13,13 @@ export interface IReviewService {
   propertyId: string
 ): Promise<PropertyReviewDto[]>
 
+getReviewsByPropertyForAdmin(
+  propertyId: string
+): Promise<PropertyReviewDto[]>
+
+toggleReviewVisibility(
+  reviewId: string,
+  hide: boolean
+  ): Promise<ReviewResponseDto>
+
 }

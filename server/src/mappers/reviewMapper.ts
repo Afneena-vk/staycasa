@@ -28,6 +28,7 @@ export class ReviewMapper {
       rating: review.rating,
       reviewText: review.reviewText,
       createdAt: review.createdAt,
+      isHidden: review.isHidden,
       user: {
         id: user._id.toString(),
         name: user.name,

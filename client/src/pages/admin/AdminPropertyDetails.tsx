@@ -15,6 +15,10 @@ function AdminPropertyDetails() {
 const reviews = useAuthStore((state) => state.reviews);
 const reviewLoading = useAuthStore((state) => state.reviewLoading);
 const reviewError = useAuthStore((state) => state.reviewError);
+const toggleReviewVisibility = useAuthStore(
+  (state) => state.toggleReviewVisibility
+);
+
 
 const PREVIEW_COUNT = 2;
 const [showAllReviews, setShowAllReviews] = useState(false);
@@ -207,7 +211,10 @@ const visibleReviews = showAllReviews
 
   <div className="space-y-3">
     {visibleReviews.map((review) => (
-      <Review key={review.id} review={review} />
+      <Review key={review.id}
+       review={review} 
+       onToggleVisibility={toggleReviewVisibility}
+       />
     ))}
   </div>
     {reviews.length > PREVIEW_COUNT && (

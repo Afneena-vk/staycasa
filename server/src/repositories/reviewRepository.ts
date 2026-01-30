@@ -24,6 +24,17 @@ export class ReviewRepository extends BaseRepository<IReview> implements IReview
       .exec();
   }
 
+  async findByPropertyIdForAdmin(
+  propertyId: string | mongoose.Types.ObjectId
+): Promise<IReview[]> {
+  return this.model
+    .find({ propertyId }) 
+    .populate('userId', 'name profileImage')
+    .sort({ createdAt: -1 })
+    .exec();
+}
+
+
   async calculatePropertyRating(
     propertyId: string | mongoose.Types.ObjectId
   ): Promise<{ averageRating: number; totalReviews: number }> {
@@ -41,4 +52,17 @@ export class ReviewRepository extends BaseRepository<IReview> implements IReview
       totalReviews: reviews.length,
     };
   }
+
+async toggleVisibility(
+  reviewId: string | mongoose.Types.ObjectId,
+  isHidden: boolean
+): Promise<IReview | null> {
+  return this.model.findByIdAndUpdate(
+    reviewId,
+    { isHidden },
+    { new: true }
+  ).exec();
+}
+
+
 }

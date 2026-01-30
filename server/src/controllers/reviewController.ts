@@ -106,7 +106,7 @@ async getReviewsByPropertyForAdmin(
   try {
     const { propertyId } = req.params;
 
-    const reviews = await this._reviewService.getReviewsByPropertyId(propertyId);
+    const reviews = await this._reviewService.getReviewsByPropertyForAdmin(propertyId);
 
     res.status(STATUS_CODES.OK).json({
       message: "Reviews fetched successfully",
@@ -118,6 +118,47 @@ async getReviewsByPropertyForAdmin(
     });
   }
 }
+
+async toggleReviewVisibility(req: Request, res: Response): Promise<void> {
+  try {
+    const { reviewId } = req.params;
+    const { hide } = req.body; // { hide: true } or { hide: false }
+
+    if (typeof hide !== 'boolean') {
+      res.status(STATUS_CODES.BAD_REQUEST).json({
+        status: STATUS_CODES.BAD_REQUEST,
+        error: 'hide must be a boolean',
+      });
+      return;
+    }
+
+    const updatedReview = await this._reviewService.toggleReviewVisibility(reviewId, hide);
+
+    res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
+      message: `Review has been ${hide ? 'hidden' : 'shown'} successfully`,
+      review: updatedReview,
+    });
+  // } catch (error: any) {
+  //   res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+  //     status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+  //     error: error.message || 'Something went wrong',
+  //   });
+  // }
+   } catch (error: unknown) {
+    let errorMessage = 'Something went wrong';
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      error: errorMessage,
+    });
+   }
+}
+
 
 
 }

@@ -95,4 +95,5 @@ export const ADMIN_API = {
   BOOKING_BY_ID: (bookingId: string) => `/admin/bookings/${bookingId}`,
   DASHBOARD_STATS:`/admin/dashboard`,
   REVIEWS_BY_PROPERTY: (propertyId: string) => `/admin/properties/${propertyId}/reviews`,
+ TOGGLE_REVIEW_VISIBILITY: (reviewId: string) => `/admin/reviews/${reviewId}/toggle-visibility`, 
 };

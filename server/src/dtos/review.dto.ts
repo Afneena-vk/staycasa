@@ -22,6 +22,7 @@ export interface PropertyReviewDto {
   rating: number;
   reviewText?: string;
   createdAt: Date;
+  isHidden: boolean;
 
   user: {
     id: string;
