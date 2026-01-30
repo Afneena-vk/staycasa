@@ -99,5 +99,25 @@ async getReviewsByProperty(
   }
 }
 
+async getReviewsByPropertyForAdmin(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    const { propertyId } = req.params;
+
+    const reviews = await this._reviewService.getReviewsByPropertyId(propertyId);
+
+    res.status(STATUS_CODES.OK).json({
+      message: "Reviews fetched successfully",
+      reviews,
+    });
+  } catch (error: any) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    });
+  }
+}
+
 
 }

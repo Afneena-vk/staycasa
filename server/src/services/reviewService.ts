@@ -107,8 +107,7 @@ export class ReviewService implements IReviewService {
     return ReviewMapper.toResponseDto(review);
   }
 
-
-  async getReviewsByPropertyId(
+async getReviewsByPropertyId(
   propertyId: string
 ): Promise<PropertyReviewDto[]> {
   const reviews = await this._reviewRepository.findByPropertyId(propertyId);
@@ -116,5 +115,6 @@ export class ReviewService implements IReviewService {
     ReviewMapper.toPropertyReviewDto(review)
   );
 }
+
 
 }

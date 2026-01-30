@@ -11,5 +11,10 @@ export interface IReviewController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void>;  
+  ): Promise<void>; 
+  getReviewsByPropertyForAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>; 
 }

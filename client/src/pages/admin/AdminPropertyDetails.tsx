@@ -1,18 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import AdminLayout from "../../layouts/admin/AdminLayout";
+import Review from "../../components/common/Review";
+import StarRating from "../../components/common/StarRating";
+import { FaStar } from "react-icons/fa";
 
 function AdminPropertyDetails() {
   const { propertyId } = useParams<{ propertyId: string }>();
   const { getPropertyByAdmin, selectedProperty, isLoading, error } = useAuthStore();
+  const fetchReviewsForAdmin = useAuthStore(
+  (state) => state.fetchReviewsForAdmin
+);
+const reviews = useAuthStore((state) => state.reviews);
+const reviewLoading = useAuthStore((state) => state.reviewLoading);
+const reviewError = useAuthStore((state) => state.reviewError);
+
+const PREVIEW_COUNT = 2;
+const [showAllReviews, setShowAllReviews] = useState(false);
+const visibleReviews = showAllReviews
+  ? reviews
+  : reviews.slice(0, PREVIEW_COUNT);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (propertyId) {
       getPropertyByAdmin(propertyId);
+       fetchReviewsForAdmin(propertyId);
     }
-  }, [propertyId, getPropertyByAdmin]);
+  }, [propertyId, getPropertyByAdmin,fetchReviewsForAdmin]);
 
   if (isLoading) {
     return (
@@ -59,6 +76,22 @@ function AdminPropertyDetails() {
             <p className="text-gray-600 mt-1">
               {p.city}, {p.state} ({p.pincode})
             </p>
+            {selectedProperty.totalReviews > 0 ? (
+  <div className="flex items-center gap-2 mt-2">
+    <StarRating rating={selectedProperty.averageRating} />
+    {/* <span className="text-gray-500 text-sm">
+      ({selectedProperty.totalReviews} reviews)
+    </span> */}
+  </div>
+) : (
+  <div className="flex items-center gap-1 text-gray-300 mt-2">
+    {[...Array(5)].map((_, i) => (
+      <FaStar key={i} />
+    ))}
+    <span className="text-gray-500 text-sm ml-1">No reviews yet</span>
+  </div>
+)}
+
           </div>
           <span
             className={`px-3 py-1 text-sm rounded-full font-medium ${
@@ -76,6 +109,7 @@ function AdminPropertyDetails() {
             {p.status.toUpperCase()}
           </span>
         </div>
+
 
         {/* Image Gallery */}
         {/* <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -156,6 +190,38 @@ function AdminPropertyDetails() {
             </div>
           </div>
         )}
+
+
+        {/* Reviews Section */}
+<div className="bg-white shadow-md rounded-lg p-6 space-y-4">
+  <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">
+    Reviews
+  </h2>
+
+  {reviewLoading && <div>Loading reviews...</div>}
+  {reviewError && <div className="text-red-500">{reviewError}</div>}
+
+  {!reviewLoading && reviews.length === 0 && (
+    <div className="text-gray-500">No reviews for this property.</div>
+  )}
+
+  <div className="space-y-3">
+    {visibleReviews.map((review) => (
+      <Review key={review.id} review={review} />
+    ))}
+  </div>
+    {reviews.length > PREVIEW_COUNT && (
+    <button
+      onClick={() => setShowAllReviews((prev) => !prev)}
+      className="mt-4 text-blue-600 font-medium hover:underline"
+    >
+      {showAllReviews
+        ? "Show less reviews"
+        : `View all ${reviews.length} reviews`}
+    </button>
+  )}
+</div>
+
       </div>
     </AdminLayout>
   );

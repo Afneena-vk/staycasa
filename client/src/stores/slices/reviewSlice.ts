@@ -13,6 +13,7 @@ export interface ReviewSlice {
     data: SubmitReviewDTO
   ) => Promise<void>;
   fetchReviews: (propertyId: string) => Promise<void>;
+  fetchReviewsForAdmin: (propertyId: string) => Promise<void>;
 }
 
 export const createReviewSlice: StateCreator<
@@ -54,5 +55,24 @@ export const createReviewSlice: StateCreator<
       set({ reviewLoading: false });
     }
   },
+
+  fetchReviewsForAdmin: async (propertyId) => {
+    set({ reviewLoading: true, reviewError: null });
+  try {
+    const reviews =
+      await reviewService.getReviewsByPropertyIdForAdmin(propertyId);
+    set({ reviews });
+  } catch (err: any) {
+    set({
+      reviewError:
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to fetch admin reviews",
+    });
+  } finally {
+    set({ reviewLoading: false });
+  }
+},
+
 
 });

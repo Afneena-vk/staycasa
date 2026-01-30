@@ -9,7 +9,7 @@ import { userService } from "../../services/userService";
 import { Button } from "../../components/common/Button";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Review from "./Review";
+import Review from "../../components/common/Review";
 import StarRating from "../../components/common/StarRating";
 
 
@@ -492,12 +492,35 @@ const visibleReviews = showAllReviews
                   </aside>
                 </section>
 
-                {/* Reviews block (placeholder) */}
-                {/* <div className="bg-white rounded-xl p-5 shadow mt-6"> */}
-                  {/* <h3 className="text-xl font-semibold mb-3">Reviews</h3> */}
-                  {/* If you have reviews array, map them here. */}
-                  {/* <div className="text-gray-600">No reviews yet.</div>
-                </div> */}
+                {/* REVIES BLOCK (placeholder) */}
+
+                        <section className="bg-white rounded-xl p-5 shadow mt-6">
+              <h3 className="text-xl font-semibold mb-3">Reviews</h3>
+
+              {reviewLoading && <div>Loading reviews...</div>}
+
+              {!reviewLoading && reviews.length === 0 && (
+                <div className="text-gray-600">No reviews yet.</div>
+              )}
+
+  <div className="space-y-3">
+    {visibleReviews.map((review) => (
+      <Review key={review.id} review={review} />
+    ))}
+  </div>
+
+    {reviews.length > PREVIEW_COUNT && (
+    <button
+      onClick={() => setShowAllReviews((prev) => !prev)}
+      className="mt-4 text-blue-600 font-medium hover:underline"
+    >
+      {showAllReviews
+        ? "Show less reviews"
+        : `View all ${reviews.length} reviews`}
+    </button>
+  )}
+            </section>
+
               </div>
 
               {/* Right: sticky booking panel (lg only) */}
@@ -648,7 +671,7 @@ const visibleReviews = showAllReviews
                 </div>
               </div>
             </div>
-                        <section className="bg-white rounded-xl p-5 shadow mt-6">
+                        {/* <section className="bg-white rounded-xl p-5 shadow mt-6">
               <h3 className="text-xl font-semibold mb-3">Reviews</h3>
 
               {reviewLoading && <div>Loading reviews...</div>}
@@ -673,7 +696,7 @@ const visibleReviews = showAllReviews
         : `View all ${reviews.length} reviews`}
     </button>
   )}
-            </section>
+            </section> */}
           </div>
         )}
 

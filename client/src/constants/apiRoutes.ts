@@ -94,4 +94,5 @@ export const ADMIN_API = {
   BOOKINGS: "/admin/bookings",
   BOOKING_BY_ID: (bookingId: string) => `/admin/bookings/${bookingId}`,
   DASHBOARD_STATS:`/admin/dashboard`,
+  REVIEWS_BY_PROPERTY: (propertyId: string) => `/admin/properties/${propertyId}/reviews`,
 };

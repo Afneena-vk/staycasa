@@ -2,17 +2,20 @@ import { Router } from "express";
 import {container} from '../config/container';
 import { IAdminController } from "../controllers/interfaces/IAdminController";
 import { IBookingController } from "../controllers/interfaces/IBookingController";
+import { IReviewController } from "../controllers/interfaces/IReviewController";
 //import adminController from '../controllers/adminController'
 import {TOKENS} from '../config/tokens'
 import { authMiddleware } from "../middleware/authMiddleware";
 import { PropertyController } from "../controllers/propertyController";
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { BookingController } from "../controllers/bookingController";
+import { ReviewController } from "../controllers/reviewController";
 
 const adminRoutes = Router();
 const adminController = container.resolve<IAdminController>(TOKENS.IAdminController);
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController)
+const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController)
 
 adminRoutes.post("/login", adminController.login.bind(adminController));
 adminRoutes.post(
@@ -155,6 +158,12 @@ adminRoutes.get(
   "/dashboard",
   authMiddleware(["admin"]), 
   adminController.getDashboardStats.bind(adminController)
+);
+
+adminRoutes.get(
+  "/properties/:propertyId/reviews",
+  authMiddleware(["admin"]),
+  reviewController.getReviewsByPropertyForAdmin.bind(reviewController)
 );
 
 export default adminRoutes;

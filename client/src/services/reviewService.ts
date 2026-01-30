@@ -1,5 +1,5 @@
 import { api } from "../api/api";
-import { USER_API } from "../constants/apiRoutes";
+import { ADMIN_API, USER_API } from "../constants/apiRoutes";
 import { SubmitReviewDTO, ReviewResponseDTO } from "../types/review";
 
 export const reviewService = {
@@ -15,4 +15,11 @@ export const reviewService = {
     const res = await api.get(USER_API.REVIEWS_BY_PROPERTY(propertyId));
     return res.data.reviews; 
   },
+
+    getReviewsByPropertyIdForAdmin: async (propertyId: string): Promise<ReviewResponseDTO[]> => {
+    const res = await api.get(ADMIN_API.REVIEWS_BY_PROPERTY(propertyId));
+    return res.data.reviews; 
+  },
+
+
 };
