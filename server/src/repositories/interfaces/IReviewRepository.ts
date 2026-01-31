@@ -9,4 +9,5 @@ export interface IReviewRepository extends IBaseRepository<IReview> {
   findByPropertyIdForAdmin(propertyId: string | mongoose.Types.ObjectId): Promise<IReview[]>;
   calculatePropertyRating(propertyId: string | mongoose.Types.ObjectId): Promise<{ averageRating: number; totalReviews: number }>;
   toggleVisibility(reviewId: string | mongoose.Types.ObjectId,isHidden: boolean): Promise<IReview | null>;
+  findByPropertyIdForOwner(propertyId: string | mongoose.Types.ObjectId,ownerId: string | mongoose.Types.ObjectId): Promise<IReview[]>
 }

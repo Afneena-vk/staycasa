@@ -1,6 +1,6 @@
 
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
@@ -12,17 +12,30 @@ import {
   FaCouch,
   FaMapMarkerAlt,
 } from "react-icons/fa";
+import Review from "../../components/common/Review";
+import StarRating from "../../components/common/StarRating";
+
 
 function OwnerPropertyDetails() {
   const { propertyId } = useParams<{ propertyId: string }>();
-  const { selectedProperty, getOwnerPropertyById, isLoading, error } =
+  const { selectedProperty, getOwnerPropertyById, isLoading, error,  reviews,reviewLoading,fetchReviewsForOwner } =
     useAuthStore();
 
   useEffect(() => {
     if (propertyId) {
       getOwnerPropertyById(propertyId);
+       fetchReviewsForOwner(propertyId);
     }
   }, [propertyId, getOwnerPropertyById]);
+
+
+  const PREVIEW_COUNT = 2;
+const [showAllReviews, setShowAllReviews] = useState(false);
+
+const visibleReviews = showAllReviews
+  ? reviews
+  : reviews.slice(0, PREVIEW_COUNT);
+
 
   if (isLoading)
     return <p className="text-center py-10 text-gray-600">Loading property...</p>;
@@ -77,13 +90,35 @@ function OwnerPropertyDetails() {
           <p className="text-2xl font-semibold text-blue-600">
             ₹{selectedProperty.pricePerMonth.toLocaleString()} / month
           </p>
-          <div className="flex items-center justify-end text-yellow-500 mt-1">
+          {/* <div className="flex items-center justify-end text-yellow-500 mt-1"> */}
             {/* <FaStar /> */}
             {/* <span className="ml-1 text-gray-700">
               {selectedProperty.averageRating.toFixed(1)} (
               {selectedProperty.totalReviews} reviews)
             </span> */}
-          </div>
+
+          {/* </div> */}
+          <div className="flex items-center justify-end mt-1 gap-2">
+  {selectedProperty.totalReviews > 0 ? (
+    <>
+      <StarRating rating={selectedProperty.averageRating} />
+      <span className="text-sm text-gray-600">
+        {selectedProperty.averageRating.toFixed(1)} (
+        {/* {selectedProperty.totalReviews} reviews) */}
+      </span>
+    </>
+  ) : (
+    <div className="flex items-center gap-1 text-gray-300">
+      {[...Array(5)].map((_, i) => (
+        <FaStar key={i} size={14} />
+      ))}
+      <span className="text-sm text-gray-400 ml-2">
+        New · No rating yet
+      </span>
+    </div>
+  )}
+</div>
+
         </div>
       </div>
 
@@ -112,6 +147,37 @@ function OwnerPropertyDetails() {
         <h2 className="text-xl font-semibold mb-2">About this property</h2>
         <p className="text-gray-700">{selectedProperty.description}</p>
       </div>
+      
+      {/* Reviews Section */}
+<section className="bg-white rounded-xl p-5 shadow mt-6">
+  <h3 className="text-xl font-semibold mb-3">Reviews</h3>
+
+  {reviewLoading && <div>Loading reviews...</div>}
+
+  {!reviewLoading && reviews.length === 0 && (
+    <div className="text-gray-600">No reviews yet.</div>
+  )}
+
+  <div className="space-y-3">
+    {visibleReviews.map((review) => (
+      <Review key={review.id} review={review} />
+    ))}
+  </div>
+
+  {reviews.length > PREVIEW_COUNT && (
+    <button
+      onClick={() => setShowAllReviews((prev) => !prev)}
+      className="mt-4 text-blue-600 font-medium hover:underline"
+    >
+      {showAllReviews
+        ? "Show less reviews"
+        : `View all ${reviews.length} reviews`}
+    </button>
+  )}
+</section>
+
+
+
 
       {/* Features */}
       <div className="mt-6">

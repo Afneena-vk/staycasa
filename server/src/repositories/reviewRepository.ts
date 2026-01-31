@@ -34,6 +34,22 @@ export class ReviewRepository extends BaseRepository<IReview> implements IReview
     .exec();
 }
 
+async findByPropertyIdForOwner(
+  propertyId: string | mongoose.Types.ObjectId,
+  ownerId: string | mongoose.Types.ObjectId
+): Promise<IReview[]> {
+  return this.model
+    .find({
+      propertyId,
+      ownerId,
+      isHidden: false,
+    })
+    .populate("userId", "name profileImage")
+    .sort({ createdAt: -1 })
+    .exec();
+}
+
+
 
   async calculatePropertyRating(
     propertyId: string | mongoose.Types.ObjectId

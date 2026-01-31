@@ -64,6 +64,7 @@ export const OWNER_API = {
   BOOKING_STATIS: "/owner/dashboard/statis",
   PROPERTY_STATIS: "/owner/dashboard/propertyStats",
   CANCEL_BOOKING:  (bookingId: string) => `/owner/bookings/${bookingId}/cancel`,
+  REVIEWS_BY_PROPERTY: (propertyId: string)=>`/owner/properties/${propertyId}/reviews`,
 };
 
 export const ADMIN_API = {
@@ -95,5 +96,5 @@ export const ADMIN_API = {
   BOOKING_BY_ID: (bookingId: string) => `/admin/bookings/${bookingId}`,
   DASHBOARD_STATS:`/admin/dashboard`,
   REVIEWS_BY_PROPERTY: (propertyId: string) => `/admin/properties/${propertyId}/reviews`,
- TOGGLE_REVIEW_VISIBILITY: (reviewId: string) => `/admin/reviews/${reviewId}/toggle-visibility`, 
+  TOGGLE_REVIEW_VISIBILITY: (reviewId: string) => `/admin/reviews/${reviewId}/toggle-visibility`, 
 };

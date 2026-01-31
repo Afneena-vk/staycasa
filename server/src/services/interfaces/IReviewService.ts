@@ -22,4 +22,9 @@ toggleReviewVisibility(
   hide: boolean
   ): Promise<ReviewResponseDto>
 
+getReviewsByPropertyForOwner(
+  propertyId: string,
+  ownerId: string
+): Promise<PropertyReviewDto[]>
+
 }

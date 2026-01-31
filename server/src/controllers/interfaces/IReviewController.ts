@@ -18,11 +18,18 @@ export interface IReviewController {
     res: Response,
     next: NextFunction
   ): Promise<void>; 
-  
+
 toggleReviewVisibility(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void>; 
+
+
+getReviewsByPropertyForOwner(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void>;   
 
 }

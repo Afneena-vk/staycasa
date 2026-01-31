@@ -159,6 +159,26 @@ async toggleReviewVisibility(req: Request, res: Response): Promise<void> {
    }
 }
 
+async getReviewsByPropertyForOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { propertyId } = req.params;
+    const ownerId = (req as any).userId; 
+
+    const reviews = await this._reviewService.getReviewsByPropertyForOwner(
+        propertyId,
+        ownerId
+      );
+    res.status(200).json({
+      status: 200,
+      message: "properties reviews fetched successfully",
+      reviews,
+    });
+  } catch (error: unknown) {
+    let errorMessage = "Something went wrong";
+    if (error instanceof Error) errorMessage = error.message;
+    res.status(500).json({ status: 500, error: errorMessage });
+  }
+}
 
 
 }

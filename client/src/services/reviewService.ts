@@ -1,5 +1,5 @@
 import { api } from "../api/api";
-import { ADMIN_API, USER_API } from "../constants/apiRoutes";
+import { ADMIN_API, USER_API, OWNER_API } from "../constants/apiRoutes";
 import { SubmitReviewDTO, ReviewResponseDTO, PropertyReviewDTO } from "../types/review";
 
 export const reviewService = {
@@ -25,7 +25,13 @@ export const reviewService = {
 toggleReviewVisibility: async (reviewId: string, hide: boolean) => {
   const res = await api.patch(ADMIN_API.TOGGLE_REVIEW_VISIBILITY(reviewId), { hide });
   return res.data.review;
-}
+},
+
+getReviewsByPropertyIdForOwner: async (propertyId: string): Promise<PropertyReviewDTO[]> => {
+  const res = await api.get(OWNER_API.REVIEWS_BY_PROPERTY(propertyId));
+  return res.data.reviews;
+},
+
 
 
 };

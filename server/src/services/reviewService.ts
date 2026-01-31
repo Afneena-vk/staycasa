@@ -144,5 +144,21 @@ async toggleReviewVisibility(reviewId: string, hide: boolean): Promise<ReviewRes
   return ReviewMapper.toResponseDto(review);
 }
 
+async getReviewsByPropertyForOwner(
+  propertyId: string,
+  ownerId: string
+): Promise<PropertyReviewDto[]> {
+  const reviews =
+    await this._reviewRepository.findByPropertyIdForOwner(
+      propertyId,
+      ownerId
+    );
+
+  return reviews.map(review =>
+    ReviewMapper.toPropertyReviewDto(review)
+  );
+}
+
+
 
 }

@@ -15,6 +15,8 @@ export interface ReviewSlice {
   fetchReviews: (propertyId: string) => Promise<void>;
   fetchReviewsForAdmin: (propertyId: string) => Promise<void>;
   toggleReviewVisibility: (reviewId: string, hide: boolean) => Promise<void>;
+  fetchReviewsForOwner: (propertyId: string) => Promise<void>;
+
 }
 
 export const createReviewSlice: StateCreator<
@@ -95,8 +97,25 @@ toggleReviewVisibility: async (reviewId: string, hide: boolean) => {
   } finally {
     set({ reviewLoading: false });
   }
-}
+},
 
+fetchReviewsForOwner: async (propertyId) => {
+  set({ reviewLoading: true, reviewError: null });
+  try {
+    const reviews =
+      await reviewService.getReviewsByPropertyIdForOwner(propertyId);
+    set({ reviews });
+  } catch (err: any) {
+    set({
+      reviewError:
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to fetch owner reviews",
+    });
+  } finally {
+    set({ reviewLoading: false });
+  }
+},
 
 
 

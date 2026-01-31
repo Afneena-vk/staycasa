@@ -3,6 +3,7 @@ import { container } from '../config/container'
 import { IOwnerController } from "../controllers/interfaces/IOwnerController";
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { IBookingController } from "../controllers/interfaces/IBookingController";
+import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -15,6 +16,7 @@ const ownerRoutes = Router();
 const ownerController = container.resolve<IOwnerController>(TOKENS.IOwnerController);
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
+const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -138,6 +140,13 @@ ownerRoutes.get(
   checkUserStatus,
   propertyController.getOwnerPropertyStats.bind(propertyController)
 );
+
+ownerRoutes.get(
+  "/properties/:propertyId/reviews",
+  authMiddleware(["owner"]),
+  reviewController.getReviewsByPropertyForOwner.bind(reviewController)
+);
+
 
 
 export default ownerRoutes
