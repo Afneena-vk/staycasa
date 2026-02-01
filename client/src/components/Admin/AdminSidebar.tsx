@@ -1,6 +1,7 @@
 
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NotificationBell } from "../../pages/user/NotificationBell";
 import {
   FaBars,
   FaTimes,
@@ -119,6 +120,9 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
             </div>
             <h1 className="text-lg font-bold">Admin Panel</h1>
           </div>
+
+            <div className="flex items-center space-x-2">
+               <NotificationBell role="Admin" /> 
           <button
             onClick={toggleSidebarMobile}
             className="p-2 rounded-lg hover:bg-slate-700 transition"
@@ -127,7 +131,7 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
           </button>
         </div>
       </div>
-
+</div>
       {/* Mobile Overlay */}
       {isOpen && (
         <div
@@ -156,13 +160,16 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
                 <p className="text-xs text-slate-400">Management Console</p>
               </div>
             </div>
-          )}
+          )}  
+            <div className="flex items-center space-x-2">
+              <NotificationBell role="Admin" /> 
           <button
             onClick={onToggle}
             className="p-2 rounded-lg hover:bg-slate-700/40 transition"
           >
             {collapsed ? <FaBars size={16} /> : <FaChevronLeft size={16} />}
           </button>
+        </div> 
         </div>
 
         {/* Nav Links */}

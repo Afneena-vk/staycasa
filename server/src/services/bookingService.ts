@@ -14,6 +14,7 @@ import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto
 import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
+import { INotificationService } from './interfaces/INotificationService';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -27,6 +28,7 @@ export class BookingService implements IBookingService {
     @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
     @inject(TOKENS.IBookingRepository) private _bookingRepository : IBookingRepository,
     @inject(TOKENS.IWalletRepository) private _walletRepository : IWalletRepository,
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
   ) {}
 
 
@@ -194,6 +196,8 @@ if (bookingId) {
       updatedBooking!._id.toString()
     );
 
+
+
     return BookingMapper.toVerifyPaymentResponse(
       populatedBooking || updatedBooking!,
       "Payment successful. Booking confirmed!",
@@ -278,6 +282,26 @@ console.log("Wallet payload:", {
 
   
 const populatedBooking = await this._bookingRepository.findById(booking._id.toString());
+
+await this._notificationService.createNotification(
+  userId,
+  "User",
+  "booking",
+  "Booking Confirmed",
+  `Your booking for ${property.title} from ${startDate.toDateString()} to ${endDate.toDateString()} is confirmed.`,
+  booking._id.toString()
+);
+
+await this._notificationService.createNotification(
+  property.ownerId.toString(),
+  "Owner",
+  "booking",
+  "New Booking Received",
+  `Your property ${property.title} has been booked by ${userId}. Booking dates: ${startDate.toDateString()} - ${endDate.toDateString()}.`,
+  booking._id.toString()
+);
+
+
  return BookingMapper.toVerifyPaymentResponse(
       populatedBooking || booking,
       "Booking confirmed successfully",
@@ -327,6 +351,15 @@ const populatedBooking = await this._bookingRepository.findById(booking._id.toSt
     isCancelled: false,
     refundAmount: 0
   });
+
+  await this._notificationService.createNotification(
+  userId,
+  "User",
+  "booking", 
+  "Payment Failed", 
+  `Your payment for ${property.title} could not be completed. Please retry.`,
+  booking._id.toString() 
+);
 
   return {
     status: STATUS_CODES.OK,
@@ -566,6 +599,16 @@ async userCancellBooking(
     throw new Error("Booking already cancelled");
   }
 
+  const property = booking.propertyId as unknown as {
+  _id: string;
+  title: string;
+  city?: string;
+};
+
+const user = booking.userId as any;
+const userName = user?.name || user?.email || "the user";
+
+
   const today = new Date();
   const moveInDate = new Date(booking.moveInDate);
 
@@ -612,6 +655,25 @@ async userCancellBooking(
       cancelledBooking.paymentStatus = PaymentStatus.Refunded;
      await cancelledBooking.save();
 
+     await this._notificationService.createNotification(
+          booking.ownerId._id.toString(),
+          "Owner",
+          "booking",
+          "Booking Cancelled",
+           `The booking for your property ${property.title} by ${userName} has been cancelled.`,
+          booking._id.toString()
+        );
+
+       await this._notificationService.createNotification(
+        userId,
+       "User",
+       "booking",
+       "Booking Cancelled",
+      // `Your booking for ${booking.propertyId} has been successfully cancelled. Refund: ₹${refundAmount}`,
+            `Your booking for ${property.title} has been successfully cancelled. Refund: ₹${refundAmount}`,
+       booking._id.toString()
+);     
+
   // return {
   //   message: "Booking cancelled successfully. Refund credited to wallet.",
   //   refundAmount,
@@ -628,6 +690,14 @@ async ownerCancelBooking(bookingId: string, ownerId: string): Promise<CancelBook
     if (!booking) throw new Error("Booking not found or unauthorized");
 
     if (booking.isCancelled) throw new Error("Booking already cancelled");
+
+
+    const property = booking.propertyId as unknown as {
+  _id: string;
+  title: string;
+  city?: string;
+  [key: string]: any;
+};
 
      
 
@@ -666,7 +736,21 @@ async ownerCancelBooking(bookingId: string, ownerId: string): Promise<CancelBook
              cancelledBooking.paymentStatus = PaymentStatus.Refunded;
              await cancelledBooking.save();
 
+
+   await this._notificationService.createNotification(
+     booking.userId._id.toString(),
+     "User",
+     "booking",
+     "Booking Cancelled by Owner",
+    //  `Your booking for ${booking.propertyId} has been cancelled by the owner. Refund: ₹${refundAmount}`,
+    `Your booking for ${property.title} has been cancelled by the owner. Refund: ₹${refundAmount}`,
+     booking._id.toString()
+  );
+
       }
+
+
+
 
 
 

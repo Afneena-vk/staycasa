@@ -4,6 +4,7 @@ import { IUserController } from '../controllers/interfaces/IUserController';
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { IReviewController } from "../controllers/interfaces/IReviewController";
+import { INotificationController } from "../controllers/interfaces/INotificationController";
 import { TOKENS } from '../config/tokens';
 //import userController from "../controllers/userController";
 import passport from "passport";
@@ -18,6 +19,7 @@ const userController = container.resolve<IUserController>(TOKENS.IUserController
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
+const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
 
 userRoutes.post("/signup", userController.signup.bind(userController));
 userRoutes.post("/verify-otp", userController.verifyOtp.bind(userController));
@@ -200,6 +202,35 @@ userRoutes.get(
   checkUserStatus,
   reviewController.getReviewsByProperty.bind(reviewController)
 );
+
+userRoutes.get(
+  "/notifications",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  notificationController.getNotifications.bind(notificationController)
+);
+
+userRoutes.patch(
+  "/notifications/:notificationId/read",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  notificationController.markAsRead.bind(notificationController)
+);
+
+userRoutes.patch(
+  "/notifications/read-all",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  notificationController.markAllAsRead.bind(notificationController)
+);
+
+userRoutes.delete(
+  "/notifications/:notificationId",
+  authMiddleware(["user"]),
+  checkUserStatus,
+  notificationController.deleteNotification.bind(notificationController)
+);
+
 
 export default userRoutes   
 

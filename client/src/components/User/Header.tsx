@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "lucide-react"; // profile icon
+import { User, Bell } from "lucide-react"; // profile icon
 //import { useAuthStore } from "../../store/authStore"; // adjust path if needed
 import { useAuthStore } from "../../stores/authStore";
+import { NotificationBell } from "../../pages/user/NotificationBell";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const Header: React.FC = () => {
           <Link to="/contact" className="text-gray-700 hover:text-blue-950">
             Contact
           </Link>
+           {isAuthenticated && <NotificationBell role="User"  />}
         </nav>
 
         {/* Right side */}

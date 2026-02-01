@@ -36,7 +36,7 @@ export interface OwnerSignupData {
 
   uploadDocument(ownerId: string, files: Express.Multer.File): Promise<{ message: string; status: number; document: string }>;
 
-  changePassword(userId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
+  changePassword(ownerId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto>;
 
   //getWallet(ownerId: string): Promise<{ balance: number;transactions: ITransaction[]}>;
 

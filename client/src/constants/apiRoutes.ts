@@ -48,6 +48,12 @@ export const USER_API = {
   SUBMIT_REVIEW: (bookingId: string) =>`/user/bookings/${bookingId}/review`,
   REVIEWS_BY_PROPERTY: (propertyId: string) => `/user/properties/${propertyId}/reviews`,
 
+  NOTIFICATIONS: "/user/notifications",
+  MARK_NOTIFICATION_READ: (notificationId: string) => `/user/notifications/${notificationId}/read`,
+  MARK_ALL_NOTIFICATIONS_READ: "/user/notifications/read-all",
+  DELETE_NOTIFICATION: (notificationId: string) => `/user/notifications/${notificationId}`,
+
+
 };
 
 export const OWNER_API = {
@@ -65,6 +71,12 @@ export const OWNER_API = {
   PROPERTY_STATIS: "/owner/dashboard/propertyStats",
   CANCEL_BOOKING:  (bookingId: string) => `/owner/bookings/${bookingId}/cancel`,
   REVIEWS_BY_PROPERTY: (propertyId: string)=>`/owner/properties/${propertyId}/reviews`,
+
+  NOTIFICATIONS: "/owner/notifications",
+  MARK_NOTIFICATION_READ: (notificationId: string) => `/owner/notifications/${notificationId}/read`,
+  MARK_ALL_NOTIFICATIONS_READ: "/owner/notifications/read-all",
+  DELETE_NOTIFICATION: (notificationId: string) => `/owner/notifications/${notificationId}`,
+
 };
 
 export const ADMIN_API = {
@@ -97,4 +109,13 @@ export const ADMIN_API = {
   DASHBOARD_STATS:`/admin/dashboard`,
   REVIEWS_BY_PROPERTY: (propertyId: string) => `/admin/properties/${propertyId}/reviews`,
   TOGGLE_REVIEW_VISIBILITY: (reviewId: string) => `/admin/reviews/${reviewId}/toggle-visibility`, 
+
+  NOTIFICATIONS: "/admin/notifications",
+  MARK_NOTIFICATION_READ: (notificationId: string) => `/admin/notifications/${notificationId}/read`,
+  MARK_ALL_NOTIFICATIONS_READ: "/admin/notifications/read-all",
+  DELETE_NOTIFICATION: (notificationId: string) => `/admin/notifications/${notificationId}`,
+
+
 };
+
+

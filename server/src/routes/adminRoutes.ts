@@ -3,6 +3,7 @@ import {container} from '../config/container';
 import { IAdminController } from "../controllers/interfaces/IAdminController";
 import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { IReviewController } from "../controllers/interfaces/IReviewController";
+import { INotificationController } from "../controllers/interfaces/INotificationController";
 //import adminController from '../controllers/adminController'
 import {TOKENS} from '../config/tokens'
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -16,6 +17,7 @@ const adminController = container.resolve<IAdminController>(TOKENS.IAdminControl
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController)
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController)
+const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
 
 adminRoutes.post("/login", adminController.login.bind(adminController));
 adminRoutes.post(
@@ -171,5 +173,35 @@ adminRoutes.patch(
   authMiddleware(["admin"]),
   reviewController.toggleReviewVisibility.bind(reviewController)
 );
+
+adminRoutes.get(
+  "/notifications",
+  authMiddleware(["admin"]),
+  
+  notificationController.getNotifications.bind(notificationController)
+);
+
+
+adminRoutes.patch(
+  "/notifications/:notificationId/read",
+  authMiddleware(["admin"]),
+  
+  notificationController.markAsRead.bind(notificationController)
+);
+
+adminRoutes.patch(
+  "/notifications/read-all",
+  authMiddleware(["admin"]),
+  
+  notificationController.markAllAsRead.bind(notificationController)
+);
+
+adminRoutes.delete(
+  "/notifications/:notificationId",
+  authMiddleware(["admin"]),
+   notificationController.deleteNotification.bind(notificationController)
+);
+
+
 
 export default adminRoutes;

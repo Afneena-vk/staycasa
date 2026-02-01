@@ -7,14 +7,17 @@ import {
   FaBuilding,
   FaCalendarAlt,
   FaWallet,
+  FaBell,
   FaSignOutAlt,
 } from "react-icons/fa";
 
 import { useAuthStore } from "../../stores/authStore";
+import { NotificationBell } from "../../pages/user/NotificationBell";
 
 const OwnerSidebar = () => {
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
+  const { unreadCount } = useAuthStore();
 
    const handleLogout = async () => {
     await logout(); 
@@ -26,6 +29,9 @@ const OwnerSidebar = () => {
       <div className="p-6 border-b border-gray-700">
         <h1 className="text-2xl font-bold text-white tracking-wide">StayCasa</h1>
         <p className="text-sm text-gray-400">Owner Dashboard</p>
+                <div className="mt-4">
+          <NotificationBell role="Owner" />
+        </div>
       </div>
 
       {/* Menu */}
@@ -35,6 +41,7 @@ const OwnerSidebar = () => {
         <NavItem to="/owner/properties" icon={<FaBuilding />} label="Properties" />
         <NavItem to="/owner/bookings" icon={<FaCalendarAlt />} label="Bookings" />
         <NavItem to="/owner/wallet" icon={<FaWallet />} label="Wallet" />
+
       </nav>
 
       {/* Footer */}

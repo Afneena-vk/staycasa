@@ -4,6 +4,7 @@ import { IOwnerController } from "../controllers/interfaces/IOwnerController";
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { IReviewController } from "../controllers/interfaces/IReviewController";
+import { INotificationController } from "../controllers/interfaces/INotificationController";
 import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -17,6 +18,7 @@ const ownerController = container.resolve<IOwnerController>(TOKENS.IOwnerControl
 const propertyController = container.resolve<IPropertyController>(TOKENS.IPropertyController);
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
+const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -147,6 +149,34 @@ ownerRoutes.get(
   reviewController.getReviewsByPropertyForOwner.bind(reviewController)
 );
 
+ownerRoutes.get(
+  "/notifications",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  notificationController.getNotifications.bind(notificationController)
+);
+
+
+ownerRoutes.patch(
+  "/notifications/:notificationId/read",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  notificationController.markAsRead.bind(notificationController)
+);
+
+ownerRoutes.patch(
+  "/notifications/read-all",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  notificationController.markAllAsRead.bind(notificationController)
+);
+
+ownerRoutes.delete(
+  "/notifications/:notificationId",
+  authMiddleware(["owner"]),
+  checkUserStatus,
+  notificationController.deleteNotification.bind(notificationController)
+);
 
 
 export default ownerRoutes

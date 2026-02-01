@@ -2,20 +2,23 @@ import { injectable, inject } from 'tsyringe';
 import { DestinationDto, IPropertyService, UserPropertyFilters, PaginatedDestinations } from './interfaces/IPropertyService';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
+import { INotificationService } from './interfaces/INotificationService';
 import { TOKENS } from '../config/tokens';
 import { CreatePropertyDto, CreatePropertyResponseDto, PropertyResponseDto, UpdatePropertyDto, UpdatePropertyResponseDto, AdminPropertyListResponseDto, AdminPropertyActionResponseDto, OwnerPropertyListResponseDto, UserPropertyListResponseDto, CheckAvailabilityRequestDTO, CheckAvailabilityResponseDTO, OwnerPropertyStatsDto } from '../dtos/property.dto';
 import { PropertyMapper } from '../mappers/propertyMapper';
 import { MESSAGES, STATUS_CODES } from '../utils/constants';
 import { PropertyStatus } from '../models/status/status';
 import { Types } from "mongoose";
+import Owner, { IOwner } from "../models/ownerModel";
 import { IProperty } from '../models/propertyModel';
-
+import mongoose from "mongoose";
 
 @injectable()
 export class PropertyService implements IPropertyService {
   constructor(
     @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
-    @inject(TOKENS.IBookingRepository) private _bookingRepository : IBookingRepository
+    @inject(TOKENS.IBookingRepository) private _bookingRepository : IBookingRepository,
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
   ) {}
 
   async createProperty(ownerId: string, data: CreatePropertyDto): Promise<CreatePropertyResponseDto> {
@@ -260,12 +263,28 @@ async approveProperty(propertyId:string): Promise<AdminPropertyActionResponseDto
     }
 
     const updatedProperty = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Active);
+
+
      
     if (!updatedProperty) {
       const err: any = new Error("Failed to activate property");
       err.status = STATUS_CODES.BAD_REQUEST;
       throw err;
     }
+
+
+const ownerId =
+  property.ownerId instanceof mongoose.Types.ObjectId
+    ? property.ownerId.toString()
+    : (property.ownerId as IOwner)._id.toString();
+            await this._notificationService.createNotification(
+      ownerId,
+      "Owner",                          
+      "property",                       
+      "Property Approved",              
+      `Your property "${property.title}" has been approved and is now live.`,
+      property._id.toString()           
+    );
 
     return PropertyMapper.toAdminPropertyActionResponse(
       updatedProperty,
@@ -299,6 +318,19 @@ async rejectProperty(propertyId:string): Promise<AdminPropertyActionResponseDto>
       err.status = STATUS_CODES.BAD_REQUEST;
       throw err;
     }
+   
+const ownerId =
+  property.ownerId instanceof mongoose.Types.ObjectId
+    ? property.ownerId.toString()
+    : (property.ownerId as IOwner)._id.toString();
+            await this._notificationService.createNotification(
+      ownerId,
+      "Owner",                          
+      "property",                      
+      "Property Rejected",              
+      `Your property "${property.title}" has been rejected.`,
+      property._id.toString()           
+    );
 
     return PropertyMapper.toAdminPropertyActionResponse(
        updatedProperty,
@@ -317,6 +349,21 @@ async blockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionRespo
   const property = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Blocked);
   if (!property) throw new Error("Property not found");
 
+    const ownerId =
+    property.ownerId instanceof mongoose.Types.ObjectId
+      ? property.ownerId.toString()
+      : (property.ownerId as IOwner)._id.toString();
+
+  await this._notificationService.createNotification(
+    ownerId,
+    "Owner",
+    "property",
+    "Property Blocked",
+    `Your property "${property.title}" has been blocked by admin.`,
+    property._id.toString()
+  );
+
+
   return PropertyMapper.toAdminPropertyActionResponse(property, "Property blocked successfully");
 
 }
@@ -324,6 +371,21 @@ async blockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionRespo
 async unblockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionResponseDto> {
    const property = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Active);
   if (!property) throw new Error("Property not found");
+
+      const ownerId =
+    property.ownerId instanceof mongoose.Types.ObjectId
+      ? property.ownerId.toString()
+      : (property.ownerId as IOwner)._id.toString();
+
+  await this._notificationService.createNotification(
+    ownerId,
+    "Owner",
+    "property",
+    "Property Unlocked",
+    `Your property "${property.title}" has been unblocked by admin.`,
+    property._id.toString()
+  );
+
 
   return PropertyMapper.toAdminPropertyActionResponse(property, "Property unblocked successfully");
 }

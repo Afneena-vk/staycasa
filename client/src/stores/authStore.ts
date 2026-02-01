@@ -9,8 +9,9 @@ import { UserSlice, createUserSlice } from "./slices/userSlice";
 import { PropertySlice, createPropertySlice } from "./slices/propertySlice";
 import { BookingState, createBookingSlice } from "./slices/bookingSlice";
 import { ReviewSlice,createReviewSlice } from "./slices/reviewSlice";
+import { NotificationSlice, createNotificationSlice } from "./slices/notificationSlice";
 
-type StoreState = AuthSlice & AdminSlice & OwnerSlice & UserSlice & PropertySlice &   BookingState & ReviewSlice;
+type StoreState = AuthSlice & AdminSlice & OwnerSlice & UserSlice & PropertySlice &   BookingState & ReviewSlice & NotificationSlice;
 
 export const useAuthStore = create<StoreState>()(
   persist(
@@ -22,6 +23,7 @@ export const useAuthStore = create<StoreState>()(
       ...createPropertySlice(...args),
       ...createBookingSlice(...args), 
       ...createReviewSlice(...args),
+      ...createNotificationSlice(...args),
     }),
     {
       name: "auth-storage",

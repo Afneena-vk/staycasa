@@ -4,6 +4,8 @@ import { IOwnerService, OwnerSignupData, OwnerLoginData } from "./interfaces/IOw
 //import ownerRepository from "../repositories/ownerRepository";
 import { IOwnerRepository } from '../repositories/interfaces/IOwnerRepository';
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
+import { IAdminRepository } from '../repositories/interfaces/IAdminRepository';
+import { INotificationService } from './interfaces/INotificationService';
 import { TOKENS } from '../config/tokens';
 import OTPService from "../utils/OTPService"
 import bcrypt from "bcryptjs";
@@ -21,7 +23,9 @@ import { ITransaction } from '../models/walletModel';
  export class OwnerService implements IOwnerService {
  constructor(
     @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository,
-    @inject(TOKENS.IWalletRepository) private _walletRepository: IWalletRepository
+    @inject(TOKENS.IWalletRepository) private _walletRepository: IWalletRepository,
+    @inject(TOKENS.IAdminRepository) private _adminRepository: IAdminRepository,
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
   ) {}
 
 
@@ -50,7 +54,7 @@ import { ITransaction } from '../models/walletModel';
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
-    await this._ownerRepository.create({
+    const owner =await this._ownerRepository.create({
         name,
         email,
         phone,
@@ -60,7 +64,24 @@ import { ITransaction } from '../models/walletModel';
         isVerified: false,
         otp,
       });
+
+
       await OTPService.sendOTP(email, otp);
+
+  const admin = await this._adminRepository.findOne({});
+  if (admin) {
+    
+    await this._notificationService.createNotification(
+      admin._id.toString(),         
+      "Admin",                     
+      "system",         
+      "New Owner Registered",        
+      `Owner ${owner.name} has registered. Verify their account.`,
+      owner._id.toString()         
+    );
+  }
+
+
       return {status: STATUS_CODES.CREATED, message: "Owner registered successfully.Please verify OTP sent to your email." };
   }
   async verifyOtp(email: string, otp: string): Promise<{ status: number; message: string }> {
@@ -306,6 +327,20 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
       const documentUrl = (file as any).path;
      
       const updatedOwner = await this._ownerRepository.updateDocument(ownerId, documentUrl);
+
+
+       const admin = await this._adminRepository.findOne({});
+
+      if(admin){
+    await this._notificationService.createNotification(
+      admin._id.toString(),      
+      "Admin",                     
+      "system",         
+      "Document uploaded",        
+      `Owner ${owner.name} has uploaded a document for verification.`, 
+              
+    );
+  }
       
       if (!updatedOwner) {
         const error: any = new Error(MESSAGES.ERROR.UPLOAD_FAILED);
@@ -351,6 +386,15 @@ async changePassword(ownerId: string, currentPassword: string, newPassword: stri
 
   
   const updatedOwner = await this._ownerRepository.update(ownerId, { password: hashedPassword });
+      await this._notificationService.createNotification(
+      ownerId,      
+      "Owner",                     
+      "system",         
+      "Password Changed",        
+      `Your password was changed successfully. If this wasn’t you, please contact support immediately..`,
+              
+    );
+
   if (!updatedOwner) {
     const error: any = new Error("Failed to update password");
     error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;

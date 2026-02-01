@@ -5,6 +5,7 @@ import { IUserRepository } from '../repositories/interfaces/IUserRepository';
 import { IOwnerRepository } from '../repositories/interfaces/IOwnerRepository';
 import { IPropertyRepository } from '../repositories/interfaces/IPropertyRepository';
 import { IBookingRepository } from '../repositories/interfaces/IBookingRepository';
+import { INotificationService } from './interfaces/INotificationService';
 import { TOKENS } from '../config/tokens';
 import { UserStatistics } from './interfaces/IAdminService';
 //import adminRepository from '../repositories/adminRepository'
@@ -24,7 +25,8 @@ export class AdminService implements IAdminService {
     @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository,
     @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository,
     @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
-     @inject(TOKENS.IBookingRepository) private _bookingRepository: IBookingRepository,
+    @inject(TOKENS.IBookingRepository) private _bookingRepository: IBookingRepository,
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
   ) {}
 
     async loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto> {
@@ -376,8 +378,19 @@ async approveOwner(ownerId: string): Promise<{ message: string; status: number }
    
     if (owner.approvalStatus === "pending" || owner.approvalStatus === "rejected") {
       await this._adminRepository.updateOwnerApprovalStatus(ownerId, "approved");
+      await this._notificationService.createNotification(
+        owner._id.toString(),       
+        "Owner",
+        "approval",
+        "Account Approved",
+        `Congratulations ${owner.name}, your account has been approved by the admin.`,
+        owner._id.toString()
+      );
+
       return { message: "Owner approved successfully", status: STATUS_CODES.OK };
     }
+
+
 
    
     return { message: "Invalid approval status", status: STATUS_CODES.BAD_REQUEST };
@@ -411,9 +424,27 @@ async rejectOwner(ownerId: string): Promise<{ message: string; status: number }>
   
     if (owner.approvalStatus === "pending" || owner.approvalStatus === "approved") {
       await this._adminRepository.updateOwnerApprovalStatus(ownerId, "rejected");
+     
+      await this._notificationService.createNotification(
+        owner._id.toString(),       
+        "Owner",
+        "approval",
+        "Account Rejected",
+        `Hi ${owner.name}, unfortunately your account verification was rejected by the admin. Please review your documents and upload valid documents to proceed.`,
+        owner._id.toString()
+      );
+      
       return { message: "Owner rejected successfully", status: STATUS_CODES.OK };
     }
 
+    await this._notificationService.createNotification(
+          ownerId,     
+          "Owner",                 
+          "system",                 
+          "Account Rejected",      
+          "Your owner account has been rejected. Please check your documents and try again.", 
+                       
+        );
     
     return { message: "Invalid rejection status", status: STATUS_CODES.BAD_REQUEST };
   } catch (error: any) {

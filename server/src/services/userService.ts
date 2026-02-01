@@ -2,6 +2,7 @@ import { injectable, inject } from 'tsyringe';
 import { IUserService, SignupData,LoginData  } from "./interfaces/IUserService";
 import { IUserRepository } from "../repositories/interfaces/IUserRepository";
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
+import { INotificationService } from './interfaces/INotificationService';
 //import userRepository from "../repositories/userRepository";
 import { TOKENS } from "../config/tokens";
 import OTPService from "../utils/OTPService";
@@ -18,7 +19,8 @@ import { ITransaction } from '../models/walletModel';
 export class UserService implements IUserService {
      constructor(
     @inject(TOKENS.IUserRepository) private _userRepository: IUserRepository,
-    @inject(TOKENS.IWalletRepository) private _walletRepository: IWalletRepository
+    @inject(TOKENS.IWalletRepository) private _walletRepository: IWalletRepository,
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
   ) {}
 
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
@@ -386,6 +388,16 @@ async changePassword(userId: string, currentPassword: string, newPassword: strin
     error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
     throw error;
   }
+
+await this._notificationService.createNotification(
+        userId,
+        "User",
+        "system",
+        "Password Changed",
+        "Your password was changed successfully. If this wasn’t you, please contact support immediately."
+        
+      );
+
     return {
     message: "Password changed successfully",
     status:  STATUS_CODES.OK,

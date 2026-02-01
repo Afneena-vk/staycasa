@@ -32,6 +32,12 @@ export const ROLES = {
       BOOKING_CONFIRMED: "Booking confirmed successfully",
       TOTAL_CALCULATED: "Total amount calculated successfully",
       RAZORPAY_ORDER_CREATED: "Razorpay order created successfully",
+
+      NOTIFICATION_CREATED: "Notification created successfully",
+      NOTIFICATIONS_FETCHED: "Notifications fetched successfully",
+      NOTIFICATION_UPDATED: "Notification updated successfully",
+      DELETED_SUCCESSFUL: "Deleted successfully",
+
     },
     ERROR: {
       INVALID_CREDENTIALS: "Invalid credentials",
@@ -63,5 +69,6 @@ export const ROLES = {
       INVALID_LEASE_PERIOD: "Invalid lease period",
       BOOKING_NOT_FOUND: "Booking not found",
       REVIEW_ALREADY_EXISTS: 'Review already exists for this booking',
+      NOTIFICATION_NOT_FOUND: "Notification not found",
     },
   };
