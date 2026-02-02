@@ -32,7 +32,11 @@ interface ProfileData {
   name: string;
   email: string;
   phone?: string;
-  profileImage: string;
+  // profileImage: string;
+    profileImage?: {
+    url: string;
+    publicId: string;
+  }; 
   address?: Address;
 }
 
@@ -44,7 +48,8 @@ const UserProfile = () => {
     name: "",
     email: "",
     phone: "",
-    profileImage: "",
+    // profileImage: "",
+      profileImage: undefined,
     address: {
       houseNo: "",
       street: "",
@@ -75,7 +80,8 @@ const [uploadingImage, setUploadingImage] = useState(false);
             name: userData.name || "",
             email: userData.email || "",
             phone: userData.phone || "",
-            profileImage: userData.profileImage || "",
+            // profileImage: userData.profileImage || "",
+            profileImage: userData.profileImage || undefined, 
             address: userData.address || {
               houseNo: "",
               street: "",
@@ -93,7 +99,9 @@ const [uploadingImage, setUploadingImage] = useState(false);
             name: response.name || "",
             email: response.email || "",
             phone: response.phone || "",
-            profileImage: response.profileImage || "",
+            // profileImage: response.profileImage || "",
+            // profileImage: userData.profileImage || undefined, 
+            profileImage: response.profileImage || undefined,
             address: response.address || {
     
               houseNo: "",
@@ -148,12 +156,18 @@ const uploadImage = async () => {
     setUploadingImage(true);
     const response = await userService.uploadProfileImage(imageFile);
 
-    const newImageUrl = response.profileImage || response.data?.profileImage;
-    if (newImageUrl) {
-      setProfile(prev => ({ ...prev, profileImage: newImageUrl }));
+    // const newImageUrl = response.profileImage || response.data?.profileImage;
+    // if (newImageUrl) {
+    //   setProfile(prev => ({ ...prev, profileImage: newImageUrl }));
       
-      updateUserData({ ...userData, profileImage: newImageUrl });
-    }
+    //   updateUserData({ ...userData, profileImage: newImageUrl });
+    // }
+    const newProfileImage = response.profileImage || response.data?.profileImage;
+if (newProfileImage) {
+  setProfile(prev => ({ ...prev, profileImage: newProfileImage }));
+  updateUserData({ ...userData, profileImage: newProfileImage });
+}
+
     return response.imageUrl || response.profileImage;
   } catch (error: any) {
     toast.error('Failed to upload image');
@@ -298,7 +312,8 @@ const uploadImage = async () => {
               //     alt="Profile"
                ) : profile.profileImage ? (
                 <img
-                  src={profile.profileImage}
+                  // src={profile.profileImage}
+                  src={profile.profileImage?.url}
                   alt="Profile"
                   className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
                 />

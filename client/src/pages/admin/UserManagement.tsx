@@ -12,7 +12,12 @@ interface User {
   email: string;
   phone?: string;
   status: "Active" | "Blocked";
-  profileImage?: string;
+  // profileImage?: string;
+    profileImage?: {
+    url: string;
+    publicId: string;
+  };
+  
   updatedAt: string;
 }
 
@@ -41,14 +46,15 @@ const UserManagement = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const getUsers = useAuthStore(state => state.getUsers);
-  
+  const [success, setSuccess] = useState<string | null>(null);
+
   const limit = 10; 
 
  
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      setError(null);
+      // setError(null);
 
   
   const data:UsersResponse = await getUsers({
@@ -93,9 +99,9 @@ const UserManagement = () => {
       if(!confirmation) return;
     try {
      
-      await api.patch(`/admin/users/${userId}/${action}`);
-      
-      
+     const response= await api.patch(`/admin/users/${userId}/${action}`);
+
+        setSuccess(response.data.message)
       fetchUsers();
     } catch (err: any) {
       console.error(`Error ${action}ing user:`, err);
@@ -229,7 +235,19 @@ const handleClearSearch = () => {
           </div>
         </div>
 
-        
+        {success && (
+  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+    <div className="flex justify-between items-center">
+      <span>{success}</span>
+      <button
+        onClick={() => setSuccess(null)}
+        className="text-green-500 hover:text-green-700"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
             <div className="flex justify-between items-center">
@@ -263,16 +281,18 @@ const handleClearSearch = () => {
                 <tr key={user.id} className="border-t hover:bg-gray-50 transition">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      {user.profileImage ? (
+                      {/* {user.profileImage ? ( */}
+                       {user.profileImage ?.url? (
                         <img
-                          src={user.profileImage}
+                          // src={user.profileImage}
+                          src={user.profileImage.url}
                           alt={user.name}
                           className="w-8 h-8 rounded-full object-cover"
                         />
                       ) : (
                         <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                           <span className="text-gray-600 text-xs font-medium">
-                            {user.name.charAt(0).toUpperCase()}
+                            {user.name.charAt(0).toUpperCase()}          
                           </span>
                         </div>
                       )}

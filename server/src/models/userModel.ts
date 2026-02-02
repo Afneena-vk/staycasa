@@ -10,6 +10,10 @@ interface Address {
     pincode: string;
   }
 
+  interface ProfileImage {
+  url: string;
+  publicId: string;
+}
 
 export interface IUser extends Document {
   _id: ObjectId;
@@ -17,7 +21,8 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   phone?: string;
-  profileImage?: string;
+  // profileImage?: string;
+   profileImage?: ProfileImage | null;
   bookings?: ObjectId;
   status: 'active' | 'blocked';
   isVerified: boolean;
@@ -47,7 +52,11 @@ const userSchema = new Schema<IUser>(
     email: {type: String,required: true,unique: true,trim: true},
     password: {type: String,required: function (this: { googleId?: string }) {return !this.googleId;}},
     phone: {type: String,trim: true,default: null},
-    profileImage: {type: String,default: null},
+    // profileImage: {type: String,default: null},
+    profileImage: {
+      url: { type: String, default: null },
+      publicId: { type: String, default: null },
+    },
     bookings: {type: Schema.Types.ObjectId,ref: 'Bookings',default: null},
     status: {type: String,enum: ['active', 'blocked'],default: 'active'},
     isVerified: {type: Boolean,default: false},

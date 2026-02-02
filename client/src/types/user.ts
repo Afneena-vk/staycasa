@@ -12,7 +12,11 @@ export interface UserProfile {
     pincode: string;
   };
   userStatus: "active" | "blocked";
-  profileImage?: string;
+  // profileImage?: string;
+    profileImage?: {
+    url: string;
+    publicId: string;
+  };
   isVerified: boolean;
 }
 
@@ -32,7 +36,11 @@ export interface UserProfileResponse {
   userStatus: "active" | "blocked";
   isVerified: boolean;
   status: number;
-  profileImage?: string;
+  // profileImage?: string;
+    profileImage?: {
+    url: string;
+    publicId: string;
+  };
   message: string;
   data: UserProfile;
 }

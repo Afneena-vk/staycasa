@@ -8,6 +8,8 @@ import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
 import crypto from "crypto";
+import { FileStorageService } from "../utils/fileStorageService"; 
+
 
 @injectable()
 export class UserController implements IUserController {
@@ -373,12 +375,15 @@ export class UserController implements IUserController {
         return;
       }
 
-      const imageUrl = (req.file as any).path;
+      // const imageUrl = (req.file as any).path;
 
-      const result = await this._userService.updateUserProfileImage(
-        userId,
-        imageUrl
-      );
+      // const result = await this._userService.updateUserProfileImage(
+      //   userId,
+      //   imageUrl
+      // );
+    const fileData = await FileStorageService.upload(req.file);
+
+    const result = await this._userService.updateUserProfileImage(userId, fileData);
 
       res.status(result.status).json(result);
     } catch (error: any) {

@@ -19,6 +19,12 @@ const StarRating = ({ rating, max = 5 }: StarRatingProps) => {
           size={14}
         />
       ))}
+
+            {/* {totalReviews !== undefined && (
+        <span className="text-gray-500 text-sm ml-1">
+          ({totalReviews} {totalReviews === 1 ? "review" : "reviews"})
+        </span>
+      )} */}
     </div>
   );
 };

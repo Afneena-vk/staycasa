@@ -25,7 +25,9 @@ export class UserListItemDto {
   phone?: string;
   status!: 'active' | 'blocked';
   isVerified!: boolean;
-  profileImage?: string;
+  // profileImage?: string;
+  profileImage?: { url: string; publicId: string };
+
   createdAt!: Date;
   updatedAt!: Date;
 }
@@ -55,7 +57,9 @@ export class UserDetailDto {
   phone?: string;
   status!: 'active' | 'blocked';
   isVerified!: boolean;
-  profileImage?: string;
+  // profileImage?: string;
+  profileImage?: { url: string; publicId: string };
+
   address?: {
     houseNo: string;
     street: string;

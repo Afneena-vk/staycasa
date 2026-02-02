@@ -141,7 +141,7 @@ const handleUnblock = async (propertyId: string) => {
             <h1 className="text-2xl font-semibold text-gray-800">Property Management</h1>
             {/* <p className="text-sm text-gray-600 mt-1">
               Total Properties: {properties.length}
-            </p> */}
+            </p> */}     
           </div>
           {/* <div> */}
           <div className="relative w-full md:w-64">

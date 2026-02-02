@@ -9,7 +9,11 @@ export class UserMapper {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      profileImage: user.profileImage,
+     // profileImage: user.profileImage,
+     profileImage: user.profileImage
+  ? { url: user.profileImage.url, publicId: user.profileImage.publicId }
+  : undefined,
+
     //status: user.status,
       userStatus: user.status,
       isVerified: user.isVerified,
@@ -27,7 +31,11 @@ export class UserMapper {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      profileImage: user.profileImage,
+      //profileImage: user.profileImage,
+      profileImage: user.profileImage
+  ? { url: user.profileImage.url, publicId: user.profileImage.publicId }
+  : undefined,
+
       userStatus: user.status,
       status: user.status,
       isVerified: user.isVerified,
@@ -47,7 +55,13 @@ export class UserMapper {
       name: user.name,
       email: user.email,
       phone: user.phone,
-      profileImage: user.profileImage,
+          profileImage: user.profileImage
+      ? {
+          url: (user.profileImage as any).url || user.profileImage, // fallback if it's still string
+          publicId: (user.profileImage as any).publicId || '',      // optional, empty if not saved
+        }
+      : undefined,
+      // profileImage: user.profileImage,
       address: user.address
         ? {
             houseNo: user.address.houseNo,

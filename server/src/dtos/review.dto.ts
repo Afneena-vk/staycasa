@@ -27,6 +27,6 @@ export interface PropertyReviewDto {
   user: {
     id: string;
     name: string;
-    avatar?: string;
+    // avatar?: string;
   };
 }

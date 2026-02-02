@@ -1,9 +1,18 @@
+export class ProfileImageDto {
+  url!: string;
+  publicId!: string;
+}
+
+
+
 export class UserLoginResponseDto {
   id!: string;
   name!: string;
   email!: string;
   phone?: string;
-  profileImage?: string;
+  //profileImage?: string;
+  profileImage?: { url: string; publicId: string };
+
   userStatus!: string;
 //status!: string;
   status!: number;
@@ -18,7 +27,9 @@ export class UserGoogleAuthResponseDto {
   name!: string;
   email!: string;
   phone?: string;
-  profileImage?: string;
+  //profileImage?: string;
+  profileImage?: { url: string; publicId: string };
+
   userStatus!: string;
   isVerified!: boolean;
   status!: string;
@@ -46,7 +57,8 @@ export class UserProfileResponseDto {
   name!: string;
   email!: string;
   phone?: string;
-  profileImage?: string;
+  // profileImage?: string;
+  profileImage?: { url: string; publicId: string };
   address?: {
     houseNo: string;
     street: string;

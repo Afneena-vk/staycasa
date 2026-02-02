@@ -1,60 +1,71 @@
 
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { Suspense, lazy } from "react";
 import "react-toastify/dist/ReactToastify.css";
 
 import ProtectedRoute from "./components/routes/ProtectedRoute.tsx";
 import PublicRoute from "./components/routes/PublicRoute";
 import SessionManager from "./components/routes/SessionManager.tsx";
-
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard.tsx";
-import UserManagement from "./pages/admin/UserManagement.tsx";
-import OwnerManagement from "./pages/admin/OwnerManagement.tsx";
-import UserDetails from "./pages/admin/UserDetails.tsx";
-import OwnerDetails from "./pages/admin/OwnerDetails.tsx";
-import AdminProperties from "./pages/admin/AdminProperties.tsx";
-import AdminPropertyDetails from "./pages/admin/AdminPropertyDetails.tsx";
-import AdminBookings from "./pages/admin/AdminBookings.tsx";
-import AdminBookingDetails from "./pages/admin/AdminBookingDetails.tsx";
-
-import OwnerSignup from "./pages/owner/OwnerSignup";
-import OwnerLogin from "./pages/owner/OwnerLogin.tsx";
-import OwnerForgotPassword from "./pages/owner/OwnerForgotPassword.tsx";
-import OwnerOTPVerification from "./pages/owner/OwnerOTPverification.tsx";
-import OwnerResetPassword from "./pages/owner/OwnerResetPassword";
-import AuthSuccess from "./pages/user/AuthSuccess.tsx";
-import OwnerDashboard from "./pages/owner/OwnerDashboard.tsx";
-import OwnerProperties from "./pages/owner/OwnerProperties.tsx";
-import OwnerAddProperty from "./pages/owner/OwnerAddProperty.tsx";
-import OwnerProfile from "./components/Owner/OwnerProfile.tsx";
-import OwnerPropertyDetails from "./pages/owner/OwnerPropertyDetails.tsx"
-import OwnerEditProperty from "./pages/owner/OwnerEditProperty.tsx";
-import OwnerWallet from "./pages/owner/OwnerWallet.tsx";
-import OwnerBookings from "./pages/owner/OwnerBookingList.tsx";
-import OwnerBookingDetails from "./pages/owner/OwnerBookingDetails.tsx";
-
-import UserSignup from "./pages/user/UserSignup";
-import UserLogin from "./pages/user/UserLogin";
-import UserForgotPassword from "./pages/user/UserForgotPassword";
-import UserOTPVerification from "./pages/user/UserOTPverification";
-import UserResetPassword from "./pages/user/UserResetPassword";
-import UserLanding from "./pages/user/UserLanding.tsx";
-import UserProfile from "./components/User/UserProfile.tsx";
-import UserWallet from "./pages/user/UserWallet.tsx";
-import ActivePropertiesUser from "./pages/user/ActivePropertiesUser.tsx";
-import UserPropertyDetails from "./pages/user/UserPropertyDetails.tsx";
-import Checkout from "./pages/user/Checkout.tsx"
-import PaymentPage from "./pages/user/Payment.tsx";
-import BookingSuccess from "./pages/user/BookingSuccess.tsx";
-import BookingFailure from "./pages/user/BookingFailure.tsx";
-import BookingList from "./pages/user/BookingList.tsx";
-import BookingDetails from "./pages/user/BookingDetails.tsx";
-import Destination from "./pages/user/Destination.tsx";
-import ReviewPage from "./pages/user/ReviewPage.tsx";
-
 import NotFound from "./components/common/NotFound.tsx";
+
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
+
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const UserManagement = lazy(() => import("./pages/admin/UserManagement"));
+const OwnerManagement = lazy(() => import("./pages/admin/OwnerManagement"));
+const UserDetails = lazy(() => import("./pages/admin/UserDetails"));
+const OwnerDetails = lazy(() => import("./pages/admin/OwnerDetails"));
+const AdminProperties = lazy(() => import("./pages/admin/AdminProperties"));
+const AdminPropertyDetails = lazy(() => import("./pages/admin/AdminPropertyDetails"));
+const AdminBookings = lazy(() => import("./pages/admin/AdminBookings"));
+const AdminBookingDetails = lazy(() => import("./pages/admin/AdminBookingDetails"));
+
+
+const OwnerSignup = lazy(() => import("./pages/owner/OwnerSignup"));
+const OwnerLogin = lazy(() => import("./pages/owner/OwnerLogin"));
+const OwnerForgotPassword = lazy(() => import("./pages/owner/OwnerForgotPassword"));
+const OwnerOTPVerification = lazy(() => import("./pages/owner/OwnerOTPverification"));
+const OwnerResetPassword = lazy(() => import("./pages/owner/OwnerResetPassword"));
+const OwnerDashboard = lazy(() => import("./pages/owner/OwnerDashboard"));
+const OwnerProperties = lazy(() => import("./pages/owner/OwnerProperties"));
+const OwnerAddProperty = lazy(() => import("./pages/owner/OwnerAddProperty"));
+const OwnerProfile = lazy(() => import("./components/Owner/OwnerProfile"));
+const OwnerPropertyDetails = lazy(() => import("./pages/owner/OwnerPropertyDetails"));
+const OwnerEditProperty = lazy(() => import("./pages/owner/OwnerEditProperty"));
+const OwnerWallet = lazy(() => import("./pages/owner/OwnerWallet"));
+const OwnerBookings = lazy(() => import("./pages/owner/OwnerBookingList"));
+const OwnerBookingDetails = lazy(() => import("./pages/owner/OwnerBookingDetails"));
+
+
+
+const UserSignup = lazy(() => import("./pages/user/UserSignup"));
+const UserLogin = lazy(() => import("./pages/user/UserLogin"));
+const UserForgotPassword = lazy(() => import("./pages/user/UserForgotPassword"));
+const UserOTPVerification = lazy(() => import("./pages/user/UserOTPverification"));
+const UserResetPassword = lazy(() => import("./pages/user/UserResetPassword"));
+const AuthSuccess = lazy(() => import("./pages/user/AuthSuccess"));
+const UserLanding = lazy(() => import("./pages/user/UserLanding"));
+const UserProfile = lazy(() => import("./components/User/UserProfile"));
+const UserWallet = lazy(() => import("./pages/user/UserWallet"));
+const ActivePropertiesUser = lazy(() => import("./pages/user/ActivePropertiesUser"));
+const UserPropertyDetails = lazy(() => import("./pages/user/UserPropertyDetails"));
+const Checkout = lazy(() => import("./pages/user/Checkout"));
+const PaymentPage = lazy(() => import("./pages/user/Payment"));
+const BookingSuccess = lazy(() => import("./pages/user/BookingSuccess"));
+const BookingFailure = lazy(() => import("./pages/user/BookingFailure"));
+const BookingList = lazy(() => import("./pages/user/BookingList"));
+const BookingDetails = lazy(() => import("./pages/user/BookingDetails"));
+const Destination = lazy(() => import("./pages/user/Destination"));
+const ReviewPage = lazy(() => import("./pages/user/ReviewPage"));
 
 
 const App = () => {
@@ -62,6 +73,7 @@ const App = () => {
     <Router>
       <SessionManager />
       <ToastContainer />
+     <Suspense fallback={<LoadingFallback />}>
       <Routes>
          <Route
           path="/admin/login"
@@ -428,6 +440,7 @@ const App = () => {
 
 
       </Routes>
+      </Suspense>
     </Router>
   );
 };

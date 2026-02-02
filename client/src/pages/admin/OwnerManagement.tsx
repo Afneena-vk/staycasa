@@ -35,6 +35,9 @@ const OwnerManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "blocked">("all");
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [success, setSuccess] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  
 
 
   const { approveOwner, rejectOwner } = useAuthStore();
@@ -105,9 +108,14 @@ const handleNextPage = () => {
       if (!confirmed) return;
     try {
       setActionLoading(`approve-${ownerId}`);
-      await approveOwner(ownerId);
+      const res=await approveOwner(ownerId);
+      setSuccess(res?.message || "Owner approved successfully");
+      setError(null);
       await fetchOwners();
-    } finally {
+  
+    } catch (err: any) {
+    setError(err?.response?.data?.message || "Failed to approve owner");
+  } finally {
       setActionLoading(null);
     }
   };
@@ -212,6 +220,35 @@ const handleNextPage = () => {
             </select>
           </div>
         </div>
+{/* Success Message */}
+{success && (
+  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
+    <div className="flex justify-between items-center">
+      <span>{success}</span>
+      <button
+        onClick={() => setSuccess(null)}
+        className="text-green-500 hover:text-green-700"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
+
+{/* Error Message */}
+{error && (
+  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
+    <div className="flex justify-between items-center">
+      <span>{error}</span>
+      <button
+        onClick={() => setError(null)}
+        className="text-red-500 hover:text-red-700"
+      >
+        ×
+      </button>
+    </div>
+  </div>
+)}
 
         {/* Owners Table */}
         <div className="bg-white shadow rounded-lg overflow-hidden">

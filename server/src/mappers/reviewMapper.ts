@@ -32,7 +32,7 @@ export class ReviewMapper {
       user: {
         id: user._id.toString(),
         name: user.name,
-        avatar: user.profileImage,
+        // avatar: user.profileImage,
       },
     };
   }

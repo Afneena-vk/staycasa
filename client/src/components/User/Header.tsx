@@ -50,9 +50,11 @@ const Header: React.FC = () => {
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="flex items-center space-x-2 focus:outline-none"
             >
-              {userData?.profileImage ? (
+              {/* {userData?.profileImage ? ( */}
+              {userData?.profileImage?.url ? (
                 <img
-                  src={userData.profileImage}
+                  // src={userData.profileImage}
+                   src={userData.profileImage.url}
                   alt="profile"
                   className="w-10 h-10 rounded-full border border-gray-300"
                 />

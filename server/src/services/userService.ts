@@ -14,6 +14,7 @@ import { UserMapper } from "../mappers/userMapper";
 import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, UserProfileResponseDto, ChangePasswordResponseDto } from "../dtos/user.dto";
 import { Types } from 'mongoose';
 import { ITransaction } from '../models/walletModel';
+import { FileStorageService } from '../utils/fileStorageService';
 
 @injectable()
 export class UserService implements IUserService {
@@ -333,7 +334,8 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
     return UserMapper.toProfileResponse(updatedUser, "Profile updated successfully");
   }
 
-async updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto> {
+// async updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProfileResponseDto> {
+async updateUserProfileImage(userId: string, fileData: { url: string; publicId: string }): Promise<UserProfileResponseDto> {
   const user = await this._userRepository.findById(userId);
 
   if (!user) {
@@ -342,8 +344,18 @@ async updateUserProfileImage(userId: string, imageUrl: string): Promise<UserProf
     throw error;
   }
 
+    if (user.profileImage?.publicId) {
+    await FileStorageService.delete(user.profileImage.publicId);
+    
+  }
+
+
+  // const updatedUser = await this._userRepository.update(userId, {
+  //   profileImage: imageUrl,
+  // });
+
   const updatedUser = await this._userRepository.update(userId, {
-    profileImage: imageUrl,
+    profileImage: fileData,
   });
 
   if (!updatedUser) {

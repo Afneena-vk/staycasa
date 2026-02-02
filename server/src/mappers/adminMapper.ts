@@ -41,7 +41,11 @@ static toUserListItem(user: IUser): UserListItemDto {
       phone: user.phone || undefined,
       status: user.status,
       isVerified: user.isVerified,
-      profileImage: user.profileImage || undefined,
+      // profileImage: user.profileImage || undefined,
+      profileImage: user.profileImage
+  ? { url: user.profileImage.url, publicId: user.profileImage.publicId }
+  : undefined,
+
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -75,7 +79,11 @@ static toUserListItem(user: IUser): UserListItemDto {
     phone: user.phone || undefined,
     status: user.status,
     isVerified: user.isVerified,
-    profileImage: user.profileImage || undefined,
+    // profileImage: user.profileImage || undefined,
+    profileImage: user.profileImage
+  ? { url: user.profileImage.url, publicId: user.profileImage.publicId }
+  : undefined,
+
     address: user.address ? {
       houseNo: user.address.houseNo,
       street: user.address.street,
