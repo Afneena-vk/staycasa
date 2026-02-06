@@ -1,4 +1,3 @@
-
 import { injectable, inject } from "tsyringe";
 import { Request, Response, NextFunction } from "express";
 import { TOKENS } from "../config/tokens";
@@ -7,18 +6,22 @@ import { IAdminSubscriptionController } from "./interfaces/IAdminSubscriptionCon
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 
 @injectable()
-export class AdminSubscriptionController implements IAdminSubscriptionController{
+export class AdminSubscriptionController implements IAdminSubscriptionController {
   constructor(
     @inject(TOKENS.IAdminSubscriptionService)
-    private  _adminSubscriptionService: IAdminSubscriptionService
+    private _adminSubscriptionService: IAdminSubscriptionService,
   ) {}
 
-  async getAllPlans(req: Request, res: Response, next: NextFunction): Promise<void>  {
+  async getAllPlans(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const plans = await this._adminSubscriptionService.getAllPlans();
-            res.status(STATUS_CODES.OK).json({
+      res.status(STATUS_CODES.OK).json({
         success: true,
-        message:  MESSAGES.SUCCESS.SUBSCRIPTION_PLANS_FETCHED,
+        message: MESSAGES.SUCCESS.SUBSCRIPTION_PLANS_FETCHED,
         data: plans,
       });
       //res.status(200).json({ success: true, data: plans });
@@ -27,31 +30,26 @@ export class AdminSubscriptionController implements IAdminSubscriptionController
     }
   }
 
-  async updatePlan(req: Request, res: Response, next: NextFunction): Promise<void>  {
+  async updatePlan(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const { planId } = req.params;
       const { price, duration, maxProperties } = req.body;
 
-      const updatedPlan = await this._adminSubscriptionService.updatePlan(planId, {
-        price,
-        duration,
-        maxProperties,
-      });
+      const updatedPlan = await this._adminSubscriptionService.updatePlan(
+        planId,
+        {
+          price,
+          duration,
+          maxProperties,
+        },
+      );
 
-    //   if (!updatedPlan) {
-    //     res.status(404).json({ success: false, message: "Plan not found" });
-    //     return;
-    //   }
-          if (!updatedPlan) {
-        res.status(STATUS_CODES.NOT_FOUND).json({
-          success: false,
-          message: MESSAGES.ERROR.SUBSCRIPTION_PLAN_NOT_FOUND, // or add PLAN_NOT_FOUND
-        });
-        return;
-      }
 
-      //res.status(200).json({ success: true, data: updatedPlan });
-            res.status(STATUS_CODES.OK).json({
+      res.status(STATUS_CODES.OK).json({
         success: true,
         message: MESSAGES.SUCCESS.SUBSCRIPTION_PLAN_UPDATED,
         data: updatedPlan,

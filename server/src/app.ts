@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import passport from './config/passport';
 import { requestLogger } from "./middleware/loggerMiddleware";
+import { errorHandler } from "./middleware/errorHandler";
 dotenv.config();
 
 
@@ -29,6 +30,7 @@ app.use(requestLogger);
 
 app.use("/api", routes);
 
+app.use(errorHandler);
 
 export default app;
 
