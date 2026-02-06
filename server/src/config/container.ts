@@ -11,6 +11,7 @@ import { IBookingRepository } from "../repositories/interfaces/IBookingRepositor
 import { IWalletRepository } from "../repositories/interfaces/IWalletRepository";
 import { IReviewRepository } from "../repositories/interfaces/IReviewRepository";
 import { INotificationRepository } from "../repositories/interfaces/INotificationRepository";
+import { ISubscriptionPlanRepository } from "../repositories/interfaces/ISubscriptionPlanRepository";
 import { PropertyRepository } from "../repositories/propertyRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { OwnerRepository } from "../repositories/ownerRepository";
@@ -19,6 +20,7 @@ import { BookingRepository } from "../repositories/bookingRepository";
 import { WalletRepository } from "../repositories/walletRepository";
 import { ReviewRepository } from "../repositories/reviewRepository";
 import { NotificationRepository } from "../repositories/notificationRepository";
+import { SubscriptionPlanRepository } from "../repositories/SubscriptionPlanRepository";
 
 import { IUserService } from "../services/interfaces/IUserService";
 import { IOwnerService } from "../services/interfaces/IOwnerService";
@@ -27,6 +29,7 @@ import { IPropertyService } from "../services/interfaces/IPropertyService";
 import { IBookingService } from "../services/interfaces/IBookingService";
 import { IReviewService } from "../services/interfaces/IReviewService";
 import { INotificationService } from "../services/interfaces/INotificationService";
+import { IAdminSubscriptionService } from "../services/interfaces/IAdminSubscriptionService";
 import { PropertyService } from "../services/propertyService";
 import { UserService } from "../services/userService";
 import { OwnerService } from "../services/ownerService";
@@ -34,6 +37,7 @@ import { AdminService } from "../services/adminService";
 import { BookingService} from  "../services/bookingService"
 import { ReviewService} from  "../services/reviewService";
 import { NotificationService } from "../services/notificationService";
+import { AdminSubscriptionService } from "../services/adminSubscriptionService";
 
 import { IUserController } from "../controllers/interfaces/IUserController";
 import { IOwnerController } from "../controllers/interfaces/IOwnerController";
@@ -42,6 +46,7 @@ import { IPropertyController } from "../controllers/interfaces/IPropertyControll
 import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { INotificationController } from "../controllers/interfaces/INotificationController";
+import { IAdminSubscriptionController } from "../controllers/interfaces/IAdminSubscriptionController";
 import { PropertyController } from "../controllers/propertyController";
 import { UserController } from "../controllers/userController";
 import { OwnerController } from "../controllers/ownerController";
@@ -49,6 +54,7 @@ import { AdminController } from "../controllers/adminController";
 import { BookingController} from "../controllers/bookingController";
 import { ReviewController} from "../controllers/reviewController";
 import { NotificationController} from "../controllers/notificationController";
+import { AdminSubscriptionController } from "../controllers/adminSubscriptionController";
 
 container.registerSingleton<IUserRepository>(TOKENS.IUserRepository, UserRepository);
 container.registerSingleton<IOwnerRepository>(TOKENS.IOwnerRepository, OwnerRepository);
@@ -58,6 +64,7 @@ container.registerSingleton<IBookingRepository>(TOKENS.IBookingRepository, Booki
 container.registerSingleton<IWalletRepository>(TOKENS.IWalletRepository, WalletRepository);
 container.registerSingleton<IReviewRepository>(TOKENS.IReviewRepository, ReviewRepository);
 container.registerSingleton<INotificationRepository>(TOKENS.INotificationRepository, NotificationRepository);
+container.registerSingleton<ISubscriptionPlanRepository>(TOKENS.ISubscriptionPlanRepository, SubscriptionPlanRepository);
 
 container.registerSingleton<IUserService>(TOKENS.IUserService, UserService);
 container.registerSingleton<IOwnerService>(TOKENS.IOwnerService, OwnerService);
@@ -66,6 +73,7 @@ container.registerSingleton<IPropertyService>(TOKENS.IPropertyService, PropertyS
 container.registerSingleton<IBookingService>(TOKENS.IBookingService, BookingService);
 container.registerSingleton<IReviewService>(TOKENS.IReviewService, ReviewService);
 container.registerSingleton<INotificationService>(TOKENS.INotificationService, NotificationService);
+container.registerSingleton<IAdminSubscriptionService>(TOKENS.IAdminSubscriptionService, AdminSubscriptionService);
 
 container.registerSingleton<IUserController>(TOKENS.IUserController, UserController);
 container.registerSingleton<IOwnerController>(TOKENS.IOwnerController, OwnerController);
@@ -74,4 +82,5 @@ container.registerSingleton<IPropertyController>(TOKENS.IPropertyController, Pro
 container.registerSingleton<IBookingController>(TOKENS.IBookingController, BookingController);
 container.registerSingleton<IReviewController>(TOKENS.IReviewController, ReviewController);
 container.registerSingleton<INotificationController>(TOKENS.INotificationController, NotificationController);
+container.registerSingleton<IAdminSubscriptionController>(TOKENS.IAdminSubscriptionController, AdminSubscriptionController);
 export { container };

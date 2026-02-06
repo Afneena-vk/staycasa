@@ -115,6 +115,9 @@ export const ADMIN_API = {
   MARK_ALL_NOTIFICATIONS_READ: "/admin/notifications/read-all",
   DELETE_NOTIFICATION: (notificationId: string) => `/admin/notifications/${notificationId}`,
 
+  SUBSCRIPTION_PLANS: "/admin/subscription-plans",
+  UPDATE_SUBSCRIPTION_PLAN: (planId: string) => `/admin/subscription-plans/${planId}`,
+
 
 };
 

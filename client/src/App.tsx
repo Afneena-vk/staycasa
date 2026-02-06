@@ -28,6 +28,7 @@ const AdminProperties = lazy(() => import("./pages/admin/AdminProperties"));
 const AdminPropertyDetails = lazy(() => import("./pages/admin/AdminPropertyDetails"));
 const AdminBookings = lazy(() => import("./pages/admin/AdminBookings"));
 const AdminBookingDetails = lazy(() => import("./pages/admin/AdminBookingDetails"));
+const AdminSubscription = lazy(()=>import("./pages/admin/AdminSubscription.tsx"))
 
 
 const OwnerSignup = lazy(() => import("./pages/owner/OwnerSignup"));
@@ -159,6 +160,14 @@ const App = () => {
           }
         />        
         
+       <Route
+          path="/admin/subscriptions"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminSubscription/>
+            </ProtectedRoute>
+          }
+        />  
         
         <Route
             path="/"

@@ -11,6 +11,7 @@ import { PropertyController } from "../controllers/propertyController";
 import { IPropertyController } from "../controllers/interfaces/IPropertyController";
 import { BookingController } from "../controllers/bookingController";
 import { ReviewController } from "../controllers/reviewController";
+import { IAdminSubscriptionController } from "../controllers/interfaces/IAdminSubscriptionController";
 
 const adminRoutes = Router();
 const adminController = container.resolve<IAdminController>(TOKENS.IAdminController);
@@ -18,6 +19,7 @@ const propertyController = container.resolve<IPropertyController>(TOKENS.IProper
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController)
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController)
 const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
+const adminSubscriptionController = container.resolve<IAdminSubscriptionController>(TOKENS.IAdminSubscriptionController);
 
 adminRoutes.post("/login", adminController.login.bind(adminController));
 adminRoutes.post(
@@ -201,6 +203,22 @@ adminRoutes.delete(
   authMiddleware(["admin"]),
    notificationController.deleteNotification.bind(notificationController)
 );
+
+
+adminRoutes.get(
+  "/subscription-plans",
+  authMiddleware(["admin"]),
+   adminSubscriptionController.getAllPlans.bind(adminSubscriptionController)
+);
+
+
+adminRoutes.patch(
+  "/subscription-plans/:planId",
+  authMiddleware(["admin"]),
+   adminSubscriptionController.updatePlan.bind(adminSubscriptionController)
+);
+
+
 
 
 

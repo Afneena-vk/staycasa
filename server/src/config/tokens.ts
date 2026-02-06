@@ -9,6 +9,7 @@ export const TOKENS = {
   IWalletRepository:Symbol.for("IWalletRepository"),
   IReviewRepository:Symbol.for("IReviewRepository"),
   INotificationRepository:Symbol.for("INotificationRepository"),
+  ISubscriptionPlanRepository:Symbol.for("ISubscriptionPlanRepository"),
   
   IUserService: Symbol.for("IUserService"),
   IOwnerService: Symbol.for("IOwnerService"),
@@ -17,6 +18,7 @@ export const TOKENS = {
   IBookingService:Symbol.for("IBookingService"),
   IReviewService:Symbol.for("IReviewService"),
   INotificationService:Symbol.for("INotificationService"),
+  IAdminSubscriptionService:Symbol.for("IAdminSubscriptionService"),
 
   IUserController: Symbol.for("IUserController"),
   IOwnerController: Symbol.for("IOwnerController"),
@@ -25,6 +27,7 @@ export const TOKENS = {
   IBookingController: Symbol.for("IBookingController"),
   IReviewController: Symbol.for("IReviewController"),
   INotificationController: Symbol.for("INotificationController"),
+  IAdminSubscriptionController: Symbol.for("IAdminSubscriptionController"),
 
   IOTPService: Symbol.for("IOTPService"),
   ILogger: Symbol.for("ILogger"),
