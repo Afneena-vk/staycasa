@@ -5,6 +5,8 @@ import OwnerLayout from "../../layouts/owner/OwnerLayout";
 //import { authService } from "../../services/authService";
 import { useAuthStore } from "../../stores/authStore";
 import ImageCropper from "../../components/ImageCropper"; 
+import { useNavigate } from "react-router-dom";
+
 
 const AddProperty: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -32,7 +34,7 @@ const AddProperty: React.FC = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
 const { addProperty, isLoading, error, clearError } = useAuthStore();
-
+ const navigate = useNavigate();
   const handleAmenitiesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     if (checked) {
@@ -186,11 +188,26 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 mt-8">
       <h2 className="text-2xl font-bold mb-6">Add New Property</h2>
 
-       {error && (
+       {/* {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
           </div>
-        )}
+        )} */}
+   {error && (
+  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <p>{error}</p>
+
+    {error.includes("subscription") && (
+      <button
+        onClick={() => navigate("/owner/subscription")}
+        className="mt-2 text-sm underline text-blue-600 hover:text-blue-800"
+      >
+        Go to Subscription Page
+      </button>
+    )}
+  </div>
+)}
+     
 
 
       <form onSubmit={handleSubmit} className="space-y-4">

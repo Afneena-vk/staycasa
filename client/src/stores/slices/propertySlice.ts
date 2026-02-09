@@ -78,7 +78,10 @@ export const createPropertySlice: StateCreator<
         }));
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.error || error.message || "Failed to add property";
+      //const errorMessage = error.response?.data?.error || error.message || "Failed to add property";
+      const errorMessage =
+  error.response?.data?.message || error.message || "Failed to add property";
+
       set({ 
         isLoading: false, 
         error: errorMessage 

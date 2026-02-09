@@ -15,9 +15,12 @@ const OwnerSubscriptionPage = () => {
     subscriptionLoading,
     subscriptionError,
     subscriptionMessage,
+    
   } = useAuthStore();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const userData = useAuthStore((state) => state.userData);
+  const isApproved = userData?.approvalStatus === "approved";
 
   useEffect(() => {
     fetchPlansForOwner();
@@ -127,11 +130,16 @@ const OwnerSubscriptionPage = () => {
                   </div>
 
                   <button
-                    disabled={subscriptionLoading}
+                    disabled={subscriptionLoading || !isApproved}
                     onClick={() => subscribeToPlan(plan.id)}
                     className="mt-6 w-full rounded-xl bg-indigo-600 text-white py-2 font-medium hover:bg-indigo-700 transition disabled:opacity-60"
                   >
-                    {subscriptionLoading ? "Processing..." : "Subscribe"}
+                    {/* {subscriptionLoading ? "Processing..." : "Subscribe"} */}
+                      {!isApproved
+    ? "Approval Pending"
+    : subscriptionLoading
+    ? "Processing..."
+    : "Subscribe"}
                   </button>
                 </div>
               ))}

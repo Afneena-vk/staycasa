@@ -1,9 +1,4 @@
 
-
-
-
-
-
 import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch } from "react-icons/fa";
 import OwnerLayout from "../../layouts/owner/OwnerLayout";
@@ -54,6 +49,20 @@ const deleteProperty = useAuthStore((state) => state.deleteProperty);
 const totalPages = useAuthStore((state) => state.totalPages);
 
 
+const fetchCurrentSubscription = useAuthStore(
+  (state) => state.fetchCurrentSubscription
+);
+
+const currentSubscription = useAuthStore(
+  (state) => state.currentSubscription
+);
+
+const subscriptionLoading = useAuthStore(
+  (state) => state.subscriptionLoading
+);
+
+const hasActiveSubscription = currentSubscription?.hasActiveSubscription === true;
+
     const isApproved = userData?.approvalStatus === "approved";
     const navigate = useNavigate();
 
@@ -74,6 +83,12 @@ const totalPages = useAuthStore((state) => state.totalPages);
     });
   }
 }, [isApproved, currentPage, debouncedSearch, sortOption]);   
+
+useEffect(() => {
+  if (isApproved) {
+    fetchCurrentSubscription();
+  }
+}, [isApproved, fetchCurrentSubscription]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -157,11 +172,17 @@ const handleDelete = async (propertyId: string) => {
             My Properties
           </h1>
 
+              {isApproved && !hasActiveSubscription && !subscriptionLoading && (
+      <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-400 text-sm text-red-700 rounded">
+        You don’t have an active subscription. Please subscribe to a plan to add properties.
+      </div>
+    )}
+
           <button
             onClick={handleAddProperty}
-            disabled={!isApproved}
+            disabled={!isApproved || !hasActiveSubscription}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md transition ${
-              isApproved
+              isApproved && hasActiveSubscription
                 ? "bg-blue-600 hover:bg-blue-700 text-white"
                 : "bg-gray-400 cursor-not-allowed text-gray-200"
             }`}

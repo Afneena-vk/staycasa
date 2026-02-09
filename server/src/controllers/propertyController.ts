@@ -24,14 +24,20 @@ export class PropertyController implements IPropertyController {
       const result = await this._propertyService.createProperty(ownerId, propertyData);
       
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Property creation error:", error);
-      logger.error('Property creation error: ' + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+      
+    } catch (error) {
+       next(error); 
     }
   }
+    // } catch (error: any) {
+    //   console.error("Property creation error:", error);
+    //   logger.error('Property creation error: ' + error.message);
+    //   res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+    //     error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+    //   });
+    // }
+
+
 
   async getOwnerProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

@@ -12,17 +12,74 @@ import { Types } from "mongoose";
 import Owner, { IOwner } from "../models/ownerModel";
 import { IProperty } from '../models/propertyModel';
 import mongoose from "mongoose";
+import { IOwnerRepository } from '../repositories/interfaces/IOwnerRepository';
+import { ISubscriptionRepository } from '../repositories/interfaces/ISubscriptionRepository';
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class PropertyService implements IPropertyService {
   constructor(
     @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
     @inject(TOKENS.IBookingRepository) private _bookingRepository : IBookingRepository,
-    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+    @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository,
+    @inject(TOKENS.ISubscriptionRepository) private _subscriptionRepository: ISubscriptionRepository
   ) {}
 
   async createProperty(ownerId: string, data: CreatePropertyDto): Promise<CreatePropertyResponseDto> {
     try {
+
+      const owner = await this._ownerRepository.findById(ownerId);
+
+    if (!owner) {
+      throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
+    }
+
+    // if (owner.approvalStatus !== "approved") {
+    //   throw { status: STATUS_CODES.FORBIDDEN, message: "Owner is not approved by admin" };
+    // }
+
+    if (owner.approvalStatus !== "approved") {
+      throw new AppError("Owner is not approved by admin", STATUS_CODES.FORBIDDEN);
+    }
+    
+   const subscription = await this._subscriptionRepository.findActiveByOwnerId(ownerId);
+
+    if (!subscription) {
+      throw new AppError(
+        "You must have an active subscription to list a property",
+        STATUS_CODES.FORBIDDEN
+      );
+    } 
+    
+    if (subscription.endDate < new Date()) {
+      await this._subscriptionRepository.update(subscription._id.toString(), { status: "Expired" });
+
+      throw new AppError(
+        "Your subscription has expired. Please renew to list properties",
+        STATUS_CODES.FORBIDDEN
+      );
+    }
+
+
+    const usedProperties = await this._propertyRepository.countByOwnerId(ownerId);
+    const plan = subscription.planId as any; 
+    const maxAllowed = plan.maxProperties; 
+
+    //     if (maxAllowed !== null && usedProperties >= maxAllowed) {
+    //   throw {
+    //     status: STATUS_CODES.FORBIDDEN,
+    //     message: `You have reached your property limit for the ${plan.name} plan`,
+    //   };
+    // }
+
+    if (maxAllowed !== null && usedProperties >= maxAllowed) {
+      throw new AppError(
+        `You have reached your property limit for the ${plan.name} plan`,
+        STATUS_CODES.FORBIDDEN
+      );
+    }
+
       const propertyData = {
         ...data,
         ownerId:new Types.ObjectId(ownerId),
@@ -39,12 +96,29 @@ export class PropertyService implements IPropertyService {
         property,
         "Property added successfully and is pending approval"
       );
-    } catch (error: any) {
-      const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-      err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-      throw err;
+
+//     } catch (error: any) {
+//   if (error.status) {
+//     throw error;   // preserve 403, 404, etc.
+//   }
+
+//   const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+//   err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
+//   throw err;
+// }
+//   }  
+
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      throw error; 
     }
+
+    throw new AppError(
+      error.message || MESSAGES.ERROR.SERVER_ERROR,
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
+}
 
   // async getOwnerProperties(ownerId: string): Promise<PropertyResponseDto[]> {
   //   try {
