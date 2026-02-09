@@ -1,19 +1,39 @@
 import { api } from "../api/api";
-import { ADMIN_API } from "../constants/apiRoutes";
-import { SubscriptionPlanDto,UpdateSubscriptionPlanDto } from "../types/subscription";
+import { ADMIN_API, OWNER_API } from "../constants/apiRoutes";
+import {
+  SubscriptionPlanDto,
+  UpdateSubscriptionPlanDto,
+} from "../types/subscription";
 
-export const subscriptionService= {
+export const subscriptionService = {
+  getAllPlans: async (): Promise<SubscriptionPlanDto[]> => {
+    const res = await api.get(ADMIN_API.SUBSCRIPTION_PLANS);
+    return res.data.data;
+  },
 
-    getAllPlans: async ():Promise<SubscriptionPlanDto[]> => {
-      const res = await api.get(ADMIN_API.SUBSCRIPTION_PLANS);
-      return res.data.data;
-    },
+  updatePlan: async (
+    planId: string,
+    data: UpdateSubscriptionPlanDto,
+  ): Promise<SubscriptionPlanDto> => {
+    const res = await api.patch(
+      ADMIN_API.UPDATE_SUBSCRIPTION_PLAN(planId),
+      data,
+    );
+    return res.data.data;
+  },
 
-    updatePlan: async (planId:string, data: UpdateSubscriptionPlanDto):Promise<SubscriptionPlanDto> => {
-      const res = await api.patch(ADMIN_API.UPDATE_SUBSCRIPTION_PLAN(planId),data);
-      return res.data.data;
-    },    
+  getAllPlansforOwner: async (): Promise<SubscriptionPlanDto[]> => {
+    const res = await api.get(OWNER_API.SUBSCRIPTION_PLANS);
+    return res.data.data;
+  },
 
+  subscribe: async (planId: string, paymentId: string) => {
+    const res = await api.post(OWNER_API.SUBSCRIBE, { planId, paymentId });
+    return res.data;
+  },
 
-
-}
+  getCurrentSubscription: async () => {
+    const res = await api.get(OWNER_API.CURRENT_SUBSCRIPTION);
+    return res.data.data;
+  },
+};

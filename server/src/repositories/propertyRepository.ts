@@ -370,4 +370,8 @@ async getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; cou
     ]);
   }
 
+  async countByOwnerId(ownerId: string): Promise<number> {
+  return await this.model.countDocuments({ ownerId }).exec();
+}
+
 }

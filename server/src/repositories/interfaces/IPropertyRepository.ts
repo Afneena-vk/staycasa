@@ -70,4 +70,5 @@ getOwnerProperties (ownerId: string,
 
    getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]>;
    getPropertyStatusCounts(): Promise<{ _id: string; count: number }[]>;
+   countByOwnerId(ownerId: string): Promise<number>;
 }

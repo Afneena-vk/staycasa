@@ -10,6 +10,7 @@ export const TOKENS = {
   IReviewRepository:Symbol.for("IReviewRepository"),
   INotificationRepository:Symbol.for("INotificationRepository"),
   ISubscriptionPlanRepository:Symbol.for("ISubscriptionPlanRepository"),
+  ISubscriptionRepository:Symbol.for("ISubscriptionRepository"),
   
   IUserService: Symbol.for("IUserService"),
   IOwnerService: Symbol.for("IOwnerService"),
@@ -19,6 +20,7 @@ export const TOKENS = {
   IReviewService:Symbol.for("IReviewService"),
   INotificationService:Symbol.for("INotificationService"),
   IAdminSubscriptionService:Symbol.for("IAdminSubscriptionService"),
+  ISubscriptionService:Symbol.for("ISubscriptionService"),
 
   IUserController: Symbol.for("IUserController"),
   IOwnerController: Symbol.for("IOwnerController"),
@@ -28,6 +30,7 @@ export const TOKENS = {
   IReviewController: Symbol.for("IReviewController"),
   INotificationController: Symbol.for("INotificationController"),
   IAdminSubscriptionController: Symbol.for("IAdminSubscriptionController"),
+  ISubscriptionController: Symbol.for("ISubscriptionController"),
 
   IOTPService: Symbol.for("IOTPService"),
   ILogger: Symbol.for("ILogger"),

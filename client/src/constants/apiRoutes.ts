@@ -77,6 +77,11 @@ export const OWNER_API = {
   MARK_ALL_NOTIFICATIONS_READ: "/owner/notifications/read-all",
   DELETE_NOTIFICATION: (notificationId: string) => `/owner/notifications/${notificationId}`,
 
+  SUBSCRIPTION_PLANS: "/owner/subscription-plans",
+  SUBSCRIBE: "/owner/subscribe",
+  CURRENT_SUBSCRIPTION: "/owner/subscription/current",
+
+
 };
 
 export const ADMIN_API = {

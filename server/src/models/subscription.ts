@@ -4,6 +4,7 @@ import { IOwner } from "./ownerModel";
 import { ISubscriptionPlan } from "./subscriptionPlan";
 
 export interface ISubscription extends Document {
+   _id: Types.ObjectId; 
   ownerId: mongoose.Types.ObjectId | IOwner;
 //   subscriptionPlan: Types.ObjectId | ISubscriptionPlan;
   planId : mongoose.Types.ObjectId | ISubscriptionPlan;

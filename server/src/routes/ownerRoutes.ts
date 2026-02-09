@@ -5,6 +5,7 @@ import { IPropertyController } from "../controllers/interfaces/IPropertyControll
 import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { INotificationController } from "../controllers/interfaces/INotificationController";
+import { ISubscriptionController } from "../controllers/interfaces/ISubscriptionController";
 import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -19,6 +20,7 @@ const propertyController = container.resolve<IPropertyController>(TOKENS.IProper
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
 const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
+const subscriptionController = container.resolve<ISubscriptionController>(TOKENS.ISubscriptionController);
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -178,5 +180,22 @@ ownerRoutes.delete(
   notificationController.deleteNotification.bind(notificationController)
 );
 
+ownerRoutes.get(
+  "/subscription-plans",
+  authMiddleware(["owner"]),
+   subscriptionController.getAllPlans.bind(subscriptionController)
+);
+
+ownerRoutes.post(
+  "/subscribe",
+  authMiddleware(["owner"]),
+   subscriptionController.subscribe.bind(subscriptionController)
+);
+
+ownerRoutes.get(
+  "/subscription/current",
+  authMiddleware(["owner"]),
+   subscriptionController.getCurrentSubscription.bind(subscriptionController)
+);
 
 export default ownerRoutes

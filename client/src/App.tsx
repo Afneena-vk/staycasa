@@ -45,7 +45,7 @@ const OwnerEditProperty = lazy(() => import("./pages/owner/OwnerEditProperty"));
 const OwnerWallet = lazy(() => import("./pages/owner/OwnerWallet"));
 const OwnerBookings = lazy(() => import("./pages/owner/OwnerBookingList"));
 const OwnerBookingDetails = lazy(() => import("./pages/owner/OwnerBookingDetails"));
-
+const OwnerSubscription = lazy(() => import("./pages/owner/OwnerSubscription"));
 
 
 const UserSignup = lazy(() => import("./pages/user/UserSignup"));
@@ -284,6 +284,15 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={["owner"]}>
               <OwnerBookingDetails/>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/owner/subscription"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerSubscription/>
             </ProtectedRoute>
           }
         />

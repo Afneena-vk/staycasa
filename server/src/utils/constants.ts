@@ -41,6 +41,8 @@ export const ROLES = {
       SUBSCRIPTION_PLANS_FETCHED: "Subscription plans fetched successfully",
       SUBSCRIPTION_PLAN_UPDATED: "Subscription plan updated successfully",
 
+      SUBSCRIPTION_SUCCESS: "Subscribed successfully",
+
     },
     ERROR: {
       INVALID_CREDENTIALS: "Invalid credentials",
@@ -74,5 +76,7 @@ export const ROLES = {
       REVIEW_ALREADY_EXISTS: 'Review already exists for this booking',
       NOTIFICATION_NOT_FOUND: "Notification not found",
       SUBSCRIPTION_PLAN_NOT_FOUND: "Subscription plan not found",
+      PLAN_NOT_FOUND: "Subscription plan not found",
+      
     },
   };
