@@ -28,6 +28,47 @@ async getAllPlans(req: Request, res: Response, next: NextFunction): Promise<void
     }
   }
 
+  async createSubscriptionOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId = (req as any).userId;
+    const { planId } = req.body;
+
+    const order = await this._subscriptionService.createSubscriptionOrder(ownerId, planId);
+
+    res.status(STATUS_CODES.OK).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+
+async verifySubscriptionPayment(req: Request, res: Response, next: NextFunction) {
+  try {
+    const ownerId = (req as any).userId;
+    const { planId, razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
+
+    await this._subscriptionService.verifySubscriptionPayment(
+      ownerId,
+      planId,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Subscription activated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
   async subscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const ownerId = (req as any).userId; 

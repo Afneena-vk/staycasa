@@ -91,33 +91,78 @@ export const createSubscriptionSlice: StateCreator<
     }
   },
 
-  subscribeToPlan: async (planId: string) => {
-    set({ subscriptionLoading: true,
-          subscriptionError: null,
-          subscriptionMessage: null,
-     });
+subscribeToPlan: async (planId: string) => {
+  set({
+    subscriptionLoading: true,
+    subscriptionError: null,
+    subscriptionMessage: null,
+  });
 
-    try {
-       const res = await subscriptionService.subscribe(planId, "dummy-payment-id");
-             set({
-        subscriptionMessage: res.message,
-      });
-      //await useAuthStore.getState().fetchCurrentSubscription();
-      const data = await subscriptionService.getCurrentSubscription();
-     set({ currentSubscription: data });
+  try {
+   
+    const order = await subscriptionService.createOrder(planId);
 
-    // } finally {
-    //   set({ subscriptionLoading: false });
-    // }
-        } catch (err: any) {
-      set({
-        subscriptionError:
-          err.response?.data?.message || "Subscription failed", 
-      });
-      throw err;
-    } finally {
-      set({ subscriptionLoading: false });
+
+    console.log("Order from backend:", order);
+    console.log("Razorpay SDK:", (window as any).Razorpay);
+    console.log("Key:", import.meta.env.VITE_RAZORPAY_KEY_ID);
+
+      if (!(window as any).Razorpay) {
+      throw new Error("Razorpay SDK not loaded");
     }
-  },
+
+    
+    const options: any = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
+      amount: order.amount,
+      currency: order.currency,
+      name: "Your App Name",
+      description: "Subscription Payment",
+      order_id: order.id,
+      handler: async function (response: any) {
+        try {
+          
+          await subscriptionService.verifyPayment({
+            planId,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+
+          set({
+            subscriptionMessage: "Subscription activated successfully 🎉",
+          });
+
+          const data = await subscriptionService.getCurrentSubscription();
+          set({ currentSubscription: data });
+        } catch (err: any) {
+          set({
+            subscriptionError:
+              err.response?.data?.message || "Payment verification failed",
+          });
+        } finally {
+          set({ subscriptionLoading: false });
+        }
+      },
+      prefill: {
+        name: "Owner",
+        email: "owner@email.com",
+      },
+      theme: {
+        color: "#4f46e5",
+      },
+    };
+
+    const razorpay = new (window as any).Razorpay(options);
+    razorpay.open();
+  } catch (err: any) {
+    set({
+      subscriptionError:
+        err.response?.data?.message || "Payment initialization failed",
+    });
+    set({ subscriptionLoading: false });
+  }
+},
+
 
 });

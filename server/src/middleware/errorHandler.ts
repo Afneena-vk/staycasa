@@ -9,7 +9,17 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  logger.error(err);
+//   logger.error(err);
+  console.error(" ERROR CAUGHT:");
+  console.error(err);              
+  console.error(err?.message);     
+  console.error(err?.stack);       
+
+  logger.error({
+    message: err?.message,
+    stack: err?.stack,
+    error: err,
+  });
 
   let statusCode = STATUS_CODES.INTERNAL_SERVER_ERROR;
   let message = MESSAGES.ERROR.SERVER_ERROR;
@@ -17,7 +27,12 @@ export const errorHandler = (
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
-  }
+  } else if (err?.statusCode) {
+  statusCode = err.statusCode;
+  message = err?.error?.description || err.message;
+} else if (err?.message) {
+  message = err.message;
+}
 
   res.status(statusCode).json({
     success: false,

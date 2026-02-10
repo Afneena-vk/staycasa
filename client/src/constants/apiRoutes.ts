@@ -80,6 +80,8 @@ export const OWNER_API = {
   SUBSCRIPTION_PLANS: "/owner/subscription-plans",
   SUBSCRIBE: "/owner/subscribe",
   CURRENT_SUBSCRIPTION: "/owner/subscription/current",
+  CREATE_SUBSCRIPTION_ORDER: "/owner/subscription/create-order",
+  VERIFY_SUBSCRIPTION_PAYMENT: "/owner/subscription/verify-payment",
 
 
 };

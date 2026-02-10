@@ -187,6 +187,18 @@ ownerRoutes.get(
 );
 
 ownerRoutes.post(
+  "/subscription/create-order",
+  authMiddleware(["owner"]),
+  subscriptionController.createSubscriptionOrder.bind(subscriptionController)
+);
+
+ownerRoutes.post(
+  "/subscription/verify-payment",
+  authMiddleware(["owner"]),
+  subscriptionController.verifySubscriptionPayment.bind(subscriptionController)
+);
+
+ownerRoutes.post(
   "/subscribe",
   authMiddleware(["owner"]),
    subscriptionController.subscribe.bind(subscriptionController)

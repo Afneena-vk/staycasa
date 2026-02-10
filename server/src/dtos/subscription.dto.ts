@@ -19,3 +19,10 @@ export interface CurrentSubscriptionDto {
   hasActiveSubscription: boolean;
   subscription: SubscriptionResponseDto | null;
 }
+
+export interface RazorpayOrderDto {
+  id: string;
+  amount: number;
+  currency: string;
+  receipt: string;
+}

@@ -27,6 +27,22 @@ export const subscriptionService = {
     return res.data.data;
   },
 
+    createOrder: async (planId: string) => {
+    const res = await api.post(OWNER_API.CREATE_SUBSCRIPTION_ORDER, { planId });
+    return res.data.order; 
+  },
+
+    verifyPayment: async (payload: {
+    planId: string;
+    razorpayPaymentId: string;
+    razorpayOrderId: string;
+    razorpaySignature: string;
+  }) => {
+    const res = await api.post(OWNER_API.VERIFY_SUBSCRIPTION_PAYMENT, payload);
+    return res.data;
+  },
+
+
   subscribe: async (planId: string, paymentId: string) => {
     const res = await api.post(OWNER_API.SUBSCRIBE, { planId, paymentId });
     return res.data;
