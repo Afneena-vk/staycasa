@@ -17,6 +17,7 @@ export interface SubscriptionSlice {
     totalPages: number;
   } | null;
 
+  adminSubscriptionRevenue: number | null; 
   
 
   fetchPlans: () => Promise<void>;
@@ -43,6 +44,7 @@ export const createSubscriptionSlice: StateCreator<
 
   adminSubscriptions: [],
   adminSubscriptionsPagination: null,
+  adminSubscriptionRevenue: null,
 
   fetchPlans: async () => {
     set({ subscriptionLoading: true, subscriptionError: null });
@@ -189,6 +191,7 @@ fetchAllAdminSubscriptions: async (filters) => {
     set({
       adminSubscriptions: res.data,
       adminSubscriptionsPagination: res.pagination,
+      adminSubscriptionRevenue: res.revenue,
     });
   } catch (err: any) {
     set({

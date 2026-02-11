@@ -102,9 +102,13 @@ async findActiveByOwnerId(ownerId: string): Promise<ISubscription | null> {
 
 async getAllSubscriptions(
   filters: AdminSubscriptionFilterDto
-// ): Promise<{ data: ISubscription[]; total: number }> {
-): Promise<{ data: IAdminSubscriptionAggregate[]; total: number }> {
 
+// ): Promise<{ data: IAdminSubscriptionAggregate[]; total: number }> {
+): Promise<{
+  data: IAdminSubscriptionAggregate[];
+  total: number;
+  totalRevenue: number;
+}> {
   const { page = 1, limit = 10, ownerName, planName, status, startDate, endDate } = filters;
 
   const matchStage: any = {};
@@ -117,10 +121,11 @@ async getAllSubscriptions(
     if (endDate) matchStage.startDate.$lte = endDate;
   }
 
-  const pipeline: any[] = [
+  // const pipeline: any[] = [
+  const basePipeline: any[] = [
     { $match: matchStage },
 
-    // join owners
+    
     {
       $lookup: {
         from: "owners",
@@ -131,7 +136,7 @@ async getAllSubscriptions(
     },
     { $unwind: "$owner" },
 
-    // join plans
+    
     {
       $lookup: {
         from: "subscriptionplans",
@@ -143,32 +148,57 @@ async getAllSubscriptions(
     { $unwind: "$plan" },
   ];
 
-  // Filters on joined fields
+  
   if (ownerName) {
-    pipeline.push({
+    // pipeline.push({
+     basePipeline.push({
       $match: { "owner.name": { $regex: ownerName, $options: "i" } },
     });
   }
 
   if (planName) {
-    pipeline.push({
+    // pipeline.push({
+    basePipeline.push({
       $match: { "plan.name": { $regex: planName, $options: "i" } },
     });
   }
 
-  // Count pipeline
-  const countPipeline = [...pipeline, { $count: "total" }];
 
-  // Pagination pipeline
-  pipeline.push(
+  //const countPipeline = [...pipeline, { $count: "total" }];
+  const countPipeline = [...basePipeline, { $count: "total" }];
+
+    const revenuePipeline = [
+    ...basePipeline,
+    {
+      $group: {
+        _id: null,
+        totalRevenue: { $sum: "$plan.price" },
+      },
+    },
+  ];
+
+ 
+  // pipeline.push(
+  //   { $sort: { startDate: -1 } },
+  //   { $skip: (page - 1) * limit },
+  //   { $limit: limit }
+  // );
+
+    const dataPipeline = [
+    ...basePipeline,
     { $sort: { startDate: -1 } },
     { $skip: (page - 1) * limit },
-    { $limit: limit }
-  );
+    { $limit: limit },
+  ];
 
-  const [rows, countResult] = await Promise.all([
-    this.model.aggregate(pipeline),
+  // const [rows, countResult] = await Promise.all([
+  //   this.model.aggregate(pipeline),
+  //   this.model.aggregate(countPipeline),
+  // ]);
+    const [rows, countResult, revenueResult] = await Promise.all([
+    this.model.aggregate(dataPipeline),
     this.model.aggregate(countPipeline),
+    this.model.aggregate(revenuePipeline),
   ]);
 
   const total = countResult[0]?.total || 0;
@@ -177,6 +207,7 @@ async getAllSubscriptions(
     // data: rows as ISubscription[],
     data: rows as IAdminSubscriptionAggregate[],
     total,
+    totalRevenue: revenueResult[0]?.totalRevenue || 0,
   };
 }
 

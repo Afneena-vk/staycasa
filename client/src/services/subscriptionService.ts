@@ -4,7 +4,8 @@ import {
   SubscriptionPlanDto,
   UpdateSubscriptionPlanDto,
   AdminSubscriptionDto,
-  AdminSubscriptionFilterDto
+  AdminSubscriptionFilterDto,
+  AdminSubscriptionListResponseDto
 } from "../types/subscription";
 
 export const subscriptionService = {
@@ -58,15 +59,16 @@ export const subscriptionService = {
 
 getAllAdminSubscriptions: async (
   filters: AdminSubscriptionFilterDto
-): Promise<{
-  data: AdminSubscriptionDto[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}> => {
+// ): Promise<{
+//   data: AdminSubscriptionDto[];
+//   pagination: {
+//     total: number;
+//     page: number;
+//     limit: number;
+//     totalPages: number;
+//   };
+// }> => {
+): Promise<AdminSubscriptionListResponseDto> => {
   const res = await api.get(ADMIN_API.ALL_SUBSCRIPTIONS, {
     params: filters,
   });
@@ -74,6 +76,7 @@ getAllAdminSubscriptions: async (
   return {
     data: res.data.data,
     pagination: res.data.pagination,
+    revenue: res.data.revenue,
   };
 },
 

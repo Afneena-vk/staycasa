@@ -62,3 +62,15 @@ export interface AdminSubscriptionDto {
   transactionType: "New" | "Renewal" | "Upgrade";
 }
 
+export interface AdminSubscriptionListResponseDto {
+  data: AdminSubscriptionDto[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  revenue: number; 
+}
+
+

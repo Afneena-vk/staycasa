@@ -6,6 +6,7 @@ const AdminAllSubscriptionsPage = () => {
   const {
     adminSubscriptions,
     adminSubscriptionsPagination,
+    adminSubscriptionRevenue,
     fetchAllAdminSubscriptions,
     subscriptionLoading,
     subscriptionError,
@@ -60,6 +61,21 @@ const AdminAllSubscriptionsPage = () => {
     <ModernAdminLayout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">All Subscriptions</h1>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+    <p className="text-sm text-slate-400">Total Revenue</p>
+    <p className="text-3xl font-bold text-emerald-400 mt-2">
+      ₹{adminSubscriptionRevenue?.toLocaleString() ?? 0}
+    </p>
+  </div>
+
+  <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
+    <p className="text-sm text-slate-400">Total Subscriptions</p>
+    <p className="text-3xl font-bold text-white mt-2">
+      {adminSubscriptionsPagination?.total ?? 0}
+    </p>
+  </div>
+</div>
 
         {/* Filters */}
         <div className="flex gap-3">

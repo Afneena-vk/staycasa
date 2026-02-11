@@ -63,4 +63,34 @@ static toDtoList(subscriptions: IAdminSubscriptionAggregate[]): AdminSubscriptio
   }  
 
 
+  static toAdminDto(subscription: ISubscription): AdminSubscriptionDto {
+    const owner = subscription.ownerId as unknown as IOwner;
+    const plan = subscription.planId as unknown as ISubscriptionPlan;
+
+    return {
+      id: subscription._id.toString(),
+      owner: {
+        id: owner._id.toString(),
+        name: owner.name,
+        email: owner.email,
+      },
+      plan: {
+        id: plan._id.toString(),
+        name: plan.name,
+        price: plan.price,
+        duration: plan.duration,
+        maxProperties: plan.maxProperties,
+      },
+      status: subscription.status,
+      startDate: subscription.startDate,
+      endDate: subscription.endDate,
+      paymentId: subscription.paymentId,
+      transactionType: subscription.transactionType,
+    };
+  }
+
+  static toAdminDtoList(subscriptions: ISubscription[]): AdminSubscriptionDto[] {
+    return subscriptions.map((sub) => this.toAdminDto(sub));
+  }
+
 }

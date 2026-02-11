@@ -63,3 +63,15 @@ export interface AdminSubscriptionFilterDto {
   limit?: number;
 }
 
+export interface AdminSubscriptionListResponseDto {
+  data: AdminSubscriptionDto[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  revenue: number;
+}
+
+

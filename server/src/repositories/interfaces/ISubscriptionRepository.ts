@@ -10,6 +10,11 @@ findActiveByOwnerId(ownerId: string): Promise<ISubscription | null>;
 expireExpiredSubscriptions(): Promise<void>;
 
 // getAllSubscriptions(filters: AdminSubscriptionFilterDto): Promise<{ data: ISubscription[]; total: number }>;
-getAllSubscriptions(filters: AdminSubscriptionFilterDto): Promise<{ data: IAdminSubscriptionAggregate[]; total: number }>;
-
+getAllSubscriptions(filters: AdminSubscriptionFilterDto
+// ): Promise<{ data: IAdminSubscriptionAggregate[]; total: number }>;
+): Promise<{
+  data: IAdminSubscriptionAggregate[];
+  total: number;
+  totalRevenue: number;
+}>
 }

@@ -154,6 +154,7 @@ async getAllSubscriptions(req: Request, res: Response, next: NextFunction): Prom
       //data: subscriptions,
       data: subscriptions.data,
       pagination: subscriptions.pagination,
+      revenue: subscriptions.revenue,
     });
   } catch (error) {
     next(error);

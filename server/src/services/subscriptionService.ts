@@ -9,6 +9,7 @@ import { IPropertyRepository } from "../repositories/interfaces/IPropertyReposit
 import { ISubscriptionService } from "./interfaces/ISubscriptionService";
 import { SubscriptionPlanMapper } from "../mappers/subscriptionPlanMapper";
 import { SubscriptionMapper} from "../mappers/subscriptionMapper";
+import { AdminSubscriptionListResponseDto } from "../dtos/subscription.dto";
 
 import { AppError } from "../utils/AppError";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
@@ -211,24 +212,29 @@ async verifySubscriptionPayment(
 
 async getAllSubscriptions(filters: AdminSubscriptionFilterDto
 
-): Promise<{
-  data: AdminSubscriptionDto[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}> {
+// ): Promise<{
+//   data: AdminSubscriptionDto[];
+//   pagination: {
+//     total: number;
+//     page: number;
+//     limit: number;
+//     totalPages: number;
+//   };
+// }>
+): Promise<AdminSubscriptionListResponseDto> {
+ {
 //   const subs = await this._subscriptionRepository.getAllSubscriptions(filters);
 //   return SubscriptionMapper.toDtoList(subs);
 
   const { page = 1, limit = 10 } = filters;
 
-  const { data, total } = await this._subscriptionRepository.getAllSubscriptions(filters);
+  // const { data, total } = await this._subscriptionRepository.getAllSubscriptions(filters);
+    const { data, total, totalRevenue } =
+    await this._subscriptionRepository.getAllSubscriptions(filters);
 
   return {
     data: SubscriptionMapper.toDtoList(data),
+    revenue: totalRevenue,
     pagination: {
       total,
       page,
@@ -241,4 +247,5 @@ async getAllSubscriptions(filters: AdminSubscriptionFilterDto
 }
 
 
+}
 }
