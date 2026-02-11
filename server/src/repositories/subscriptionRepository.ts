@@ -212,4 +212,97 @@ async getAllSubscriptions(
 }
 
 
+async getTotalRevenue(): Promise<number> {
+  const result = await this.model.aggregate([
+    {
+      $lookup: {
+        from: "subscriptionplans",
+        localField: "planId",
+        foreignField: "_id",
+        as: "plan",
+      },
+    },
+    { $unwind: "$plan" },
+    {
+      $project: {
+        amount: {
+          $cond: [
+            { $eq: ["$transactionType", "Upgrade"] },
+            { $ifNull: ["$proratedAmount", 0] },
+            { $ifNull: ["$originalAmount", "$plan.price"] }
+          ]
+        }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$amount" }
+      }
+    }
+  ]);
+
+  return result[0]?.total || 0;
+}
+
+async getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number }[]> {
+  const match: any = {};
+
+  if (year) {
+    match.createdAt = {
+      $gte: new Date(`${year}-01-01`),
+      $lte: new Date(`${year}-12-31`)
+    };
+  }
+
+  return this.model.aggregate([
+    { $match: match },
+    {
+      $lookup: {
+        from: "subscriptionplans",
+        localField: "planId",
+        foreignField: "_id",
+        as: "plan",
+      },
+    },
+    { $unwind: "$plan" },
+    {
+      $project: {
+        month: { $month: "$createdAt" },
+        year: { $year: "$createdAt" },
+        amount: {
+          $cond: [
+            { $eq: ["$transactionType", "Upgrade"] },
+            { $ifNull: ["$proratedAmount", 0] },
+            { $ifNull: ["$originalAmount", "$plan.price"] }
+          ]
+        }
+      }
+    },
+    {
+      $group: {
+        _id: { year: "$year", month: "$month" },
+        revenue: { $sum: "$amount" }
+      }
+    },
+    {
+      $sort: { "_id.year": 1, "_id.month": 1 }
+    },
+    {
+      $project: {
+        _id: 0,
+        month: {
+          $concat: [
+            { $toString: "$_id.year" },
+            "-",
+            { $toString: "$_id.month" }
+          ]
+        },
+        revenue: 1
+      }
+    }
+  ]);
+}
+
+
 }

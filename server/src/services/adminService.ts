@@ -15,6 +15,8 @@ import jwt from "jsonwebtoken";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { AdminMapper } from '../mappers/adminMapper';
 import { AdminLoginResponseDto, UsersListResponseDto, UserListQueryDto, UserDetailResponseDto, OwnerListQueryDto, OwnersListResponseDto, OwnerDetailResponseDto, UserStatisticsDto, AdminDashboardDTO } from '../dtos/admin.dto';
+import { ISubscriptionService } from './interfaces/ISubscriptionService';
+import { ISubscriptionRepository } from '../repositories/interfaces/ISubscriptionRepository';
 
 
 @injectable()
@@ -26,7 +28,8 @@ export class AdminService implements IAdminService {
     @inject(TOKENS.IOwnerRepository) private _ownerRepository: IOwnerRepository,
     @inject(TOKENS.IPropertyRepository) private _propertyRepository: IPropertyRepository,
     @inject(TOKENS.IBookingRepository) private _bookingRepository: IBookingRepository,
-    @inject(TOKENS.INotificationService) private _notificationService: INotificationService
+    @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+    @inject(TOKENS.ISubscriptionRepository) private _subscriptionRepository: ISubscriptionRepository
   ) {}
 
     async loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto> {
@@ -473,19 +476,25 @@ async getAdminDashboardStats(): Promise<AdminDashboardDTO>{
     userStats,
     ownerStats,
     propertyStats,
-    bookingStats
+    bookingStats,
+    totalRevenue,
+    monthlyRevenue
   ] = await Promise.all([
     this._userRepository.getUserStatusCounts(),
     this._ownerRepository.getOwnerStatusCounts(),
     this._propertyRepository.getPropertyStatusCounts(),
-    this._bookingRepository.getBookingStatusCounts()
+    this._bookingRepository.getBookingStatusCounts(),
+    this._subscriptionRepository.getTotalRevenue(),          
+    this._subscriptionRepository.getMonthlyRevenue(new Date().getFullYear())
   ]);
   
   return AdminMapper.toDashboardDTO(
     userStats,
     ownerStats,
     propertyStats,
-    bookingStats
+    bookingStats,
+    totalRevenue,
+    monthlyRevenue
   );
 }
 

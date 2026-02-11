@@ -18,10 +18,17 @@ export interface StatusCountDTO {
   count: number;
 }
 
+export interface MonthlyRevenueDTO {
+  month: string;
+  revenue: number;
+}
+
 export interface AdminDashboardStats {
   users: StatusCountDTO[];
   owners: StatusCountDTO[];
   properties: StatusCountDTO[];
   bookings: StatusCountDTO[];
+  totalRevenue: number;                 
+  monthlyRevenue: MonthlyRevenueDTO[];
 }
 

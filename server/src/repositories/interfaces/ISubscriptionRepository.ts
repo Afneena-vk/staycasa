@@ -17,4 +17,8 @@ getAllSubscriptions(filters: AdminSubscriptionFilterDto
   total: number;
   totalRevenue: number;
 }>
+
+getTotalRevenue(): Promise<number>;
+getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number }[]>;
+
 }

@@ -81,7 +81,7 @@ const AdminAllSubscriptionsPage = () => {
         <div className="flex gap-3">
           <input
             placeholder="Owner name"
-            className="px-3 py-2 rounded bg-slate-800 border border-slate-700"
+            className="px-3 py-2 rounded bg-slate-800 border border-slate-700  text-slate-400"
             // value={filters.ownerName}
               value={ownerNameInput}
             // onChange={(e) =>
@@ -91,7 +91,7 @@ const AdminAllSubscriptionsPage = () => {
           />
           <input
             placeholder="Plan name"
-            className="px-3 py-2 rounded bg-slate-800 border border-slate-700"
+            className="px-3 py-2 rounded bg-slate-800 border border-slate-700  text-slate-400"
             // value={filters.planName}
              value={planNameInput}
             // onChange={(e) =>
@@ -100,7 +100,7 @@ const AdminAllSubscriptionsPage = () => {
             onChange={(e) => setPlanNameInput(e.target.value)}
           />
           <select
-            className="px-3 py-2 rounded bg-slate-800 border border-slate-700"
+            className="px-3 py-2 rounded bg-slate-800 border border-slate-700  text-slate-400"
             value={filters.status}
             onChange={(e) =>
               setFilters((f) => ({ ...f, status: e.target.value, page: 1 }))

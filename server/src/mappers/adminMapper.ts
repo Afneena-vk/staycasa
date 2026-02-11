@@ -193,13 +193,17 @@ static toUserStatisticsDto(stats:{
     users: RawStatusCount[],
     owners: RawStatusCount[],
     properties: RawStatusCount[],
-    bookings: RawStatusCount[]
+    bookings: RawStatusCount[],
+    totalRevenue: number,                            
+    monthlyRevenue: { month: string; revenue: number }[] 
   ): AdminDashboardDTO {
     return {
       users: this.mapStatusCounts(users),
       owners: this.mapStatusCounts(owners),
       properties: this.mapStatusCounts(properties),
-      bookings: this.mapStatusCounts(bookings)
+      bookings: this.mapStatusCounts(bookings),
+      totalRevenue,        
+      monthlyRevenue   
     };
   }
 
