@@ -125,6 +125,7 @@ export const ADMIN_API = {
   SUBSCRIPTION_PLANS: "/admin/subscription-plans",
   UPDATE_SUBSCRIPTION_PLAN: (planId: string) => `/admin/subscription-plans/${planId}`,
 
+  ALL_SUBSCRIPTIONS: "/admin/subscriptions",
 
 };
 

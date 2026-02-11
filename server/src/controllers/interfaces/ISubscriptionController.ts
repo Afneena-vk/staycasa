@@ -7,4 +7,5 @@ export interface ISubscriptionController {
   getCurrentSubscription(req: Request, res: Response, next: NextFunction): Promise<void>;
   createSubscriptionOrder(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifySubscriptionPayment(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getAllSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

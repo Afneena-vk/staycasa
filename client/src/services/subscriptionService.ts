@@ -3,6 +3,8 @@ import { ADMIN_API, OWNER_API } from "../constants/apiRoutes";
 import {
   SubscriptionPlanDto,
   UpdateSubscriptionPlanDto,
+  AdminSubscriptionDto,
+  AdminSubscriptionFilterDto
 } from "../types/subscription";
 
 export const subscriptionService = {
@@ -52,4 +54,29 @@ export const subscriptionService = {
     const res = await api.get(OWNER_API.CURRENT_SUBSCRIPTION);
     return res.data.data;
   },
+
+
+getAllAdminSubscriptions: async (
+  filters: AdminSubscriptionFilterDto
+): Promise<{
+  data: AdminSubscriptionDto[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}> => {
+  const res = await api.get(ADMIN_API.ALL_SUBSCRIPTIONS, {
+    params: filters,
+  });
+
+  return {
+    data: res.data.data,
+    pagination: res.data.pagination,
+  };
+},
+
+
+
 };

@@ -104,5 +104,62 @@ async getCurrentSubscription(req: Request, res: Response, next: NextFunction): P
     }
   }
 
+async getAllSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void>  {
+  try {
+    //const { ownerName, planName, status, startDate, endDate } = req.query;
+
+       const ownerName =
+      typeof req.query.ownerName === "string" ? req.query.ownerName : undefined;
+
+    const planName =
+      typeof req.query.planName === "string" ? req.query.planName : undefined;
+
+    const status =
+      req.query.status === "Active" || req.query.status === "Expired"
+        ? req.query.status
+        : undefined;
+
+    const startDate =
+      typeof req.query.startDate === "string"
+        ? new Date(req.query.startDate)
+        : undefined;
+
+    const endDate =
+      typeof req.query.endDate === "string"
+        ? new Date(req.query.endDate)
+        : undefined;
+
+    const page =
+      typeof req.query.page === "string" ? Number(req.query.page) : 1;
+
+    const limit =
+      typeof req.query.limit === "string" ? Number(req.query.limit) : 10;
+
+
+    const subscriptions = await this._subscriptionService.getAllSubscriptions({
+      ownerName,
+      planName,
+      status,
+      startDate,
+      endDate,
+      page,
+      limit,
+    //   startDate: startDate ? new Date(startDate as string) : undefined,
+    //   endDate: endDate ? new Date(endDate as string) : undefined,
+    });
+
+    res.status(STATUS_CODES.OK).json({
+      success: true,
+      message: "Subscriptions fetched successfully",
+      //data: subscriptions,
+      data: subscriptions.data,
+      pagination: subscriptions.pagination,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 
 }

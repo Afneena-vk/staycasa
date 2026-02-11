@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { subscriptionService } from "../../services/subscriptionService";
-import { SubscriptionPlanDto,UpdateSubscriptionPlanDto, CurrentSubscriptionDto } from "../../types/subscription";
+import { SubscriptionPlanDto,UpdateSubscriptionPlanDto, CurrentSubscriptionDto, AdminSubscriptionDto, AdminSubscriptionFilterDto } from "../../types/subscription";
 
 export interface SubscriptionSlice {
   subscriptionLoading: boolean;
@@ -9,12 +9,24 @@ export interface SubscriptionSlice {
   plans: SubscriptionPlanDto[];
   currentSubscription: CurrentSubscriptionDto | null;
 
+  adminSubscriptions: AdminSubscriptionDto[];
+  adminSubscriptionsPagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  } | null;
+
+  
+
   fetchPlans: () => Promise<void>;
   updatePlan: (planId: string, data: UpdateSubscriptionPlanDto) => Promise<void>;
 
   fetchPlansForOwner: () => Promise<void>;
   fetchCurrentSubscription: () => Promise<void>;
   subscribeToPlan: (planId: string) => Promise<void>;
+  fetchAllAdminSubscriptions: (filters: AdminSubscriptionFilterDto) => Promise<void>;
+ 
 }
 
 export const createSubscriptionSlice: StateCreator<
@@ -28,6 +40,9 @@ export const createSubscriptionSlice: StateCreator<
   subscriptionMessage: null,
   plans: [],
   currentSubscription: null,
+
+  adminSubscriptions: [],
+  adminSubscriptionsPagination: null,
 
   fetchPlans: async () => {
     set({ subscriptionLoading: true, subscriptionError: null });
@@ -160,6 +175,27 @@ subscribeToPlan: async (planId: string) => {
       subscriptionError:
         err.response?.data?.message || "Payment initialization failed",
     });
+    set({ subscriptionLoading: false });
+  }
+},
+
+
+fetchAllAdminSubscriptions: async (filters) => {
+  set({ subscriptionLoading: true, subscriptionError: null });
+
+  try {
+    const res = await subscriptionService.getAllAdminSubscriptions(filters);
+
+    set({
+      adminSubscriptions: res.data,
+      adminSubscriptionsPagination: res.pagination,
+    });
+  } catch (err: any) {
+    set({
+      subscriptionError:
+        err.response?.data?.message || "Failed to fetch subscriptions",
+    });
+  } finally {
     set({ subscriptionLoading: false });
   }
 },

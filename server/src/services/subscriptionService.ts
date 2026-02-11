@@ -8,13 +8,16 @@ import { IOwnerRepository } from "../repositories/interfaces/IOwnerRepository";
 import { IPropertyRepository } from "../repositories/interfaces/IPropertyRepository";
 import { ISubscriptionService } from "./interfaces/ISubscriptionService";
 import { SubscriptionPlanMapper } from "../mappers/subscriptionPlanMapper";
-import { SubscriptionMapper } from "../mappers/subscriptionMapper";
+import { SubscriptionMapper} from "../mappers/subscriptionMapper";
+
 import { AppError } from "../utils/AppError";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import {
   CreateSubscriptionDto,
   CurrentSubscriptionDto,
-  RazorpayOrderDto
+  RazorpayOrderDto,
+  AdminSubscriptionDto,
+  AdminSubscriptionFilterDto
 } from "../dtos/subscription.dto";
 import { SubscriptionPlanResponseDto } from "../dtos/subscriptionPlan.dto";
 import Razorpay from "razorpay";
@@ -203,4 +206,39 @@ async verifySubscriptionPayment(
         subscription: SubscriptionMapper.toResponseDto(subscription, usedProperties),
       };
     }
+
+
+
+async getAllSubscriptions(filters: AdminSubscriptionFilterDto
+
+): Promise<{
+  data: AdminSubscriptionDto[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}> {
+//   const subs = await this._subscriptionRepository.getAllSubscriptions(filters);
+//   return SubscriptionMapper.toDtoList(subs);
+
+  const { page = 1, limit = 10 } = filters;
+
+  const { data, total } = await this._subscriptionRepository.getAllSubscriptions(filters);
+
+  return {
+    data: SubscriptionMapper.toDtoList(data),
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+
+
+}
+
+
 }

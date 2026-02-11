@@ -16,3 +16,5 @@ export interface UpdateSubscriptionPlanDto {
   duration?: string;
   maxProperties?: number | null;
 }
+
+
