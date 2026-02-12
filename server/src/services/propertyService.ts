@@ -626,5 +626,25 @@ async getOwnerPropertyStats(ownerId: string): Promise<OwnerPropertyStatsDto> {
   return PropertyMapper.toOwnerPropertyStatsDto(stats);
 }
 
+async getLatestActiveProperties(limit: number): Promise<UserPropertyListResponseDto> {
+  try {
+    const properties = await this._propertyRepository.getLatestActiveProperties(limit);
+
+    return PropertyMapper.toUserPropertyListResponse(
+      properties,
+      properties.length,
+      1,
+      1
+    );
+  } catch (error: any) {
+    const err = new AppError(
+      error.message || MESSAGES.ERROR.SERVER_ERROR,
+      error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
+    throw err;
+  }
+}
+
+
 
 }

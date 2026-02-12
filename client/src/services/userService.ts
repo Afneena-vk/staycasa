@@ -94,4 +94,12 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
     return response.data;
   },
 
+ getLatestActiveProperties: async(limit=6)=> {
+    const response = await api.get(USER_API.LATEST_ACTIVE_PROPERTIES, {
+    params: { limit },
+  });
+  return response.data;
+ }
+
+
 };

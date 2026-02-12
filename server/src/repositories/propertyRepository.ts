@@ -1,6 +1,7 @@
 import { injectable } from "tsyringe";
 import Property, { IProperty } from "../models/propertyModel";
 import { BaseRepository } from "./baseRepository";
+import { PipelineStage } from "mongoose";
 
 import {
   IPropertyRepository,
@@ -374,4 +375,33 @@ async getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; cou
   return await this.model.countDocuments({ ownerId }).exec();
 }
 
+// async getLatestActiveProperties(limit: number): Promise<IProperty[]> {
+  
+// }
+
+async getLatestActiveProperties(limit: number): Promise<IProperty[]> {
+  // const pipeline = [
+  const pipeline: PipelineStage[] = [
+    { 
+      $match: { 
+        status: "active", 
+        isRejected: false 
+      } 
+    },
+    {
+      $lookup: {
+        from: "owners",
+        localField: "ownerId",
+        foreignField: "_id",
+        as: "owner",
+      },
+    },
+    { $unwind: "$owner" },
+    { $match: { "owner.isBlocked": false } },
+    { $sort: { createdAt: -1 } },
+    { $limit: limit },
+  ];
+
+  return Property.aggregate(pipeline);
+}
 }

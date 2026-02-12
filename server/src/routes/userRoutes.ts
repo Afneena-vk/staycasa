@@ -92,6 +92,12 @@ userRoutes.get(
 );
 
 userRoutes.get(
+  "/properties/latest",
+  propertyController.getLatestActiveProperties.bind(propertyController)
+);
+
+
+userRoutes.get(
   "/properties/:propertyId",
   // authMiddleware(["user"]),
   // checkUserStatus,

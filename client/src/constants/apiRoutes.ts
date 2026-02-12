@@ -52,7 +52,7 @@ export const USER_API = {
   MARK_NOTIFICATION_READ: (notificationId: string) => `/user/notifications/${notificationId}/read`,
   MARK_ALL_NOTIFICATIONS_READ: "/user/notifications/read-all",
   DELETE_NOTIFICATION: (notificationId: string) => `/user/notifications/${notificationId}`,
-
+  LATEST_ACTIVE_PROPERTIES:"/user/properties/latest"
 
 };
 

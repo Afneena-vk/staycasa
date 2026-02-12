@@ -344,6 +344,16 @@ async getOwnerPropertyStats(req: Request, res: Response, next: NextFunction): Pr
   }
 }
 
+async getLatestActiveProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const limit = Number(req.query.limit) || 6;
+    const response = await this._propertyService.getLatestActiveProperties(limit);
+    res.status(response.status).json(response);
+  } catch (error) {
+    next(error); 
+  }
+}
+
 
 }
 

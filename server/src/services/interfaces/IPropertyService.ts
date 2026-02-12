@@ -69,4 +69,5 @@ export interface IPropertyService {
     limit?: number): Promise<PaginatedDestinations> 
 
     getOwnerPropertyStats(ownerId: string): Promise<OwnerPropertyStatsDto>
+    getLatestActiveProperties(limit: number): Promise<UserPropertyListResponseDto>;
 }

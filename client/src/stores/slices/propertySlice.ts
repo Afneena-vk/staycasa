@@ -12,6 +12,7 @@ import { Property, DestinationDto } from "../../types/property";
 
 export interface PropertySlice {
   properties: Property[];
+  latestProperties: Property[];
   isLoading: boolean;
   error: string | null;
   selectedProperty: Property | null; 
@@ -38,6 +39,7 @@ export interface PropertySlice {
   blockPropertyByAdmin(propertyId:string): Promise<void>;
   unblockPropertyByAdmin(propertyId:string): Promise<void>;
   getDestinations(params?: { search?: string; page?: number; limit?: number }): Promise<void>;
+  fetchLatestActiveProperties: (limit?: number) => Promise<void>;
 
   clearError(): void;
   setLoading(loading: boolean): void;
@@ -51,8 +53,9 @@ export const createPropertySlice: StateCreator<
   PropertySlice
 > = (set, get) => ({
   properties: [],
-   selectedProperty: null,
-   destinations: [],
+  latestProperties: [],
+  selectedProperty: null,
+  destinations: [],
   isLoading: false,
   error: null,
 
@@ -411,6 +414,24 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
     }
   },
 
+    fetchLatestActiveProperties: async (limit= 6) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await userService.getLatestActiveProperties(limit);
+       set({ latestProperties:  response.properties || [], isLoading: false, error: null });
+    } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to load latest properties";
+
+    set({
+      latestProperties: [],
+      isLoading: false,
+      error: errorMessage,
+    });
+  }
+  },
 
 
   clearError: () => {

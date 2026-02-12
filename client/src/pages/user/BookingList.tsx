@@ -200,7 +200,7 @@ useEffect(() => {
           <span className="font-medium">Guests:</span> {b.guests}
         </p>
         <p className="text-gray-600 text-sm">
-          <span className="font-medium">Total:</span> ${b.totalCost}
+          <span className="font-medium">Total:</span> ₹{b.totalCost}
         </p>
       </div>
     </div>
