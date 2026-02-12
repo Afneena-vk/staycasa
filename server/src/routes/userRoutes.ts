@@ -86,22 +86,22 @@ userRoutes.put(
 
 userRoutes.get(
   "/properties",
-  authMiddleware(["user"]),
-  checkUserStatus,
+  // authMiddleware(["user"]),
+  // checkUserStatus,
   propertyController.getActiveProperties.bind(propertyController)
 );
 
 userRoutes.get(
   "/properties/:propertyId",
-  authMiddleware(["user"]),
-  checkUserStatus,
+  // authMiddleware(["user"]),
+  // checkUserStatus,
   propertyController.getActivePropertyById.bind(propertyController)
 );
 
 userRoutes.get(
   "/properties/:propertyId/check-availability",
-  authMiddleware(["user"]),
-  checkUserStatus,
+  // authMiddleware(["user"]),
+  // checkUserStatus,
   propertyController.checkAvailability.bind(propertyController)
 )
 
@@ -153,8 +153,8 @@ userRoutes.get(
 
 userRoutes.get(
   "/destinations",
-  authMiddleware(["user"]),
-  checkUserStatus,
+  // authMiddleware(["user"]),
+  // checkUserStatus,
   propertyController.getDestinations.bind(propertyController)
 
 )

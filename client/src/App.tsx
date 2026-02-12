@@ -350,9 +350,9 @@ const App = () => {
         <Route
           path="/user/dashboard"
           element={
-            <ProtectedRoute allowedRoles={["user"]}>
+            // <ProtectedRoute allowedRoles={["user"]}>
               <UserLanding />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
         <Route
@@ -366,17 +366,17 @@ const App = () => {
         <Route
           path="/user/properties"
           element={
-            <ProtectedRoute allowedRoles={["user"]}>
+            // <ProtectedRoute allowedRoles={["user"]}>
               <ActivePropertiesUser />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
           <Route
           path="/user/properties/:propertyId"
           element={
-            <ProtectedRoute allowedRoles={["user"]}>
+            // <ProtectedRoute allowedRoles={["user"]}>
               <UserPropertyDetails />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />
 
@@ -435,9 +435,9 @@ const App = () => {
           <Route
           path="/user/destination"
           element={
-            <ProtectedRoute allowedRoles={["user"]}>
+            // <ProtectedRoute allowedRoles={["user"]}>
               <Destination />
-            </ProtectedRoute>
+            // </ProtectedRoute>
           }
         />       
 

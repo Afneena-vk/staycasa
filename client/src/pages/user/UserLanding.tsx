@@ -8,15 +8,19 @@ const UserLanding: React.FC = () => {
 
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore(); 
-  const handleBookStay = () => {
-    if (isAuthenticated) {
+  // const handleBookStay = () => {
+  //   if (isAuthenticated) {
       
-      navigate("/user/properties");
-    } else {
+  //     navigate("/user/properties");
+  //   } else {
      
-      navigate("/user/login"); 
-    }
-  };
+  //     navigate("/user/login"); 
+  //   }
+  // };
+  const handleBookStay = () => {
+  navigate("/user/properties"); 
+};
+
 
   return (
     <div className="flex flex-col min-h-screen">
