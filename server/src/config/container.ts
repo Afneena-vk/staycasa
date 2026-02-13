@@ -13,6 +13,7 @@ import { IReviewRepository } from "../repositories/interfaces/IReviewRepository"
 import { INotificationRepository } from "../repositories/interfaces/INotificationRepository";
 import { ISubscriptionPlanRepository } from "../repositories/interfaces/ISubscriptionPlanRepository";
 import { ISubscriptionRepository } from "../repositories/interfaces/ISubscriptionRepository";
+import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 import { PropertyRepository } from "../repositories/propertyRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { OwnerRepository } from "../repositories/ownerRepository";
@@ -22,7 +23,8 @@ import { WalletRepository } from "../repositories/walletRepository";
 import { ReviewRepository } from "../repositories/reviewRepository";
 import { NotificationRepository } from "../repositories/notificationRepository";
 import { SubscriptionPlanRepository } from "../repositories/SubscriptionPlanRepository";
-import { SubscriptionRepository } from "../repositories/SubscriptionRepository";
+import { SubscriptionRepository } from "../repositories/subscriptionRepository";
+import {TokenBlacklistRepository} from "../repositories/tokenBlacklistRepository"
 
 import { IUserService } from "../services/interfaces/IUserService";
 import { IOwnerService } from "../services/interfaces/IOwnerService";
@@ -72,6 +74,8 @@ container.registerSingleton<IReviewRepository>(TOKENS.IReviewRepository, ReviewR
 container.registerSingleton<INotificationRepository>(TOKENS.INotificationRepository, NotificationRepository);
 container.registerSingleton<ISubscriptionPlanRepository>(TOKENS.ISubscriptionPlanRepository, SubscriptionPlanRepository);
 container.registerSingleton<ISubscriptionRepository>(TOKENS.ISubscriptionRepository, SubscriptionRepository);
+container.registerSingleton<ITokenBlacklistRepository>(TOKENS.ITokenBlacklistRepository, TokenBlacklistRepository);
+
 
 container.registerSingleton<IUserService>(TOKENS.IUserService, UserService);
 container.registerSingleton<IOwnerService>(TOKENS.IOwnerService, OwnerService);

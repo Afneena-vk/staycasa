@@ -26,6 +26,7 @@ const subscriptionController = container.resolve<ISubscriptionController>(TOKENS
 adminRoutes.post("/login", adminController.login.bind(adminController));
 adminRoutes.post(
   "/logout",
+  authMiddleware(["admin"]), 
 adminController.logout.bind(adminController)
 );
 

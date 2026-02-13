@@ -4,6 +4,9 @@ import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
 import crypto from "crypto";
+import { TOKENS } from "../config/tokens";
+import { container } from "../config/container";
+import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 
  class AuthController implements IAuthController{
     async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -17,9 +20,23 @@ import crypto from "crypto";
       const storedCsrfToken = req.cookies["csrf-token"];
 
 
+
     if (!refreshToken) {
       res.status(STATUS_CODES.UNAUTHORIZED).json({ 
         message: MESSAGES.ERROR.UNAUTHORIZED 
+      });
+      return;
+    }
+
+   
+    const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+      TOKENS.ITokenBlacklistRepository
+    );
+    
+    const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(refreshToken);
+    if (isBlacklisted) {
+      res.status(STATUS_CODES.UNAUTHORIZED).json({
+        message: MESSAGES.ERROR.INVALID_TOKEN
       });
       return;
     }

@@ -3,6 +3,9 @@ import { IAdminController } from "./interfaces/IAdminController";
 import { Request, Response, NextFunction } from "express";
 import { IAdminService } from "../services/interfaces/IAdminService";
 import { TOKENS } from "../config/tokens";
+import { container } from "../config/container";
+import jwt from "jsonwebtoken";
+import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 //import adminService from "../services/adminService";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import {
@@ -87,6 +90,39 @@ export class AdminController implements IAdminController {
     try {
       // res.clearCookie("admin-auth-token", { path: "/" });
       // res.clearCookie("admin-refresh-token", { path: "/" });
+
+       const accessToken = req.cookies["access-token"];
+          const refreshToken = req.cookies["refresh-token"];
+          const userId = (req as any).userId;
+          const userType = (req as any).userType;
+      
+         
+          const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+            TOKENS.ITokenBlacklistRepository
+          );
+      
+          
+          if (accessToken) {
+            const decoded = jwt.decode(accessToken) as { exp: number };
+            await tokenBlacklistRepo.addToken(
+              accessToken,
+              'access',
+              userId,
+              userType,
+              new Date(decoded.exp * 1000)
+            );
+          }
+      
+          if (refreshToken) {
+            const decoded = jwt.decode(refreshToken) as { exp: number };
+            await tokenBlacklistRepo.addToken(
+              refreshToken,
+              'refresh',
+              userId,
+              userType,
+              new Date(decoded.exp * 1000)
+            );
+          }
 
     res.clearCookie("access-token", { path: "/" });
     res.clearCookie("refresh-token", { path: "/" });

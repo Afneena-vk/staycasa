@@ -7,6 +7,9 @@ import { TOKENS } from "../config/tokens";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import logger from "../utils/logger";
 import crypto from 'crypto'
+import { container } from "../config/container";
+import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
+import jwt from "jsonwebtoken";
 
 @injectable()
 export class OwnerController implements IOwnerController {
@@ -154,6 +157,40 @@ export class OwnerController implements IOwnerController {
     try {
       // res.clearCookie("owner-auth-token", { path: "/" });
       // res.clearCookie("owner-refresh-token", { path: "/" });
+
+
+       const accessToken = req.cookies["access-token"];
+          const refreshToken = req.cookies["refresh-token"];
+          const userId = (req as any).userId;
+          const userType = (req as any).userType;
+      
+         
+          const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+            TOKENS.ITokenBlacklistRepository
+          );
+      
+          
+          if (accessToken) {
+            const decoded = jwt.decode(accessToken) as { exp: number };
+            await tokenBlacklistRepo.addToken(
+              accessToken,
+              'access',
+              userId,
+              userType,
+              new Date(decoded.exp * 1000)
+            );
+          }
+      
+          if (refreshToken) {
+            const decoded = jwt.decode(refreshToken) as { exp: number };
+            await tokenBlacklistRepo.addToken(
+              refreshToken,
+              'refresh',
+              userId,
+              userType,
+              new Date(decoded.exp * 1000)
+            );
+          }
 
     res.clearCookie("access-token", { path: "/" });
     res.clearCookie("refresh-token", { path: "/" });

@@ -11,6 +11,7 @@ export const TOKENS = {
   INotificationRepository:Symbol.for("INotificationRepository"),
   ISubscriptionPlanRepository:Symbol.for("ISubscriptionPlanRepository"),
   ISubscriptionRepository:Symbol.for("ISubscriptionRepository"),
+  ITokenBlacklistRepository: Symbol.for("ITokenBlackListRepository"),
   
   IUserService: Symbol.for("IUserService"),
   IOwnerService: Symbol.for("IOwnerService"),

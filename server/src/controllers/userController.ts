@@ -9,7 +9,8 @@ import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
 import crypto from "crypto";
 import { FileStorageService } from "../utils/fileStorageService"; 
-
+import { container } from "../config/container";
+import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 
 @injectable()
 export class UserController implements IUserController {
@@ -160,6 +161,42 @@ export class UserController implements IUserController {
     try {
       // res.clearCookie("user-auth-token", { path: "/" });
       // res.clearCookie("user-refresh-token", { path: "/" });
+
+ const accessToken = req.cookies["access-token"];
+    const refreshToken = req.cookies["refresh-token"];
+    const userId = (req as any).userId;
+    const userType = (req as any).userType;
+
+   
+    const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+      TOKENS.ITokenBlacklistRepository
+    );
+
+    
+    if (accessToken) {
+      const decoded = jwt.decode(accessToken) as { exp: number };
+      await tokenBlacklistRepo.addToken(
+        accessToken,
+        'access',
+        userId,
+        userType,
+        new Date(decoded.exp * 1000)
+      );
+    }
+
+    if (refreshToken) {
+      const decoded = jwt.decode(refreshToken) as { exp: number };
+      await tokenBlacklistRepo.addToken(
+        refreshToken,
+        'refresh',
+        userId,
+        userType,
+        new Date(decoded.exp * 1000)
+      );
+    }
+
+
+
     res.clearCookie("access-token", { path: "/" });
     res.clearCookie("refresh-token", { path: "/" });
     res.clearCookie("csrf-token", { path: "/" });

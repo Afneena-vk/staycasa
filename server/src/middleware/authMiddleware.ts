@@ -1,9 +1,12 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { MESSAGES, STATUS_CODES } from "../utils/constants";
+import { container } from "../config/container";
+import { TOKENS } from "../config/tokens";
+import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 
 export const authMiddleware = (allowedRoles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return async(req: Request, res: Response, next: NextFunction) => {
     //const token = req.cookies["auth-token"];
     // let token: string | undefined;
     //  if (allowedRoles.includes("admin")) {
@@ -15,6 +18,7 @@ export const authMiddleware = (allowedRoles: string[]) => {
     // }
 
      const token = req.cookies["access-token"];
+      //const token = req.cookies["access-token"] || req.headers["authorization"];
 
     if (!token) {
       res
@@ -23,7 +27,21 @@ export const authMiddleware = (allowedRoles: string[]) => {
       return;
     }
 
-    try {
+    try { 
+
+
+      const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+        TOKENS.ITokenBlacklistRepository
+      );
+
+          const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(token);
+      if (isBlacklisted) {
+        res
+          .status(STATUS_CODES.UNAUTHORIZED)
+          .json({ message: "token is blacklisted" });
+        return;
+      }
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
         userId: string;
        // type: string;

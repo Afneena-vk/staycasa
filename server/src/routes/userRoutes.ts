@@ -32,6 +32,7 @@ userRoutes.post("/reset-password", userController.resetPassword.bind(userControl
 
 userRoutes.post(
   "/logout",
+  authMiddleware(["user"]), 
   userController.logout.bind(userController)
 );
 
