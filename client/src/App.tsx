@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { Suspense, lazy } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import ErrorBoundary from "./components/error/ErrorBoundary.tsx";
 
 import ProtectedRoute from "./components/routes/ProtectedRoute.tsx";
 import PublicRoute from "./components/routes/PublicRoute";
@@ -76,6 +77,7 @@ const ChatWindow = lazy(() => import("./pages/user/ChatPage"));
 
 const App = () => {
   return (
+     <ErrorBoundary>
     <Router>
       <SessionManager />
       <ToastContainer />
@@ -521,6 +523,7 @@ const App = () => {
       </Routes>
       </Suspense>
     </Router>
+    </ErrorBoundary>
   );
 };
 
