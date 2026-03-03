@@ -116,6 +116,43 @@ const OwnerBookingDetails = () => {
           )}
         </div>
 
+        {/* Chat with User */}
+{b.user && (
+  <div className="bg-white rounded-xl shadow p-6 flex items-center justify-between mt-6">
+    <div className="flex items-center gap-4">
+      {/* Avatar */}
+      <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-lg">
+        {b.user.name.charAt(0).toUpperCase()}
+      </div>
+
+      {/* User Details */}
+      <div>
+        <p className="text-sm text-gray-500">User</p>
+        <h3 className="font-semibold text-lg">{b.user.name}</h3>
+        {b.user.email && <p className="text-sm text-gray-600">{b.user.email}</p>}
+      </div>
+    </div>
+
+    {/* Chat Button */}
+    <button
+      onClick={() =>
+        navigate(`/owner/chat/${b.property.id}/${b.user?.id}`, {
+          state: {
+            userId: b.user?.id,
+            userName: b.user?.name,
+            bookingId: b.bookingId,
+            propertyTitle: b.property.title,
+          },
+        })
+      }
+      className="px-4 py-2 rounded-lg bg-indigo-900 text-white hover:bg-indigo-950 transition"
+    >
+      💬 Chat with User
+    </button>
+  </div>
+)}
+
+
       </div>
     </OwnerLayout>
   );

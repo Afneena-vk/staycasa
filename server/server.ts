@@ -9,6 +9,7 @@ import app from "./src/app";
 import connectDB from "./src/config/db";
 import http from "http";
 import { startBookingCompletionJob } from './src/jobs/bookingCompletion.job';
+import { initSocket } from "./src/socket/socket";
 
 //const PORT = process.env.PORT || 5000;
 const PORT = process.env.PORT;
@@ -21,6 +22,7 @@ const startServer = async () => {
 
     const server = http.createServer(app); 
 
+    initSocket(server);
     
 server.listen(PORT, () => { 
       console.log(`Server is running on port ${PORT}`);

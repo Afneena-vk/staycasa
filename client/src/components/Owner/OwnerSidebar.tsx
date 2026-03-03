@@ -43,6 +43,7 @@ const OwnerSidebar = () => {
         <NavItem to="/owner/bookings" icon={<FaCalendarAlt />} label="Bookings" />
         <NavItem to="/owner/wallet" icon={<FaWallet />} label="Wallet" />
         <NavItem to="/owner/subscription" icon={<FaCrown />} label="Subscription" />
+        <NavItem to="/owner/chat" icon={<FaBell />} label="Messages" />
 
       </nav>
 

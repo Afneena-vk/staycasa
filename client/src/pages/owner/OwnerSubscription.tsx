@@ -128,19 +128,28 @@ const OwnerSubscriptionPage = () => {
                       </span>
                     </p>
                   </div>
+<button
+  disabled={subscriptionLoading || !isApproved}
+  onClick={() => {
+    if (!isApproved) return;
 
-                  <button
-                    disabled={subscriptionLoading || !isApproved}
-                    onClick={() => subscribeToPlan(plan.id)}
-                    className="mt-6 w-full rounded-xl bg-indigo-600 text-white py-2 font-medium hover:bg-indigo-700 transition disabled:opacity-60"
-                  >
-                    {/* {subscriptionLoading ? "Processing..." : "Subscribe"} */}
-                      {!isApproved
+    const confirmed = window.confirm(
+      `Are you sure you want to subscribe to the "${plan.name}" plan for ₹${plan.price}?`
+    );
+    if (confirmed) {
+      subscribeToPlan(plan.id);
+    }
+  }}
+  className="mt-6 w-full rounded-xl bg-indigo-600 text-white py-2 font-medium hover:bg-indigo-700 transition disabled:opacity-60"
+>
+  {!isApproved
     ? "Approval Pending"
     : subscriptionLoading
     ? "Processing..."
     : "Subscribe"}
-                  </button>
+</button>
+
+
                 </div>
               ))}
             </div>

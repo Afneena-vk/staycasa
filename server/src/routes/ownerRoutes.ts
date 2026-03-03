@@ -6,6 +6,7 @@ import { IBookingController } from "../controllers/interfaces/IBookingController
 import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { INotificationController } from "../controllers/interfaces/INotificationController";
 import { ISubscriptionController } from "../controllers/interfaces/ISubscriptionController";
+import { IMessageController } from "../controllers/interfaces/IMessageController";
 import { TOKENS } from "../config/tokens";
 //import ownerController from "../controllers/ownerController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -21,6 +22,7 @@ const bookingController = container.resolve<IBookingController>(TOKENS.IBookingC
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
 const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
 const subscriptionController = container.resolve<ISubscriptionController>(TOKENS.ISubscriptionController);
+const messageController = container.resolve<IMessageController>(TOKENS.IMessageController);
 
 ownerRoutes.post("/signup",ownerController.signup.bind(ownerController))
 ownerRoutes.post("/verify-otp", ownerController.verifyOtp.bind(ownerController));
@@ -209,6 +211,50 @@ ownerRoutes.get(
   "/subscription/current",
   authMiddleware(["owner"]),
    subscriptionController.getCurrentSubscription.bind(subscriptionController)
+);
+
+
+// ownerRoutes.get(
+//   "/chat/:propertyId/:ownerId",
+//   authMiddleware(["owner"]),
+//   checkUserStatus,
+//   messageController.getChat.bind(messageController)
+// );
+
+
+// ownerRoutes.post(
+//   "/chat/send",
+//   authMiddleware(["owner"]),
+//   checkUserStatus,
+//   messageController.sendMessage.bind(messageController)
+// );
+
+// ownerRoutes.patch(
+//   "/chat/read",
+//   authMiddleware(["owner"]),
+//   checkUserStatus,
+//   messageController.markAsRead.bind(messageController)
+// );
+
+ownerRoutes.get(
+  '/messages/:ownerId/:propertyId',
+  authMiddleware(['owner']),
+  checkUserStatus,
+  messageController.getConversation.bind(messageController)
+);
+
+ownerRoutes.get(
+  '/messages',
+  authMiddleware(['owner']),
+  checkUserStatus,
+  messageController.getConversationList.bind(messageController)
+);
+
+ownerRoutes.post(
+  '/messages/read',
+  authMiddleware(['owner']),
+  checkUserStatus,
+  messageController.markAsRead.bind(messageController)
 );
 
 export default ownerRoutes

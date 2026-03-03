@@ -5,6 +5,7 @@ import { IPropertyController } from "../controllers/interfaces/IPropertyControll
 import { IBookingController } from "../controllers/interfaces/IBookingController";
 import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { INotificationController } from "../controllers/interfaces/INotificationController";
+import { IMessageController } from "../controllers/interfaces/IMessageController";
 import { TOKENS } from '../config/tokens';
 //import userController from "../controllers/userController";
 import passport from "passport";
@@ -20,6 +21,7 @@ const propertyController = container.resolve<IPropertyController>(TOKENS.IProper
 const bookingController = container.resolve<IBookingController>(TOKENS.IBookingController);
 const reviewController = container.resolve<IReviewController>(TOKENS.IReviewController);
 const notificationController = container.resolve<INotificationController>(TOKENS.INotificationController);
+const messageController = container.resolve<IMessageController>(TOKENS.IMessageController);
 
 userRoutes.post("/signup", userController.signup.bind(userController));
 userRoutes.post("/verify-otp", userController.verifyOtp.bind(userController));
@@ -236,6 +238,50 @@ userRoutes.delete(
   authMiddleware(["user"]),
   checkUserStatus,
   notificationController.deleteNotification.bind(notificationController)
+);
+
+
+// userRoutes.get(
+//   "/chat/:propertyId/:ownerId",
+//   authMiddleware(["user"]),
+//   checkUserStatus,
+//   messageController.getChat.bind(messageController)
+// );
+
+
+// userRoutes.post(
+//   "/chat/send",
+//   authMiddleware(["user"]),
+//   checkUserStatus,
+//   messageController.sendMessage.bind(messageController)
+// );
+
+// userRoutes.patch(
+//   "/chat/read",
+//   authMiddleware(["user"]),
+//   checkUserStatus,
+//   messageController.markAsRead.bind(messageController)
+// );
+
+userRoutes.get(
+  '/messages/:ownerId/:propertyId',
+  authMiddleware(['user']),
+  checkUserStatus,
+  messageController.getConversation.bind(messageController)
+);
+
+userRoutes.get(
+  '/messages',
+  authMiddleware(['user']),
+  checkUserStatus,
+  messageController.getConversationList.bind(messageController)
+);
+
+userRoutes.post(
+  '/messages/read',
+  authMiddleware(['user']),
+  checkUserStatus,
+  messageController.markAsRead.bind(messageController)
 );
 
 

@@ -8,6 +8,8 @@ import ProtectedRoute from "./components/routes/ProtectedRoute.tsx";
 import PublicRoute from "./components/routes/PublicRoute";
 import SessionManager from "./components/routes/SessionManager.tsx";
 import NotFound from "./components/common/NotFound.tsx";
+//import ErrorBoundary from "./components/common/ErrorBoundary.tsx";
+import UserChatPage from "./pages/user/ChatPage";
 
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -46,7 +48,8 @@ const OwnerWallet = lazy(() => import("./pages/owner/OwnerWallet"));
 const OwnerBookings = lazy(() => import("./pages/owner/OwnerBookingList"));
 const OwnerBookingDetails = lazy(() => import("./pages/owner/OwnerBookingDetails"));
 const OwnerSubscription = lazy(() => import("./pages/owner/OwnerSubscription"));
-
+//const OwnerChatWindow = lazy(() => import("./pages/owner/OwnerChatWindow"));
+const OwnerChatPage = lazy(() => import("./pages/owner/OwnerChatPage"));
 
 const UserSignup = lazy(() => import("./pages/user/UserSignup"));
 const UserLogin = lazy(() => import("./pages/user/UserLogin"));
@@ -67,6 +70,8 @@ const BookingList = lazy(() => import("./pages/user/BookingList"));
 const BookingDetails = lazy(() => import("./pages/user/BookingDetails"));
 const Destination = lazy(() => import("./pages/user/Destination"));
 const ReviewPage = lazy(() => import("./pages/user/ReviewPage"));
+// const ChatWindow = lazy(() => import("./pages/user/ChatWindow"));
+const ChatWindow = lazy(() => import("./pages/user/ChatPage"));
 
 
 const App = () => {
@@ -306,6 +311,34 @@ const App = () => {
           }
         />
 
+        {/* <Route
+          path="/owner/chat/:propertyId/:userId"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerChatWindow />
+            </ProtectedRoute>
+          }
+        /> */}
+
+          
+        <Route
+          path="/owner/chat/:propertyId/:userId"
+          element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+             <OwnerChatPage/>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/owner/chat"
+           element={
+            <ProtectedRoute allowedRoles={["owner"]}>
+             <OwnerChatPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/user/forgot-password" element={<UserForgotPassword />} />
@@ -456,6 +489,25 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={["user"]}>
               <ReviewPage/>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* <Route
+          path="/user/chat/:propertyId/:ownerId"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+             <ChatWindow/>
+            </ProtectedRoute>
+          }
+        /> */}
+
+        
+        <Route
+          path="/user/chat/:propertyId/:ownerId"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+             <UserChatPage/>
             </ProtectedRoute>
           }
         />

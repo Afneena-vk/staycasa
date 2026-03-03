@@ -52,7 +52,11 @@ export const USER_API = {
   MARK_NOTIFICATION_READ: (notificationId: string) => `/user/notifications/${notificationId}/read`,
   MARK_ALL_NOTIFICATIONS_READ: "/user/notifications/read-all",
   DELETE_NOTIFICATION: (notificationId: string) => `/user/notifications/${notificationId}`,
-  LATEST_ACTIVE_PROPERTIES:"/user/properties/latest"
+  LATEST_ACTIVE_PROPERTIES:"/user/properties/latest",
+
+  MESSAGES: '/user/messages',
+  CONVERSATION: (ownerId: string, propertyId: string) => `/user/messages/${ownerId}/${propertyId}`,
+  MARK_READ: '/user/messages/read',
 
 };
 
@@ -82,6 +86,10 @@ export const OWNER_API = {
   CURRENT_SUBSCRIPTION: "/owner/subscription/current",
   CREATE_SUBSCRIPTION_ORDER: "/owner/subscription/create-order",
   VERIFY_SUBSCRIPTION_PAYMENT: "/owner/subscription/verify-payment",
+
+  MESSAGES: '/owner/messages',
+  CONVERSATION: (ownerId: string, propertyId: string) => `/owner/messages/${ownerId}/${propertyId}`,
+  MARK_READ: '/owner/messages/read',
 
 
 };

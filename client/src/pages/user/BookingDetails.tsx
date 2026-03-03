@@ -270,6 +270,47 @@ const handleCancelBooking = async () => {
             </div>
           </div>
 
+          {/* OWNER / HOST INFO */}
+{b.owner && (
+  <div className="bg-white rounded-xl shadow p-6 flex items-center justify-between">
+    <div className="flex items-center gap-4">
+      {/* Avatar */}
+      <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-lg">
+        {b.owner.name.charAt(0).toUpperCase()}
+      </div>
+
+      {/* Owner Details */}
+      <div>
+        <p className="text-sm text-gray-500">Owner</p>
+        <h3 className="font-semibold text-lg">{b.owner.name}</h3>
+        <p className="text-sm text-gray-600">
+          {b.owner.businessName}
+        </p>
+
+      </div>
+    </div>
+
+    {/* Chat Button */}
+    <button
+      onClick={() =>
+        // navigate(`/user/chat/${b.owner?.id}`, {
+        navigate(`/user/chat/${b.property.id}/${b.owner?.id}`, {
+          state: {
+            ownerId: b.owner?.id,
+            ownerName: b.owner?.name,
+            bookingId: b.bookingId,
+            propertyTitle: b.property.title,
+          },
+        })
+      }
+      className="px-4 py-2 rounded-lg bg-indigo-900 text-white hover:bg-indigo-950 transition"
+    >
+      💬 Chat with Host
+    </button>
+  </div>
+)}
+
+
           {/* BOOKING INFO */}
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold mb-4">Booking Information</h3>

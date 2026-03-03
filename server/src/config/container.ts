@@ -14,6 +14,7 @@ import { INotificationRepository } from "../repositories/interfaces/INotificatio
 import { ISubscriptionPlanRepository } from "../repositories/interfaces/ISubscriptionPlanRepository";
 import { ISubscriptionRepository } from "../repositories/interfaces/ISubscriptionRepository";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
+import { IMessageRepository } from "../repositories/interfaces/IMessageRepository";
 import { PropertyRepository } from "../repositories/propertyRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { OwnerRepository } from "../repositories/ownerRepository";
@@ -24,7 +25,8 @@ import { ReviewRepository } from "../repositories/reviewRepository";
 import { NotificationRepository } from "../repositories/notificationRepository";
 import { SubscriptionPlanRepository } from "../repositories/SubscriptionPlanRepository";
 import { SubscriptionRepository } from "../repositories/subscriptionRepository";
-import {TokenBlacklistRepository} from "../repositories/tokenBlacklistRepository"
+import {TokenBlacklistRepository} from "../repositories/tokenBlacklistRepository";
+import {MessageRepository} from "../repositories/messageRepository"
 
 import { IUserService } from "../services/interfaces/IUserService";
 import { IOwnerService } from "../services/interfaces/IOwnerService";
@@ -35,6 +37,7 @@ import { IReviewService } from "../services/interfaces/IReviewService";
 import { INotificationService } from "../services/interfaces/INotificationService";
 import { IAdminSubscriptionService } from "../services/interfaces/IAdminSubscriptionService";
 import { ISubscriptionService } from "../services/interfaces/ISubscriptionService";
+import { IMessageService } from "../services/interfaces/IMessageService";
 import { PropertyService } from "../services/propertyService";
 import { UserService } from "../services/userService";
 import { OwnerService } from "../services/ownerService";
@@ -44,6 +47,7 @@ import { ReviewService} from  "../services/reviewService";
 import { NotificationService } from "../services/notificationService";
 import { AdminSubscriptionService } from "../services/adminSubscriptionService";
 import { SubscriptionService } from "../services/subscriptionService";
+import { MessageService } from "../services/messageService";
 
 import { IUserController } from "../controllers/interfaces/IUserController";
 import { IOwnerController } from "../controllers/interfaces/IOwnerController";
@@ -54,6 +58,7 @@ import { IReviewController } from "../controllers/interfaces/IReviewController";
 import { INotificationController } from "../controllers/interfaces/INotificationController";
 import { IAdminSubscriptionController } from "../controllers/interfaces/IAdminSubscriptionController";
 import { ISubscriptionController } from "../controllers/interfaces/ISubscriptionController";
+import { IMessageController } from "../controllers/interfaces/IMessageController";
 import { PropertyController } from "../controllers/propertyController";
 import { UserController } from "../controllers/userController";
 import { OwnerController } from "../controllers/ownerController";
@@ -63,6 +68,7 @@ import { ReviewController} from "../controllers/reviewController";
 import { NotificationController} from "../controllers/notificationController";
 import { AdminSubscriptionController } from "../controllers/adminSubscriptionController";
 import { SubscriptionController } from "../controllers/subscriptionController";
+import { MessageController } from "../controllers/messageController";
 
 container.registerSingleton<IUserRepository>(TOKENS.IUserRepository, UserRepository);
 container.registerSingleton<IOwnerRepository>(TOKENS.IOwnerRepository, OwnerRepository);
@@ -75,7 +81,7 @@ container.registerSingleton<INotificationRepository>(TOKENS.INotificationReposit
 container.registerSingleton<ISubscriptionPlanRepository>(TOKENS.ISubscriptionPlanRepository, SubscriptionPlanRepository);
 container.registerSingleton<ISubscriptionRepository>(TOKENS.ISubscriptionRepository, SubscriptionRepository);
 container.registerSingleton<ITokenBlacklistRepository>(TOKENS.ITokenBlacklistRepository, TokenBlacklistRepository);
-
+container.registerSingleton<IMessageRepository>(TOKENS.IMessageRepository, MessageRepository);
 
 container.registerSingleton<IUserService>(TOKENS.IUserService, UserService);
 container.registerSingleton<IOwnerService>(TOKENS.IOwnerService, OwnerService);
@@ -86,6 +92,7 @@ container.registerSingleton<IReviewService>(TOKENS.IReviewService, ReviewService
 container.registerSingleton<INotificationService>(TOKENS.INotificationService, NotificationService);
 container.registerSingleton<IAdminSubscriptionService>(TOKENS.IAdminSubscriptionService, AdminSubscriptionService);
 container.registerSingleton<ISubscriptionService>(TOKENS.ISubscriptionService, SubscriptionService);
+container.registerSingleton<IMessageService>(TOKENS.IMessageService, MessageService);
 
 container.registerSingleton<IUserController>(TOKENS.IUserController, UserController);
 container.registerSingleton<IOwnerController>(TOKENS.IOwnerController, OwnerController);
@@ -96,4 +103,5 @@ container.registerSingleton<IReviewController>(TOKENS.IReviewController, ReviewC
 container.registerSingleton<INotificationController>(TOKENS.INotificationController, NotificationController);
 container.registerSingleton<IAdminSubscriptionController>(TOKENS.IAdminSubscriptionController, AdminSubscriptionController);
 container.registerSingleton<ISubscriptionController>(TOKENS.ISubscriptionController, SubscriptionController);
+container.registerSingleton<IMessageController>(TOKENS.IMessageController, MessageController);
 export { container };

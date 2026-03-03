@@ -187,12 +187,12 @@ const propertyPieData = useMemo(() => {
               <div>
                 <h3 className="font-medium">
                   {userData?.approvalStatus === "pending"
-                    ? "Account Under Review"
+                    ? "Account is not Appproved, upload the document if not provided"
                     : "Account Action Required"}
                 </h3>
                 <p className="text-sm mt-1">
                   {userData?.approvalStatus === "pending"
-                    ? "Your account is being reviewed. Property listing will be available once approved."
+                    ? " Property listing will be available once approved."
                     : "Your account needs attention. Please contact support or resubmit documents."}
                 </p>
               </div>

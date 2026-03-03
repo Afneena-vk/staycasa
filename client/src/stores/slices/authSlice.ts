@@ -3,6 +3,8 @@ import { authService } from "../../services/authService";
 import { tokenService } from "../../utils/tokenService";
 import { AuthType } from "../../types/auth";
 // export type AuthType = "user" | "owner" | "admin";
+import { socketService } from "../../socket/socketService";
+
 
 export interface AuthSlice {
   userData: any | null;
@@ -69,6 +71,9 @@ export const createAuthSlice: StateCreator<
         isAuthenticated: true,
        
       });
+
+      socketService.connect();
+
         const store = get() as any;
       if (store.resetProperties) {
         store.resetProperties();
@@ -97,6 +102,9 @@ export const createAuthSlice: StateCreator<
     } catch (error) {
       console.error("Logout failed", error);
     } finally {
+
+         socketService.disconnect();
+
          tokenService.clearAuthType();
          tokenService.clearCsrfToken();
     
