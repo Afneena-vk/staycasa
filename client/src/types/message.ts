@@ -1,23 +1,23 @@
 
-export interface MessageDTO {
-  _id: string;
-  sender: string;
+export interface MessageResponseDTO {
+  id: string;
+  senderId: string;
   senderModel: 'User' | 'Owner';
-  receiver: string;
+  receiverId: string;
   receiverModel: 'User' | 'Owner';
   propertyId: string;
   content?: string;
   image?: string;
   isRead: boolean;
-  createdAt: string;
+  createdAt: Date;
 }
 
-export interface ConversationListItem {
+export interface ConversationListDTO {
   propertyId: string;
+  propertyTitle: string;
+  propertyImage: string | null;
   otherUserId: string;
   otherUserModel: 'User' | 'Owner';
-  propertyTitle: string;
-  propertyImage?: string;
-  lastMessage: MessageDTO;
+  lastMessage: MessageResponseDTO;
   unreadCount: number;
 }

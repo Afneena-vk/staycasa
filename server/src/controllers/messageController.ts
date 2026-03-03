@@ -18,7 +18,7 @@ export class MessageController implements IMessageController {
       const userId = (req as any).userId;
       const userType = (req as any).userType;
 
-      // If caller is owner, swap the ids
+      
       const resolvedUserId = userType === 'user' ? userId : ownerId;
       const resolvedOwnerId = userType === 'owner' ? userId : ownerId;
 
@@ -48,7 +48,7 @@ export class MessageController implements IMessageController {
       const receiverId = (req as any).userId;
 
       await this._messageService.markAsRead(receiverId, senderId, propertyId);
-      res.status(STATUS_CODES.OK).json({ success: true });
+      res.status(STATUS_CODES.OK).json({ success: true, message: "Messages marked as read",});
     } catch (error) {
       next(error);
     }

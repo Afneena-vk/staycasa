@@ -1,11 +1,14 @@
 
 import { StateCreator } from 'zustand';
-import { MessageDTO, ConversationListItem } from '../../types/message';
+//import { MessageDTO, ConversationListItem } from '../../types/message';
+import { MessageResponseDTO, ConversationListDTO } from '../../types/message';
 import { messageService } from '../../services/messageService';
 
 export interface MessageSlice {
-  messages: MessageDTO[];
-  conversationList: ConversationListItem[];
+  // messages: MessageDTO[];
+  messages: MessageResponseDTO[];
+  // conversationList: ConversationListItem[];
+  conversationList: ConversationListDTO[];
   messageLoading: boolean;
   messageError: string | null;
   typingUsers: Record<string, boolean>; // key: senderId_propertyId
@@ -13,7 +16,8 @@ export interface MessageSlice {
 
   fetchConversation: (ownerId: string, propertyId: string, role: 'user' | 'owner') => Promise<void>;
   fetchConversationList: (role: 'user' | 'owner') => Promise<void>;
-  addMessage: (message: MessageDTO) => void;
+  //addMessage: (message: MessageDTO) => void;
+  addMessage: (message: MessageResponseDTO) => void;
   markMessagesRead: (senderId: string, propertyId: string, role: 'user' | 'owner') => Promise<void>;
   setTyping: (senderId: string, propertyId: string, isTyping: boolean) => void;
   setUserOnline: (userId: string) => void;
@@ -58,7 +62,8 @@ export const createMessageSlice: StateCreator<MessageSlice> = (set, get) => ({
       await messageService.markAsRead(senderId, propertyId, role);
       set((state) => ({
         messages: state.messages.map((m) =>
-          m.sender === senderId && m.propertyId === propertyId ? { ...m, isRead: true } : m
+          // m.sender === senderId && m.propertyId === propertyId ? { ...m, isRead: true } : m
+          m.senderId === senderId && m.propertyId === propertyId ? { ...m, isRead: true } : m
         ),
       }));
     } catch (err: any) {

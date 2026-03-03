@@ -60,9 +60,11 @@ export const ChatWindow = ({ otherUserId, otherUserName, otherUserModel, propert
         {/* {messages.map((msg) => { */}
         {/* {messages?.map((msg) => { */}
         {(messages || []).map((msg) => {
-          const isMine = msg.sender === myId;
+        //   const isMine = msg.sender === myId;
+        const isMine = msg.senderId === myId;
           return (
-            <div key={msg._id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+            // <div key={msg._id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+              <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-xs px-3 py-2 rounded-2xl text-sm ${
                   isMine ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none shadow'

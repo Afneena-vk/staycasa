@@ -4,6 +4,7 @@ import Message, { IMessage } from '../models/messageModel';
 import { BaseRepository } from './baseRepository';
 import { IMessageRepository } from './interfaces/IMessageRepository';
 import mongoose from 'mongoose';
+import { ConversationListDTO } from '../dtos/message.dto';
 
 @injectable()
 export class MessageRepository extends BaseRepository<IMessage> implements IMessageRepository {
@@ -34,7 +35,8 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
   }
 
   
-  async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<any[]> {
+  // async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<any[]> {
+    async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<ConversationListDTO[]> {
     return Message.aggregate([
       {
         $match: {
@@ -103,5 +105,30 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
       },
       { $sort: { 'lastMessage.createdAt': -1 } },
     ]);
-  }
+  } 
+
+async saveMessage(data: {
+  sender: mongoose.Types.ObjectId;
+  senderModel: 'User' | 'Owner';
+  receiver: mongoose.Types.ObjectId;
+  receiverModel: 'User' | 'Owner';
+  propertyId: mongoose.Types.ObjectId;
+  content?: string;
+  image?: string;
+}): Promise<IMessage> {
+
+  const message = new Message({
+    sender: data.sender,
+    senderModel: data.senderModel,
+    receiver: data.receiver,
+    receiverModel: data.receiverModel,
+    propertyId: data.propertyId,
+    content: data.content,
+    image: data.image,
+    isRead: false,
+  });
+
+  return await message.save();
+}
+  
 }
