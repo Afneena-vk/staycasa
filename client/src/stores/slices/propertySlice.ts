@@ -281,7 +281,8 @@ getPropertyByAdmin: async (propertyId:string)=>{
 },
 
 approveProperty: async (propertyId:string)=>{
-    set({ isLoading: true, error: null });
+    // set({ isLoading: true, error: null });
+    set({ error: null });
     try {
       const response = await adminService.approveProperty(propertyId);
        set((state) => ({
@@ -307,7 +308,8 @@ approveProperty: async (propertyId:string)=>{
 },
 
 rejectProperty: async (propertyId: string) => {
-  set({ isLoading: true, error: null });
+  //set({ isLoading: true, error: null });
+  set({ error: null });
 
   try {
     const response = await adminService.rejectProperty(propertyId);
@@ -337,7 +339,8 @@ rejectProperty: async (propertyId: string) => {
 },
 
 blockPropertyByAdmin: async (propertyId: string) => {
-  set({ isLoading: true, error: null });
+  // set({ isLoading: true, error: null });
+    set({ error: null });
   try {
     const response = await adminService.blockPropertyByAdmin(propertyId);
     set((state) => ({
@@ -360,7 +363,8 @@ blockPropertyByAdmin: async (propertyId: string) => {
 },
 
 unblockPropertyByAdmin: async (propertyId: string) => {
-  set({ isLoading: true, error: null });
+  //set({ isLoading: true, error: null });
+    set({ error: null });
   try {
     const response = await adminService.unblockPropertyByAdmin(propertyId);
     set((state) => ({

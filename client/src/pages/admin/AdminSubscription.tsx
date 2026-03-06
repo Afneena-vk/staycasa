@@ -5,6 +5,15 @@ import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
 
+
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  duration: string;
+  maxProperties: number | null;
+}
+
 const AdminSubscriptionsPage = () => {
   const {
     plans,
@@ -25,9 +34,11 @@ const AdminSubscriptionsPage = () => {
 
   useEffect(() => {
     fetchPlans();
-  }, [fetchPlans]);
+  // }, [fetchPlans]);
+  }, []);
 
-  const startEdit = (plan: any) => {
+  // const startEdit = (plan: any) => {
+  const startEdit = (plan: Plan) => {
     setEditingPlanId(plan.id);
     setForm({
       price: plan.price,
@@ -45,13 +56,18 @@ const AdminSubscriptionsPage = () => {
     setEditingPlanId(null);
   };
 
-  if (subscriptionLoading) {
-    return (
-      <ModernAdminLayout>
-        <p className="text-center mt-10">Loading plans...</p>
-      </ModernAdminLayout>
-    );
-  }
+  // if (subscriptionLoading) {
+  //   return (
+  //     <ModernAdminLayout>
+  //       <p className="text-center mt-10">Loading plans...</p>
+  //     </ModernAdminLayout>
+  //   );
+  // }
+  {subscriptionLoading && (
+  <div className="p-6 text-center text-slate-400">
+    Loading plans...
+  </div>
+)}
 
   if (subscriptionError) {
     return (
@@ -165,6 +181,7 @@ const AdminSubscriptionsPage = () => {
                       {isEditing ? (
                         <>
                           <button
+                            disabled={subscriptionLoading}
                             onClick={() => saveEdit(plan.id)}
                             className="px-3 py-1 rounded bg-green-600 hover:bg-green-700 text-white"
                           >

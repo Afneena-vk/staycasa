@@ -26,7 +26,7 @@ const navLinks = [
   { name: "Properties", path: "/admin/properties", icon: FaBuilding },
   { name: "Bookings", path: "/admin/bookings", icon: FaCalendarAlt },
   { name: "Subscriptions", path: "/admin/subscriptions", icon: FaConciergeBell },
-  { name: "Settings", path: "/admin/settings", icon: FaCog },
+  //{ name: "Settings", path: "/admin/settings", icon: FaCog },
   // { name: "Services & Features", path: "/admin/services", icon: FaConciergeBell },
   { name: "Logout", path: "/admin/logout", icon: FaSignOutAlt },
  

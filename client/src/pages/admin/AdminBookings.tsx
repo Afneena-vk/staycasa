@@ -25,8 +25,8 @@ const AdminBookings = () => {
   } = useAuthStore();
 
   const [searchTerm, setSearchTerm] = useState(search);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  //const [debouncedSearch, setDebouncedSearch] = useState("");
+  //const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   // Fetch bookings
@@ -46,7 +46,7 @@ const AdminBookings = () => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
+     // setDebouncedSearch(searchTerm);
       setFilters({ search: searchTerm, page: 1 });
     }, 1000);
 
@@ -55,8 +55,9 @@ const AdminBookings = () => {
 
   const handleClearSearch = () => {
   setSearchTerm("");
-  setDebouncedSearch("");
-  setCurrentPage(1);
+  //setDebouncedSearch("");
+  //setCurrentPage(1);
+  setFilters({ search: "", page: 1 });
 };
 
 
@@ -75,6 +76,18 @@ const AdminBookings = () => {
         return "bg-gray-100 text-gray-600";
     }
   };
+
+  if (isLoading && bookings.length === 0) {
+  return (
+    <AdminLayout>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-lg text-gray-600">
+          Loading bookings...
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
 
   return (
     <AdminLayout>
@@ -155,9 +168,7 @@ const AdminBookings = () => {
         </div>
 
         {/* Loading & Error */}
-        {isLoading && (
-          <p className="text-center text-gray-500">Loading bookings...</p>
-        )}
+
         {error && (
           <p className="text-center text-red-500">{error}</p>
         )}
@@ -173,7 +184,12 @@ const AdminBookings = () => {
         )} */}
 
         {/* Table */}
-        <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-xl shadow">
+        <div className="overflow-x-auto bg-white dark:bg-slate-800 rounded-xl shadow relative">
+                    {isLoading && bookings.length > 0 && (
+            <div className="absolute top-2 right-4 text-xs text-gray-400">
+              Updating...
+            </div>
+          )}
           <table className="min-w-full border-collapse">
             <thead className="bg-slate-100 dark:bg-slate-700">
               <tr>
@@ -210,6 +226,7 @@ const AdminBookings = () => {
                           b.property.images?.[0] ||
                           "https://via.placeholder.com/60"
                         }
+                         alt={b.property.title || "Property image"}
                         className="w-14 h-14 rounded object-cover"
                       />
                       <div>
@@ -257,7 +274,7 @@ const AdminBookings = () => {
                 !isLoading && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={10}
                       className="text-center py-10 text-gray-500"
                     >
                       No bookings found

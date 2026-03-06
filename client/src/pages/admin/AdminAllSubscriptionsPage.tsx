@@ -25,24 +25,34 @@ const AdminAllSubscriptionsPage = () => {
 
     useEffect(() => {
     const timer = setTimeout(() => {
-      setFilters((f) => ({
-        ...f,
-        ownerName: ownerNameInput,
-        page: 1,
-      }));
-    }, 1000); 
+      // setFilters((f) => ({
+      //   ...f,
+      //   ownerName: ownerNameInput,
+      //   page: 1,
+      // }));
+      setFilters((f) =>
+  f.ownerName === ownerNameInput
+    ? f
+    : { ...f, ownerName: ownerNameInput, page: 1 }
+);
+    }, 500); 
 
     return () => clearTimeout(timer);
   }, [ownerNameInput]);
 
     useEffect(() => {
     const timer = setTimeout(() => {
-      setFilters((f) => ({
-        ...f,
-        planName: planNameInput,
-        page: 1,
-      }));
-    }, 1000);
+      // setFilters((f) => ({
+      //   ...f,
+      //   planName: planNameInput,
+      //   page: 1,
+      // }));
+      setFilters((f) =>
+  f.planName === planNameInput
+    ? f
+    : { ...f, planName: planNameInput, page: 1 }
+);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [planNameInput])
@@ -55,7 +65,7 @@ const AdminAllSubscriptionsPage = () => {
       page: filters.page,
       limit: filters.limit,
     });
-  }, [filters]);
+  }, [filters, fetchAllAdminSubscriptions]);
 
   return (
     <ModernAdminLayout>
@@ -113,12 +123,38 @@ const AdminAllSubscriptionsPage = () => {
         </div>
 
         {/* Table */}
-        {subscriptionLoading ? (
+        {/* {subscriptionLoading ? (
           <p>Loading subscriptions...</p>
         ) : subscriptionError ? (
           <p className="text-red-500">{subscriptionError}</p>
         ) : (
-          <div className="bg-slate-900 rounded-xl overflow-x-auto">
+          <div className="bg-slate-900 rounded-xl overflow-x-auto"> */}
+          {subscriptionError ? (
+  <p className="text-red-500">{subscriptionError}</p>
+) : (
+  <div className="relative bg-slate-900 rounded-xl overflow-x-auto">
+
+    {/* {subscriptionLoading && (
+      <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center z-10">
+        <div className="text-sm text-slate-300 animate-pulse">
+          Updating results...
+        </div>
+      </div>
+    )} */}
+   
+  
+{/* 
+  {subscriptionLoading && (
+    <span className="text-sm text-slate-400 animate-pulse">
+      Updating...
+    </span>
+  )} */}
+  {subscriptionLoading && adminSubscriptions.length > 0 && (
+  <div className="absolute top-2 right-4 text-xs text-slate-400">
+    Updating...
+  </div>
+)}
+
             <table className="w-full text-sm text-left text-slate-300">
               <thead className="bg-slate-800">
                 <tr>
@@ -133,7 +169,11 @@ const AdminAllSubscriptionsPage = () => {
               </thead>
               <tbody>
                 {adminSubscriptions.map((sub) => (
-                  <tr key={sub.id} className="border-t border-slate-800">
+                  // <tr key={sub.id} className="border-t border-slate-800">
+                  <tr
+  key={sub.id}
+  className="border-t border-slate-800 hover:bg-slate-800/50 transition-colors duration-150"
+>
                     <td className="p-3">{sub.owner.name}</td>
                     <td className="p-3">{sub.owner.email}</td>
                     <td className="p-3">{sub.plan.name}</td>

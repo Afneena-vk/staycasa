@@ -109,9 +109,18 @@ const handleNextPage = () => {
     try {
       setActionLoading(`approve-${ownerId}`);
       const res=await approveOwner(ownerId);
+
+      setOwners((prev) =>
+        prev.map((owner) =>
+         owner.id === ownerId
+          ? { ...owner, approvalStatus: "approved" }
+          : owner
+      )
+    );
+
       setSuccess(res?.message || "Owner approved successfully");
       setError(null);
-      await fetchOwners();
+      // await fetchOwners();
   
     } catch (err: any) {
     setError(err?.response?.data?.message || "Failed to approve owner");
@@ -128,7 +137,18 @@ const handleNextPage = () => {
     try {
       setActionLoading(`reject-${ownerId}`);
       await rejectOwner(ownerId);
-      await fetchOwners();
+
+     setOwners((prev) =>
+       prev.map((owner) =>
+        owner.id === ownerId
+          ? { ...owner, approvalStatus: "rejected" }
+          : owner
+      )
+    );
+     } catch (err: any) {
+    setError(err?.response?.data?.message || "Failed to reject owner");
+
+      //await fetchOwners();
     } finally {
       setActionLoading(null);
     }
@@ -141,7 +161,18 @@ const handleNextPage = () => {
     try {
       setActionLoading(`block-${ownerId}`);
       await adminService.blockOwner(ownerId);
-      await fetchOwners();
+      //await fetchOwners();
+
+    setOwners((prev) =>
+      prev.map((owner) =>
+        owner.id === ownerId
+          ? { ...owner, status: "blocked" }
+          : owner
+      )
+    );
+  } catch (err: any) {
+    setError(err?.response?.data?.message || "Failed to block owner");
+
     } finally {
       setActionLoading(null);
     }
@@ -155,7 +186,17 @@ const handleNextPage = () => {
     try {
       setActionLoading(`unblock-${ownerId}`);
       await adminService.unblockOwner(ownerId);
-      await fetchOwners();
+
+    setOwners((prev) =>
+      prev.map((owner) =>
+        owner.id === ownerId
+          ? { ...owner, status: "active" }
+          : owner
+      )
+     );
+    } catch (err: any) {
+    setError(err?.response?.data?.message || "Failed to unblock owner");
+      //await fetchOwners();
     } finally {
       setActionLoading(null);
     }
@@ -309,7 +350,7 @@ const handleNextPage = () => {
                         <button
                           onClick={() => handleApprove(owner.id)}
                           disabled={actionLoading === `approve-${owner.id}`}
-                          className="text-green-600 hover:text-green-800" 
+                          className="text-green-600 hover:text-green-800 " 
                           title="approve"
                         >
                           <CheckCircle size={18} />
