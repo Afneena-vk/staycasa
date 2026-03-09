@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../layouts/admin/AdminLayout";
+//import AdminLayout from "../../layouts/admin/AdminLayout";
 import { api } from "../../api/api";
 import { useAuthStore } from "../../stores/authStore";
 
@@ -172,18 +172,18 @@ const UserManagement = () => {
   // Initial full-page loader (only first load)
   if (loading && users.length === 0) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg text-gray-600">
             Loading users...
           </div>
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="space-y-6">
 
         {/* HEADER */}
@@ -488,7 +488,7 @@ const UserManagement = () => {
           </div>
         )}
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 };
 

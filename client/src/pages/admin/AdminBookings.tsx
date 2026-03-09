@@ -79,18 +79,18 @@ const AdminBookings = () => {
 
   if (isLoading && bookings.length === 0) {
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-lg text-gray-600">
           Loading bookings...
         </div>
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 }
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="p-6">
         <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
           All Bookings
@@ -317,7 +317,7 @@ const AdminBookings = () => {
           </button>
         </div>
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 };
 

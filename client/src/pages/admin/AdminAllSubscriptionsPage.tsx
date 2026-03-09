@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ModernAdminLayout from "../../layouts/admin/AdminLayout";
+//import ModernAdminLayout from "../../layouts/admin/AdminLayout";
 import { useAuthStore } from "../../stores/authStore";
 
 const AdminAllSubscriptionsPage = () => {
@@ -68,7 +68,7 @@ const AdminAllSubscriptionsPage = () => {
   }, [filters, fetchAllAdminSubscriptions]);
 
   return (
-    <ModernAdminLayout>
+    // <ModernAdminLayout>
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">All Subscriptions</h1>
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -258,7 +258,7 @@ const AdminAllSubscriptionsPage = () => {
 
 
       </div>
-    </ModernAdminLayout>
+    // </ModernAdminLayout>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import AdminLayout from "../../layouts/admin/AdminLayout";
+//import AdminLayout from "../../layouts/admin/AdminLayout";
 import Review from "../../components/common/Review";
 import StarRating from "../../components/common/StarRating";
 import { FaStar } from "react-icons/fa";
@@ -37,25 +37,25 @@ const visibleReviews = showAllReviews
 
   if (isLoading) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="p-8 text-center text-gray-500">Loading property details...</div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   if (error) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="p-8 text-center text-red-500">{error}</div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   if (!selectedProperty) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="p-8 text-center text-gray-500">No property found.</div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
@@ -63,7 +63,7 @@ const visibleReviews = showAllReviews
   const owner = p.owner;
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="p-8 max-w-6xl mx-auto space-y-8">
         {/* Back Button */}
         <button
@@ -230,7 +230,7 @@ const visibleReviews = showAllReviews
 </div>
 
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 }
 

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import ModernAdminLayout from "../../layouts/admin/AdminLayout";
+//import ModernAdminLayout from "../../layouts/admin/AdminLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
@@ -71,16 +71,16 @@ const AdminSubscriptionsPage = () => {
 
   if (subscriptionError) {
     return (
-      <ModernAdminLayout>
+      // <ModernAdminLayout>
         <p className="text-center mt-10 text-red-500">
           {subscriptionError}
         </p>
-      </ModernAdminLayout>
+      // </ModernAdminLayout>
     );
   }
 
   return (
-    <ModernAdminLayout>
+    // <ModernAdminLayout>
       <div className="space-y-6">
        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Header */}
@@ -216,7 +216,7 @@ const AdminSubscriptionsPage = () => {
           )}
         </div>
       </div>
-    </ModernAdminLayout>
+    // </ModernAdminLayout>
   );
 };
 

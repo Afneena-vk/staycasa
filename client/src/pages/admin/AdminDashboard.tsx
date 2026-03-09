@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import ModernAdminLayout from "../../layouts/admin/AdminLayout";
+//import ModernAdminLayout from "../../layouts/admin/AdminLayout";
 import { useAuthStore } from "../../stores/authStore";
 import DashboardPieChart from "../../components/common/DashboardPieChart";
 import RevenueLineChart from "../../components/common/RevenueLineChart";
@@ -34,9 +34,9 @@ const AdminDashboard = () => {
 
   if (!dashboardStats) {
     return (
-      <ModernAdminLayout>
+      // <ModernAdminLayout>
         <p className="text-center mt-10">Loading dashboard...</p>
-      </ModernAdminLayout>
+      // </ModernAdminLayout>
     );
   }
 
@@ -50,7 +50,7 @@ const AdminDashboard = () => {
 
 
   return (
-    <ModernAdminLayout>
+    // <ModernAdminLayout>
       <div className="space-y-8">
         {/* Header */}
         <div>
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
         </div>
 
       </div>
-    </ModernAdminLayout>
+    // </ModernAdminLayout>
   );
 };
 

@@ -33,6 +33,7 @@ const AdminBookings = lazy(() => import("./pages/admin/AdminBookings"));
 const AdminBookingDetails = lazy(() => import("./pages/admin/AdminBookingDetails"));
 const AdminSubscription = lazy(()=>import("./pages/admin/AdminSubscription.tsx"))
 const AdminAllSubscriptionsPage = lazy(()=>import("./pages/admin/AdminAllSubscriptionsPage.tsx"))
+const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 
 const OwnerSignup = lazy(() => import("./pages/owner/OwnerSignup"));
 const OwnerLogin = lazy(() => import("./pages/owner/OwnerLogin"));
@@ -91,7 +92,7 @@ const App = () => {
             </PublicRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/admin/dashboard"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
@@ -183,7 +184,32 @@ const App = () => {
               <AdminAllSubscriptionsPage/>
             </ProtectedRoute>
           }
-        />  
+        />   */}
+        <Route
+  path="/admin"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <AdminLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashboard" element={<AdminDashboard />} />
+
+  <Route path="users" element={<UserManagement />} />
+  <Route path="users/:userId" element={<UserDetails />} />
+
+  <Route path="owners" element={<OwnerManagement />} />
+  <Route path="owners/:ownerId" element={<OwnerDetails />} />
+
+  <Route path="properties" element={<AdminProperties />} />
+  <Route path="properties/:propertyId" element={<AdminPropertyDetails />} />
+
+  <Route path="bookings" element={<AdminBookings />} />
+  <Route path="bookings/:bookingId" element={<AdminBookingDetails />} />
+
+  <Route path="subscriptions" element={<AdminSubscription />} />
+  <Route path="subscriptions/all" element={<AdminAllSubscriptionsPage />} />
+</Route>
         
         <Route
             path="/"

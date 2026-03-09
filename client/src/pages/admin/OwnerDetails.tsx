@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminLayout from "../../layouts/admin/AdminLayout";
+//import AdminLayout from "../../layouts/admin/AdminLayout";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
 import { toast } from "react-toastify";
@@ -70,17 +70,17 @@ const OwnerDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px] text-lg text-gray-600">
           Loading owner details...
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   if (!owner) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="space-y-4">
           <button onClick={() => navigate("/admin/owners")} className="text-blue-600 hover:text-blue-800">
             ← Back to Owners
@@ -89,12 +89,12 @@ const OwnerDetails: React.FC = () => {
             Owner not found
           </div>
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -255,7 +255,7 @@ const OwnerDetails: React.FC = () => {
 
         </div>
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 };
 

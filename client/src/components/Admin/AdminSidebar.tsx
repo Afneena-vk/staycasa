@@ -13,10 +13,9 @@ import {
   FaCog,
   FaConciergeBell,
   FaSignOutAlt,
-  FaChevronLeft
+  FaChevronLeft,
 } from "react-icons/fa";
 import { useState } from "react";
-
 import { useAuthStore } from "../../stores/authStore";
 
 const navLinks = [
@@ -26,49 +25,40 @@ const navLinks = [
   { name: "Properties", path: "/admin/properties", icon: FaBuilding },
   { name: "Bookings", path: "/admin/bookings", icon: FaCalendarAlt },
   { name: "Subscriptions", path: "/admin/subscriptions", icon: FaConciergeBell },
-  //{ name: "Settings", path: "/admin/settings", icon: FaCog },
-  // { name: "Services & Features", path: "/admin/services", icon: FaConciergeBell },
   { name: "Logout", path: "/admin/logout", icon: FaSignOutAlt },
- 
-
 ];
 
 interface AdminSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  onMobileClose?: () => void;
 }
 
-const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps) => {
   const location = useLocation();
-  const logout = useAuthStore((state)=>state.logout);
+  const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
 
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
-      await logout(); 
-      navigate("/admin/login"); 
+      await logout();
+      navigate("/admin/login");
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
 
-
-
-  const toggleSidebarMobile = () => {
-    setIsOpen(!isOpen);
-  };
-
   const handleLinkClick = () => {
-    setIsOpen(false);
+    // Close mobile menu when a link is tapped
+    onMobileClose?.();
   };
 
-  const renderNavItem = (link: typeof navLinks[number]) => {
+  const renderNavItem = (link: (typeof navLinks)[number]) => {
     const Icon = link.icon;
     const isActive = location.pathname === link.path;
     const isLogout = link.name === "Logout";
 
-   if (isLogout) {
+    if (isLogout) {
       return (
         <button
           key={link.name}
@@ -92,8 +82,6 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
         className={`group flex items-center space-x-3 py-3 px-4 rounded-xl transition-all duration-200 ${
           isActive
             ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-[1.02]"
-            // : isLogout
-            // ? "hover:bg-red-600/20 text-red-400"
             : "hover:bg-slate-700/50 text-slate-300 hover:text-white"
         }`}
       >
@@ -101,9 +89,7 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
           <Icon size={18} />
         </div>
         {!collapsed && (
-          <span className="font-medium text-sm">
-            {link.name}
-          </span>
+          <span className="font-medium text-sm">{link.name}</span>
         )}
         {isActive && !collapsed && (
           <div className="ml-auto w-2 h-2 bg-white rounded-full opacity-75" />
@@ -114,7 +100,7 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
 
   return (
     <>
-      {/* Mobile Header */}
+      {/* Mobile Header — shown only on small screens, above the sidebar */}
       <div className="lg:hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
@@ -123,36 +109,43 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
             </div>
             <h1 className="text-lg font-bold">Admin Panel</h1>
           </div>
-
-            <div className="flex items-center space-x-2">
-               <NotificationBell role="Admin" /> 
-          <button
-            onClick={toggleSidebarMobile}
-            className="p-2 rounded-lg hover:bg-slate-700 transition"
-          >
-            {isOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
-          </button>
+          <div className="flex items-center space-x-2">
+            <NotificationBell role="Admin" />
+            <button
+              onClick={onMobileClose}
+              className="p-2 rounded-lg hover:bg-slate-700 transition"
+            >
+              <FaTimes size={20} />
+            </button>
+          </div>
         </div>
       </div>
-</div>
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
 
-      {/* Sidebar */}
+      {/*
+        Sidebar <aside>
+        Key changes vs original:
+          - Removed: fixed lg:relative (that caused the disappearing-on-scroll bug)
+          - Removed: min-h-screen (was unreliable with fixed positioning)
+          - Added:   h-screen         → always full viewport height
+          - Added:   overflow-y-auto  → if nav items overflow, sidebar scrolls independently
+          The parent wrapper in AdminLayout handles sticky on desktop
+          and fixed overlay on mobile.
+      */}
       <aside
-        className={`${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 fixed lg:static top-0 left-0 h-full ${
-          collapsed ? "w-16" : "w-72"
-        } bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 transition-transform duration-300 ease-in-out shadow-2xl`}
+        className={`
+          ${collapsed ? "w-16" : "w-72"}
+          h-screen
+          overflow-y-auto
+          bg-gradient-to-b from-slate-900 to-slate-800
+          text-white
+          z-50
+          transition-all duration-300 ease-in-out
+          shadow-2xl
+          flex flex-col
+        `}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-slate-700/50 flex items-center justify-between">
+        <div className="p-4 border-b border-slate-700/50 flex items-center justify-between flex-shrink-0">
           {!collapsed && (
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
@@ -163,40 +156,28 @@ const AdminSidebar = ({ collapsed, onToggle }: AdminSidebarProps) => {
                 <p className="text-xs text-slate-400">Management Console</p>
               </div>
             </div>
-          )}  
-            <div className="flex items-center space-x-2">
-              <NotificationBell role="Admin" /> 
-          <button
-            onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-slate-700/40 transition"
-          >
-            {collapsed ? <FaBars size={16} /> : <FaChevronLeft size={16} />}
-          </button>
-        </div> 
+          )}
+          <div className="flex items-center space-x-2">
+            <NotificationBell role="Admin" />
+            <button
+              onClick={onToggle}
+              className="p-2 rounded-lg hover:bg-slate-700/40 transition"
+            >
+              {collapsed ? <FaBars size={16} /> : <FaChevronLeft size={16} />}
+            </button>
+          </div>
         </div>
 
         {/* Nav Links */}
-        <nav className="flex flex-col p-3 space-y-1">
+        <nav className="flex flex-col flex-grow p-3 space-y-1">
           {navLinks.map(renderNavItem)}
         </nav>
-
-        {/* Footer */}
-        {/* {!collapsed && (
-          <div className="absolute bottom-4 left-4 right-4 p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center text-xs text-slate-400">
-            <p>Admin Dashboard v2.0</p>
-            <p className="text-slate-500">© 2025 Your Company</p>
-          </div>
-        )} */}
       </aside>
     </>
   );
 };
 
 export default AdminSidebar;
-
-
-
-
 
 
 

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import AdminLayout from "../../layouts/admin/AdminLayout";
+//import AdminLayout from "../../layouts/admin/AdminLayout";
 //import { STATUS_CODES } from "../../utils/constants";
 
 const AdminBookingDetails = () => {
@@ -21,28 +21,28 @@ const AdminBookingDetails = () => {
 
   if (isLoading) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="flex justify-center items-center h-96">
           <span className="text-gray-500">Loading booking details...</span>
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   if (error || !selectedBooking) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="flex justify-center items-center h-96">
           <span className="text-red-500">{error || "Booking not found"}</span>
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   const { property, user, owner, paymentStatus, bookingStatus } = selectedBooking;
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="max-w-6xl mx-auto p-4">
         <h1 className="text-2xl font-semibold mb-4">Booking Details</h1>
 
@@ -121,7 +121,7 @@ const AdminBookingDetails = () => {
           )}
         </div>
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 };
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Eye, Ban, CheckCircle, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../layouts/admin/AdminLayout";
+//import AdminLayout from "../../layouts/admin/AdminLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
@@ -223,7 +223,7 @@ const handleNextPage = () => {
   };
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -468,7 +468,7 @@ const handleNextPage = () => {
           </div>
         )}
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 };
 

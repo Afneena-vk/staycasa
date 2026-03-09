@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import AdminLayout from "../../layouts/admin/AdminLayout";
+//import AdminLayout from "../../layouts/admin/AdminLayout";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
 
@@ -112,17 +112,17 @@ const UserDetails = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg text-gray-600">Loading user details...</div>
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   if (error || !user) {
     return (
-      <AdminLayout>
+      // <AdminLayout>
         <div className="space-y-6">
           {/* Back Button */}
           <button
@@ -138,12 +138,12 @@ const UserDetails = () => {
             <p>{error || 'User not found'}</p>
           </div>
         </div>
-      </AdminLayout>
+      // </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    // <AdminLayout>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -358,7 +358,7 @@ const UserDetails = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    // </AdminLayout>
   );
 };
 

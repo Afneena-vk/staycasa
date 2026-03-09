@@ -2,28 +2,45 @@
 
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
-import { Check, Trash2 } from "lucide-react"; // icons for mark read and delete
+import { Check, Trash2 } from "lucide-react"; 
 
 interface NotificationBellProps {
   role?: "User" | "Owner" | "Admin";
 }
 
 export const NotificationBell = ({ role = "User" }: NotificationBellProps) => {
-  const {
-    notifications,
-    unreadCount,
-    fetchNotifications,
-    markAsRead,
-    markAllAsRead,
-    deleteNotification,
-  } = useAuthStore();
+  // const {
+  //   notifications,
+  //   unreadCount,
+  //   fetchNotifications,
+  //   markAsRead,
+  //   markAllAsRead,
+  //   deleteNotification,
+  // } = useAuthStore();
+const notifications = useAuthStore((state) => state.notifications);
+const unreadCount = useAuthStore((state) => state.unreadCount);
+const fetchNotifications = useAuthStore((state) => state.fetchNotifications);
+const markAsRead = useAuthStore((state) => state.markAsRead);
+const markAllAsRead = useAuthStore((state) => state.markAllAsRead);
+const deleteNotification = useAuthStore((state) => state.deleteNotification);
 
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<"All" | "Unread">("All");
 
+  // useEffect(() => {
+  //   fetchNotifications(role);
+  // }, [fetchNotifications, role]);
+
+//   useEffect(() => {
+//   if (notifications.length === 0) {
+//     fetchNotifications(role);
+//   }
+// }, [role]);
   useEffect(() => {
+  if (notifications.length === 0) {
     fetchNotifications(role);
-  }, [fetchNotifications, role]);
+  }
+}, [notifications.length, role]);
 
   const filteredNotifications =
     filter === "Unread"
