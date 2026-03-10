@@ -52,6 +52,7 @@ const OwnerBookingDetails = lazy(() => import("./pages/owner/OwnerBookingDetails
 const OwnerSubscription = lazy(() => import("./pages/owner/OwnerSubscription"));
 //const OwnerChatWindow = lazy(() => import("./pages/owner/OwnerChatWindow"));
 const OwnerChatPage = lazy(() => import("./pages/owner/OwnerChatPage"));
+const OwnerLayout = lazy(() => import("./layouts/owner/OwnerLayout.tsx"));
 
 const UserSignup = lazy(() => import("./pages/user/UserSignup"));
 const UserLogin = lazy(() => import("./pages/user/UserLogin"));
@@ -253,6 +254,10 @@ const App = () => {
             </PublicRoute>
           }
         />
+
+
+
+{/* 
         <Route
           path="/owner/dashboard"
           element={
@@ -339,14 +344,7 @@ const App = () => {
           }
         />
 
-        {/* <Route
-          path="/owner/chat/:propertyId/:userId"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerChatWindow />
-            </ProtectedRoute>
-          }
-        /> */}
+
 
           
         <Route
@@ -365,7 +363,36 @@ const App = () => {
              <OwnerChatPage />
             </ProtectedRoute>
           }
-        />
+        /> */}
+
+<Route
+  path="/owner"
+  element={
+    <ProtectedRoute allowedRoles={["owner"]}>
+      <OwnerLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route path="dashboard" element={<OwnerDashboard />} />
+
+  <Route path="profile" element={<OwnerProfile />} />
+
+  <Route path="properties" element={<OwnerProperties />} />
+  <Route path="add-property" element={<OwnerAddProperty />} />
+  <Route path="properties/:propertyId" element={<OwnerPropertyDetails />} />
+  <Route path="properties/:propertyId/edit" element={<OwnerEditProperty />} />
+
+  <Route path="wallet" element={<OwnerWallet />} />
+
+  <Route path="bookings" element={<OwnerBookings />} />
+  <Route path="bookings/:bookingId" element={<OwnerBookingDetails />} />
+
+  <Route path="subscription" element={<OwnerSubscription />} />
+
+  <Route path="chat" element={<OwnerChatPage />} />
+  <Route path="chat/:propertyId/:userId" element={<OwnerChatPage />} />
+</Route>
+
 
         {/* <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />

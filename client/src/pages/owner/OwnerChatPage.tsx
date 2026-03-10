@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ConversationList } from "../../components/chat/ConversationList";
 import { ChatWindow } from "../../components/chat/ChatWindow";
-import OwnerSidebar from "../../components/Owner/OwnerSidebar";
+//import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
@@ -65,13 +65,12 @@ const OwnerChatPage = () => {
 //     </div>
 //   );  
 return (
-  <div className="flex h-screen bg-gray-100">
-    
-    {/* Sidebar */}
-    <OwnerSidebar />
+ 
 
-    {/* Main Content */}
-    <div className="flex-1 p-6">
+
+      <div className="p-6">
+
+    {/* <div className="flex-1 p-6"> */}
       <div className="flex h-[85vh] bg-white border rounded-lg overflow-hidden shadow-sm">
         
         {/* Conversation Sidebar */}
@@ -107,7 +106,7 @@ return (
 
       </div>
     </div>
-  </div>
+  // </div>
 );
 };
 

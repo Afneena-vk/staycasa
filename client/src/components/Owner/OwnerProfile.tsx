@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaPhone, FaBuilding, FaMapMarkerAlt, FaUpload, FaSave, FaSpinner } from "react-icons/fa";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { toast } from "react-toastify";
 import ChangePassword from "../common/ChangePassword";
@@ -239,19 +239,19 @@ const handleDocumentUpload = async () => {
 
   if (initialLoad && loading) {
     return (
-      <OwnerLayout>
+      // <OwnerLayout>
         <div className="min-h-screen bg-gray-50 flex justify-center items-center">
           <div className="flex items-center gap-3">
             <FaSpinner className="animate-spin text-indigo-600" size={24} />
             <span className="text-gray-600">Loading profile...</span>
           </div>
         </div>
-      </OwnerLayout>
+      // </OwnerLayout>
     );
   }
 
   return (
-    <OwnerLayout>
+    // <OwnerLayout>
       <div className="min-h-screen bg-gray-50 py-10 px-6 flex justify-center items-center">
         <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
           {/* Profile Header */}
@@ -512,7 +512,7 @@ const handleDocumentUpload = async () => {
 
         </div>
       </div>
-    </OwnerLayout>
+    // </OwnerLayout>
   );
 };
 

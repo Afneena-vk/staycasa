@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { authService } from "../../services/authService";
 import { ownerService } from "../../services/ownerService";
-import OwnerSidebar from "../../components/Owner/OwnerSidebar";
+//import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const OwnerWallet = () => {
@@ -30,12 +30,7 @@ const [totalPages, setTotalPages] = useState(1);
     return <p className="p-6 text-gray-500 text-center">Loading...</p>;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <OwnerSidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 p-6 md:p-10">
+       <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
           My Wallet
         </h1>
@@ -123,7 +118,7 @@ const [totalPages, setTotalPages] = useState(1);
 </div>
 
       </div>
-    </div>
+    
   );
 };
 

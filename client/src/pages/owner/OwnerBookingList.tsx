@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { FaCheck, FaTimes, FaEye, FaSearch } from "react-icons/fa";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
@@ -88,7 +88,7 @@ const OwnerBookings = () => {
 };
 
   return (
-    <OwnerLayout>
+    // <OwnerLayout>
       <div className="p-6">
         <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
           Owner Bookings
@@ -326,7 +326,7 @@ const OwnerBookings = () => {
           </button>
         </div>
       </div>
-    </OwnerLayout>
+    // </OwnerLayout>
   );
 };
 

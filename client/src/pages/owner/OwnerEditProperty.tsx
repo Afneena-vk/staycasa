@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import ImageCropper from "../../components/ImageCropper";
 import { FaTimes } from "react-icons/fa";
@@ -273,7 +273,8 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   };
 
   return (
-    <OwnerLayout>
+    // <OwnerLayout>
+    <div className="p-6">
       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 mt-8">
         <h2 className="text-2xl font-bold mb-6">Edit Property</h2>
 
@@ -556,7 +557,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           onCancel={handleCropCancel}
         />
       )}
-    </OwnerLayout>
+   </div>
   );
 };
 

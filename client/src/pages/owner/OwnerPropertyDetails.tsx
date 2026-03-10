@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import {
   FaStar,
@@ -45,7 +45,7 @@ const visibleReviews = showAllReviews
     return <p className="text-center py-10 text-gray-600">No property found.</p>;
 
   return (
-    <OwnerLayout>
+    // <OwnerLayout>
     <div className="max-w-6xl mx-auto p-6">
       
 <div className="rounded-xl overflow-hidden shadow-lg">
@@ -246,7 +246,7 @@ const visibleReviews = showAllReviews
         </button> */}
       </div>
     </div>
-    </OwnerLayout>
+    // </OwnerLayout>
   );
 }
 

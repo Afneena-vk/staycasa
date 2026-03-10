@@ -1,7 +1,7 @@
 
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 
 const OwnerBookingDetails = () => {
@@ -15,23 +15,23 @@ const OwnerBookingDetails = () => {
 
   if (isLoading)
     return (
-      <OwnerLayout>
+      // <OwnerLayout>
         <p className="text-center mt-10 text-gray-500">Loading booking details...</p>
-      </OwnerLayout>
+      // </OwnerLayout>
     );
 
   if (error)
     return (
-      <OwnerLayout>
+      // <OwnerLayout>
         <p className="text-center mt-10 text-red-500">{error}</p>
-      </OwnerLayout>
+      // </OwnerLayout>
     );
 
   if (!selectedBooking)
     return (
-      <OwnerLayout>
+      // <OwnerLayout>
         <p className="text-center mt-10 text-gray-500">No booking found.</p>
-      </OwnerLayout>
+      // </OwnerLayout>
     );
 
   const b = selectedBooking;
@@ -45,7 +45,7 @@ const OwnerBookingDetails = () => {
   };
 
   return (
-    <OwnerLayout>
+    // <OwnerLayout>
       <div className="p-6 space-y-6 max-w-6xl mx-auto">
 
         {/* Back Button */}
@@ -154,7 +154,7 @@ const OwnerBookingDetails = () => {
 
 
       </div>
-    </OwnerLayout>
+    // </OwnerLayout>
   );
 };
 

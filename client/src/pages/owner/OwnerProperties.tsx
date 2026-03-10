@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch } from "react-icons/fa";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
@@ -165,7 +165,8 @@ const handleDelete = async (propertyId: string) => {
     };
 
     return (
-      <OwnerLayout>
+      // <OwnerLayout>
+       <div className="p-6">
         {/* Header + Add Button */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
@@ -421,13 +422,15 @@ const handleDelete = async (propertyId: string) => {
                   Next
                 </button>
               </div>
-      </OwnerLayout>
+      {/* </OwnerLayout> */}
+      </div>
     );
 
   } catch (error) {
     console.error("Component error:", error);
     return (
-      <OwnerLayout>
+        <div className="p-6">
+      {/* // <OwnerLayout> */}
         <div className="p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
           <h2 className="text-lg font-semibold text-red-800">Error Loading Properties</h2>
           <p className="text-red-600">
@@ -439,7 +442,7 @@ const handleDelete = async (propertyId: string) => {
           </details>
         </div>
         
-      </OwnerLayout>
+     </div>
     );
   }
 };

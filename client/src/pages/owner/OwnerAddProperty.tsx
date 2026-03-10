@@ -1,7 +1,7 @@
 
 
 import React, { useState } from "react";
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 //import { authService } from "../../services/authService";
 import { useAuthStore } from "../../stores/authStore";
 import ImageCropper from "../../components/ImageCropper"; 
@@ -184,7 +184,8 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
 };
 
   return (
-    <OwnerLayout>
+    // <OwnerLayout>
+      <>
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-2xl p-6 mt-8">
       <h2 className="text-2xl font-bold mb-6">Add New Property</h2>
 
@@ -474,7 +475,8 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
        />
       )
     }
-    </OwnerLayout>
+    {/* </OwnerLayout> */}
+      </>
   );
 };
 

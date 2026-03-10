@@ -1,4 +1,4 @@
-import OwnerLayout from "../../layouts/owner/OwnerLayout";
+//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useEffect, useMemo, useState } from "react";
 import {
   FaCheckCircle,
@@ -162,8 +162,9 @@ const propertyPieData = useMemo(() => {
   // }, [ownerBookingStats]);
 
   return (
-    <OwnerLayout>
-      <div>
+    // <OwnerLayout>
+      // <div>
+      <div className="p-6">
         {/* Page Title */}
         <h1 className="text-2xl font-bold mb-6 text-slate-800 dark:text-slate-100">
           Dashboard Overview
@@ -304,7 +305,7 @@ const propertyPieData = useMemo(() => {
 </div>
 </div>
       </div>
-    </OwnerLayout>
+    // </OwnerLayout>
   );
 };
 
