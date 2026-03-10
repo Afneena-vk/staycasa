@@ -1,12 +1,27 @@
 
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 import { FaBars } from "react-icons/fa";
+import { useAuthStore } from "../../stores/authStore";
 
 const OwnerLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+    const fetchCurrentSubscription = useAuthStore(
+    (state) => state.fetchCurrentSubscription
+  );
+
+   const userData = useAuthStore((state) => state.userData);
+  const isApproved = userData?.approvalStatus === "approved";
+
+  useEffect(() => {
+    if (isApproved) {
+      fetchCurrentSubscription();
+    }
+  }, [isApproved]);
+
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);

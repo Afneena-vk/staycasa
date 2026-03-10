@@ -24,7 +24,7 @@ const OwnerSubscriptionPage = () => {
 
   useEffect(() => {
     fetchPlansForOwner();
-    fetchCurrentSubscription();
+    //fetchCurrentSubscription();
   }, []);
 
   return (

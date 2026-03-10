@@ -49,9 +49,9 @@ const deleteProperty = useAuthStore((state) => state.deleteProperty);
 const totalPages = useAuthStore((state) => state.totalPages);
 
 
-const fetchCurrentSubscription = useAuthStore(
-  (state) => state.fetchCurrentSubscription
-);
+// const fetchCurrentSubscription = useAuthStore(
+//   (state) => state.fetchCurrentSubscription
+// );
 
 const currentSubscription = useAuthStore(
   (state) => state.currentSubscription
@@ -84,11 +84,11 @@ const hasActiveSubscription = currentSubscription?.hasActiveSubscription === tru
   }
 }, [isApproved, currentPage, debouncedSearch, sortOption]);   
 
-useEffect(() => {
-  if (isApproved) {
-    fetchCurrentSubscription();
-  }
-}, [isApproved, fetchCurrentSubscription]);
+// useEffect(() => {
+//   if (isApproved) {
+//     fetchCurrentSubscription();
+//   }
+// }, [isApproved, fetchCurrentSubscription]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

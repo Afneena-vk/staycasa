@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaUser, FaEnvelope, FaPhone, FaBuilding, FaMapMarkerAlt, FaUpload, FaSave, FaSpinner } from "react-icons/fa";
 //import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
@@ -26,7 +26,7 @@ const OwnerProfile = () => {
     businessName: "",
     businessAddress: "",
     // profileImage: "",
-     approvalStatus: "pending",
+    approvalStatus: "pending",
     documents: [],
   });
   
@@ -39,7 +39,7 @@ const OwnerProfile = () => {
    
   const [uploading, setUploading] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-
+  const hasFetched = useRef(false);
   
   useEffect(() => {
     const loadProfile = async () => {
@@ -88,9 +88,14 @@ const OwnerProfile = () => {
       }
     };
 
+    // loadProfile();
+      if (!hasFetched.current) {
+    hasFetched.current = true;
     loadProfile();
+  }
   // }, [getOwnerProfile, userData, updateUserData]);
-   }, [getOwnerProfile]);
+  //  }, [getOwnerProfile]);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
