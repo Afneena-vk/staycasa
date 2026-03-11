@@ -11,6 +11,15 @@ import SearchInput from "../../components/Admin/common/SearchInput";
 import FilterSelect from "../../components/Admin/common/FilterSelect";
 import Pagination from "../../components/Admin/common/Pagination";
 
+const statusOptions = [
+  { value: "", label: "All Statuses" },
+  { value: "pending", label: "Pending" },
+  { value: "active", label: "Active" },
+  { value: "blocked", label: "Blocked" },
+  // { value: "booked", label: "Booked" },
+  { value: "rejected", label: "Rejected" },
+];
+
 const sortOptions = [
   { value: "createdAt-desc", label: "Newest" },
   { value: "createdAt-asc", label: "Oldest" },
@@ -55,6 +64,7 @@ function AdminProperties() {
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("createdAt-desc");
+  const [statusFilter, setStatusFilter] = useState<string>("");
 
   const propertiesPerPage = 9;
 
@@ -66,8 +76,9 @@ function AdminProperties() {
       search: debouncedSearch,
       sortBy: sortByField,
       sortOrder: sortOrderDir,
+      status: statusFilter,
     });
-  }, [currentPage, debouncedSearch, sortOption]);
+  }, [currentPage, debouncedSearch, sortOption,  statusFilter]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -159,6 +170,16 @@ function AdminProperties() {
           options={sortOptions}
           ariaLabel="Sort properties"
         />
+
+          <FilterSelect
+           value={statusFilter}
+           onChange={(val) => {
+           setStatusFilter(val);
+           setCurrentPage(1);
+          }}
+           options={statusOptions}
+           ariaLabel="Filter by status"
+         />
       </PageHeader>
 
       {/* ─ Error ─ */}

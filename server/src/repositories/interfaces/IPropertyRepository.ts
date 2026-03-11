@@ -36,7 +36,8 @@ export interface IPropertyRepository extends IBaseRepository<IProperty> {
   limit: number,
   search: string,
   sortBy: string,
-  sortOrder: string
+  sortOrder: string,
+  status?: string
     ): Promise<IPropertyListResult>;
 // ): Promise<{
 //   properties: IProperty[];

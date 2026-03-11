@@ -79,7 +79,8 @@ export class PropertyRepository
     limit: number,
     search: string,
     sortBy: string,
-    sortOrder: string
+    sortOrder: string,
+    status?: string
   ): Promise<IPropertyListResult> {
     // ): Promise<{
     //   properties: IProperty[];
@@ -97,6 +98,10 @@ export class PropertyRepository
         { state: { $regex: search, $options: "i" } },
       ];
     }
+
+  if (status) {
+    query.status = status; 
+  }
 
     const sortQuery: any = {};
     sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;

@@ -137,14 +137,16 @@ async deleteOwnerProperty(req: Request, res: Response, next: NextFunction): Prom
 async getAllProperties(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
 
-    const { page, limit, search, sortBy, sortOrder } = req.query;
+   // const { page, limit, search, sortBy, sortOrder } = req.query;
+   const { page, limit, search, sortBy, sortOrder, status } = req.query;
 
     const result = await this._propertyService.getAllProperties({
       page: Number(page),
       limit: Number(limit),
       search: search as string,
       sortBy: sortBy as string,
-      sortOrder: sortOrder as string
+      sortOrder: sortOrder as string,
+      status: status as string,
     });
 
     console.log("properties fetched successfully:", result)

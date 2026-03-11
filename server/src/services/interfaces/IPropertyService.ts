@@ -6,6 +6,7 @@ export interface PropertyFilters {
   search?: string;
   sortBy?: string;
   sortOrder?: string;
+  status?: string;
 } 
 
 export interface OwnerPropertyFilters {

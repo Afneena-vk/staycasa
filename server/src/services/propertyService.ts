@@ -270,6 +270,7 @@ async getAllProperties(filters: {
   search?: string;
   sortBy?: string;
   sortOrder?: string;
+  status?: string;
 }): Promise<AdminPropertyListResponseDto> {
 
   try {
@@ -278,7 +279,8 @@ async getAllProperties(filters: {
       limit = 10,
       search = "",
       sortBy = "createdAt",
-      sortOrder = "desc"
+      sortOrder = "desc",
+      status
     } = filters;
 
     const result = await this._propertyRepository.getAllProperties(
@@ -286,7 +288,8 @@ async getAllProperties(filters: {
       limit,
       search,
       sortBy,
-      sortOrder
+      sortOrder,
+      status
     );
 
      return PropertyMapper.toAdminPropertyListResponse(
