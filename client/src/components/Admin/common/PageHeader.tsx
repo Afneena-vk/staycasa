@@ -3,7 +3,7 @@ import React from "react";
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  children?: React.ReactNode; // for filters/actions on the right
+  children?: React.ReactNode; 
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, children }) => {
