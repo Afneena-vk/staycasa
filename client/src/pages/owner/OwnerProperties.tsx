@@ -1,7 +1,6 @@
 
 import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch } from "react-icons/fa";
-//import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -11,20 +10,11 @@ interface Property {
   title: string;
   type: string;
   description: string;
-  houseNumber: string;
-  street: string;
   city: string;
-  district: string;
   state: string;
-  pincode: number;
   pricePerMonth: number;
   bedrooms: number;
   bathrooms: number;
-  furnishing: string;
-  maxGuests: number;
-  minLeasePeriod: number;
-  maxLeasePeriod: number;
-  features: string[];
   images: string[];
   status: "pending" | "active" | "blocked" | "booked" | "rejected";
   createdAt: Date;
@@ -32,438 +22,271 @@ interface Property {
 
 const OwnerProperties = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [localError, setLocalError] = useState<string | null>(null);
- 
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("createdAt-desc");
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  // try {
-    
-const userData = useAuthStore((state) => state.userData);
-const getOwnerProperties = useAuthStore((state) => state.getOwnerProperties);
-const properties = useAuthStore((state) => state.properties);
-const isLoading = useAuthStore((state) => state.isLoading);
-const error = useAuthStore((state) => state.error);
-const deleteProperty = useAuthStore((state) => state.deleteProperty);
-const totalPages = useAuthStore((state) => state.totalPages);
-const location = useLocation();
+  const userData = useAuthStore((state) => state.userData);
+  const getOwnerProperties = useAuthStore((state) => state.getOwnerProperties);
+  const properties = useAuthStore((state) => state.properties);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const deleteProperty = useAuthStore((state) => state.deleteProperty);
+  const totalPages = useAuthStore((state) => state.totalPages);
+  const currentSubscription = useAuthStore(
+    (state) => state.currentSubscription
+  );
+  const subscriptionLoading = useAuthStore(
+    (state) => state.subscriptionLoading
+  );
 
+  const navigate = useNavigate();
+  const location = useLocation();
 
-// const fetchCurrentSubscription = useAuthStore(
-//   (state) => state.fetchCurrentSubscription
-// );
+  const isApproved = userData?.approvalStatus === "approved";
+  const hasActiveSubscription = currentSubscription?.hasActiveSubscription === true;
 
-const currentSubscription = useAuthStore(
-  (state) => state.currentSubscription
-);
-
-const subscriptionLoading = useAuthStore(
-  (state) => state.subscriptionLoading
-);
-
-const hasActiveSubscription = currentSubscription?.hasActiveSubscription === true;
-
-    const isApproved = userData?.approvalStatus === "approved";
-    const navigate = useNavigate();
-
-    
-    useEffect(() => {
-  if (isApproved) {
-     const [sortByField, sortOrderDir] = sortOption.split("-");
-       console.log("Sorting by:", sortByField, "Order:", sortOrderDir);
-
-    getOwnerProperties({
-      page: currentPage,
-      limit: 10,
-      // search: searchTerm,
-      search: debouncedSearch,
-      // sortBy: "createdAt",
-      sortBy: sortByField,
-      // sortOrder: "desc",
-      sortOrder: sortOrderDir,
-    });
-  }
-}, [isApproved, currentPage, debouncedSearch, sortOption]);   
-
-// useEffect(() => {
-//   if (isApproved) {
-//     fetchCurrentSubscription();
-//   }
-// }, [isApproved, fetchCurrentSubscription]);
-
-
- useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchTerm); 
-      setCurrentPage(1);
-    }, 1000); 
   
-    return () => clearTimeout(handler); 
+  useEffect(() => {
+    if (isApproved) {
+      const [sortByField, sortOrderDir] = sortOption.split("-");
+      getOwnerProperties({
+        page: currentPage,
+        limit: 10,
+        search: debouncedSearch,
+        sortBy: sortByField,
+        sortOrder: sortOrderDir,
+      });
+    }
+  }, [isApproved, currentPage, debouncedSearch, sortOption]);
+
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(handler);
   }, [searchTerm]);
 
-useEffect(() => {
-  if (location.state?.success) {
-    toast.success(location.state.success, {
-      toastId: "property-update-success",
-    });
+  
+  useEffect(() => {
+    if (location.state?.success) {
+      toast.success(location.state.success, { toastId: "property-update-success" });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, navigate]);
 
-    navigate(location.pathname, { replace: true, state: null });
-  }
-}, [location.state, navigate]);
- 
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handleAddProperty = () => {
+    try {
+      if (isApproved) navigate("/owner/add-property");
+    } catch (err) {
+      console.error("Navigation error:", err);
+      setLocalError("Navigation failed");
+    }
   };
 
- 
-  
-  const handleClearSearch = () => {
-  setSearchTerm("");       
-  setDebouncedSearch("");   
-  setCurrentPage(1);        
-};
+  const handleDelete = async (propertyId: string) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this property?");
+    if (!confirmDelete) return;
 
+    try {
+      await deleteProperty(propertyId);
+      toast.success("Property deleted successfully!");
+    } catch (err) {
+      console.error("Error deleting property:", err);
+      toast.error("Failed to delete property.");
+    }
+  };
 
-    const handleAddProperty = () => {
-      try {
-        if (isApproved) {
-          navigate("/owner/add-property");
-        }
-      } catch (err) {
-        console.error("Navigation error:", err);
-        setLocalError("Navigation failed");
-      }
-    };
+  const getStatusInfo = (status: string) => {
+    switch (status) {
+      case "active": return { text: "Active", color: "bg-green-100 text-green-600" };
+      case "pending": return { text: "Pending", color: "bg-yellow-100 text-yellow-600" };
+      case "blocked": return { text: "Blocked", color: "bg-red-100 text-red-600" };
+      case "booked": return { text: "Booked", color: "bg-blue-100 text-blue-600" };
+      case "rejected": return { text: "Rejected", color: "bg-red-100 text-red-600" };
+      default: return { text: status || "Unknown", color: "bg-gray-100 text-gray-600" };
+    }
+  };
 
-    
-const handleDelete = async (propertyId: string) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this property?"
-  );
-  if (!confirmDelete) return;
+  const safeProperties = Array.isArray(properties) ? properties : [];
 
-  try {
-    await deleteProperty(propertyId);
-    alert("Property deleted successfully!");
-  } catch (err) {
-    console.error("Error deleting property:", err);
-    alert("Failed to delete property.");
-  }
-};
-
-   
-    const safeProperties = Array.isArray(properties) ? properties : [];
-
-    
-
-    
-    const getStatusInfo = (status: string) => {
-      switch (status) {
-        case 'active':
-          return { text: 'Active', color: 'bg-green-100 text-green-600' };
-        case 'pending':
-          return { text: 'Pending', color: 'bg-yellow-100 text-yellow-600' };
-        case 'blocked':
-          return { text: 'Blocked', color: 'bg-red-100 text-red-600' };
-        case 'booked':
-          return { text: 'Booked', color: 'bg-blue-100 text-blue-600' };
-        case 'rejected':
-          return { text: 'Rejected', color: 'bg-red-100 text-red-600' };
-        default:
-          return { text: status || 'Unknown', color: 'bg-gray-100 text-gray-600' };
-      }
-    };
-
-    
-    const getStatusCount = (statusType: string) => {
-      return safeProperties.filter((p) => p && p.status === statusType).length;
-    };
-
-
-  if (isLoading && safeProperties.length === 0) {
-    return (
-      <div className="flex justify-center items-center py-20">
-        <p className="text-gray-500 text-lg">Loading properties...</p>
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+        <h1 className="text-2xl font-bold text-slate-800 dark:text-white">My Properties</h1>
+        <button
+          onClick={handleAddProperty}
+          disabled={!isApproved || !hasActiveSubscription}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md transition ${
+            isApproved && hasActiveSubscription
+              ? "bg-blue-600 hover:bg-blue-700 text-white"
+              : "bg-gray-400 cursor-not-allowed text-gray-200"
+          }`}
+        >
+          <FaPlus />
+          Add New Property
+        </button>
       </div>
-    );
-  }
 
-    return (
-      // <OwnerLayout>
-       <div className="p-6">
-        {/* Header + Add Button */}
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
-            My Properties
-          </h1>
-
-              {isApproved && !hasActiveSubscription && !subscriptionLoading && (
-      <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-400 text-sm text-red-700 rounded">
-        You don’t have an active subscription. Please subscribe to a plan to add properties.
+      {/* Search + Sort */}
+      <div className="flex flex-col sm:flex-row items-center gap-4 mb-6">
+        <div className="relative w-full max-w-sm">
+          <FaSearch className="absolute left-3 top-3 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search by title, location, type, or status..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
+            >
+              ❌
+            </button>
+          )}
+        </div>
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value)}
+          className="px-4 py-2 border rounded-lg bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700"
+        >
+          <option value="createdAt-desc">Newest</option>
+          <option value="createdAt-asc">Oldest</option>
+          <option value="pricePerMonth-asc">Price: Low → High</option>
+          <option value="pricePerMonth-desc">Price: High → Low</option>
+        </select>
       </div>
-    )}
 
+      {/* Error */}
+      {(error || localError) && (
+        <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
+          <p className="text-red-700">{error || localError}</p>
+        </div>
+      )}
+
+      {/* Properties Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {safeProperties.length > 0 ? (
+          safeProperties.map((property) => {
+            const statusInfo = getStatusInfo(property.status);
+            const priceFormatted = property.pricePerMonth?.toLocaleString() || "0";
+
+            return (
+              <div
+                key={property.id}
+                className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden flex flex-col"
+              >
+                <img
+                  src={property.images?.[0] || "https://via.placeholder.com/300"}
+                  alt={property.title || "Property"}
+                  className="h-40 w-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://via.placeholder.com/300";
+                  }}
+                />
+                <div className="p-4 flex-1 flex flex-col justify-between">
+                  <div className="mb-2">
+                    <h2 className="font-bold text-lg text-slate-800 dark:text-white">
+                      {property.title || "No Title"}
+                    </h2>
+                    <p className="text-sm text-slate-500 dark:text-gray-300">
+                      {property.type || "N/A"} • {property.city}, {property.state}
+                    </p>
+                    <p className={`mt-2 inline-block px-2 py-1 text-xs rounded-full ${statusInfo.color}`}>
+                      {statusInfo.text}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex justify-between items-center">
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      ₹{priceFormatted}/month
+                    </span>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => navigate(`/owner/properties/${property.id}`)}
+                        className="p-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
+                        title="View"
+                      >
+                        <FaEye size={14} />
+                      </button>
+                      <button
+                        onClick={() => navigate(`/owner/properties/${property.id}/edit`)}
+                        disabled={property.status === "booked"}
+                        className={`p-2 rounded-lg ${
+                          property.status !== "booked"
+                            ? "bg-green-500 hover:bg-green-600 text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
+                        title="Edit"
+                      >
+                        <FaEdit size={14} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(property.id)}
+                        disabled={property.status === "booked"}
+                        className={`p-2 rounded-lg ${
+                          property.status !== "booked"
+                            ? "bg-red-500 hover:bg-red-600 text-white"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
+                        title="Delete"
+                      >
+                        <FaTrash size={14} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          !isLoading && (
+            <p className="col-span-full text-center text-gray-500 py-20">
+              {searchTerm ? "No properties found matching your search" : "No properties found"}
+            </p>
+          )
+        )}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-6">
           <button
-            onClick={handleAddProperty}
-            disabled={!isApproved || !hasActiveSubscription}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-md transition ${
-              isApproved && hasActiveSubscription
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                : "bg-gray-400 cursor-not-allowed text-gray-200"
-            }`}
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
-            <FaPlus />
-            Add New Property
+            Prev
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : ""}`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
           </button>
         </div>
-
-        {!isApproved && (
-          <div className="mb-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
-            <p className="text-sm text-yellow-700">
-              <strong>Account Pending Approval:</strong>
-              {userData?.approvalStatus === "pending" &&
-                " Your account is under review. You cannot add properties until approved."}
-              {userData?.approvalStatus === "rejected" &&
-                " Your account has been rejected. Please contact support."}
-            </p>
-          </div>
-        )}
-
-        {/* Search Bar */}
-        <div className="flex items-center gap-2 mb-6">
-          <div className="relative w-full max-w-sm">
-            <FaSearch className="absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by title, location, type, or status..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
-            />
-              {searchTerm && (
-    <button
-      onClick={handleClearSearch}
-      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
-      aria-label="Clear search"
-    >
-      ❌
-    </button>
-  )}
-          </div>
-           <select
-    value={sortOption}
-    onChange={(e) => setSortOption(e.target.value)}
-    className="px-4 py-2 border rounded-lg bg-white dark:bg-slate-800 dark:text-white dark:border-slate-700"
-  >
-    <option value="createdAt-desc">Newest</option>
-    <option value="createdAt-asc">Oldest</option>
-    <option value="pricePerMonth-asc">Price: Low → High</option>
-    <option value="pricePerMonth-desc">Price: High → Low</option>
-  </select>
-        </div>
-
-        {/* Loading & Error States */}
-        
-        {(error || localError) && (
-          <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
-            <p className="text-red-700">{error || localError}</p>
-          </div>
-        )}
-
-        {/* Summary Cards */}
-        {safeProperties.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
-              <h2 className="text-sm text-slate-500">Total Properties</h2>
-              {/* <p className="text-xl font-bold">{safeProperties.length}</p> */}
-              <p className="text-xl font-bold">{safeProperties.length}</p>
-            </div>
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
-              <h2 className="text-sm text-slate-500">Active</h2>
-              <p className="text-xl font-bold">{getStatusCount("active")}</p>
-            </div>
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
-              <h2 className="text-sm text-slate-500">Pending</h2>
-              <p className="text-xl font-bold">{getStatusCount("pending")}</p>
-            </div>
-            {/* <div className="p-4 bg-white dark:bg-slate-800 rounded-xl shadow-md">
-              <h2 className="text-sm text-slate-500">Booked</h2>
-              <p className="text-xl font-bold">{getStatusCount("booked")}</p>
-            </div> */}
-          </div>
-        )}
-
-        {/* Properties Table */}  
-
-<div className="relative bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-
-  {isLoading && safeProperties.length > 0 && (
-    <div className="absolute top-3 right-4 z-10 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-500 text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">
-      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-      Updating…
+      )}
     </div>
-  )}
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
-            <thead className="bg-slate-100 dark:bg-slate-700">
-              <tr>
-                <th className="px-4 py-2 text-left">Image</th>
-                <th className="px-4 py-2 text-left">Title</th>
-                <th className="px-4 py-2 text-left">Type</th>
-                <th className="px-4 py-2 text-left">Location</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Price/Month</th>
-                <th className="px-4 py-2 text-left">CreatedAt</th>
-                <th className="px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* {filteredProperties.length > 0 ? (
-                filteredProperties.map((property) => { */}
-                 {safeProperties.length > 0 ? (
-                     safeProperties.map((property) => {
-                  if (!property || !property.id) return null;
-                  
-                  const statusInfo = getStatusInfo(property.status);
-                  const priceFormatted = property.pricePerMonth 
-                    ? property.pricePerMonth.toLocaleString() 
-                    : '0';
-                  
-                  return (
-                    <tr
-                      key={property.id}
-                      className="border-t dark:border-slate-700"
-                    >
-                      <td className="px-4 py-2">
-                        <img
-                          src={
-                            property.images && property.images.length > 0
-                              ? property.images[0]
-                              : "https://via.placeholder.com/150"
-                          }
-                          alt={property.title || "Property"}
-                          className="w-16 h-16 rounded-lg object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "https://via.placeholder.com/150";
-                          }}
-                        />
-                      </td>
-                      <td className="px-4 py-2 font-medium">
-                        {property.title || "No Title"}
-                      </td>
-                      <td className="px-4 py-2">{property.type || "N/A"}</td>
-                      <td className="px-4 py-2">
-                        {property.city || "N/A"}, {property.state || "N/A"}
-                      </td>
-                      <td className="px-4 py-2">
-                        <span
-                          className={`px-3 py-1 text-xs rounded-full ${statusInfo.color}`}
-                        >
-                          {statusInfo.text}
-                        </span>
-                      </td>
-                      <td className="px-4 py-2">₹{priceFormatted}</td>
-                           <td className="px-4 py-2"> {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : "N/A"}</td> 
-                      <td className="px-4 py-2 flex gap-2">
-                        <button
-                          disabled={!isApproved}
-                          onClick={()=> navigate(`/owner/properties/${property.id}`)}
-                          className={`p-2 rounded-lg ${
-                            isApproved
-                              ? "bg-blue-500 hover:bg-blue-600 text-white"
-                              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          }`}
-                          title="View Property"
-                        >
-                          <FaEye size={14} />
-                        </button>
-                        <button
-                          // disabled={!isApproved || property.status === "booked"  as Property["status"]}
-                          disabled={!isApproved || property.status === "booked"}
-                          onClick={()=> navigate(`/owner/properties/${property.id}/edit`)}
-                          className={`p-2 rounded-lg ${
-                            // isApproved && property.status !== "booked"  as Property["status"]
-                            isApproved && property.status !== "booked"
-                              ? "bg-green-500 hover:bg-green-600 text-white"
-                              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          }`}
-                          title="Edit Property"
-                        >
-                          <FaEdit size={14} />
-                        </button>
-                        <button
-                          disabled={!isApproved || property.status === "booked"  as Property["status"]}
-                          onClick={() => handleDelete(property.id)}
-                          className={`p-2 rounded-lg ${
-                            isApproved && property.status !== "booked"  as Property["status"]
-                              ? "bg-red-500 hover:bg-red-600 text-white"
-                              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                          }`}
-                          title="Delete Property"
-                        >
-                          <FaTrash size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                !isLoading && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="text-center py-8 text-gray-500"
-                    >
-                      {searchTerm 
-                        ? "No properties found matching your search" 
-                        : "No properties found"}
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
-        </div>
-        </div>
-        <div className="flex justify-center items-center gap-2 p-4">
-                <button
-                  disabled={currentPage === 1}
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                >
-                  Prev
-                </button>
-
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handlePageChange(i + 1)}
-                    className={`px-3 py-1 border rounded ${
-                      currentPage === i + 1 ? "bg-blue-500 text-white" : ""
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-
-                <button
-                  disabled={currentPage === totalPages}
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
-              {/* </>
-           )} */}
-      {/* </OwnerLayout> */}
-      </div>
-    );
-
+  );
 };
 
 export default OwnerProperties;
+
