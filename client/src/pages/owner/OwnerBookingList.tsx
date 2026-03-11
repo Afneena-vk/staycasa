@@ -87,6 +87,15 @@ const OwnerBookings = () => {
   }
 };
 
+
+if (isLoading && bookings.length === 0) {
+  return (
+    <div className="flex justify-center items-center py-20">
+      <p className="text-gray-500 text-lg">Loading bookings...</p>
+    </div>
+  );
+}
+
   return (
     // <OwnerLayout>
       <div className="p-6">
@@ -181,7 +190,7 @@ const OwnerBookings = () => {
         </div>
 
         {/* Loading & Error */}
-        {isLoading && <p className="text-center text-gray-500">Loading bookings...</p>}
+      
         {error && <p className="text-center text-red-500">{error}</p>}
 
         {/* Summary Cards */}
@@ -209,6 +218,14 @@ const OwnerBookings = () => {
         )}
 
         {/* Booking Table */}
+        <div className="relative bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+
+  {isLoading && bookings.length > 0 && (
+    <div className="absolute top-3 right-4 z-10 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-500 text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">
+      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+      Updating…
+    </div>
+  )}
         <div className="overflow-x-auto">
           <table className="min-w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
             <thead className="bg-slate-100 dark:bg-slate-700">
@@ -297,6 +314,7 @@ const OwnerBookings = () => {
               )}
             </tbody>
           </table>
+        </div>
         </div>
 
         {/* Pagination */}

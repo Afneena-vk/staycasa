@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 //import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
 import ImageCropper from "../../components/ImageCropper";
@@ -45,8 +45,9 @@ const OwnerEditProperty: React.FC = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [filesToCrop, setFilesToCrop] = useState<File[]>([]);
   const [croppingImage, setCroppingImage] = useState<string | null>(null);
-   const [imageError, setImageError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
 
+  const navigate = useNavigate();
  
   useEffect(() => {
     if (propertyId) {
@@ -264,8 +265,14 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     try {
       await updateProperty(propertyId!, formData);
-      await getOwnerPropertyById(propertyId!);
-      alert("Property updated successfully!");
+      // await getOwnerPropertyById(propertyId!);
+      // alert("Property updated successfully!");
+      // navigate("/owner/properties");
+
+  navigate("/owner/properties", {
+      replace: true,
+    state: { success: "Property updated successfully!" }
+  });
     } catch (err: any) {
       console.error("Error updating property:", err);
       alert("Failed to update property");

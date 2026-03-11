@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch } from "react-icons/fa";
 //import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface Property {
   id: string;
@@ -38,15 +38,16 @@ const OwnerProperties = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState("createdAt-desc");
 
-  try {
+  // try {
     
-    const userData = useAuthStore((state) => state.userData);
+const userData = useAuthStore((state) => state.userData);
 const getOwnerProperties = useAuthStore((state) => state.getOwnerProperties);
 const properties = useAuthStore((state) => state.properties);
 const isLoading = useAuthStore((state) => state.isLoading);
 const error = useAuthStore((state) => state.error);
 const deleteProperty = useAuthStore((state) => state.deleteProperty);
 const totalPages = useAuthStore((state) => state.totalPages);
+const location = useLocation();
 
 
 // const fetchCurrentSubscription = useAuthStore(
@@ -75,7 +76,8 @@ const hasActiveSubscription = currentSubscription?.hasActiveSubscription === tru
     getOwnerProperties({
       page: currentPage,
       limit: 10,
-      search: searchTerm,
+      // search: searchTerm,
+      search: debouncedSearch,
       // sortBy: "createdAt",
       sortBy: sortByField,
       // sortOrder: "desc",
@@ -90,17 +92,32 @@ const hasActiveSubscription = currentSubscription?.hasActiveSubscription === tru
 //   }
 // }, [isApproved, fetchCurrentSubscription]);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
 
-  useEffect(() => {
+ useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchTerm); 
+      setCurrentPage(1);
     }, 1000); 
   
     return () => clearTimeout(handler); 
   }, [searchTerm]);
+
+useEffect(() => {
+  if (location.state?.success) {
+    toast.success(location.state.success, {
+      toastId: "property-update-success",
+    });
+
+    navigate(location.pathname, { replace: true, state: null });
+  }
+}, [location.state, navigate]);
+ 
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+ 
   
   const handleClearSearch = () => {
   setSearchTerm("");       
@@ -163,6 +180,15 @@ const handleDelete = async (propertyId: string) => {
     const getStatusCount = (statusType: string) => {
       return safeProperties.filter((p) => p && p.status === statusType).length;
     };
+
+
+  if (isLoading && safeProperties.length === 0) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <p className="text-gray-500 text-lg">Loading properties...</p>
+      </div>
+    );
+  }
 
     return (
       // <OwnerLayout>
@@ -239,9 +265,6 @@ const handleDelete = async (propertyId: string) => {
         </div>
 
         {/* Loading & Error States */}
-        {isLoading && (
-          <p className="text-center text-gray-500">Loading properties...</p>
-        )}
         
         {(error || localError) && (
           <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
@@ -272,7 +295,17 @@ const handleDelete = async (propertyId: string) => {
           </div>
         )}
 
-        {/* Properties Table */}
+        {/* Properties Table */}  
+
+<div className="relative bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+
+  {isLoading && safeProperties.length > 0 && (
+    <div className="absolute top-3 right-4 z-10 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-slate-200 text-slate-500 text-xs font-medium px-2.5 py-1 rounded-full shadow-sm">
+      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+      Updating…
+    </div>
+  )}
+
         <div className="overflow-x-auto">
           <table className="min-w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
             <thead className="bg-slate-100 dark:bg-slate-700">
@@ -349,10 +382,12 @@ const handleDelete = async (propertyId: string) => {
                           <FaEye size={14} />
                         </button>
                         <button
-                          disabled={!isApproved || property.status === "booked"  as Property["status"]}
+                          // disabled={!isApproved || property.status === "booked"  as Property["status"]}
+                          disabled={!isApproved || property.status === "booked"}
                           onClick={()=> navigate(`/owner/properties/${property.id}/edit`)}
                           className={`p-2 rounded-lg ${
-                            isApproved && property.status !== "booked"  as Property["status"]
+                            // isApproved && property.status !== "booked"  as Property["status"]
+                            isApproved && property.status !== "booked"
                               ? "bg-green-500 hover:bg-green-600 text-white"
                               : "bg-gray-300 text-gray-500 cursor-not-allowed"
                           }`}
@@ -393,6 +428,7 @@ const handleDelete = async (propertyId: string) => {
             </tbody>
           </table>
         </div>
+        </div>
         <div className="flex justify-center items-center gap-2 p-4">
                 <button
                   disabled={currentPage === 1}
@@ -422,29 +458,12 @@ const handleDelete = async (propertyId: string) => {
                   Next
                 </button>
               </div>
+              {/* </>
+           )} */}
       {/* </OwnerLayout> */}
       </div>
     );
 
-  } catch (error) {
-    console.error("Component error:", error);
-    return (
-        <div className="p-6">
-      {/* // <OwnerLayout> */}
-        <div className="p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
-          <h2 className="text-lg font-semibold text-red-800">Error Loading Properties</h2>
-          <p className="text-red-600">
-            There was an error loading your properties. Please try refreshing the page.
-          </p>
-          <details className="mt-2 text-sm text-red-500">
-            <summary>Error Details</summary>
-            <pre>{error instanceof Error ? error.message : String(error)}</pre>
-          </details>
-        </div>
-        
-     </div>
-    );
-  }
 };
 
 export default OwnerProperties;
