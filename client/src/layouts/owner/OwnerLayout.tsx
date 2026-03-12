@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 import { FaBars } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
+import { NotificationBell } from "../../pages/user/NotificationBell";
 
 const OwnerLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -71,7 +72,21 @@ const OwnerLayout = () => {
       <main className="flex-1 flex flex-col min-w-0 min-h-screen">
 
         {/* Mobile Header Spacer */}
-        <div className="lg:hidden h-16" />
+        {/* <div className="lg:hidden h-16" /> */}
+
+
+  {/* Desktop Header with Notification on Left */}
+<div className="hidden lg:flex items-center p-4 border-b border-gray-200 bg-admin-bg z-50 relative">
+  {/* Place notification near the left edge */}
+  <div className="mr-4">
+    <NotificationBell role="Owner" />
+  </div>
+</div>
+
+  {/* Mobile Header Spacer with Notification */}
+  <div className="lg:hidden h-16 flex items-center justify-end px-4">
+    <NotificationBell role="Owner" />
+  </div>
 
         {/* Page Content */}
         <div className="flex-1 p-6">

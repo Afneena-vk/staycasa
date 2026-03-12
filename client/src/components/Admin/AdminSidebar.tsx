@@ -1,7 +1,7 @@
 
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { NotificationBell } from "../../pages/user/NotificationBell";
+//import { NotificationBell } from "../../pages/user/NotificationBell";
 import {
   FaBars,
   FaTimes,
@@ -101,7 +101,7 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
   return (
     <>
       {/* Mobile Header — shown only on small screens, above the sidebar */}
-      <div className="lg:hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md">
+      {/* <div className="lg:hidden bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -109,17 +109,9 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
             </div>
             <h1 className="text-lg font-bold">Admin Panel</h1>
           </div>
-          <div className="flex items-center space-x-2">
-            <NotificationBell role="Admin" />
-            <button
-              onClick={onMobileClose}
-              className="p-2 rounded-lg hover:bg-slate-700 transition"
-            >
-              <FaTimes size={20} />
-            </button>
-          </div>
+    
         </div>
-      </div>
+      </div> */}
 
       {/*
         Sidebar <aside>
@@ -157,7 +149,7 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
               </div>
             </div>
           )}
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <NotificationBell role="Admin" />
             <button
               onClick={onToggle}
@@ -165,7 +157,7 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
             >
               {collapsed ? <FaBars size={16} /> : <FaChevronLeft size={16} />}
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Nav Links */}

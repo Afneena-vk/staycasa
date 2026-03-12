@@ -5,6 +5,7 @@ import { useState } from "react";
 import AdminSidebar from "../../components/Admin/AdminSidebar";
 import { FaBars } from "react-icons/fa";
 import { Outlet } from "react-router-dom";
+import { NotificationBell } from "../../pages/user/NotificationBell";
 
 const AdminLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -20,6 +21,7 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-admin-bg flex">
+      
       {/* Mobile Menu Button */}
       <div className="lg:hidden fixed top-4 left-4 z-50">
         <button
@@ -38,10 +40,12 @@ const AdminLayout = () => {
         />
       )}
 
-      {/* Sidebar Wrapper
-          - Mobile: fixed overlay (slide in/out)
-          - Desktop: sticky so it stays in view while content scrolls
-      */}
+      {/* Notification (Desktop) */}
+      <div className="hidden lg:flex fixed top-4 left-[280px] z-50">
+        <NotificationBell role="Admin" />
+      </div>
+
+      {/* Sidebar */}
       <div
         className={`
           ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
@@ -63,15 +67,20 @@ const AdminLayout = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 min-h-screen">
-        {/* Mobile Header Spacer */}
-        <div className="lg:hidden h-16" />
+
+        {/* Mobile Header */}
+        <div className="lg:hidden h-16 flex items-center justify-end px-4">
+          <NotificationBell role="Admin" />
+        </div>
 
         {/* Content Area */}
-        <div className="flex-1 p-6">
+       
+        <div className="flex-1 p-6 lg:pt-16">
           <div className="max-w-full mx-auto">
             <Outlet />
           </div>
         </div>
+
       </main>
     </div>
   );

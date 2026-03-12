@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 
 import { useAuthStore } from "../../stores/authStore";
-import { NotificationBell } from "../../pages/user/NotificationBell";
+//import { NotificationBell } from "../../pages/user/NotificationBell";
 
 interface OwnerSidebarProps {
   onMobileClose?: () => void;
@@ -51,9 +51,9 @@ const OwnerSidebar = ({ onMobileClose }: OwnerSidebarProps) => {
             <FaTimes size={18} />
           </button>
         </div>
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <NotificationBell role="Owner" />
-        </div>
+        </div> */}
       </div>
 
       {/* Menu */}
