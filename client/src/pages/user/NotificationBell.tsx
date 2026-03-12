@@ -65,7 +65,17 @@ const deleteNotification = useAuthStore((state) => state.deleteNotification);
       {/* Dropdown */}
       {open && (
         // <div className="absolute right-0 mt-2 w-96 bg-white shadow-lg rounded-md max-h-96 overflow-y-auto z-50 border border-gray-200">
-          <div className="absolute left-full ml-2 mt-2 w-96 bg-white shadow-lg rounded-md max-h-96 overflow-y-auto z-[9999] border border-gray-200">
+          //<div className="absolute left-full ml-2 mt-2 w-96 bg-white shadow-lg rounded-md max-h-96 overflow-y-auto z-[9999] border border-gray-200">
+                  <div
+          className="
+            absolute 
+            right-0 mt-2
+            w-72 sm:w-96
+            md:left-full md:ml-2 md:right-auto
+            bg-white shadow-lg rounded-md max-h-96 overflow-y-auto 
+            z-[9999] border border-gray-200
+          "
+        >
 
           {/* Header with Tabs */}
           <div className="flex border-b border-gray-200">

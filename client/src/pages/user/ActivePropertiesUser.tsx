@@ -277,11 +277,13 @@ const ActivePropertiesUser: React.FC = () => {
   <div
     key={property.id}
     onClick={() => navigate(`/user/properties/${property.id}`)}
-    className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex"
+    // className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex"
+     className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex flex-col sm:flex-row"
   >
     
     {/* Property Image */}
-    <div className="w-64 h-48 bg-gray-100 shrink-0">
+    {/* <div className="w-64 h-48 bg-gray-100 shrink-0"> */}
+    <div className="w-full sm:w-64 h-48 sm:h-auto bg-gray-100 shrink-0">
       {property.images?.[0] && (
         <img
           src={property.images[0]}
@@ -292,7 +294,8 @@ const ActivePropertiesUser: React.FC = () => {
     </div>
 
     {/* Property Details */}
-    <div className="flex flex-col justify-between p-5 flex-1">
+    {/* <div className="flex flex-col justify-between p-5 flex-1"> */}
+     <div className="flex flex-col justify-between p-4 sm:p-5 flex-1">
 
       <div>
 
@@ -349,7 +352,8 @@ const ActivePropertiesUser: React.FC = () => {
       </div>
 
       {/* Price */}
-      <div className="flex justify-end">
+      {/* <div className="flex justify-end"> */}
+       <div className="mt-3 sm:mt-0 flex justify-end">
         <p className="text-xl font-bold text-blue-950">
           ₹{property.pricePerMonth}
           <span className="text-sm text-gray-500 font-normal">
