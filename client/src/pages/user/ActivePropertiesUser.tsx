@@ -77,24 +77,36 @@ const ActivePropertiesUser: React.FC = () => {
     setPage(1);
   };
 
-  if (isLoading)
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-gray-500 text-lg animate-pulse">Loading properties...</p>
-      </div>
-    );
+  // if (isLoading)
+  //   return (
+  //     <div className="flex items-center justify-center min-h-[60vh]">
+  //       <p className="text-gray-500 text-lg animate-pulse">Loading properties...</p>
+  //     </div>
+  //   );
 
-  if (error)
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-red-500 text-lg">{error}</p>
-      </div>
-    );
+  // if (error)
+  //   return (
+  //     <div className="flex items-center justify-center min-h-[60vh]">
+  //       <p className="text-red-500 text-lg">{error}</p>
+  //     </div>
+  //   );
 
   const isFilterApplied =
     searchQuery.trim() !== "" ||
     filters.category !== "" ||
     filters.facilities.length > 0;
+
+      if (isLoading && properties.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-blue-700 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-500 font-medium">Loading properties...</p>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-gray-50">
