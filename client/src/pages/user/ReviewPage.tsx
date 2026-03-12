@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 
 const ReviewPage = () => {
   const { bookingId } = useParams();
@@ -51,10 +51,11 @@ const ReviewPage = () => {
 
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gray-50 pt-28 px-4 md:px-8">
+      {/* <Header /> */}
+      <div className="min-h-screen bg-gray-50 pt-18 pb-20 px-4 md:px-8">
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
-          <div className="md:flex">
+          {/* <div className="md:flex"> */}
+          <div className="md:flex flex-col md:flex-row">
             {/* LEFT: Property Image */}
             <div className="md:w-1/2 relative">
               {selectedBooking.property?.images?.[0] ? (
@@ -116,7 +117,8 @@ const ReviewPage = () => {
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow-md transition"
+                 className="w-full py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow-md transition"
+               //className= "w-full py-3 sm:py-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg shadow-md transition"
               >
                 {loading ? "Submitting..." : "Submit Review"}
               </button>
@@ -124,7 +126,7 @@ const ReviewPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 import { paymentService } from "../../services/paymentService";
 
 const BookingDetails = () => {
@@ -177,13 +177,15 @@ const handleCancelBooking = async () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
 
-      <div className="min-h-screen bg-gray-50 pt-28 px-4 md:px-8">
+      {/* <div className="min-h-screen bg-gray-50 pt-28 px-4 md:px-8"> */}
+      <div className="min-h-screen bg-gray-50 pt-10 px-4 md:px-8">
         <div className="max-w-5xl mx-auto space-y-6">
 
           {/* HEADER */}
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          {/* <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4"> */}
+          <div className="bg-white rounded-xl shadow p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 flex-wrap">
             <div>
               <p className="text-sm text-gray-500">Booking ID</p>
               <h2 className="font-semibold text-lg">{b.bookingId}</h2>
@@ -233,7 +235,8 @@ const handleCancelBooking = async () => {
           </div>
 
           {/* PROPERTY SUMMARY */}
-          <div className="bg-white rounded-xl shadow p-6 grid md:grid-cols-3 gap-6">
+          {/* <div className="bg-white rounded-xl shadow p-6 grid md:grid-cols-3 gap-6"> */}
+          <div className="bg-white rounded-xl shadow p-6 grid sm:grid-cols-1 md:grid-cols-3 gap-6">
             {/* Image */}
             <div
               className="cursor-pointer group"
@@ -243,7 +246,8 @@ const handleCancelBooking = async () => {
                 <img
                   src={b.property.images[0]}
                   alt={b.property.title}
-                  className="w-full h-40 object-cover rounded-lg"
+                  // className="w-full h-40 object-cover rounded-lg"
+                   className="w-full h-40 sm:h-60 md:h-40 object-cover rounded-lg"
                 />
               ) : (
                 <div className="w-full h-40 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">
@@ -272,7 +276,8 @@ const handleCancelBooking = async () => {
 
           {/* OWNER / HOST INFO */}
 {b.owner && (
-  <div className="bg-white rounded-xl shadow p-6 flex items-center justify-between">
+  // <div className="bg-white rounded-xl shadow p-6 flex items-center justify-between">
+  <div className="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div className="flex items-center gap-4">
       {/* Avatar */}
       <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-semibold text-lg">
@@ -382,7 +387,7 @@ const handleCancelBooking = async () => {
         </div>
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

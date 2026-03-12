@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 import { useAuthStore } from "../../stores/authStore";
 import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
@@ -177,15 +177,23 @@ const isStartDateValid = (dateString: string) => {
  
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 py-10 px-4">
-          <Header />
+          {/* <Header /> */}
 
       
       <div className="max-w-5xl mx-auto">
 
         {/* Title */}
-        <h1 className="text-4xl font-bold mb-10 text-gray-800">
+        {/* <h1 className="text-4xl font-bold mb-10 text-gray-800">
           Book Your Stay 
-        </h1>
+        </h1> */}
+        <div className="mb-10">
+  <h1 className="text-4xl md:text-4xl font-bold text-gray-900">
+    Book Your Stay
+  </h1>
+  <p className="text-gray-500 mt-2 text-lg">
+    Choose your move-in date and rental duration
+  </p>
+</div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
@@ -198,13 +206,21 @@ const isStartDateValid = (dateString: string) => {
             />
 
             <div className="p-6">
-              <h2 className="text-2xl font-semibold text-gray-900">
+              {/* <h2 className="text-2xl font-semibold text-gray-900">
                 {property.title}
               </h2>
 
               <h3>
   {`${property.houseNumber}, ${property.street}, ${property.city}, ${property.district}, ${property.state} - ${property.pincode}`}
-</h3>
+</h3> */}
+
+<h2 className="text-xl font-semibold text-gray-900 leading-tight">
+  {property.title}
+</h2>
+
+<p className="text-sm text-gray-500 mt-2 leading-relaxed">
+  {`${property.houseNumber}, ${property.street}, ${property.city}, ${property.district}, ${property.state} - ${property.pincode}`}
+</p>
 
 
 
@@ -212,9 +228,13 @@ const isStartDateValid = (dateString: string) => {
 
               <div className="mt-4">
 
-                <p className="text-blue-700 text-xl font-bold">
+                {/* <p className="text-blue-700 text-xl font-bold">
                   ₹{property.pricePerMonth}/month
-                </p>
+                </p> */}
+                <p className="text-blue-600 text-2xl font-bold mt-3">
+  ₹{property.pricePerMonth}
+  <span className="text-sm text-gray-500 font-medium ml-1">/ month</span>
+</p>
 
                 <p className="text-sm text-gray-500 mt-1">
                   Lease Period: {property.minLeasePeriod} – {property.maxLeasePeriod} months
@@ -225,9 +245,12 @@ const isStartDateValid = (dateString: string) => {
 
           {/* ------- BOOKING FORM ------- */}
           <div className="lg:col-span-2 bg-white/90 backdrop-blur-lg border border-gray-200 shadow-xl rounded-2xl p-8">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+            {/* <h2 className="text-2xl font-semibold mb-6 text-gray-800">
               Booking Details
-            </h2>
+            </h2> */}
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">
+  Booking Details
+</h2>
 
             <form onSubmit={handleBooking} className="grid grid-cols-1 md:grid-cols-2 gap-6" noValidate>
 
@@ -247,7 +270,8 @@ const isStartDateValid = (dateString: string) => {
               </div> */}
               {/* Move-in Date */}
 <div>
-  <label className="block mb-1 text-gray-700 font-medium">Move-in Date</label>
+  {/* <label className="block mb-1 text-gray-700 font-medium">Move-in Date</label> */}
+<label className="block text-sm font-medium text-gray-700 mb-2">Move-in Date</label>
   <ReactDatePicker
     selected={moveInDate ? new Date(moveInDate) : null}
     onChange={(date: Date | null) =>
@@ -255,7 +279,8 @@ const isStartDateValid = (dateString: string) => {
     }
     minDate={new Date()}
     filterDate={(date) => isStartDateValid(date.toISOString().split("T")[0])}
-    className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+    // className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+    className="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
     placeholderText="Select move-in date"
     dateFormat="yyyy-MM-dd"
   />
@@ -285,12 +310,15 @@ const isStartDateValid = (dateString: string) => {
               </div> */}
               {/* Rental Period */}
 <div>
-  <label className="block mb-1 text-gray-700 font-medium">Rental Period (months)</label>
+  {/* <label className="block mb-1 text-gray-700 font-medium">Rental Period (months)</label> */}
+    <label className="block text-sm font-medium text-gray-700 mb-2">Rental Period (months)</label>
+   
   <input
     type="number"
     min={property.minLeasePeriod}
     max={property.maxLeasePeriod}
-    className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+    // className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+    className="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
     value={rentalPeriod ?? ""}
     onChange={(e) => {
       setRentalPeriod(e.target.value ? Number(e.target.value) : null);
@@ -307,12 +335,14 @@ const isStartDateValid = (dateString: string) => {
 
               {/* Guests */}
               <div>
-                <label className="block mb-1 text-gray-700 font-medium">Guests</label>
+                {/* <label className="block mb-1 text-gray-700 font-medium">Guests</label> */}
+                     <label className="block text-sm font-medium text-gray-700 mb-2">Guests</label>  
                 <input
                   type="number"
                   min={1}
                   max={property.maxGuests} 
-                  className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+                  // className="w-full px-4 py-2 rounded-lg bg-gray-100 border"
+                  className="w-full px-4 py-2.5 rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // value={guests}
                   // onChange={(e) => setGuests(Number(e.target.value))}
                   value={guests ?? ""}
@@ -328,7 +358,8 @@ const isStartDateValid = (dateString: string) => {
               <div className="col-span-2">
                 <button
                   type="submit"
-                  className="w-full py-3 mt-4 bg-blue-600 text-white text-lg font-semibold rounded-xl shadow-md hover:bg-blue-700"
+                  // className="w-full py-3 mt-4 bg-blue-600 text-white text-lg font-semibold rounded-xl shadow-md hover:bg-blue-700"
+                  className="w-full py-3.5 mt-4 bg-blue-600 text-white text-lg font-semibold rounded-xl shadow-lg hover:bg-blue-700 transition"
                 >
                   Proceed to Payment
                 </button>
@@ -344,7 +375,7 @@ const isStartDateValid = (dateString: string) => {
 
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

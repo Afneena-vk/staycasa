@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import { Button } from "../../components/common/Button";
@@ -154,9 +154,10 @@ const visibleReviews = showAllReviews
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
 
-      <main className="bg-gray-50 min-h-screen">
+      {/* <main className="bg-gray-50 min-h-screen"> */}
+      <div className="bg-gray-50">
         {/* Loading state */}
         {loading && (
           <div className="max-w-6xl mx-auto p-6">
@@ -178,14 +179,16 @@ const visibleReviews = showAllReviews
 
         {/* Main content */}
         {!loading && property && (
-          <div className="max-w-7xl mx-auto p-4 md:p-6">
+          // <div className="max-w-7xl mx-auto p-4 md:p-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
             {/* HERO: two-column layout - left content, right sticky booking */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left: images + info (span 2 cols) */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Image gallery + thumbnails */}
                 <div className="rounded-xl overflow-hidden bg-white shadow">
-                  <div className="relative w-full h-[480px] md:h-[520px] bg-gray-100">
+                  {/* <div className="relative w-full h-[480px] md:h-[520px] bg-gray-100"> */}
+                  <div className="relative w-full h-[260px] sm:h-[360px] md:h-[480px] lg:h-[520px] bg-gray-100">
                     {images.length > 0 ? (
                       <img
                         src={images[mainIndex]}
@@ -234,7 +237,8 @@ const visibleReviews = showAllReviews
 
                   {/* thumbnail strip */}
                   {images.length > 1 && (
-                    <div className="p-3 bg-white flex items-center gap-3 overflow-x-auto">
+                    // <div className="p-3 bg-white flex items-center gap-3 overflow-x-auto">
+                    <div className="p-3 bg-white flex items-center gap-3 overflow-x-auto scrollbar-hide">
                       {images.map((src, idx) => (
                         <button
                           key={idx}
@@ -298,7 +302,8 @@ const visibleReviews = showAllReviews
 
                 {/* Quick facts bar */}
                 <div className="bg-white rounded-xl shadow p-4">
-                  <div className="flex flex-wrap gap-4 items-center">
+                  {/* <div className="flex flex-wrap gap-4 items-center"> */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-blue-50 rounded-md text-blue-700">
                         <FaBed />
@@ -525,7 +530,8 @@ const visibleReviews = showAllReviews
 
               {/* Right: sticky booking panel (lg only) */}
               <div className="lg:col-span-1">
-                <div className="sticky top-24 space-y-4">
+                {/* <div className="sticky top-24 space-y-4"> */}
+                <div className="sticky top-28 space-y-4">
                   <div className="bg-white rounded-xl p-5 shadow">
                     <div className="flex items-baseline justify-between gap-3">
                       <div>
@@ -643,12 +649,12 @@ const visibleReviews = showAllReviews
     {availabilityMessage}
   </div>
   )}
-  <button
+  {/* <button
     onClick={() => alert("Start booking")}
     className="w-full px-4 py-2 border rounded-lg"
   >
     Message owner
-  </button>
+  </button> */}
 </div>
 
 
@@ -746,9 +752,10 @@ const visibleReviews = showAllReviews
             </div>
           </div>
         )}
-      </main>
+      {/* </main> */}
+      </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

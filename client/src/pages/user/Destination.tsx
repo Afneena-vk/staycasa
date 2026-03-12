@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 import { useAuthStore } from "../../stores/authStore";
 
 const Destinations = () => {
@@ -49,9 +49,10 @@ const handleClearSearch = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      {/* <Header /> */}
 
-      <div className="container mx-auto px-4 py-12">
+      {/* <div className="container mx-auto px-4 py-12"> */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-12">
         {/* Heading + Description + Search in one compact section */}
         <div className="text-center mb-10">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-3">
@@ -161,7 +162,7 @@ destinations.length === 0 ? (
         )}
       </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

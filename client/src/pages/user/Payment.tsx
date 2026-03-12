@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
@@ -231,24 +231,26 @@ const PaymentPage = () => {
   if (!property) {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Header />
+      {/* <Header /> */}
       <main className="flex-grow pt-24 flex justify-center items-center">
         <p className="text-gray-600">Loading property...</p>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    // <div className="min-h-screen flex flex-col bg-slate-50">
+<div className="bg-slate-50 min-h-[calc(100vh-80px)]">
 
       {/* ---------------- HEADER ---------------- */}
-      <Header />
+   
 
       {/* ---------------- MAIN CONTENT ---------------- */}
-      <main className="flex-grow py-24 px-4 bg-slate-50">
+      {/* <main className="flex-grow py-24 px-4 bg-slate-50"> */}
+      <div className="py-10 px-4">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* -------- Booking Summary -------- */}
@@ -382,11 +384,11 @@ alt={property?.title || "Property"}
             </button>
           </div>
         </div>
-      </main>
+     
 
       {/* ----------- FOOTER ----------- */}
-      <Footer />
-
+      
+</div>
     </div>
   );
 };

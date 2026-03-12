@@ -16,8 +16,8 @@ import { useAuthStore } from "../../stores/authStore";
 import { toast } from "react-toastify";
 import ChangePassword from "../common/ChangePassword";
 
-import Header from "./Header";
-import Footer from "./Footer";
+// import Header from "./Header";
+// import Footer from "./Footer";
 
 interface Address {
   houseNo: string;
@@ -261,25 +261,28 @@ if (newProfileImage) {
   if (initialLoad && loading) {
     return (
       <>
-        <Header />
+        {/* <Header /> */}
         <div className="min-h-screen bg-gray-50 flex justify-center items-center pt-20">
           <div className="flex items-center gap-3">
             <FaSpinner className="animate-spin text-indigo-600" size={24} />
             <span className="text-gray-600">Loading profile...</span>
           </div>
         </div>
-        <Footer />
+        {/* <Footer /> */}
       </>
     );
   }
 
   return (
     <>
-      <Header />
-      <main className="min-h-screen bg-gray-50 pt-24 pb-16 px-4 flex justify-center">
-        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+      {/* <Header /> */}
+      {/* <main className="min-h-screen bg-gray-50 pt-24 pb-16 px-4 flex justify-center"> */}
+      <main className="min-h-screen bg-gray-50 pt-20 md:pt-18 pb-12 px-4 sm:px-6 flex justify-center">
+        {/* <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-gray-200 p-8"> */}
+        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8">
           {/* Profile Header */}
-          <div className="flex items-center gap-6 border-b pb-6 mb-6">
+          {/* <div className="flex items-center gap-6 border-b pb-6 mb-6"> */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 border-b pb-6 mb-6">
             
               <div className="relative">
     {/* {userData?.profileImage ? (
@@ -531,7 +534,7 @@ if (newProfileImage) {
 
         </div>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

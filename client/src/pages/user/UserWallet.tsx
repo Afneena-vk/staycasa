@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { userService } from "../../services/userService";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
+// import Header from "../../components/User/Header";
+// import Footer from "../../components/User/Footer";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
 
 const UserWallet = () => {
@@ -27,19 +27,20 @@ const UserWallet = () => {
   if (!wallet)
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
+        {/* <Header /> */}
         <div className="flex-1 flex items-center justify-center text-gray-500">
           Loading Wallet...
         </div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     );
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
+      {/* <Header /> */}
 
-      <main className="flex-1 max-w-7xl mx-auto px-4 md:px-10 py-8">
+      {/* <main className="flex-1 max-w-7xl mx-auto px-4 md:px-10 py-8"> */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">  </h1>
 
         {/* Wallet Balance Card */}
@@ -48,7 +49,8 @@ const UserWallet = () => {
             <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">
               Current Balance
             </p>
-            <h2 className="text-5xl font-extrabold text-gray-900 mt-2">₹{wallet.balance}</h2>
+            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">₹{wallet.balance}</h2>
+            {/* <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-900 mt-2">₹{wallet.balance}</h2> */}
           </div>
           <div className="mt-4 md:mt-0 text-gray-500 text-sm">
             Updated just now
@@ -117,7 +119,7 @@ const UserWallet = () => {
 
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };
