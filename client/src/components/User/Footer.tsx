@@ -2,40 +2,43 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-gray-300 mt-12">
-      <div className="container mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="bg-blue-950 text-gray-300 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {/* Company Info */}
-        <div>
-          <h2 className="text-xl font-bold text-white">VacayStay</h2>
-          <p className="mt-4 text-gray-400">
+        <div className="space-y-3">
+          <h3 className="text-white text-lg font-bold">VacayStay</h3>
+          <p className="text-sm leading-relaxed">
             Find the perfect vacation home and create memories that last forever.
           </p>
         </div>
 
         {/* Quick Links */}
-        <div>
-          <h3 className="text-lg font-semibold text-white">Quick Links</h3>
-          <ul className="mt-4 space-y-2">
-            <li><a href="/" className="hover:underline">Home</a></li>
-            <li><a href="/destinations" className="hover:underline">Destinations</a></li>
-            <li><a href="/about" className="hover:underline">About Us</a></li>
-            <li><a href="/contact" className="hover:underline">Contact</a></li>
+        <div className="space-y-3">
+          <h3 className="text-white text-sm font-semibold uppercase tracking-wider">Quick Links</h3>
+          <ul className="space-y-2 text-sm">
+            <li><a href="/" className="hover:text-white transition-colors">Home</a></li>
+            <li><a href="/destinations" className="hover:text-white transition-colors">Destinations</a></li>
+            <li><a href="/about" className="hover:text-white transition-colors">About Us</a></li>
+            <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
           </ul>
         </div>
 
         {/* Social */}
-        <div>
-          <h3 className="text-lg font-semibold text-white">Follow Us</h3>
-          <div className="flex space-x-4 mt-4">
-            <a href="#" className="hover:text-white">🌐</a>
-            <a href="#" className="hover:text-white">📘</a>
-            <a href="#" className="hover:text-white">📸</a>
-            <a href="#" className="hover:text-white">🐦</a>
+        <div className="space-y-3">
+          <h3 className="text-white text-sm font-semibold uppercase tracking-wider">Follow Us</h3>
+          <div className="flex gap-4 text-xl">
+            <span className="cursor-pointer hover:text-white transition-colors">🌐</span>
+            <span className="cursor-pointer hover:text-white transition-colors">📘</span>
+            <span className="cursor-pointer hover:text-white transition-colors">📸</span>
+            <span className="cursor-pointer hover:text-white transition-colors">🐦</span>
           </div>
         </div>
       </div>
-      <div className="border-t border-gray-700 text-center py-4 text-gray-500 text-sm">
-        © {new Date().getFullYear()} VacayStay. All rights reserved.
+
+      <div className="border-t border-blue-900 py-4">
+        <p className="text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} Staycasa. All rights reserved.
+        </p>
       </div>
     </footer>
   );

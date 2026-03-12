@@ -1,15 +1,11 @@
 
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
-//import { Property } from "../../stores/slices/propertySlice";
 import { Property } from "../../types/property";
-import Header from "../../components/User/Header";
-import Footer from "../../components/User/Footer";
 import PropertyFilterSidebar from "../../components/Filters/PropertyFilterSidebar";
 import { useNavigate } from "react-router-dom";
 import StarRating from "../../components/common/StarRating";
 import { FaStar } from "react-icons/fa";
-
 
 const ActivePropertiesUser: React.FC = () => {
   const properties = useAuthStore((state) => state.properties);
@@ -21,68 +17,41 @@ const ActivePropertiesUser: React.FC = () => {
   );
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);  
-   const [page, setPage] = useState(1);
-   const totalPages = useAuthStore((state) => state.totalPages);
-  
-
-
+  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
+  const [page, setPage] = useState(1);
+  const totalPages = useAuthStore((state) => state.totalPages);
 
   const [filters, setFilters] = React.useState({
-  // search: "",
-  sortBy: "createdAt",
-  sortOrder: "desc" as "asc" | "desc",
-  // page: 1,
-  limit:6,
-  category: "", 
-  facilities: [] as string[]
-});
+    sortBy: "createdAt",
+    sortOrder: "desc" as "asc" | "desc",
+    limit: 6,
+    category: "",
+    facilities: [] as string[],
+  });
 
-useEffect(() => {
+  useEffect(() => {
     const delay = setTimeout(() => {
       setDebouncedSearch(searchQuery);
-      setPage(1); 
+      setPage(1);
     }, 1000);
-
     return () => clearTimeout(delay);
   }, [searchQuery]);
-  
-  const handlePageChange = (newPage: number) => {
-  setFilters((prev) => ({ ...prev, page: newPage }));
-};
 
-const handleClearSearch = () => {
-  setSearchQuery("");
-  setDebouncedSearch("");
-  setPage(1);
-};
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setPage(1);
+  };
 
+  const handleCategoryChange = (category: string) => {
+    setFilters((prev) => ({ ...prev, category }));
+    setPage(1);
+  };
 
-const handleCategoryChange = (category: string) => {
-  setFilters((prev) => ({ 
-    ...prev, 
-    category, 
-    // page: 1 
-  }));
-   setPage(1);  
-};
-
-
-
-
-
-
-
-
-const handleFacilitiesChange = (facilities: string[]) => {
-  setFilters((prev) => ({ 
-    ...prev, 
-    facilities, 
-    // page: 1 
-  }));
-   setPage(1);
-};
-
+  const handleFacilitiesChange = (facilities: string[]) => {
+    setFilters((prev) => ({ ...prev, facilities }));
+    setPage(1);
+  };
 
   useEffect(() => {
     const query = {
@@ -93,292 +62,321 @@ const handleFacilitiesChange = (facilities: string[]) => {
       sortOrder: filters.sortOrder,
       category: filters.category,
       facilities: filters.facilities,
-    };   
-    console.log("Fetching properties with:", query);
+    };
     getActivePropertiesForUser(query);
   }, [debouncedSearch, page, filters]);
 
-useEffect(() => {
-  return () => {
-    useAuthStore.getState().resetProperties();
-  };
-}, []);
+  useEffect(() => {
+    return () => {
+      useAuthStore.getState().resetProperties();
+    };
+  }, []);
 
-
-
-const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
+  const handleSort = (sortBy: string, sortOrder: "asc" | "desc") => {
     setFilters((prev) => ({ ...prev, sortBy, sortOrder }));
     setPage(1);
   };
 
-
-
-
   if (isLoading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-600">
-        <p>Loading active properties...</p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-gray-500 text-lg animate-pulse">Loading properties...</p>
       </div>
     );
 
   if (error)
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-500">
-        <p>Error: {error}</p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-red-500 text-lg">{error}</p>
       </div>
     );
 
-  // if (!properties || properties.length === 0)
-  //   return (
-  //     <div>
-  //       <Header />
-  //       <div className="flex justify-center items-center min-h-[50vh] text-gray-500">
-  //         No active properties found.
-  //       </div>
-  //       <Footer />
-  //     </div>
-  //   );
-
   const isFilterApplied =
-  searchQuery.trim() !== "" ||
-  filters.category !== "" ||
-  filters.facilities.length > 0;
-
+    searchQuery.trim() !== "" ||
+    filters.category !== "" ||
+    filters.facilities.length > 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
 
-      
+      {/* ── STICKY SEARCH + SORT BAR ── */}
+      <div className="sticky top-16 z-40 bg-gray-50 border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
 
-      <div className="max-w-7xl mx-auto px-4 mt-10 py-10">
-        
-       
-      
- 
-
-
-<div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-
-  {/* SEARCH BAR */}
-  <div className="relative w-full md:w-1/2">
-    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-      🔍
-    </span>
-
-    <input
-      type="text"
-      placeholder="Search for your perfect stay..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="w-full py-3 pl-12 pr-4 rounded-full bg-white shadow-md focus:ring-2 focus:ring-blue-700 outline-none text-gray-700"
-    />
-
-    {searchQuery && (
-    <button
-      onClick={handleClearSearch}
-      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
-      aria-label="Clear search"
-    >
-      ❌
-    </button>
-  )}
-  </div>
-
-  {/* SORT DROPDOWN */}
-  <div className="flex items-center gap-2">
-    <label className="text-gray-700 font-medium">Sort:</label>
-
-    <select
-      value={
-        filters.sortBy === "pricePerMonth" && filters.sortOrder === "asc"
-          ? "lowest"
-          : filters.sortBy === "pricePerMonth" && filters.sortOrder === "desc"
-          ? "highest"
-          : filters.sortBy === "createdAt" && filters.sortOrder === "asc"
-          ? "oldest"
-          : "newest"
-      }
-      onChange={(e) => {
-        const value = e.target.value;
-        if (value === "lowest") handleSort("pricePerMonth", "asc");
-        else if (value === "highest") handleSort("pricePerMonth", "desc");
-        else if (value === "oldest") handleSort("createdAt", "asc");
-        else handleSort("createdAt", "desc");
-      }}
-      className="border px-3 py-2 rounded-lg shadow-sm bg-white"
-    >
-      <option value="newest">Newest</option>
-      <option value="oldest">Oldest</option>
-      <option value="lowest">Price: Low → High</option>
-      <option value="highest">Price: High → Low</option>
-    </select>
-  </div>
-</div>
-
-
-
-         <div className="flex flex-col lg:flex-row gap-8">
-           <div className="w-full lg:w-1/4">
-            <PropertyFilterSidebar 
-  onCategoryChange={handleCategoryChange}
-  onFacilitiesChange={handleFacilitiesChange}
-  selectedCategory={filters.category}
-  selectedFacilities={filters.facilities}
-/>
-
+          {/* Search */}
+          <div className="relative flex-1 max-w-xl">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              🔍
+            </span>
+            <input
+              type="text"
+              placeholder="Search properties..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full py-2.5 pl-11 pr-10 rounded-full bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-blue-700 focus:border-transparent outline-none text-sm"
+            />
+            {searchQuery && (
+              <button
+                onClick={handleClearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                ❌
+              </button>
+            )}
           </div>
 
-           {/* <div className="w-full lg:w-3/4">
-            {(!properties || properties.length === 0) ? (
-              <p className="text-gray-500 text-center">No active properties found.</p>
-            ) : ( */}
-<div className="w-full lg:w-3/4">
-  {properties.length === 0 ? (
-    <div className="flex flex-col items-center justify-center bg-white rounded-xl shadow-md p-12 text-center min-h-[300px]">
-      <div className="text-6xl mb-4">🏠</div>
+          {/* Sort */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-sm text-gray-500 whitespace-nowrap">Sort:</span>
+            <select
+              value={
+    filters.sortBy === "pricePerMonth" && filters.sortOrder === "asc"
+      ? "lowest"
+      : filters.sortBy === "pricePerMonth" && filters.sortOrder === "desc"
+      ? "highest"
+      : filters.sortBy === "createdAt" && filters.sortOrder === "asc"
+      ? "oldest"
+      : "newest"
+  }
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === "lowest") handleSort("pricePerMonth", "asc");
+                else if (value === "highest") handleSort("pricePerMonth", "desc");
+                else if (value === "oldest") handleSort("createdAt", "asc");
+                else handleSort("createdAt", "desc");
+              }}
+              className="border border-gray-200 rounded-lg px-3 py-2 bg-white shadow-sm text-sm focus:ring-2 focus:ring-blue-700 outline-none"
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="lowest">Price: Low → High</option>
+              <option value="highest">Price: High → Low</option>
+            </select>
+          </div>
 
-      {!isFilterApplied ? (
-        <>
-          {/* INITIAL LOAD – NO ACTIVE PROPERTIES */}
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-            No active properties available
-          </h2>
-          <p className="text-gray-500">
-            Properties will appear here once they are listed.
-          </p>
-        </>
-      ) : (
-        <>
-          {/* SEARCH / FILTER – NO RESULTS */}
-          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-            No results found
-          </h2>
-          <p className="text-gray-500 mb-6">
-            Try changing or clearing your search filters.
-          </p>
+        </div>
+      </div>
 
-          <button
-            onClick={handleClearSearch}
-            className="px-6 py-2 bg-blue-950 text-white rounded-full hover:bg-blue-900 transition"
-          >
-            Clear Search
-          </button>
-        </>
+      {/* ── MAIN CONTENT ── */}
+      {/* top-16 header + ~64px search bar ≈ top-32 for sticky sidebar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <div className="flex gap-6 items-start">
+
+          {/* ── SIDEBAR ── */}
+          {/* <aside className="hidden lg:block w-56 xl:w-64 shrink-0">
+            <div className="sticky top-32"> */}
+            <aside className="hidden lg:block w-56 xl:w-64 shrink-0 sticky top-32 self-start">
+              <PropertyFilterSidebar
+                onCategoryChange={handleCategoryChange}
+                onFacilitiesChange={handleFacilitiesChange}
+                selectedCategory={filters.category}
+                selectedFacilities={filters.facilities}
+              />
+            {/* </div> */}
+          </aside>
+
+          {/* ── PROPERTY GRID ── */}
+          <section className="flex-1 min-w-0">
+            {properties.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 text-center">
+                <div className="text-6xl mb-4">🏠</div>
+                {!isFilterApplied ? (
+                  <>
+                    <h2 className="text-xl font-semibold text-gray-700 mb-2">
+                      No active properties available
+                    </h2>
+                    <p className="text-gray-400 text-sm">
+                      Properties will appear here once they are listed.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="text-xl font-semibold text-gray-700 mb-2">
+                      No results found
+                    </h2>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Try changing or clearing your filters.
+                    </p>
+                    <button
+                      onClick={handleClearSearch}
+                      className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm hover:bg-blue-800 transition-colors"
+                    >
+                      Clear Search
+                    </button>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                {/* <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"> */}
+                <div className="flex flex-col gap-6">
+                  {/* {properties.map((property: Property) => (
+                    <div
+                      key={property.id}
+                      onClick={() => navigate(`/user/properties/${property.id}`)}
+                      className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
+                    >
+                   
+                      <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+      
+                        {property.images?.[0] && (
+  <img
+    src={property.images[0]}
+    alt={property.title}
+    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+  />
+)}
+                      </div>
+
+                      <div className="p-4 space-y-2">
+                        <h3 className="text-sm font-semibold text-gray-900 truncate">
+                          {property.title}
+                        </h3>
+                        <p className="text-xs text-gray-400 truncate">
+                          {property.city}, {property.district}, {property.state}
+                        </p>
+
+                        <div className="flex items-center gap-1">
+                          {property.totalReviews > 0 ? (
+                            <>
+                              <StarRating rating={property.averageRating} />
+                              <span className="text-xs text-gray-400">
+                                ({property.totalReviews})
+                              </span>
+                            </>
+                          ) : (
+                            <div className="flex gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <FaStar key={i} className="text-gray-200 text-xs" />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <p className="text-sm font-bold text-blue-950">
+                          ₹{property.pricePerMonth}
+                          <span className="text-xs font-normal text-gray-400">/month</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))} */}
+
+                  {properties.map((property: Property) => (
+  <div
+    key={property.id}
+    onClick={() => navigate(`/user/properties/${property.id}`)}
+    className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex"
+  >
+    
+    {/* Property Image */}
+    <div className="w-64 h-48 bg-gray-100 shrink-0">
+      {property.images?.[0] && (
+        <img
+          src={property.images[0]}
+          alt={property.title}
+          className="w-full h-full object-cover"
+        />
       )}
     </div>
-  ) : (
 
-         <>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map((property: Property) => (
-            <div
-               onClick={() => navigate(`/user/properties/${property.id}`)}
-              key={property.id}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5"
+    {/* Property Details */}
+    <div className="flex flex-col justify-between p-5 flex-1">
+
+      <div>
+
+        {/* Title */}
+        <h3 className="text-lg font-semibold text-gray-900">
+          {property.title}
+        </h3>
+
+        {/* Location */}
+        <p className="text-sm text-gray-500 mb-2">
+          {property.city}, {property.district}, {property.state}
+        </p>
+
+        {/* Rating */}
+        <div className="flex items-center gap-2 mb-2">
+          {property.totalReviews > 0 ? (
+            <>
+              <StarRating rating={property.averageRating} />
+              <span className="text-sm text-gray-500">
+                ({property.totalReviews})
+              </span>
+            </>
+          ) : (
+            <div className="flex text-gray-300">
+              {[...Array(5)].map((_, i) => (
+                <FaStar key={i} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Property Details */}
+        <p className="text-sm text-gray-600">
+          {property.bedrooms} Bedrooms • {property.bathrooms} Bathrooms • {property.maxGuests} Guests
+        </p>
+
+        {/* Lease Period */}
+        <p className="text-sm text-gray-600 mt-1">
+          Lease: {property.minLeasePeriod} - {property.maxLeasePeriod} months
+        </p>
+
+        {/* Features */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          {property.features.slice(0, 4).map((feature, index) => (
+            <span
+              key={index}
+              className="text-xs bg-gray-100 px-2 py-1 rounded"
             >
-              {/* Images */}
-              <div className="overflow-hidden rounded-lg mb-4">
-                <img
-                  src={property.images[0]}
-                  alt={property.title}
-                  className="w-full h-48 object-cover hover:scale-105 transition-transform"
-                />
-              </div>
-
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {property.title}
-              </h3>
-
-              {/* <p className="text-gray-600 mb-1">{property.type}</p> */}
-
-              <p className="text-gray-500 text-sm mb-2">
-                {property.city}, {property.district}, {property.state}
-              </p>  
-
-              {/* Rating */}
-<div className="flex items-center gap-2 mb-2">
-  {property.totalReviews > 0 ? (
-    <>
-      <StarRating rating={property.averageRating} />
-      <span className="text-sm text-gray-500">
-        ({property.totalReviews})
-      </span>
-    </>
-  ) : (
-    // <span className="text-sm text-gray-400">No rating yet</span>
-    <div className="flex items-center gap-1 text-gray-300">
-  {[...Array(5)].map((_, i) => (
-    <FaStar key={i} />
-  ))}
-</div>
-
-  )}
-</div>
-
-
-              <p className="text-gray-900 font-bold text-lg mb-3">
-                ₹{property.pricePerMonth}/month
-              </p>
-              
-
-              
-
-              
-
-              
-            </div>
+              {feature}
+            </span>
           ))}
-            </div>
-            {/* After the property grid */}
-{/* {properties.length > 0 && (
-  <div className="flex justify-center items-center gap-4 mt-8">
-    <button
-      onClick={() => handlePageChange(filters.page - 1)}
-      disabled={filters.page === 1}
-      className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-50"
-    >
-      Previous
-    </button>
-    <span className="text-gray-700">
-      Page {filters.page} of {useAuthStore.getState().totalPages}
-    </span>
-    <button
-      onClick={() => handlePageChange(filters.page + 1)}
-      disabled={filters.page >= useAuthStore.getState().totalPages}
-      className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-50"
-    >
-      Next
-    </button>
+        </div>
+
+      </div>
+
+      {/* Price */}
+      <div className="flex justify-end">
+        <p className="text-xl font-bold text-blue-950">
+          ₹{property.pricePerMonth}
+          <span className="text-sm text-gray-500 font-normal">
+            {" "} / month
+          </span>
+        </p>
+      </div>
+
+    </div>
   </div>
-)} */}
-<div className="flex justify-center items-center gap-4 mt-8">
+))}
+                </div>
+
+                {/* ── PAGINATION ── */}
+                <div className="flex items-center justify-center gap-4 mt-8 pb-4">
                   <button
-                    disabled={page === 1}
+                    disabled={page <= 1}
                     onClick={() => setPage(page - 1)}
-                    className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40"
+                    className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm disabled:opacity-40 hover:bg-blue-800 transition-colors"
                   >
                     Previous
                   </button>
-
-                  <span>Page {page} of {totalPages}</span>
-
+                  <span className="text-sm text-gray-500">
+                    Page {page} of {totalPages}
+                  </span>
                   <button
                     disabled={page >= totalPages}
                     onClick={() => setPage(page + 1)}
-                    className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40"
+                    className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm disabled:opacity-40 hover:bg-blue-800 transition-colors"
                   >
                     Next
                   </button>
                 </div>
-</>
-
-
+              </>
             )}
+          </section>
+
         </div>
       </div>
-      </div>
-      <Footer />
     </div>
   );
 };

@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Bell } from "lucide-react"; // profile icon
-//import { useAuthStore } from "../../store/authStore"; // adjust path if needed
+import { User } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 import { NotificationBell } from "../../pages/user/NotificationBell";
 
@@ -13,92 +12,56 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout(); 
+    logout();
     navigate("/user/login");
   };
 
   return (
-    <header className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
-      <div className="container mx-auto flex items-center justify-between px-6 py-4">
+    <header className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-bold text-blue-950">
+        <Link to="/" className="text-xl font-bold text-blue-950 tracking-tight">
           Staycasa
         </Link>
 
         {/* Navigation */}
-        <nav className="hidden md:flex space-x-6">
-          <Link to="/user/dashboard" className="text-gray-700 hover:text-blue-950">
-            Home
-          </Link>
-          <Link to="/user/destination" className="text-gray-700 hover:text-blue-950">
-            Destinations
-          </Link>
-          <Link to="/about" className="text-gray-700 hover:text-blue-950">
-            About
-          </Link>
-          <Link to="/contact" className="text-gray-700 hover:text-blue-950">
-            Contact
-          </Link>
-           {isAuthenticated && <NotificationBell role="User"  />}
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
+          <Link to="/user/dashboard" className="hover:text-blue-700 transition-colors">Home</Link>
+          <Link to="/user/destination" className="hover:text-blue-700 transition-colors">Destinations</Link>
+          <Link to="/about" className="hover:text-blue-700 transition-colors">About</Link>
+          <Link to="/contact" className="hover:text-blue-700 transition-colors">Contact</Link>
+          {isAuthenticated && <NotificationBell role="User" />}
         </nav>
 
         {/* Right side */}
         {isAuthenticated ? (
           <div className="relative">
-            {/* Profile Icon */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="flex items-center space-x-2 focus:outline-none"
             >
-              {/* {userData?.profileImage ? ( */}
               {userData?.profileImage?.url ? (
                 <img
-                  // src={userData.profileImage}
-                   src={userData.profileImage.url}
+                  src={userData.profileImage.url}
                   alt="profile"
-                  className="w-10 h-10 rounded-full border border-gray-300"
+                  className="w-9 h-9 rounded-full object-cover border-2 border-blue-100"
                 />
               ) : (
-                <User className="w-8 h-8 text-blue-950" />
+                <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center">
+                  <User className="w-5 h-5 text-blue-700" />
+                </div>
               )}
             </button>
 
-            {/* Dropdown Menu */}
             {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2 z-50">
-                <Link
-                  to="/user/dashboard"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  Dashboard
-                </Link>
-                <Link
-                  to="/user/bookings"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                 Bookings
-                </Link>
-                <Link
-                  to="/user/profile"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  My Profile
-                </Link>
-                <Link
-                  to="/user/wallet"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                 Wallet
-                </Link>                
-                {/* <Link
-                  to="/user/settings"
-                  className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                >
-                  Settings
-                </Link> */}
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-1 z-50">
+                <Link to="/user/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Dashboard</Link>
+                <Link to="/user/bookings" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Bookings</Link>
+                <Link to="/user/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">My Profile</Link>
+                <Link to="/user/wallet" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Wallet</Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                 >
                   Logout
                 </button>
@@ -106,16 +69,16 @@ const Header: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="flex space-x-4">
+          <div className="flex items-center gap-3">
             <Link
               to="/user/signup"
-              className="bg-purple-100 text-blue-950 px-4 py-2 rounded-lg hover:bg-purple-200 transition"
+              className="text-sm font-medium text-gray-600 hover:text-blue-700 transition-colors"
             >
               Register
             </Link>
             <Link
               to="/user/login"
-              className="bg-blue-800 text-white px-4 py-2 rounded-lg hover:bg-blue-950 transition"
+              className="text-sm font-medium bg-blue-950 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors"
             >
               Sign In
             </Link>

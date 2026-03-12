@@ -16,12 +16,9 @@ const PropertyFilterSidebar: React.FC<SidebarProps> = ({
   onCategoryChange,
   onFacilitiesChange,
   selectedCategory,
-  selectedFacilities
-}) => { 
-    
- 
-
-const handleCategoryChange = (cat: string) => {
+  selectedFacilities,
+}) => {
+  const handleCategoryChange = (cat: string) => {
     onCategoryChange(selectedCategory === cat ? "" : cat);
   };
 
@@ -32,48 +29,48 @@ const handleCategoryChange = (cat: string) => {
     onFacilitiesChange(updated);
   };
 
-return (
-    <div className="w-full sm:w-64 bg-white shadow-md rounded-xl p-6 h-fit sticky top-24">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6">Filter By</h2>
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 space-y-6">
+      <h2 className="text-base font-semibold text-gray-800">Filter By</h2>
 
       {/* Categories */}
-      <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Categories</h3>
-        <div className="space-y-3">
+      <div className="space-y-2">
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Categories</h3>
+        <ul className="space-y-2">
           {categories.map((cat) => (
-            <label key={cat} className="flex items-center space-x-3 cursor-pointer group">
+            <li key={cat} className="flex items-center gap-2 cursor-pointer group" onClick={() => handleCategoryChange(cat)}>
               <input
                 type="checkbox"
                 checked={selectedCategory === cat}
-                onChange={() => handleCategoryChange(cat)}
-                className="w-4 h-4 rounded border-gray-400"
+                readOnly
+                className="w-4 h-4 rounded border-gray-300 accent-blue-700 cursor-pointer"
               />
-              <span className="text-gray-600 group-hover:text-gray-900">
+              <span className={`text-sm transition-colors ${selectedCategory === cat ? "text-blue-700 font-medium" : "text-gray-600 group-hover:text-gray-900"}`}>
                 {cat}
               </span>
-            </label>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
 
       {/* Facilities */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Facilities</h3>
-        <div className="space-y-3">
+      <div className="space-y-2">
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Facilities</h3>
+        <ul className="space-y-2">
           {facilities.map((fac) => (
-            <label key={fac} className="flex items-center space-x-3 cursor-pointer group">
+            <li key={fac} className="flex items-center gap-2 cursor-pointer group" onClick={() => handleFacilityChange(fac)}>
               <input
                 type="checkbox"
                 checked={selectedFacilities.includes(fac)}
-                onChange={() => handleFacilityChange(fac)}
-                className="w-4 h-4 rounded border-gray-400"
+                readOnly
+                className="w-4 h-4 rounded border-gray-300 accent-blue-700 cursor-pointer"
               />
-              <span className="text-gray-600 group-hover:text-gray-900">
+              <span className={`text-sm transition-colors ${selectedFacilities.includes(fac) ? "text-blue-700 font-medium" : "text-gray-600 group-hover:text-gray-900"}`}>
                 {fac}
               </span>
-            </label>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   );

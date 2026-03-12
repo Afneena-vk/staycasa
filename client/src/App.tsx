@@ -75,7 +75,7 @@ const Destination = lazy(() => import("./pages/user/Destination"));
 const ReviewPage = lazy(() => import("./pages/user/ReviewPage"));
 // const ChatWindow = lazy(() => import("./pages/user/ChatWindow"));
 const ChatWindow = lazy(() => import("./pages/user/ChatPage"));
-
+const UserLayout = lazy(() => import("./layouts/user/UserLayout"));
 
 const App = () => {
   return (
@@ -435,7 +435,10 @@ const App = () => {
           }
         />
         <Route path="/user/auth-success" element={<AuthSuccess />} />
-        <Route
+
+ <Route path="/user" element={<UserLayout />}>
+
+        {/* <Route
           path="/user/dashboard"
           element={
             // <ProtectedRoute allowedRoles={["user"]}>
@@ -548,14 +551,7 @@ const App = () => {
           }
         />
 
-        {/* <Route
-          path="/user/chat/:propertyId/:ownerId"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-             <ChatWindow/>
-            </ProtectedRoute>
-          }
-        /> */}
+    
 
         
         <Route
@@ -565,7 +561,67 @@ const App = () => {
              <UserChatPage/>
             </ProtectedRoute>
           }
-        />
+        /> */}
+
+          <Route path="dashboard" element={<UserLanding />} />
+
+              <Route
+                path="profile"
+                element={<ProtectedRoute allowedRoles={["user"]}><UserProfile /></ProtectedRoute>}
+              />
+
+              <Route path="properties" element={<ActivePropertiesUser />} />
+              <Route path="properties/:propertyId" element={<UserPropertyDetails />} />
+
+              <Route
+                path="checkout/:propertyId"
+                element={<ProtectedRoute allowedRoles={["user"]}><Checkout /></ProtectedRoute>}
+              />
+
+              <Route
+                path="payment"
+                element={<ProtectedRoute allowedRoles={["user"]}><PaymentPage /></ProtectedRoute>}
+              />
+
+              <Route
+                path="booking-success"
+                element={<ProtectedRoute allowedRoles={["user"]}><BookingSuccess /></ProtectedRoute>}
+              />
+
+              <Route
+                path="booking-failure"
+                element={<ProtectedRoute allowedRoles={["user"]}><BookingFailure /></ProtectedRoute>}
+              />
+
+              <Route
+                path="bookings"
+                element={<ProtectedRoute allowedRoles={["user"]}><BookingList /></ProtectedRoute>}
+              />
+
+              <Route
+                path="bookings/:bookingId"
+                element={<ProtectedRoute allowedRoles={["user"]}><BookingDetails /></ProtectedRoute>}
+              />
+
+              <Route path="destination" element={<Destination />} />
+
+              <Route
+                path="wallet"
+                element={<ProtectedRoute allowedRoles={["user"]}><UserWallet /></ProtectedRoute>}
+              />
+
+              <Route
+                path="bookings/:bookingId/review"
+                element={<ProtectedRoute allowedRoles={["user"]}><ReviewPage /></ProtectedRoute>}
+              />
+
+              <Route
+                path="chat/:propertyId/:ownerId"
+                element={<ProtectedRoute allowedRoles={["user"]}><UserChatPage /></ProtectedRoute>}
+              />
+
+            </Route>
+
 
 
 
