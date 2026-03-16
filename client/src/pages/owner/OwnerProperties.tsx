@@ -67,12 +67,20 @@ const OwnerProperties = () => {
   const totalPages = useAuthStore((state) => state.totalPages);
   const currentSubscription = useAuthStore((state) => state.currentSubscription);
 
+  const subscriptionLoading = useAuthStore(
+  (state) => state.subscriptionLoading
+);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   const isApproved = userData?.approvalStatus === "approved";
   const hasActiveSubscription =
     currentSubscription?.hasActiveSubscription === true;
+    const maxProperties = currentSubscription?.subscription?.maxProperties || 0;
+const usedProperties = currentSubscription?.subscription?.usedProperties || 0;
+
+const propertyLimitReached = usedProperties >= maxProperties;
 
   const propertiesPerPage = 9;
 
@@ -140,8 +148,31 @@ const OwnerProperties = () => {
 
   return (
     <div className="space-y-5">
+
       {/* ─ Header ─ */}
       <PageHeader title="My Properties">
+        {/* ─ Approval / Subscription Messages ─ */}
+{!isApproved && (
+  <div className="px-4 py-3 bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm rounded-lg">
+    <strong>Account Pending Approval:</strong>
+    {userData?.approvalStatus === "pending" &&
+      " Your account is under review. You cannot add properties until approved."}
+    {userData?.approvalStatus === "rejected" &&
+      " Your account has been rejected. Please contact support."}
+  </div>
+)}
+
+{isApproved && !hasActiveSubscription && !subscriptionLoading && (
+  <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+    You don’t have an active subscription. Please subscribe to a plan to add properties.
+  </div>
+)}
+{isApproved && hasActiveSubscription && propertyLimitReached && (
+  <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+    Property limit reached for your current plan.  
+    Your plan allows <strong>{maxProperties}</strong> properties and you have already used all available slots.
+  </div>
+)}
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}
@@ -159,7 +190,7 @@ const OwnerProperties = () => {
         {/* Add property button */}
         <button
           onClick={handleAddProperty}
-          disabled={!isApproved || !hasActiveSubscription}
+          disabled={!isApproved || !hasActiveSubscription || propertyLimitReached}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition ${
             isApproved && hasActiveSubscription
               ? "bg-indigo-600 hover:bg-indigo-700 text-white"

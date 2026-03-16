@@ -396,7 +396,7 @@ const visibleReviews = showAllReviews
                       <h3 className="text-xl font-semibold mb-3">Booking & Policies</h3>
                       <div className="space-y-2 text-gray-700">
                         <div>
-                          <strong>Lease Period:</strong>{" "}
+                          <strong>Rental Period:</strong>{" "}
                           {property.minLeasePeriod} to {property.maxLeasePeriod} months
                         </div>
                         {/* <div>

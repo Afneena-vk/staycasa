@@ -18,6 +18,7 @@ export interface ConversationListDTO {
   propertyTitle: string;
   propertyImage: string | null;
   otherUserId: string;
+  otherUserName: string;
   otherUserModel: 'User' | 'Owner';
   lastMessage: MessageResponseDTO;
   unreadCount: number;

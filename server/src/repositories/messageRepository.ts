@@ -36,6 +36,78 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
 
   
   // async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<any[]> {
+  //   async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<ConversationListDTO[]> {
+  //   return Message.aggregate([
+  //     {
+  //       $match: {
+  //         $or: [
+  //           { sender: new mongoose.Types.ObjectId(userId) },
+  //           { receiver: new mongoose.Types.ObjectId(userId) },
+  //         ],
+  //       },
+  //     },
+  //     { $sort: { createdAt: -1 } },
+  //     {
+  //       $group: {
+  //         _id: {
+  //           propertyId: '$propertyId',
+  //           otherUser: {
+  //             $cond: [
+  //               { $eq: ['$sender', new mongoose.Types.ObjectId(userId)] },
+  //               '$receiver',
+  //               '$sender',
+  //             ],
+  //           },
+  //           otherUserModel: {
+  //             $cond: [
+  //               { $eq: ['$sender', new mongoose.Types.ObjectId(userId)] },
+  //               '$receiverModel',
+  //               '$senderModel',
+  //             ],
+  //           },
+  //         },
+  //         lastMessage: { $first: '$$ROOT' },
+  //         unreadCount: {
+  //           $sum: {
+  //             $cond: [
+  //               {
+  //                 $and: [
+  //                   { $eq: ['$receiver', new mongoose.Types.ObjectId(userId)] },
+  //                   { $eq: ['$isRead', false] },
+  //                 ],
+  //               },
+  //               1,
+  //               0,
+  //             ],
+  //           },
+  //         },
+  //       },
+  //     },
+  //     {
+  //       $lookup: {
+  //         from: 'properties',
+  //         localField: '_id.propertyId',
+  //         foreignField: '_id',
+  //         as: 'property',
+  //       },
+  //     },
+  //     { $unwind: '$property' },
+  //     {
+  //       $project: {
+  //         propertyId: '$_id.propertyId',
+  //         otherUserId: '$_id.otherUser',
+  //         otherUserModel: '$_id.otherUserModel',
+  //         lastMessage: 1,
+  //         unreadCount: 1,
+  //         propertyTitle: '$property.title',
+  //         propertyImage: { $arrayElemAt: ['$property.images', 0] },
+  //       },
+  //     },
+  //     { $sort: { 'lastMessage.createdAt': -1 } },
+  //   ]);
+  // } 
+
+
     async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<ConversationListDTO[]> {
     return Message.aggregate([
       {
@@ -93,16 +165,64 @@ export class MessageRepository extends BaseRepository<IMessage> implements IMess
       },
       { $unwind: '$property' },
       {
-        $project: {
-          propertyId: '$_id.propertyId',
-          otherUserId: '$_id.otherUser',
-          otherUserModel: '$_id.otherUserModel',
-          lastMessage: 1,
-          unreadCount: 1,
-          propertyTitle: '$property.title',
-          propertyImage: { $arrayElemAt: ['$property.images', 0] },
-        },
-      },
+  $lookup: {
+    from: "users",
+    localField: "_id.otherUser",
+    foreignField: "_id",
+    as: "user",
+  },
+},
+{
+  $unwind: {
+    path: "$user",
+    preserveNullAndEmptyArrays: true
+  }
+},
+{
+  $lookup: {
+    from: "owners",
+    localField: "_id.otherUser",
+    foreignField: "_id",
+    as: "owner",
+  },
+},
+{
+  $unwind: {
+    path: "$owner",
+    preserveNullAndEmptyArrays: true
+  }
+},
+      // {
+      //   $project: {
+      //     propertyId: '$_id.propertyId',
+      //     otherUserId: '$_id.otherUser',
+      //     otherUserModel: '$_id.otherUserModel',
+      //     lastMessage: 1,
+      //     unreadCount: 1,
+      //     propertyTitle: '$property.title',
+      //     propertyImage: { $arrayElemAt: ['$property.images', 0] },
+      //   },
+      // },
+      {
+  $project: {
+    propertyId: '$_id.propertyId',
+    otherUserId: '$_id.otherUser',
+    otherUserModel: '$_id.otherUserModel',
+
+    otherUserName: {
+      $cond: [
+        { $eq: ['$_id.otherUserModel', 'User'] },
+        '$user.name',
+        '$owner.name'
+      ]
+    },
+
+    lastMessage: 1,
+    unreadCount: 1,
+    propertyTitle: '$property.title',
+    propertyImage: { $arrayElemAt: ['$property.images', 0] },
+  },
+},
       { $sort: { 'lastMessage.createdAt': -1 } },
     ]);
   } 

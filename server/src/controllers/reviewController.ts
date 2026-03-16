@@ -122,7 +122,7 @@ async getReviewsByPropertyForAdmin(
 async toggleReviewVisibility(req: Request, res: Response): Promise<void> {
   try {
     const { reviewId } = req.params;
-    const { hide } = req.body; // { hide: true } or { hide: false }
+    const { hide } = req.body; 
 
     if (typeof hide !== 'boolean') {
       res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -168,15 +168,15 @@ async getReviewsByPropertyForOwner(req: Request, res: Response, next: NextFuncti
         propertyId,
         ownerId
       );
-    res.status(200).json({
-      status: 200,
+    res.status (STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
       message: "properties reviews fetched successfully",
       reviews,
     });
   } catch (error: unknown) {
     let errorMessage = "Something went wrong";
     if (error instanceof Error) errorMessage = error.message;
-    res.status(500).json({ status: 500, error: errorMessage });
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ status: STATUS_CODES.INTERNAL_SERVER_ERROR, error: errorMessage });
   }
 }
 

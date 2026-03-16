@@ -31,8 +31,8 @@ const AdminProperties = lazy(() => import("./pages/admin/AdminProperties"));
 const AdminPropertyDetails = lazy(() => import("./pages/admin/AdminPropertyDetails"));
 const AdminBookings = lazy(() => import("./pages/admin/AdminBookings"));
 const AdminBookingDetails = lazy(() => import("./pages/admin/AdminBookingDetails"));
-const AdminSubscription = lazy(()=>import("./pages/admin/AdminSubscription.tsx"))
-const AdminAllSubscriptionsPage = lazy(()=>import("./pages/admin/AdminAllSubscriptionsPage.tsx"))
+const AdminSubscription = lazy(()=>import("./pages/admin/AdminSubscription.tsx"));
+const AdminAllSubscriptionsPage = lazy(()=>import("./pages/admin/AdminAllSubscriptionsPage.tsx"));
 const AdminLayout = lazy(() => import("./layouts/admin/AdminLayout"));
 
 const OwnerSignup = lazy(() => import("./pages/owner/OwnerSignup"));
@@ -79,559 +79,293 @@ const UserLayout = lazy(() => import("./layouts/user/UserLayout"));
 
 const App = () => {
   return (
-     <ErrorBoundary>
-    <Router>
-      <SessionManager />
-      <ToastContainer />
-     <Suspense fallback={<LoadingFallback />}>
-      <Routes>
-         <Route
-          path="/admin/login"
-          element={
-            <PublicRoute restrictedFor={["admin"]}>
-              <AdminLogin />
-            </PublicRoute>
-          }
-        />
-        {/* <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <UserManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/users/:userId"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <UserDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/owners"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <OwnerManagement />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/owners/:ownerId"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <OwnerDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/properties"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminProperties />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/properties/:propertyId"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminPropertyDetails />
-            </ProtectedRoute>
-          }
-        />
+    <ErrorBoundary>
+      <Router>
+        <SessionManager />
+        <ToastContainer />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route
+              path="/admin/login"
+              element={
+                <PublicRoute restrictedFor={["admin"]}>
+                  <AdminLogin />
+                </PublicRoute>
+              }
+            />
 
-         <Route
-          path="/admin/bookings"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminBookings/>
-            </ProtectedRoute>
-          }
-        />       
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<AdminDashboard />} />
 
- 
-         <Route
-          path="/admin/bookings/:bookingId"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminBookingDetails/>
-            </ProtectedRoute>
-          }
-        />        
-        
-       <Route
-          path="/admin/subscriptions"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminSubscription/>
-            </ProtectedRoute>
-          }
-        />  
+              <Route path="users" element={<UserManagement />} />
+              <Route path="users/:userId" element={<UserDetails />} />
 
-        <Route
-          path="/admin/subscriptions/all"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminAllSubscriptionsPage/>
-            </ProtectedRoute>
-          }
-        />   */}
-        <Route
-  path="/admin"
-  element={
-    <ProtectedRoute allowedRoles={["admin"]}>
-      <AdminLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="owners" element={<OwnerManagement />} />
+              <Route path="owners/:ownerId" element={<OwnerDetails />} />
 
-  <Route path="users" element={<UserManagement />} />
-  <Route path="users/:userId" element={<UserDetails />} />
+              <Route path="properties" element={<AdminProperties />} />
+              <Route
+                path="properties/:propertyId"
+                element={<AdminPropertyDetails />}
+              />
 
-  <Route path="owners" element={<OwnerManagement />} />
-  <Route path="owners/:ownerId" element={<OwnerDetails />} />
+              <Route path="bookings" element={<AdminBookings />} />
+              <Route
+                path="bookings/:bookingId"
+                element={<AdminBookingDetails />}
+              />
 
-  <Route path="properties" element={<AdminProperties />} />
-  <Route path="properties/:propertyId" element={<AdminPropertyDetails />} />
+              <Route path="subscriptions" element={<AdminSubscription />} />
+              <Route
+                path="subscriptions/all"
+                element={<AdminAllSubscriptionsPage />}
+              />
+            </Route>
 
-  <Route path="bookings" element={<AdminBookings />} />
-  <Route path="bookings/:bookingId" element={<AdminBookingDetails />} />
+            <Route
+              path="/"
+              element={
+                <PublicRoute restrictedFor={["user", "owner"]}>
+                  <UserLanding />
+                </PublicRoute>
+              }
+            />
 
-  <Route path="subscriptions" element={<AdminSubscription />} />
-  <Route path="subscriptions/all" element={<AdminAllSubscriptionsPage />} />
-</Route>
-        
-        <Route
-            path="/"
-            element={
-             <PublicRoute restrictedFor={["user", "owner"]}>
-              <UserLanding />
-             </PublicRoute>
-          }
-        />
+            <Route
+              path="/owner/signup"
+              element={
+                <PublicRoute restrictedFor={["owner"]}>
+                  <OwnerSignup />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/owner/login"
+              element={
+                <PublicRoute restrictedFor={["owner"]}>
+                  <OwnerLogin />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/owner/forgot-password"
+              element={
+                <PublicRoute restrictedFor={["owner"]}>
+                  <OwnerForgotPassword />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/owner/otp-verification"
+              element={<OwnerOTPVerification />}
+            />
+            <Route
+              path="/owner/reset-password"
+              element={
+                <PublicRoute restrictedFor={["owner"]}>
+                  <OwnerResetPassword />
+                </PublicRoute>
+              }
+            />
 
-          <Route
-          path="/owner/signup"
-          element={
-            <PublicRoute restrictedFor={["owner"]}>
-              <OwnerSignup />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/owner/login"
-          element={
-            <PublicRoute restrictedFor={["owner"]}>
-              <OwnerLogin />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/owner/forgot-password"
-          element={
-            <PublicRoute restrictedFor={["owner"]}>
-              <OwnerForgotPassword />
-            </PublicRoute>
-          }
-        />
-        <Route path="/owner/otp-verification" element={<OwnerOTPVerification />} />
-        <Route
-          path="/owner/reset-password"
-          element={
-            <PublicRoute restrictedFor={["owner"]}>
-              <OwnerResetPassword />
-            </PublicRoute>
-          }
-        />
+            <Route
+              path="/owner"
+              element={
+                <ProtectedRoute allowedRoles={["owner"]}>
+                  <OwnerLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="dashboard" element={<OwnerDashboard />} />
 
+              <Route path="profile" element={<OwnerProfile />} />
 
+              <Route path="properties" element={<OwnerProperties />} />
+              <Route path="add-property" element={<OwnerAddProperty />} />
+              <Route
+                path="properties/:propertyId"
+                element={<OwnerPropertyDetails />}
+              />
+              <Route
+                path="properties/:propertyId/edit"
+                element={<OwnerEditProperty />}
+              />
 
-{/* 
-        <Route
-          path="/owner/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/owner/properties"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerProperties />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/owner/profile"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/owner/add-property"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerAddProperty />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/owner/properties/:propertyId"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerPropertyDetails />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/owner/properties/:propertyId/edit"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerEditProperty />
-            </ProtectedRoute>
-          }
-        />
+              <Route path="wallet" element={<OwnerWallet />} />
 
-        <Route
-          path="/owner/wallet"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerWallet/>
-            </ProtectedRoute>
-          }
-        />
+              <Route path="bookings" element={<OwnerBookings />} />
+              <Route
+                path="bookings/:bookingId"
+                element={<OwnerBookingDetails />}
+              />
 
-        
-        <Route
-          path="/owner/bookings"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerBookings/>
-            </ProtectedRoute>
-          }
-        />
+              <Route path="subscription" element={<OwnerSubscription />} />
 
-        <Route
-          path="/owner/bookings/:bookingId"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerBookingDetails/>
-            </ProtectedRoute>
-          }
-        />
+              <Route path="chat" element={<OwnerChatPage />} />
+              <Route
+                path="chat/:propertyId/:userId"
+                element={<OwnerChatPage />}
+              />
+            </Route>
 
-        <Route
-          path="/owner/subscription"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerSubscription/>
-            </ProtectedRoute>
-          }
-        />
-
-
-
-          
-        <Route
-          path="/owner/chat/:propertyId/:userId"
-          element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-             <OwnerChatPage/>
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/owner/chat"
-           element={
-            <ProtectedRoute allowedRoles={["owner"]}>
-             <OwnerChatPage />
-            </ProtectedRoute>
-          }
-        /> */}
-
-<Route
-  path="/owner"
-  element={
-    <ProtectedRoute allowedRoles={["owner"]}>
-      <OwnerLayout />
-    </ProtectedRoute>
-  }
->
-  <Route path="dashboard" element={<OwnerDashboard />} />
-
-  <Route path="profile" element={<OwnerProfile />} />
-
-  <Route path="properties" element={<OwnerProperties />} />
-  <Route path="add-property" element={<OwnerAddProperty />} />
-  <Route path="properties/:propertyId" element={<OwnerPropertyDetails />} />
-  <Route path="properties/:propertyId/edit" element={<OwnerEditProperty />} />
-
-  <Route path="wallet" element={<OwnerWallet />} />
-
-  <Route path="bookings" element={<OwnerBookings />} />
-  <Route path="bookings/:bookingId" element={<OwnerBookingDetails />} />
-
-  <Route path="subscription" element={<OwnerSubscription />} />
-
-  <Route path="chat" element={<OwnerChatPage />} />
-  <Route path="chat/:propertyId/:userId" element={<OwnerChatPage />} />
-</Route>
-
-
-        {/* <Route path="/user/signup" element={<UserSignup />} />
+            {/* <Route path="/user/signup" element={<UserSignup />} />
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/user/forgot-password" element={<UserForgotPassword />} />
         <Route path='/user/profile' element={<UserProfile/>}/>
          */}
 
-                {/* User Routes */}
-        <Route
-          path="/user/signup"
-          element={
-            <PublicRoute restrictedFor={["user"]}>
-              <UserSignup />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/user/login"
-          element={
-            <PublicRoute restrictedFor={["user"]}>
-              <UserLogin />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/user/forgot-password"
-          element={
-            <PublicRoute restrictedFor={["user"]}>
-              <UserForgotPassword />
-            </PublicRoute>
-          }
-        />
-        <Route path="/user/otp-verification" element={<UserOTPVerification />} />
-        <Route
-          path="/user/reset-password"
-          element={
-            <PublicRoute restrictedFor={["user"]}>
-              <UserResetPassword />
-            </PublicRoute>
-          }
-        />
-        <Route path="/user/auth-success" element={<AuthSuccess />} />
+            {/* User Routes */}
+            <Route
+              path="/user/signup"
+              element={
+                <PublicRoute restrictedFor={["user"]}>
+                  <UserSignup />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/user/login"
+              element={
+                <PublicRoute restrictedFor={["user"]}>
+                  <UserLogin />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/user/forgot-password"
+              element={
+                <PublicRoute restrictedFor={["user"]}>
+                  <UserForgotPassword />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/user/otp-verification"
+              element={<UserOTPVerification />}
+            />
+            <Route
+              path="/user/reset-password"
+              element={
+                <PublicRoute restrictedFor={["user"]}>
+                  <UserResetPassword />
+                </PublicRoute>
+              }
+            />
+            <Route path="/user/auth-success" element={<AuthSuccess />} />
 
- <Route path="/user" element={<UserLayout />}>
-
-        {/* <Route
-          path="/user/dashboard"
-          element={
-            // <ProtectedRoute allowedRoles={["user"]}>
-              <UserLanding />
-            // </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/profile"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <UserProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/user/properties"
-          element={
-            // <ProtectedRoute allowedRoles={["user"]}>
-              <ActivePropertiesUser />
-            // </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/user/properties/:propertyId"
-          element={
-            // <ProtectedRoute allowedRoles={["user"]}>
-              <UserPropertyDetails />
-            // </ProtectedRoute>
-          }
-        />
-
-         <Route
-          path="/user/checkout/:propertyId"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/user/payment"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <PaymentPage />
-            </ProtectedRoute>
-          }
-        />
-
-      <Route
-          path="/user/booking-success"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <BookingSuccess />
-            </ProtectedRoute>
-          }
-        />
-
-          <Route
-          path="/user/booking-failure"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <BookingFailure />
-            </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/user/bookings"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <BookingList />
-            </ProtectedRoute>
-          }
-        />
-         <Route
-          path="/user/bookings/:bookingId"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <BookingDetails />
-            </ProtectedRoute>
-          }
-        />
-
-          <Route
-          path="/user/destination"
-          element={
-            // <ProtectedRoute allowedRoles={["user"]}>
-              <Destination />
-            // </ProtectedRoute>
-          }
-        />       
-
-
-          <Route
-          path="/user/wallet"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <UserWallet />
-            </ProtectedRoute>
-          }
-        /> 
-
-      <Route
-          path="/user/bookings/:bookingId/review"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-              <ReviewPage/>
-            </ProtectedRoute>
-          }
-        />
-
-    
-
-        
-        <Route
-          path="/user/chat/:propertyId/:ownerId"
-          element={
-            <ProtectedRoute allowedRoles={["user"]}>
-             <UserChatPage/>
-            </ProtectedRoute>
-          }
-        /> */}
-
-          <Route path="dashboard" element={<UserLanding />} />
+            <Route path="/user" element={<UserLayout />}>
+              <Route path="dashboard" element={<UserLanding />} />
 
               <Route
                 path="profile"
-                element={<ProtectedRoute allowedRoles={["user"]}><UserProfile /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <UserProfile />
+                  </ProtectedRoute>
+                }
               />
 
               <Route path="properties" element={<ActivePropertiesUser />} />
-              <Route path="properties/:propertyId" element={<UserPropertyDetails />} />
+              <Route
+                path="properties/:propertyId"
+                element={<UserPropertyDetails />}
+              />
 
               <Route
                 path="checkout/:propertyId"
-                element={<ProtectedRoute allowedRoles={["user"]}><Checkout /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <Checkout />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="payment"
-                element={<ProtectedRoute allowedRoles={["user"]}><PaymentPage /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <PaymentPage />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="booking-success"
-                element={<ProtectedRoute allowedRoles={["user"]}><BookingSuccess /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <BookingSuccess />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="booking-failure"
-                element={<ProtectedRoute allowedRoles={["user"]}><BookingFailure /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <BookingFailure />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="bookings"
-                element={<ProtectedRoute allowedRoles={["user"]}><BookingList /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <BookingList />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="bookings/:bookingId"
-                element={<ProtectedRoute allowedRoles={["user"]}><BookingDetails /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <BookingDetails />
+                  </ProtectedRoute>
+                }
               />
 
               <Route path="destination" element={<Destination />} />
 
               <Route
                 path="wallet"
-                element={<ProtectedRoute allowedRoles={["user"]}><UserWallet /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <UserWallet />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="bookings/:bookingId/review"
-                element={<ProtectedRoute allowedRoles={["user"]}><ReviewPage /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <ReviewPage />
+                  </ProtectedRoute>
+                }
               />
 
               <Route
                 path="chat/:propertyId/:ownerId"
-                element={<ProtectedRoute allowedRoles={["user"]}><UserChatPage /></ProtectedRoute>}
+                element={
+                  <ProtectedRoute allowedRoles={["user"]}>
+                    <UserChatPage />
+                  </ProtectedRoute>
+                }
               />
-
             </Route>
 
-
-
-
-         <Route path="*" element={<NotFound />} />
-
-
-
-      </Routes>
-      </Suspense>
-    </Router>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </Router>
     </ErrorBoundary>
   );
 };

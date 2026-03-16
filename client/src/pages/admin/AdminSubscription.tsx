@@ -24,12 +24,45 @@ const AdminSubscriptionsPage = () => {
   } = useAuthStore();
 
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null);
+  const [errors, setErrors] = useState({
+  price: "",
+  duration: "",
+  maxProperties: "",
+});
   const [form, setForm] = useState({
     price: 0,
     duration: "",
     maxProperties: null as number | null,
   });
   const navigate = useNavigate();
+
+  const validateForm = () => {
+  const newErrors = {
+    price: "",
+    duration: "",
+    maxProperties: "",
+  };
+
+  let isValid = true;
+
+  if (!form.price || form.price <= 0) {
+    newErrors.price = "Price must be greater than 0";
+    isValid = false;
+  }
+
+  if (!form.duration.trim()) {
+    newErrors.duration = "Duration is required";
+    isValid = false;
+  }
+
+  if (form.maxProperties !== null && form.maxProperties <= 0) {
+    newErrors.maxProperties = "Must be greater than 0";
+    isValid = false;
+  }
+
+  setErrors(newErrors);
+  return isValid;
+};
 
 
   useEffect(() => {
@@ -47,11 +80,20 @@ const AdminSubscriptionsPage = () => {
     });
   };
 
+  // const cancelEdit = () => {
+  //   setEditingPlanId(null);
+  // };
   const cancelEdit = () => {
-    setEditingPlanId(null);
-  };
+  setEditingPlanId(null);
+  setErrors({
+    price: "",
+    duration: "",
+    maxProperties: "",
+  });
+};
 
   const saveEdit = async (planId: string) => {
+     if (!validateForm()) return;
     await updatePlan(planId, form);
     setEditingPlanId(null);
   };
@@ -124,8 +166,10 @@ const AdminSubscriptionsPage = () => {
 
                     <td className="p-4">
                       {isEditing ? (
+                         <div className="flex flex-col">
                         <input
                           type="number"
+                          min="0" 
                           value={form.price}
                           onChange={(e) =>
                             setForm({
@@ -135,6 +179,10 @@ const AdminSubscriptionsPage = () => {
                           }
                           className="bg-slate-800 border border-slate-700 rounded px-2 py-1 w-24"
                         />
+                              {errors.price && (
+        <p className="text-red-500 text-xs mt-1">{errors.price}</p>
+      )}
+    </div>
                       ) : (
                         `₹ ${plan.price}`
                       )}
@@ -142,6 +190,7 @@ const AdminSubscriptionsPage = () => {
 
                     <td className="p-4">
                       {isEditing ? (
+                        <div className="flex flex-col">
                         <input
                           value={form.duration}
                           onChange={(e) =>
@@ -152,6 +201,11 @@ const AdminSubscriptionsPage = () => {
                           }
                           className="bg-slate-800 border border-slate-700 rounded px-2 py-1 w-32"
                         />
+                              {errors.duration && (
+        <p className="text-red-500 text-xs mt-1">{errors.duration}</p>
+      )}
+    </div>
+
                       ) : (
                         plan.duration
                       )}
@@ -159,6 +213,8 @@ const AdminSubscriptionsPage = () => {
 
                     <td className="p-4">
                       {isEditing ? (
+                        <div className="flex flex-col">
+
                         <input
                           type="number"
                           value={form.maxProperties ?? ""}
@@ -171,7 +227,13 @@ const AdminSubscriptionsPage = () => {
                             })
                           }
                           className="bg-slate-800 border border-slate-700 rounded px-2 py-1 w-24"
-                        />
+                        />  
+                             {errors.maxProperties && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.maxProperties}
+        </p>
+      )}
+      </div>
                       ) : (
                         plan.maxProperties ?? "Unlimited"
                       )}

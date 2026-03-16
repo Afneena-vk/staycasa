@@ -44,6 +44,16 @@ const OwnerDetails: React.FC = () => {
   
   const handleBlockToggle = async () => {
   if (!owner) return;
+
+  const action = owner.status === "blocked" ? "unblock" : "block";
+
+  
+  const confirmAction = window.confirm(
+    `Are you sure you want to ${action} this owner?`
+  );
+
+  if (!confirmAction) return;
+
   try {
     setActionLoading(true);
     if (owner.status === "blocked") {
@@ -55,7 +65,8 @@ const OwnerDetails: React.FC = () => {
     }
     fetchOwnerDetails();
   } catch {
-    toast.error("Action failed");
+    // toast.error("Action failed");
+    toast.error(`Failed to ${action} owner`);
   } finally {
     setActionLoading(false);
   }

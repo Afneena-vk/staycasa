@@ -4,6 +4,7 @@ import { INotificationService } from "../services/interfaces/INotificationServic
 import { INotificationController } from "./interfaces/INotificationController";
 import { TOKENS } from "../config/tokens";
 import { RecipientModel } from "../models/notificationModel";
+import { STATUS_CODES} from "../utils/constants";
 
 @injectable()
 export class NotificationController implements INotificationController {
@@ -27,7 +28,7 @@ export class NotificationController implements INotificationController {
 
       res.status(result.status).json(result);
     } catch (err) {
-      res.status(500).json({ message: "Server error", error: err });
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
     }
   }
 
@@ -51,7 +52,7 @@ export class NotificationController implements INotificationController {
 
        res.status(result.status).json(result);
     } catch (err) {
-       res.status(500).json({ message: "Server error", error: err });
+       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
     }
   }
 
@@ -63,7 +64,7 @@ export class NotificationController implements INotificationController {
 
       res.status(result.status).json(result);
     } catch (err) {
-      res.status(500).json({ message: "Server error", error: err });
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
     }
   }
 
@@ -76,7 +77,7 @@ export class NotificationController implements INotificationController {
 
       res.status(result.status).json(result);
     } catch (err) {
-      res.status(500).json({ message: "Server error", error: err });
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
     }
   }
 
@@ -99,7 +100,7 @@ export class NotificationController implements INotificationController {
 
        res.status(result.status).json(result);
     } catch (err) {
-       res.status(500).json({ message: "Server error", error: err });
+       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
     }
   }
 
@@ -111,7 +112,7 @@ async deleteNotification(req: Request, res: Response, next: NextFunction): Promi
 
        res.status(result.status).json(result);
     } catch (err) {
-       res.status(500).json({ message: "Server error", error: err });
+       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
     }
   }
 }

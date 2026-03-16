@@ -289,7 +289,7 @@ async checkAvailability(req: Request, res: Response, next: NextFunction): Promis
     //   }
 
        if (!checkIn || !rentalPeriod) {
-              res.status(400).json({ message: "Check-in date and rental period are required" });
+              res.status(STATUS_CODES.BAD_REQUEST).json({ message: "Check-in date and rental period are required" });
          }
 
       // const result = await this._propertyService.checkAvailability(propertyId, checkIn as string, checkOut as string,  Number(guests)|| 1);
@@ -297,7 +297,7 @@ async checkAvailability(req: Request, res: Response, next: NextFunction): Promis
       res.json(result);
   } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error" });
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
   }
 }
 
@@ -311,8 +311,8 @@ async checkAvailability(req: Request, res: Response, next: NextFunction): Promis
       page,
       limit);
 
-    res.status(200).json({
-      status: 200,
+    res.status(STATUS_CODES.OK).json({
+      status: STATUS_CODES.OK,
       message: "Destinations retrieved successfully",
       data: destinations.data,
       total: destinations.total,    
@@ -321,8 +321,8 @@ async checkAvailability(req: Request, res: Response, next: NextFunction): Promis
     });
   } catch (error) {
     console.error(error);
-     res.status(500).json({
-      status: 500,
+     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
       message: "Failed to retrieve destinations",
     });
   }

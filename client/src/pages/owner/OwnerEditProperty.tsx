@@ -119,7 +119,6 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 
-  //  Handle new image uploads
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -215,7 +214,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 
-  // Submit form
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
@@ -300,6 +299,11 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+  <label htmlFor="title" className="block font-medium mb-1">
+    Property Title
+  </label>
+
           {/* Title */} 
           <input
             type="text"
@@ -310,7 +314,12 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
            
           />
    {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
+    </div>
           {/* Type */} 
+         <div>
+  <label htmlFor="type" className="block font-medium mb-1">
+    Property Type
+  </label> 
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
@@ -325,10 +334,15 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <option value="Homestay">Homestay</option>
           </select>
            {errors.type && <p className="text-red-600 text-sm mt-1">{errors.type}</p>}
+           </div>
           {/* Address */}
           <div className="border rounded-lg p-4">
             <h3 className="font-semibold mb-2">Address</h3>
             <div className="grid grid-cols-2 gap-4">
+              <div>
+  <label htmlFor="houseNumber" className="block font-medium mb-1">
+    House Number
+  </label>
               <input
                 type="text"
                 placeholder="House Number"
@@ -338,6 +352,12 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 
               />
               {errors.houseNumber && <p className="text-red-600 text-sm mt-1">{errors.houseNumber}</p>}
+              </div>
+              <div>
+  <label htmlFor="street" className="block font-medium mb-1">
+    Street
+  </label>
+
               <input
                 type="text"
                 placeholder="Street"
@@ -346,7 +366,13 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 className="w-full border p-2 rounded-lg"
                
               />
+              </div>
               {errors.street && <p className="text-red-600 text-sm mt-1">{errors.street}</p>}
+              <div>
+  <label htmlFor="city" className="block font-medium mb-1">
+  city
+  </label>
+
               <input
                 type="text"
                 placeholder="City"
@@ -356,6 +382,12 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 
               />
               {errors.city && <p className="text-red-600 text-sm mt-1">{errors.city}</p>}
+              </div>
+              <div>
+  <label htmlFor="district" className="block font-medium mb-1">
+    District
+  </label>
+
               <input
                 type="text"
                 placeholder="District"
@@ -365,6 +397,12 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 
               />
               {errors.district && <p className="text-red-600 text-sm mt-1">{errors.district}</p>}
+              </div>
+              <div>
+  <label htmlFor="state" className="block font-medium mb-1">
+    State
+  </label>
+
               <input
                 type="text"
                 placeholder="State"
@@ -374,6 +412,12 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 
               />
               {errors.state && <p className="text-red-600 text-sm mt-1">{errors.state}</p>}
+              </div>
+              <div>
+  <label htmlFor="pincode" className="block font-medium mb-1">
+   Pincode
+  </label>
+
               <input
                 type="number"
                 placeholder="Pincode"
@@ -383,10 +427,15 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 
               />
               {errors.pincode && <p className="text-red-600 text-sm mt-1">{errors.pincode}</p>}
+              </div>
             </div>
           </div>
 
           {/* Price per Month */}
+          <div>
+          <label htmlFor="price" className="block font-medium mb-1">
+  Price Per Month
+</label>
           <input
             type="number"
             placeholder="Price per Month"
@@ -396,8 +445,13 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             
           />
 {errors.pricePerMonth && <p className="text-red-600 text-sm mt-1">{errors.pricePerMonth}</p>}
+</div>
           {/* Bedrooms & Bathrooms */}
           <div className="grid grid-cols-2 gap-4">
+            <div>
+            <label htmlFor="bedrooms" className="block font-medium mb-1">
+  Bedrooms
+</label>
             <input
               type="number"
               placeholder="Bedrooms"
@@ -406,6 +460,9 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               className="w-full border p-2 rounded-lg"
             />
             {errors.bedrooms && <p className="text-red-500 text-xs mt-1">{errors.bedrooms}</p>}
+            </div>
+            <div>
+    <label htmlFor="bathrooms"  className="block font-medium mb-1">Bathrooms</label>
             <input
               type="number"
               placeholder="Bathrooms"
@@ -415,8 +472,11 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             />
             {errors.bedrooms && <p className="text-red-500 text-xs mt-1">{errors.bedrooms}</p>}
           </div>
+          </div>
 
           {/* Furnishing */}
+          <div>
+  <label htmlFor="furnishing">Furnishing</label>
           <select
             value={furnishing}
             onChange={(e) => setFurnishing(e.target.value)}
@@ -428,8 +488,10 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             <option value="Not Furnished">Not Furnished</option>
           </select>
            {errors.furnishing && <p className="text-red-500 text-xs mt-1">{errors.furnishing}</p>}
-
+</div>
           {/* Max Guests */}
+          <div>
+  <label htmlFor="maxGuests">Maximum Guests Allowed</label>
           <input
             type="number"
             placeholder="Max Guests Allowed"
@@ -439,9 +501,11 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             
           />
           {errors.maxGuests && <p className="text-red-600 text-sm mt-1">{errors.maxGuests}</p>}
-
+</div>
           {/* Lease Period */}
           <div className="grid grid-cols-2 gap-4">
+              <div>
+    <label htmlFor="minLeasePeriod">Min Lease Period (Months)</label>
             <input
               type="number"
               placeholder="Min Lease Period (months)"
@@ -451,6 +515,9 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             
             />
             {errors.minLeasePeriod && <p className="text-red-600 text-sm mt-1">{errors.minLeasePeriod}</p>}
+            </div>
+              <div>
+    <label htmlFor="maxLeasePeriod">Max Lease Period (Months)</label>
             <input
               type="number"
               placeholder="Max Lease Period (months)"
@@ -460,6 +527,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
               
             />
             {errors.maxLeasePeriod && <p className="text-red-600 text-sm mt-1">{errors.maxLeasePeriod}</p>}
+            </div>
           </div>
 
           {/* Amenities */}
@@ -483,6 +551,8 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
           </div>
 
           {/* Description */}
+          <div>
+  <label htmlFor="description">Property Description</label>
           <textarea
             placeholder="Property Description"
             value={description}
@@ -490,6 +560,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
             className="w-full border p-2 rounded-lg"
             rows={4}
           />
+          </div>
 
           {/* Images */}
           <div>
@@ -529,7 +600,10 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                 </div>
               ))}
             </div>
-
+<div>
+  <label htmlFor="images" className="font-semibold mb-2 block">
+    Upload Property Images
+  </label>
             <input
               type="file"
               multiple
@@ -540,6 +614,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
              {errors.images && (
     <p className="text-red-600 text-sm mt-1">{errors.images}</p>
   )}
+          </div>
           </div>
 
           {/* Submit */}

@@ -91,7 +91,8 @@ return (
           {selected ? (
             <ChatWindow
               otherUserId={selected.otherUserId}
-              otherUserName={selected.userName}
+              // otherUserName={selected.userName}
+              otherUserName={selected.otherUserName}
               otherUserModel="User"
               propertyId={selected.propertyId}
               propertyTitle={selected.propertyTitle}

@@ -32,58 +32,7 @@ export class AdminService implements IAdminService {
     @inject(TOKENS.ISubscriptionRepository) private _subscriptionRepository: ISubscriptionRepository
   ) {}
 
-    async loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto> {
-    
 
-        const { email, password } = data;
-    
-        if (!email || !password) {
-          const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
-          error.status = STATUS_CODES.BAD_REQUEST;
-          throw error;
-        }
-    
-        const admin = await this._adminRepository.findByEmail(email);
-    
-        if (!admin) {
-          const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
-          error.status = STATUS_CODES.UNAUTHORIZED;
-          throw error;
-        }
-    
-        const isPasswordValid = await bcrypt.compare(password, admin.password || "");
-    
-        if (!isPasswordValid) {
-          const error: any = new Error("Invalid email or password");
-          error.status = STATUS_CODES.UNAUTHORIZED;
-          throw error;
-        }
-    
-        const JWT_SECRET = process.env.JWT_SECRET;
-          const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-    
-       
-         if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
-      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
-    }
-    
-       
-    
-    const accessToken = jwt.sign(
-      { userId: admin._id, email: admin.email, type: "admin" },
-      JWT_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: admin._id, email: admin.email, type: "admin" },
-      JWT_REFRESH_SECRET,
-      { expiresIn: "7d" }
-    );
-
-        
-        return AdminMapper.toLoginResponse(admin, accessToken, refreshToken, MESSAGES.SUCCESS.LOGIN);
-      }
 
       
 
@@ -497,6 +446,61 @@ async getAdminDashboardStats(): Promise<AdminDashboardDTO>{
     monthlyRevenue
   );
 }
+
+
+
+    async loginAdmin(data: AdminLoginData): Promise<AdminLoginResponseDto> {
+    
+
+        const { email, password } = data;
+    
+        if (!email || !password) {
+          const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
+          error.status = STATUS_CODES.BAD_REQUEST;
+          throw error;
+        }
+    
+        const admin = await this._adminRepository.findByEmail(email);
+    
+        if (!admin) {
+          const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
+          error.status = STATUS_CODES.UNAUTHORIZED;
+          throw error;
+        }
+    
+        const isPasswordValid = await bcrypt.compare(password, admin.password || "");
+    
+        if (!isPasswordValid) {
+          const error: any = new Error("Invalid email or password");
+          error.status = STATUS_CODES.UNAUTHORIZED;
+          throw error;
+        }
+    
+        const JWT_SECRET = process.env.JWT_SECRET;
+          const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+    
+       
+         if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+    }
+    
+       
+    
+    const accessToken = jwt.sign(
+      { userId: admin._id, email: admin.email, type: "admin" },
+      JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: admin._id, email: admin.email, type: "admin" },
+      JWT_REFRESH_SECRET,
+      { expiresIn: "7d" }
+    );
+
+        
+        return AdminMapper.toLoginResponse(admin, accessToken, refreshToken, MESSAGES.SUCCESS.LOGIN);
+      }
 
       
  }

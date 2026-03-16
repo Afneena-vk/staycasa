@@ -26,120 +26,6 @@ export class AdminController implements IAdminController {
   return crypto.randomBytes(32).toString("hex");
 };
 
-  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const result = await this._adminService.loginAdmin(req.body);
-      const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
-      const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
-
-       const csrfToken = this.generateCsrfToken();
-
-     res.cookie("access-token", result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: accessTokenMaxAge,
-      path: "/",
-    });
-
-
-
-     res.cookie("refresh-token", result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: refreshTokenMaxAge,
-      path: "/",
-    });
-
-      res.cookie("csrf-token", csrfToken, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: refreshTokenMaxAge,
-      path: "/",
-    });
-
-      //res.status(STATUS_CODES.OK).json(result);
-
-      res.status(result.status).json({
-        message: result.message,
-
-        user: {
-          id: result.id,
-          name: result.name,
-          email: result.email,
-        },
-
-        accessToken: result.token,
-        refreshToken: result.refreshToken,
-        csrfToken: csrfToken,
-      });
-    } catch (error: any) {
-      console.error("Login error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
-    }
-  }
-
-  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      // res.clearCookie("admin-auth-token", { path: "/" });
-      // res.clearCookie("admin-refresh-token", { path: "/" });
-
-       const accessToken = req.cookies["access-token"];
-          const refreshToken = req.cookies["refresh-token"];
-          const userId = (req as any).userId;
-          const userType = (req as any).userType;
-      
-         
-          const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
-            TOKENS.ITokenBlacklistRepository
-          );
-      
-          
-          if (accessToken) {
-            const decoded = jwt.decode(accessToken) as { exp: number };
-            await tokenBlacklistRepo.addToken(
-              accessToken,
-              'access',
-              userId,
-              userType,
-              new Date(decoded.exp * 1000)
-            );
-          }
-      
-          if (refreshToken) {
-            const decoded = jwt.decode(refreshToken) as { exp: number };
-            await tokenBlacklistRepo.addToken(
-              refreshToken,
-              'refresh',
-              userId,
-              userType,
-              new Date(decoded.exp * 1000)
-            );
-          }
-
-    res.clearCookie("access-token", { path: "/" });
-    res.clearCookie("refresh-token", { path: "/" });
-    res.clearCookie("csrf-token", { path: "/" });
-
-
-      res
-        .status(STATUS_CODES.OK)
-        .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
-    } catch (error: any) {
-      logger.error("Logout error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
-    }
-  }
-
   async getUsersList(
     req: Request,
     res: Response,
@@ -448,6 +334,125 @@ async getDashboardStats(req: Request, res: Response, next: NextFunction): Promis
     });
   }
 }
+
+
+
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await this._adminService.loginAdmin(req.body);
+      const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
+      const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
+
+       const csrfToken = this.generateCsrfToken();
+
+     res.cookie("access-token", result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: accessTokenMaxAge,
+      path: "/",
+    });
+
+
+
+     res.cookie("refresh-token", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
+
+      res.cookie("csrf-token", csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      // sameSite: "strict",
+       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      maxAge: refreshTokenMaxAge,
+      path: "/",
+    });
+
+      //res.status(STATUS_CODES.OK).json(result);
+
+      res.status(result.status).json({
+        message: result.message,
+
+        user: {
+          id: result.id,
+          name: result.name,
+          email: result.email,
+        },
+
+        accessToken: result.token,
+        refreshToken: result.refreshToken,
+        csrfToken: csrfToken,
+      });
+    } catch (error: any) {
+      console.error("Login error:", error);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+    }
+  }
+
+  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      // res.clearCookie("admin-auth-token", { path: "/" });
+      // res.clearCookie("admin-refresh-token", { path: "/" });
+
+       const accessToken = req.cookies["access-token"];
+          const refreshToken = req.cookies["refresh-token"];
+          const userId = (req as any).userId;
+          const userType = (req as any).userType;
+      
+         
+          const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+            TOKENS.ITokenBlacklistRepository
+          );
+      
+          
+          if (accessToken) {
+            const decoded = jwt.decode(accessToken) as { exp: number };
+            await tokenBlacklistRepo.addToken(
+              accessToken,
+              'access',
+              userId,
+              userType,
+              new Date(decoded.exp * 1000)
+            );
+          }
+      
+          if (refreshToken) {
+            const decoded = jwt.decode(refreshToken) as { exp: number };
+            await tokenBlacklistRepo.addToken(
+              refreshToken,
+              'refresh',
+              userId,
+              userType,
+              new Date(decoded.exp * 1000)
+            );
+          }
+
+    res.clearCookie("access-token", { path: "/" });
+    res.clearCookie("refresh-token", { path: "/" });
+    res.clearCookie("csrf-token", { path: "/" });
+
+
+      res
+        .status(STATUS_CODES.OK)
+        .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
+    } catch (error: any) {
+      logger.error("Logout error: " + error.message);
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
+      });
+    }
+  }
+
+
+
 
 }
 

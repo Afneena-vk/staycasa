@@ -20,7 +20,11 @@ interface UserDetails {
   name: string;
   email: string;
   phone?: string;
-  profileImage?: string;
+  // profileImage?: string;
+  profileImage?: {
+  url: string;
+  publicId: string;
+};
   status: "active" | "blocked";
   //isVerified: boolean;
   googleId?: string;
@@ -66,6 +70,12 @@ const UserDetails = () => {
     if (!user) return;
 
     const action = user.status === "active" ? "block" : "unblock";
+
+      const confirmAction = window.confirm(
+    `Are you sure you want to ${action} this user?`
+  );
+
+  if (!confirmAction) return;
     
     try {
       setActionLoading(true);
@@ -195,19 +205,19 @@ const UserDetails = () => {
           {/* Profile Header */}
           <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-8">
             <div className="flex items-center gap-6">
-              {user.profileImage ? (
-                <img
-                  src={user.profileImage}
-                  alt={user.name}
-                  className="w-20 h-20 rounded-full border-4 border-white object-cover"
-                />
-              ) : (
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-white">
-                  <span className="text-2xl font-bold text-gray-600">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              )}
+             {user.profileImage?.url ? (
+  <img
+    src={user.profileImage.url}
+    alt={user.name}
+    className="w-20 h-20 rounded-full border-4 border-white object-cover"
+  />
+) : (
+  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-4 border-white">
+    <span className="text-2xl font-bold text-gray-600">
+      {user.name.charAt(0).toUpperCase()}
+    </span>
+  </div>
+)}
               <div className="text-white">
                 <h2 className="text-2xl font-bold">{user.name}</h2>
                 <p className="text-blue-100">{user.email}</p>

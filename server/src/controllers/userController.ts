@@ -478,7 +478,7 @@ export class UserController implements IUserController {
     res.status(STATUS_CODES.OK).json(result);
 
     } catch (error: any) {
-      res.status(error.status || 500).json({
+      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         message: error.message,
       });
     }

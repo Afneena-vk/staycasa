@@ -31,7 +31,10 @@ export const ConversationList = ({ role, onSelect, selectedId }: Props) => {
             {conv.propertyTitle?.[0]?.toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-sm truncate">{conv.propertyTitle}</p>
+            {/* <p className="font-medium text-sm truncate">{conv.propertyTitle}</p> */}
+            <p className="font-medium text-sm truncate">
+  {conv.otherUserName}
+</p>
             <p className="text-xs text-gray-500 truncate">{conv.lastMessage?.content || '📷 Image'}</p>
           </div>
           {conv.unreadCount > 0 && (

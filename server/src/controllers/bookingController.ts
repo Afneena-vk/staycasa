@@ -205,10 +205,10 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
             : undefined,
         }
       );
-      res.status(200).json(result);
+      res.status(STATUS_CODES.OK).json(result);
     } catch (error: any) {
       res
-        .status(500)
+        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
         .json({ message: error.message || "Something went wrong" });
     }
   }
@@ -254,8 +254,8 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
       res.status(200).json({ status: 200, blockedDates });
     } catch (err: any) {
       res
-        .status(500)
-        .json({ status: 500, message: err.message || "Server error" });
+        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .json({ status: STATUS_CODES.INTERNAL_SERVER_ERROR, message: err.message || "Server error" });
     }
   }
 
@@ -302,7 +302,7 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
 
       res.status(STATUS_CODES.OK).json(result);
     } catch (error: any) {
-      res.status(500).json({
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
         message: error.message || "Failed to fetch owner bookings",
       });
     }

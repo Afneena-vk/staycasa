@@ -72,7 +72,6 @@ export const initSocket = (server: HttpServer): void => {
       socket.join(roomId);
     });
 
-    // Send a message
     socket.on(
       'chat:send',
       async ({

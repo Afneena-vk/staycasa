@@ -59,7 +59,7 @@ async verifySubscriptionPayment(req: Request, res: Response, next: NextFunction)
       razorpaySignature
     );
 
-    res.status(201).json({
+    res.status(STATUS_CODES.CREATED).json({
       success: true,
       message: "Subscription activated successfully",
     });

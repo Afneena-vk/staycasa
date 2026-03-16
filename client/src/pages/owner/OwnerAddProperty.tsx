@@ -154,7 +154,8 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
    
       await addProperty(formData);
     
-      alert("Property added successfully!");
+      // alert("Property added successfully!");
+      navigate("/owner/properties");
       
       setTitle("");
       setType("");
