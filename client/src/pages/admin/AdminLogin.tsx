@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../../stores/authStore'; 
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AdminLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -9,6 +10,15 @@ const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);  
+
+  const getErrorMessage = (err: unknown): string => {
+if (axios.isAxiosError(err)) {
+return err.response?.data?.message || err.message || "Login failed";
+}
+if (err instanceof Error) return err.message;
+return "Something went wrong";
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,11 +29,17 @@ const AdminLogin: React.FC = () => {
       return;
     }
 
+    setLoading(true);
+
     try {
       await login(email, password, 'admin');
       navigate('/admin/dashboard'); 
-    } catch (err: any) {
-      setError('Invalid email or password');
+    
+    } catch (err: unknown) {
+       setError(getErrorMessage(err)); 
+
+     } finally { 
+      setLoading(false); 
     }
   };
 

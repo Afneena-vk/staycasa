@@ -7,6 +7,7 @@ import { inject, injectable } from "tsyringe";
 import { TOKENS } from "../config/tokens";
 import { NotificationMapper } from "../mappers/notificationMapper";
 import { NotificationDto} from "../dtos/notification.dto";
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class NotificationService implements INotificationService {
@@ -24,6 +25,10 @@ export class NotificationService implements INotificationService {
     message: string,
     relatedId?: string | null
   ): Promise<{ message: string; status: number; data: NotificationDto }> {
+
+     if (!recipientId) {
+      throw new AppError(MESSAGES.ERROR.INVALID_INPUT, STATUS_CODES.BAD_REQUEST);
+    }
 
     const recipientObjectId = new Types.ObjectId(recipientId);
 
@@ -76,11 +81,11 @@ export class NotificationService implements INotificationService {
     const updatedNotification = await this._notificationRepository.markAsRead
     (notificationId,new Types.ObjectId(recipientId));
   if (!updatedNotification) {
-    return {
-      message: MESSAGES.ERROR.NOTIFICATION_NOT_FOUND,
-      status: STATUS_CODES.NOT_FOUND,
-      data: null
-    };
+
+      throw new AppError(
+        MESSAGES.ERROR.NOTIFICATION_NOT_FOUND,
+        STATUS_CODES.NOT_FOUND
+      );
   }
     return {
       message: MESSAGES.SUCCESS.NOTIFICATION_UPDATED,
@@ -115,10 +120,11 @@ export class NotificationService implements INotificationService {
     const notification = await this._notificationRepository.findOne({ _id: notificationId });
 
     if (!notification) {
-      return {
-        message: MESSAGES.ERROR.NOTIFICATION_NOT_FOUND,
-        status: STATUS_CODES.NOT_FOUND
-      };
+
+      throw new AppError(
+        MESSAGES.ERROR.NOTIFICATION_NOT_FOUND,
+        STATUS_CODES.NOT_FOUND
+      );
     }
 
     await this._notificationRepository.delete(notificationId);
@@ -136,11 +142,11 @@ async getNotificationById(
   const notification = await this._notificationRepository.findOne({ _id: notificationId });
 
   if (!notification) {
-    return {
-      message: MESSAGES.ERROR.NOTIFICATION_NOT_FOUND,
-      status: STATUS_CODES.NOT_FOUND,
-      data: null
-    };
+
+      throw new AppError(
+        MESSAGES.ERROR.NOTIFICATION_NOT_FOUND,
+        STATUS_CODES.NOT_FOUND
+      );
   }
 
   return {

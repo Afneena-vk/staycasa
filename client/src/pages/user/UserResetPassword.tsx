@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
+import axios from "axios";
 
 const UserResetPassword = () => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,7 @@ const UserResetPassword = () => {
 
     if (!tempEmail) {
       toast.error("Email not found. Please start the reset process again.");
+      setIsLoading(false); 
       navigate("/user/forgot-password");
       return;
     }
@@ -56,8 +58,21 @@ const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\
       );
       toast.success("Password reset successful!");
       navigate("/user/login");
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Password reset failed. Please try again.");
+    
+     } catch (error: unknown) {
+  let message = "Password reset failed";
+
+  if (axios.isAxiosError(error)) {
+    message =
+      error.response?.data?.message ??
+      error.message ??
+      message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  toast.error(message);
+
     } finally {
       setIsLoading(false);
     }

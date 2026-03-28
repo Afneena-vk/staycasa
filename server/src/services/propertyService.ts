@@ -97,39 +97,20 @@ export class PropertyService implements IPropertyService {
         "Property added successfully and is pending approval"
       );
 
-//     } catch (error: any) {
-//   if (error.status) {
-//     throw error;   // preserve 403, 404, etc.
-//   }
 
-//   const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-//   err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-//   throw err;
-// }
-//   }  
 
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      throw error; 
-    }
+  } catch (error: unknown) {
+  if (error instanceof AppError) throw error;
 
-    throw new AppError(
-      error.message || MESSAGES.ERROR.SERVER_ERROR,
-      STATUS_CODES.INTERNAL_SERVER_ERROR
-    );
+  if (error instanceof Error) {
+    throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
+
+  throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
+}
 }
 
-  // async getOwnerProperties(ownerId: string): Promise<PropertyResponseDto[]> {
-  //   try {
-  //     const properties = await this._propertyRepository.findByOwnerId(ownerId);
-  //     return properties.map(property => PropertyMapper.toPropertyResponse(property));
-  //   } catch (error: any) {
-  //     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-  //     err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-  //     throw err;
-  //   }
-  // }
+
 
   async getOwnerProperties(filters: {
   ownerId: string;
@@ -164,11 +145,17 @@ export class PropertyService implements IPropertyService {
       result.totalPages,
       page
     );
-  } catch (error: any) {
-    const err: any = new Error(error.message || "Server Error");
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+  } 
+
+  catch (error: unknown) {
+  if (error instanceof AppError) throw error;
+
+  if (error instanceof Error) {
+    throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
+
+  throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
+}
 }
 
 
@@ -177,22 +164,25 @@ export class PropertyService implements IPropertyService {
       const property = await this._propertyRepository.findByPropertyId(propertyId);
 
       if(!property){
-        const err:any = new Error("Property not found");
-        err.status = STATUS_CODES.NOT_FOUND;
-        throw err;
+
+         throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
       }
 
       if (property.ownerId.toString() !== ownerId){
-        const err: any = new Error("Unauthorized access to this property");
-        err.status = STATUS_CODES.FORBIDDEN;
-        throw err;
+
+         throw new AppError("Unauthorized access to this property", STATUS_CODES.FORBIDDEN);
       }
       return PropertyMapper.toPropertyResponse(property);
-    } catch (error: any) {
-      const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-      err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-      throw err;
+
+      } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
     }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
+  }
   }   
 
 async updateOwnerProperty( ownerId: string, propertyId: string, data: UpdatePropertyDto): Promise<UpdatePropertyResponseDto> {
@@ -201,22 +191,19 @@ async updateOwnerProperty( ownerId: string, propertyId: string, data: UpdateProp
     
       const property = await this._propertyRepository.findByPropertyId(propertyId);
     if (!property) {
-      const err: any = new Error("Property not found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
+
+      throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
     } 
 
      if (property.ownerId.toString() !== ownerId) {
-      const err: any = new Error("Unauthorized to update this property");
-      err.status = STATUS_CODES.FORBIDDEN;
-      throw err;
+
+       throw new AppError("Unauthorized to update this property", STATUS_CODES.FORBIDDEN);
     } 
     
      const updatedProperty = await this._propertyRepository.updateProperty(propertyId, data);
     if (!updatedProperty) {
-      const err: any = new Error("Failed to update property");
-      err.status = STATUS_CODES.BAD_REQUEST;
-      throw err;
+
+      throw new AppError("Failed to update property", STATUS_CODES.BAD_REQUEST);
     }
 
     return PropertyMapper.toUpdatePropertyResponse(
@@ -224,10 +211,15 @@ async updateOwnerProperty( ownerId: string, propertyId: string, data: UpdateProp
       "Property updated successfully"
     );
 
-  } catch (error: any) {
-     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -236,30 +228,35 @@ async deleteOwnerProperty(ownerId: string, propertyId: string): Promise<{ messag
     const property = await this._propertyRepository.findByPropertyId(propertyId);
 
     if (!property) {
-      const err: any = new Error("Property not found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
+
+       throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
+
     }
 
     if (property.ownerId.toString() !== ownerId) {
-      const err: any = new Error("Unauthorized to delete this property");
-      err.status = STATUS_CODES.FORBIDDEN;
-      throw err;
+      // const err: any = new Error("Unauthorized to delete this property");
+      // err.status = STATUS_CODES.FORBIDDEN;
+      // throw err;
+      throw new AppError("Unauthorized to delete this property", STATUS_CODES.FORBIDDEN);
     }
 
     const deleted = await this._propertyRepository.deleteByOwner(ownerId, propertyId);
 
     if (!deleted) {
-      const err: any = new Error("Failed to delete property");
-      err.status = STATUS_CODES.BAD_REQUEST;
-      throw err;
+
+      throw new AppError("Failed to delete property", STATUS_CODES.BAD_REQUEST);
     }
 
     return { message: "Property deleted successfully", status: STATUS_CODES.OK };
-  } catch (error: any) {
-    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -299,10 +296,19 @@ async getAllProperties(filters: {
       page
     );
 
-  } catch (error: any) {
-    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+  // } catch (error: any) {
+  //   const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
+  //   err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
+  //   throw err;
+  // }
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -313,17 +319,21 @@ async getAdminPropertyById(propertyId: string): Promise<PropertyResponseDto> {
     const property = await this._propertyRepository.findByPropertyIdForAdmin(propertyId); 
     console.log("propertyDetailsService for admin returning:", property);
     if(!property){
-      const err: any = new Error("Property not found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
+
+      throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
     }
 
     return PropertyMapper.toPropertyResponse(property);
     
-  } catch (error:any) {
-     const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+   } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -334,9 +344,8 @@ async approveProperty(propertyId:string): Promise<AdminPropertyActionResponseDto
   const property = await this._propertyRepository.findByPropertyId(propertyId);
   
     if (!property) {
-      const err: any = new Error("Property not found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
+
+       throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
     }
 
     const updatedProperty = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Active);
@@ -344,9 +353,8 @@ async approveProperty(propertyId:string): Promise<AdminPropertyActionResponseDto
 
      
     if (!updatedProperty) {
-      const err: any = new Error("Failed to activate property");
-      err.status = STATUS_CODES.BAD_REQUEST;
-      throw err;
+
+       throw new AppError("Failed to activate property", STATUS_CODES.BAD_REQUEST);
     }
 
 
@@ -369,11 +377,15 @@ const ownerId =
     )
 
 
-  } catch (error:any) {
-     console.error("Approve property error:", error);
-    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+   } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
 }  
@@ -382,18 +394,16 @@ async rejectProperty(propertyId:string): Promise<AdminPropertyActionResponseDto>
   try {
     const property = await this._propertyRepository.findByPropertyId(propertyId);
     if(!property){
-        const err: any = new Error("Property not found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
+
+       throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
     }
 
      const updatedProperty = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Rejected);
  
 
      if (!updatedProperty) {
-      const err: any = new Error("Failed to reject property");
-      err.status = STATUS_CODES.BAD_REQUEST;
-      throw err;
+
+       throw new AppError("Failed to reject property", STATUS_CODES.BAD_REQUEST);
     }
    
 const ownerId =
@@ -414,17 +424,26 @@ const ownerId =
       "Property rejected successfully"
     )
 
-  } catch (error: any) {
-    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
 async blockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionResponseDto> {
 
   const property = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Blocked);
-  if (!property) throw new Error("Property not found");
+  //if (!property) throw new Error("Property not found");
+      if (!property) {
+      throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
+    }
+
 
     const ownerId =
     property.ownerId instanceof mongoose.Types.ObjectId
@@ -447,7 +466,11 @@ async blockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionRespo
 
 async unblockPropertyByAdmin(propertyId: string): Promise<AdminPropertyActionResponseDto> {
    const property = await this._propertyRepository.updateStatus(propertyId, PropertyStatus.Active);
-  if (!property) throw new Error("Property not found");
+  // if (!property) throw new Error("Property not found");
+      if (!property) {
+      throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
+    }
+
 
       const ownerId =
     property.ownerId instanceof mongoose.Types.ObjectId
@@ -490,10 +513,15 @@ async getActiveProperties(params: UserPropertyFilters
        result.totalPages,
        page
     );
-  } catch (error: any) {
-    const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -501,15 +529,19 @@ async getActivePropertyById(propertyId: string): Promise<PropertyResponseDto> {
   try {
     const result= await this._propertyRepository.findByPropertyIdForAdmin(propertyId); 
      if(!result){
-      const err: any = new Error("Property not found");
-      err.status = STATUS_CODES.NOT_FOUND;
-      throw err;
+
+       throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
     }
     return PropertyMapper.toPropertyResponse(result);
-  } catch (error:any) {
-       const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-    err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -604,12 +636,21 @@ endDate.setMonth(endDate.getMonth() + rentalPeriod);
         "Property is available!"
       );
 
- } catch (error : any) {
-   console.error("Availability check failed:", error);
-    const err: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
-    err.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw err;
- }
+
+  } catch (error: unknown) {
+    console.error("Availability check failed:", error);
+
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError(
+      "Something went wrong",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
+  }
 
 }
 
@@ -639,12 +680,16 @@ async getLatestActiveProperties(limit: number): Promise<UserPropertyListResponse
       1,
       1
     );
-  } catch (error: any) {
-    const err = new AppError(
-      error.message || MESSAGES.ERROR.SERVER_ERROR,
-      error.status || STATUS_CODES.INTERNAL_SERVER_ERROR
-    );
-    throw err;
+
+
+  } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof Error) {
+      throw new AppError(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    }
+
+    throw new AppError("Something went wrong", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 }
 

@@ -1,16 +1,30 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../api/api";
+//import { api } from "../../api/api";
 import { useAuthStore } from "../../stores/authStore";
-
+import { UsersListResponseDto } from "../../types/admin";
 
 import PageHeader from "../../components/Admin/common/PageHeader";
 import SearchInput from "../../components/Admin/common/SearchInput";
 import FilterSelect from "../../components/Admin/common/FilterSelect";
 import AlertMessage from "../../components/Admin/common/AlertMessage";
 import DataTable from "../../components/Admin/common/DataTable";
-import Pagination from "../../components/Admin/common/Pagination";
+import Pagination from "../../components/Admin/common/Pagination";  
+import axios from "axios";
+
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message || error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 interface User {
   id: string;
@@ -52,6 +66,8 @@ const sortOptions = [
 const UserManagement = () => {
   const navigate = useNavigate();
   const getUsers = useAuthStore((state) => state.getUsers);
+  const blockUser = useAuthStore((state) => state.blockUser);
+const unblockUser = useAuthStore((state) => state.unblockUser);
 
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +92,9 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data: UsersResponse = await getUsers({
+      //const data: UsersResponse = await getUsers({
+     // const data = await getUsers({
+     const data: UsersListResponseDto = await getUsers({
         page: currentPage,
         limit,
         status: statusFilter,
@@ -94,13 +112,10 @@ const UserManagement = () => {
       );
       setTotalPages(data.totalPages);
       setTotalCount(data.totalCount);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          err.response?.data?.error ||
-          err.message ||
-          "Failed to fetch users"
-      );
+    
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setLoading(false);
     }
@@ -131,7 +146,14 @@ const UserManagement = () => {
     if (!window.confirm("Are you sure want to change the status")) return;
 
     try {
-      const response = await api.patch(`/admin/users/${userId}/${action}`);
+      //const response = await api.patch(`/admin/users/${userId}/${action}`);
+          let res;
+
+    if (action === "block") {
+      res = await blockUser(userId);
+    } else {
+      res = await unblockUser(userId);
+    }
       setUsers((prev) =>
         prev.map((user) =>
           user.id === userId
@@ -139,14 +161,12 @@ const UserManagement = () => {
             : user
         )
       );
-      setSuccess(response.data.message);
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          err.response?.data?.error ||
-          `Failed to ${action} user`
-      );
-    }
+      // setSuccess(response.data.message);
+        setSuccess(res.message);
+    
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+}
   };
 
   const handleViewUser = (userId: string) => {

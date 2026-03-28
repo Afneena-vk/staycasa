@@ -70,12 +70,17 @@ function AdminProperties() {
 
   useEffect(() => {
     const [sortByField, sortOrderDir] = sortOption.split("-");
+     const sortOrder =
+    sortOrderDir === "asc" || sortOrderDir === "desc"
+      ? sortOrderDir
+      : undefined;
     getAllPropertiesAdmin({
       page: currentPage,
       limit: propertiesPerPage,
       search: debouncedSearch,
       sortBy: sortByField,
-      sortOrder: sortOrderDir,
+      // sortOrder: sortOrderDir,
+      sortOrder,
       status: statusFilter,
     });
   }, [currentPage, debouncedSearch, sortOption,  statusFilter]);

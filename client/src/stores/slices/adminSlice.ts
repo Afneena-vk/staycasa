@@ -1,24 +1,26 @@
 import { StateCreator } from "zustand";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
-import { UserFilters,UserStatistics, AdminDashboardStats } from "../../types/admin";
+import { UserFilters,UserStatistics, AdminDashboardStats, UsersListResponseDto, UserDetailResponseDto,OwnersListResponseDto, OwnerDetailResponseDto } from "../../types/admin";
 
 
 
 export interface AdminSlice {
   // User management
-  getUsers(filters?: UserFilters): Promise<any>;
-  blockUser(userId: string): Promise<any>;
-  unblockUser(userId: string): Promise<any>;
-  getUserDetails(userId: string): Promise<any>;
+  getUsers(filters?: UserFilters): Promise<UsersListResponseDto>;
+  blockUser(userId: string): Promise<{ message: string; status: number }>;
+  unblockUser(userId: string): Promise<{ message: string; status: number }>;
+  getUserDetails(userId: string): Promise<UserDetailResponseDto>;
   
   // Owner management
-  getOwners(filters?: UserFilters): Promise<any>;
-  blockOwner(ownerId: string): Promise<any>;
-  unblockOwner(ownerId: string): Promise<any>;
-  getOwnerDetails(ownerId: string): Promise<any>;
-  approveOwner(ownerId: string): Promise<any>;
-  rejectOwner(ownerId: string): Promise<any>;
+  getOwners(filters?: UserFilters): Promise<OwnersListResponseDto>;
+  blockOwner(ownerId: string): Promise<{ message: string; status: number }>;
+  unblockOwner(ownerId: string): Promise<{ message: string; status: number }>;
+  getOwnerDetails(ownerId: string): Promise<OwnerDetailResponseDto>;
+  approveOwner(ownerId: string): Promise<{ message: string; status: number }>;
+  rejectOwner(ownerId: string): Promise<{ message: string; status: number }>;
+
+
   //adminUserStatistics: UserStatistics | null;
  // fetchAdminUserStatistics: () => Promise<void>;
   dashboardStats: AdminDashboardStats | null;
@@ -35,7 +37,8 @@ export const createAdminSlice: StateCreator<
     //adminUserStatistics: null,
     dashboardStats: null,
 
-  getUsers: async (filters = {}) => {
+ // getUsers: async (filters = {}) => {
+ getUsers: async (filters = {}): Promise<UsersListResponseDto> => {
     try {
       const response = await adminService.getUsers(filters);
       return response;
@@ -75,7 +78,8 @@ export const createAdminSlice: StateCreator<
     }
   },
 
-  getOwners: async (filters = {}) => {
+  // getOwners: async (filters = {}) => {
+   getOwners: async (filters = {}): Promise<OwnersListResponseDto> => {
     try {
       const response = await adminService.getOwners(filters);
       return response;
@@ -105,7 +109,8 @@ export const createAdminSlice: StateCreator<
     }
   },
 
-  getOwnerDetails: async (ownerId) => {
+  // getOwnerDetails: async (ownerId) => {
+  getOwnerDetails: async (ownerId): Promise<OwnerDetailResponseDto> => {
     try {
       const response = await adminService.getOwnerDetails(ownerId);
       return response;

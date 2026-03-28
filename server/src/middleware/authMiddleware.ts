@@ -4,6 +4,7 @@ import { MESSAGES, STATUS_CODES } from "../utils/constants";
 import { container } from "../config/container";
 import { TOKENS } from "../config/tokens";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
+import { AppError } from "../utils/AppError";
 
 export const authMiddleware = (allowedRoles: string[]) => {
   return async(req: Request, res: Response, next: NextFunction) => {
@@ -21,10 +22,14 @@ export const authMiddleware = (allowedRoles: string[]) => {
       //const token = req.cookies["access-token"] || req.headers["authorization"];
 
     if (!token) {
-      res
-        .status(STATUS_CODES.UNAUTHORIZED)
-        .json({ message: MESSAGES.ERROR.UNAUTHORIZED });
-      return;
+      // res
+      //   .status(STATUS_CODES.UNAUTHORIZED)
+      //   .json({ message: MESSAGES.ERROR.UNAUTHORIZED });
+      // return;
+              throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.UNAUTHORIZED
+        );
     }
 
     try { 
@@ -36,10 +41,11 @@ export const authMiddleware = (allowedRoles: string[]) => {
 
           const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(token);
       if (isBlacklisted) {
-        res
-          .status(STATUS_CODES.UNAUTHORIZED)
-          .json({ message: "token is blacklisted" });
-        return;
+        // res
+        //   .status(STATUS_CODES.UNAUTHORIZED)
+        //   .json({ message: "token is blacklisted" });
+        // return;
+                throw new AppError("Token is blacklisted", STATUS_CODES.UNAUTHORIZED);
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
@@ -49,21 +55,36 @@ export const authMiddleware = (allowedRoles: string[]) => {
       };
 
       if (!allowedRoles.includes(decoded.type)) {
-        res
-          .status(STATUS_CODES.FORBIDDEN)
-          .json({ message: MESSAGES.ERROR.FORBIDDEN });
+        // res
+        //   .status(STATUS_CODES.FORBIDDEN)
+        //   .json({ message: MESSAGES.ERROR.FORBIDDEN });
 
-        return;
+        // return;
+                throw new AppError(
+          MESSAGES.ERROR.FORBIDDEN,
+          STATUS_CODES.FORBIDDEN
+        );
       }
 
-      (req as any).userId = decoded.userId;
-      (req as any).userType = decoded.type;
+
+
+      req.userId = decoded.userId;
+      req.userType = decoded.type;
+
       next();
-    } catch (error) {
-      res
-        .status(STATUS_CODES.UNAUTHORIZED)
-        .json({ message: MESSAGES.ERROR.INVALID_TOKEN });
-      return;
+    // } catch (error) {
+    //   res
+    //     .status(STATUS_CODES.UNAUTHORIZED)
+    //     .json({ message: MESSAGES.ERROR.INVALID_TOKEN });
+    //   return;
+    // }
+        } catch (error: unknown) {
+      next(
+        new AppError(
+          MESSAGES.ERROR.INVALID_TOKEN,
+          STATUS_CODES.UNAUTHORIZED
+        )
+      );
     }
   };
 };

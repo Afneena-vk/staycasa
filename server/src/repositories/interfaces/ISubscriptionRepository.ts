@@ -4,6 +4,19 @@ import { ISubscription } from "../../models/subscription";
 import { AdminSubscriptionFilterDto } from "../../dtos/subscription.dto";
 import { IAdminSubscriptionAggregate } from "../../dtos/adminSubscriptionAggregate";
 
+
+export interface CreateSubscriptionInput {
+  ownerId: string;
+  planId: string;
+  startDate: Date;
+  endDate: Date;
+  status: "Active" | "Expired";
+  paymentId?: string;
+  isUpgrade: boolean;
+  transactionType: "New" | "Renewal" | "Upgrade";
+  originalAmount?: number;
+}
+
 export interface ISubscriptionRepository extends IBaseRepository<ISubscription> {
 
 findActiveByOwnerId(ownerId: string): Promise<ISubscription | null>;
@@ -20,5 +33,7 @@ getAllSubscriptions(filters: AdminSubscriptionFilterDto
 
 getTotalRevenue(): Promise<number>;
 getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number }[]>;
+
+createSubscription(data: CreateSubscriptionInput): Promise<ISubscription>
 
 }

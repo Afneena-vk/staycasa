@@ -9,7 +9,7 @@ interface OwnerProfileUpdateData {
   //profileImage?: string;
 }
 
-interface PropertyFilters {
+export interface PropertyFilters {
   page?: number;
   limit?: number;
   search?: string;

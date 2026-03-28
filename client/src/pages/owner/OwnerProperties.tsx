@@ -88,12 +88,14 @@ const propertyLimitReached = usedProperties >= maxProperties;
   useEffect(() => {
     if (isApproved) {
       const [sortByField, sortOrderDir] = sortOption.split("-");
+      const sortOrder = sortOrderDir === "asc" || sortOrderDir === "desc" ? sortOrderDir : undefined;
       getOwnerProperties({
         page: currentPage,
         limit: propertiesPerPage,
         search: debouncedSearch,
         sortBy: sortByField,
-        sortOrder: sortOrderDir,
+        // sortOrder: sortOrderDir,
+        sortOrder,
       });
     }
   }, [isApproved, currentPage, debouncedSearch, sortOption]);

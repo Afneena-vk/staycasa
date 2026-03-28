@@ -15,6 +15,7 @@ import {
 } from "../dtos/admin.dto";
 import logger from "../utils/logger";
 import crypto from "crypto"
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class AdminController implements IAdminController {
@@ -44,14 +45,12 @@ export class AdminController implements IAdminController {
       const result = await this._adminService.getUsersList(queryParams);
 
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      console.error("Get users list error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+
+  } catch (error: unknown) {
+    next(error);
   }
+  }
+
   async blockUser(
     req: Request,
     res: Response,
@@ -74,13 +73,10 @@ export class AdminController implements IAdminController {
         message: result.message,
         status: result.status,
       });
-    } catch (error: any) {
-      console.error("Block user error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+
+     } catch (error: unknown) {
+  next(error);
+}
   }
 
   async unblockUser(
@@ -105,13 +101,10 @@ export class AdminController implements IAdminController {
         message: result.message,
         status: result.status,
       });
-    } catch (error: any) {
-      console.error("Unblock user error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
   async getUserById(
@@ -133,16 +126,13 @@ export class AdminController implements IAdminController {
       const result = await this._adminService.getUserById(userId);
 
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      console.error("Get user by ID error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
-  async getOwnersList(req: Request, res: Response): Promise<void> {
+  async getOwnersList(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const queryParams: OwnerListQueryDto = {
         page: req.query.page ? parseInt(req.query.page as string) : 1,
@@ -155,13 +145,10 @@ export class AdminController implements IAdminController {
 
       const result = await this._adminService.getOwnersList(queryParams);
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      console.error("Get owners list error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
   async blockOwner(
@@ -186,13 +173,10 @@ export class AdminController implements IAdminController {
         message: result.message,
         status: result.status,
       });
-    } catch (error: any) {
-      console.error("Block owner error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+ 
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
   async unblockOwner(
@@ -217,13 +201,10 @@ export class AdminController implements IAdminController {
         message: result.message,
         status: result.status,
       });
-    } catch (error: any) {
-      console.error("Unblock owner error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+ 
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
   async getOwnerById(
@@ -245,16 +226,13 @@ export class AdminController implements IAdminController {
       const result = await this._adminService.getOwnerById(ownerId);
 
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      console.error("Get owner by ID error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+  
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
-  async approveOwner(req: Request, res: Response): Promise<void> {
+  async approveOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { ownerId } = req.params;
       if (!ownerId) {
@@ -266,16 +244,13 @@ export class AdminController implements IAdminController {
       }
       const result = await this._adminService.approveOwner(ownerId);
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Approve owner error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+    
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
-  async rejectOwner(req: Request, res: Response): Promise<void> {
+  async rejectOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { ownerId } = req.params;
       if (!ownerId) {
@@ -287,13 +262,10 @@ export class AdminController implements IAdminController {
       }
       const result = await this._adminService.rejectOwner(ownerId);
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Reject owner error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-        status: error.status || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      });
-    }
+    
+      } catch (error: unknown) {
+    next(error);
+  }
   }
   // async adminUserStatistics(req: Request, res: Response, next: NextFunction): Promise<void> {
   //   try {
@@ -324,14 +296,9 @@ async getDashboardStats(req: Request, res: Response, next: NextFunction): Promis
       message: "Admin dashboard data fetched",
       data: dashboardData
     });
-  } catch (error:unknown) {
-    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch admin dashboard data",
-    });
+  
+    } catch (error: unknown) {
+    next(error);
   }
 }
 
@@ -389,12 +356,10 @@ async getDashboardStats(req: Request, res: Response, next: NextFunction): Promis
         refreshToken: result.refreshToken,
         csrfToken: csrfToken,
       });
-    } catch (error: any) {
-      console.error("Login error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
-    }
+    
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -404,10 +369,15 @@ async getDashboardStats(req: Request, res: Response, next: NextFunction): Promis
 
        const accessToken = req.cookies["access-token"];
           const refreshToken = req.cookies["refresh-token"];
-          const userId = (req as any).userId;
-          const userType = (req as any).userType;
+       
+
+          const userId = req.userId;
+          const userType = req.userType;
       
-         
+         if (!userId || !userType) {
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
+
           const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
             TOKENS.ITokenBlacklistRepository
           );
@@ -443,12 +413,10 @@ async getDashboardStats(req: Request, res: Response, next: NextFunction): Promis
       res
         .status(STATUS_CODES.OK)
         .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
-    } catch (error: any) {
-      logger.error("Logout error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
-    }
+ 
+      } catch (error: unknown) {
+    next(error);
+  }
   }
 
 

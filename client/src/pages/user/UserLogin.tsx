@@ -5,6 +5,7 @@ import { useAuthStore } from "../../stores/authStore";
 import GoogleAuthButton from "../../components/GoogleAuthButton";
 import Header from "../../components/User/Header";
 import Footer from "../../components/User/Footer";
+import axios from "axios";
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({
@@ -44,8 +45,15 @@ const UserLogin = () => {
       await login(formData.email, formData.password, "user");
       toast.success("Login successful!");
       navigate("/user/dashboard");
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Login failed. Please try again.");
+ 
+    }  catch (error: unknown) {
+  const message = axios.isAxiosError(error)
+    ? error.response?.data?.message || error.message
+    : error instanceof Error
+    ? error.message
+    : "Login failed. Please try again.";
+  toast.error(message);
+
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +62,7 @@ const UserLogin = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-28 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 pt-12 pb-10 px-4">
         <div className="flex flex-col md:flex-row w-full max-w-4xl bg-white rounded-xl shadow-lg overflow-hidden">
 
           {/* Left Panel - Homestay Image + Branding */}
@@ -118,7 +126,7 @@ const UserLogin = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2 px-4 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition flex justify-center items-center gap-2"
+                className="w-full py-2 px-4 bg-blue-950 text-white rounded-md hover:bg-blue-800 transition flex justify-center items-center gap-2"
               >
                 {isLoading && <span className="animate-spin h-5 w-5 border-2 border-white rounded-full border-t-transparent"></span>}
                 {isLoading ? "Signing in..." : "Sign in"}

@@ -10,7 +10,7 @@ interface UserFilters {
   sortOrder?: "asc" | "desc";
 }
 
-interface PropertyFilters {
+export interface PropertyFilters {
   page?: number;
   limit?: number;
   search?: string;

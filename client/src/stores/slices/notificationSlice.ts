@@ -1,6 +1,24 @@
 import { StateCreator } from "zustand";
 import { notificationService } from "../../services/notificationService";
 import { NotificationDto } from "../../types/notification";
+import axios from "axios";
+
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 export interface NotificationSlice {
      notifications: NotificationDto[];
@@ -28,8 +46,11 @@ fetchNotifications: async (role: 'User' | 'Owner' | 'Admin' = 'User') => {
       const notifications = await notificationService.getNotifications(role);
       const unreadCount = notifications.filter(n => !n.read).length;
       set({ notifications, unreadCount });
-    } catch (err: any) {
-      set({ notificationError: err.message || "Failed to fetch notifications" });
+
+        } catch (error: unknown) {
+      set({
+        notificationError: getErrorMessage(error),
+      });
     } finally {
       set({ notificationLoading: false });
     }
@@ -47,8 +68,11 @@ markAsRead: async (notificationId: string, role: "User" | "Owner" | "Admin" = "U
           unreadCount: updated.filter((n) => !n.read).length,
         };
       });
-    } catch (err: any) {
-      set({ notificationError: err.message || "Failed to mark notification as read" });
+ 
+        } catch (error: unknown) {
+      set({
+        notificationError: getErrorMessage(error),
+      });
     }
   },
 
@@ -60,8 +84,11 @@ markAsRead: async (notificationId: string, role: "User" | "Owner" | "Admin" = "U
         notifications: state.notifications.map((n) => ({ ...n, read: true })),
         unreadCount: 0,
       }));
-    } catch (err: any) {
-      set({ notificationError: err.message || "Failed to mark all notifications as read" });
+   
+        } catch (error: unknown) {
+      set({
+        notificationError: getErrorMessage(error),
+      });
     }
   },
 
@@ -76,8 +103,11 @@ markAsRead: async (notificationId: string, role: "User" | "Owner" | "Admin" = "U
           unreadCount: updated.filter((n) => !n.read).length,
         };
       });
-    } catch (err: any) {
-      set({ notificationError: err.message || "Failed to delete notification" });
+   
+        } catch (error: unknown) {
+      set({
+        notificationError: getErrorMessage(error),
+      });
     }
   },
 

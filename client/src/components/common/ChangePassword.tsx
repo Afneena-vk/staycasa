@@ -6,6 +6,24 @@ import { useAuthStore } from "../../stores/authStore";
 // interface ChangePasswordProps {
 //   userId?: string; 
 // }
+import axios from "axios";
+
+ const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+       error.response?.data?.error ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 
 
@@ -53,8 +71,11 @@ const ChangePassword: React.FC = () => {
         setNewPassword("");
         setConfirmPassword("");
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to change password");
+   
+        } catch (error: unknown) {
+  
+      const message = getErrorMessage(error);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

@@ -15,7 +15,7 @@ interface UserProfileUpdateData {
   };
 }
 
-interface UserPropertyFilters {
+export interface UserPropertyFilters {
   page?: number;
   limit?: number;
   search?: string;

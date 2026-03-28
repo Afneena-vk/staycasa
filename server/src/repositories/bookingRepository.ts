@@ -3,7 +3,8 @@ import Booking,{IBooking} from '../models/bookingModel';
 import { BaseRepository } from "./baseRepository";
 import { IBookingRepository, FindByUserOptions } from "./interfaces/IBookingRepository";  
 import { BookingStatus,PaymentStatus } from "../models/status/status";
-import mongoose from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
+import { FilterQuery } from "mongoose";
 
 @injectable()
 export class BookingRepository extends BaseRepository<IBooking> implements IBookingRepository {
@@ -72,7 +73,8 @@ async findByUserWithQuery(
     sortOrder = "desc",
   } = options;
 
-  const query: any = { userId };
+
+  const query: FilterQuery<IBooking> = { userId };
 
   if (status) query.bookingStatus = status;
   if (paymentStatus) query.paymentStatus = paymentStatus;
@@ -167,98 +169,7 @@ async getBookedRanges(propertyId: string) {
   }).select("moveInDate endDate -_id");
 }
 
-//  async findByOwnerWithQuery(
-//   ownerId: string,
-//   options: FindByUserOptions
-// ) {
-//   const {
-//     search,
-//     status,
-//     paymentStatus,
-//     startDate,
-//     endDate,
-//     bookingType,
-//     page = 1,
-//     limit = 10,
-//     sortField = "createdAt",
-//     sortOrder = "desc",
-//   } = options;
 
-//   const query: any = { ownerId };
-
-//   if (status) query.bookingStatus = status;
-//   if (paymentStatus) query.paymentStatus = paymentStatus;
-
-// // if (startDate || endDate) {
-// //   query.endDate = {};
-
-// //   if (startDate) {
-// //     query.endDate.$gte = new Date(startDate);
-// //   }
-
-// //   if (endDate) {
-// //     const end = new Date(endDate);
-// //     end.setHours(23, 59, 59, 999);
-// //     query.endDate.$lte = end;
-// //   }
-// // }
-
-
-// const today= new Date();
-// today.setHours(0,0,0,0);
-
-//   if (bookingType === "past") {
-//     query.endDate = { $lt: today };
-//   }
-
-
-//   if (bookingType === "ongoing") {
-//     query.moveInDate = { $lte: today };
-//     query.endDate = { $gte: today };
-//   }
-
-//    if (bookingType === "upcoming") {
-//     query.moveInDate = { $gt: today };
-//   }
-
-//   const total = await Booking.countDocuments(query);
-
-//   const bookings = await Booking.find(query)
-//     .populate({
-//       path: "propertyId",
-//       match: search
-//         ? { title: { $regex: search, $options: "i" } }
-//         : {},
-//     })
-//     .populate({
-//       path: "userId",
-//       match: search
-//         ? {
-//             $or: [
-//               { name: { $regex: search, $options: "i" } },
-//               { email: { $regex: search, $options: "i" } },
-//             ],
-//           }
-//         : {},
-//     })
-//     .sort({ [sortField]: sortOrder === "asc" ? 1 : -1 })
-//     .skip((page - 1) * limit)
-//     .limit(limit);
-
-  
-//   const filteredBookings = bookings.filter(
-//     //(b) => b.propertyId && b.userId
-//       (b) => {
-//   if (!search) return true;
-
-//   return Boolean(b.propertyId || b.userId);
-  
-//     }
-  
-//   );
-
-//   return { bookings: filteredBookings, total };
-// }
 
 async findByOwnerWithQuery(
   ownerId: string,
@@ -277,7 +188,10 @@ async findByOwnerWithQuery(
     sortOrder = "desc",
   } = options;
 
-  const matchStage: any = { ownerId: new mongoose.Types.ObjectId(ownerId) };
+
+  const matchStage: FilterQuery<IBooking> = {
+  ownerId: new mongoose.Types.ObjectId(ownerId),
+};
 
   if (status) matchStage.bookingStatus = status;
   if (paymentStatus) matchStage.paymentStatus = paymentStatus;
@@ -298,7 +212,8 @@ async findByOwnerWithQuery(
     matchStage.moveInDate = { $gt: today };
   }
 
-  const pipeline: any[] = [
+
+ const pipeline: PipelineStage[] = [
     { $match: matchStage },
     {
       $lookup: {
@@ -365,9 +280,10 @@ async findOwnerBookingsByDate(
   today.setHours(0,0,0,0);
 
 
- const query: any ={
-    ownerId: new mongoose.Types.ObjectId(ownerId),
- };
+
+const query: FilterQuery<IBooking> = {
+  ownerId: new mongoose.Types.ObjectId(ownerId),
+};
 
    if (type === "upcoming") {
      query.moveInDate= {$gt: today}
@@ -450,7 +366,8 @@ async findAllWithQuery(options: FindByUserOptions) {
     sortOrder = "desc",
   } = options;
 
-  const matchStage: any = {};
+
+  const matchStage: FilterQuery<IBooking> = {};
 
   if (status) matchStage.bookingStatus = status;
   if (paymentStatus) matchStage.paymentStatus = paymentStatus;
@@ -473,7 +390,7 @@ async findAllWithQuery(options: FindByUserOptions) {
     if (endDate) matchStage.moveInDate.$lte = endDate;
   }
 
-  const pipeline: any[] = [
+  const pipeline: PipelineStage[] = [
     { $match: matchStage },
     {
       $lookup: {

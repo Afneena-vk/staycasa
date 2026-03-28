@@ -5,7 +5,9 @@ import Subscription, {ISubscription} from "../models/subscription";
 import { ISubscriptionRepository } from "./interfaces/ISubscriptionRepository";
 import { AdminSubscriptionFilterDto } from "../dtos/subscription.dto";
 import { IAdminSubscriptionAggregate } from "../dtos/adminSubscriptionAggregate";
-
+import { CreateSubscriptionInput } from "./interfaces/ISubscriptionRepository";
+import { Types } from "mongoose";
+import { PipelineStage, FilterQuery } from "mongoose";
 
 @injectable()
 export class SubscriptionRepository extends BaseRepository<ISubscription> implements ISubscriptionRepository {
@@ -33,71 +35,7 @@ async findActiveByOwnerId(ownerId: string): Promise<ISubscription | null> {
     );
   }
 
-//   async getAllSubscriptions(
-//     filters: AdminSubscriptionFilterDto
-//   ): Promise<{ data: ISubscription[]; total: number }> {
 
-//       const { page = 1, limit = 10 } = filters;
-
-//       const query: any = {};
-
-//   if (filters.status) query.status = filters.status;
-
-//   if (filters.startDate || filters.endDate) {
-//     query.startDate = {};
-//     if (filters.startDate) query.startDate.$gte = filters.startDate;
-//     if (filters.endDate) query.startDate.$lte = filters.endDate;
-//   }
-
-//   let subscriptionsQuery = this.model.find(query)
-//     .populate("ownerId", "name email")      // only fetch name & email
-//     .populate("planId", "name price duration maxProperties")
-//     // .sort({ startDate: -1 });
-
-//   // If filtering by ownerName or planName
-//   if (filters.ownerName || filters.planName) {
-//     subscriptionsQuery = subscriptionsQuery.where({
-//       ...(filters.ownerName && { "ownerId.name": new RegExp(filters.ownerName, "i") }),
-//       ...(filters.planName && { "planId.name": new RegExp(filters.planName, "i") }),
-//     });
-//   }
-
-// //   return await subscriptionsQuery.exec();
-
-//  const total = await this.model.countDocuments(query);
-
-//   const data = await subscriptionsQuery
-//     .sort({ startDate: -1 })
-//     .skip((page - 1) * limit)
-//     .limit(limit)
-//     .exec();
-
-//   return { data, total };
-
-// }
-
-// async getAllSubscriptions(
-//   filters: AdminSubscriptionFilterDto
-// ): Promise<{ data: ISubscription[]; total: number }> {
-//   const { page = 1, limit = 10, status } = filters;
-
-//   const query: any = {};
-//   if (status) query.status = status;
-
-//   const [data, total] = await Promise.all([
-//     this.model
-//       .find(query)
-//       .populate("ownerId", "name email")
-//       .populate("planId", "name price duration maxProperties")
-//       .sort({ startDate: -1 })
-//       .skip((page - 1) * limit)
-//       .limit(limit),
-
-//     this.model.countDocuments(query),
-//   ]);
-
-//   return { data, total };
-// }
 
 
 async getAllSubscriptions(
@@ -111,7 +49,8 @@ async getAllSubscriptions(
 }> {
   const { page = 1, limit = 10, ownerName, planName, status, startDate, endDate } = filters;
 
-  const matchStage: any = {};
+ 
+   const matchStage: FilterQuery<ISubscription> = {};
 
   if (status) matchStage.status = status;
 
@@ -121,8 +60,8 @@ async getAllSubscriptions(
     if (endDate) matchStage.startDate.$lte = endDate;
   }
 
-  // const pipeline: any[] = [
-  const basePipeline: any[] = [
+
+    const basePipeline: PipelineStage[] = [
     { $match: matchStage },
 
     
@@ -165,9 +104,14 @@ async getAllSubscriptions(
 
 
   //const countPipeline = [...pipeline, { $count: "total" }];
-  const countPipeline = [...basePipeline, { $count: "total" }];
+  //const countPipeline = [...basePipeline, { $count: "total" }];
+  const countPipeline: PipelineStage[] = [
+  ...basePipeline,
+  { $count: "total" },
+];
 
-    const revenuePipeline = [
+    //const revenuePipeline = [
+    const revenuePipeline: PipelineStage[] = [
     ...basePipeline,
     {
       $group: {
@@ -184,7 +128,8 @@ async getAllSubscriptions(
   //   { $limit: limit }
   // );
 
-    const dataPipeline = [
+   // const dataPipeline = [
+   const dataPipeline: PipelineStage[] = [
     ...basePipeline,
     { $sort: { startDate: -1 } },
     { $skip: (page - 1) * limit },
@@ -213,7 +158,8 @@ async getAllSubscriptions(
 
 
 async getTotalRevenue(): Promise<number> {
-  const result = await this.model.aggregate([
+ // const result = await this.model.aggregate([
+   const pipeline: PipelineStage[] = [
     {
       $lookup: {
         from: "subscriptionplans",
@@ -240,13 +186,16 @@ async getTotalRevenue(): Promise<number> {
         total: { $sum: "$amount" }
       }
     }
-  ]);
+  ]
+  const result = await this.model.aggregate(pipeline);
+//);
 
   return result[0]?.total || 0;
 }
 
 async getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number }[]> {
-  const match: any = {};
+
+    const match: FilterQuery<ISubscription> = {};
 
   if (year) {
     match.createdAt = {
@@ -255,7 +204,9 @@ async getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number
     };
   }
 
-  return this.model.aggregate([
+  // return this.model.aggregate([
+
+  const pipeline: PipelineStage[] = [
     { $match: match },
     {
       $lookup: {
@@ -301,8 +252,25 @@ async getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number
         revenue: 1
       }
     }
-  ]);
+  ]
+
+  return this.model.aggregate(pipeline);
+//);
 }
 
+
+async createSubscription(data: CreateSubscriptionInput): Promise<ISubscription> {
+  return await this.model.create({
+    ownerId: new Types.ObjectId(data.ownerId),
+    planId: new Types.ObjectId(data.planId),
+    startDate: data.startDate,
+    endDate: data.endDate,
+    status: data.status,
+    paymentId: data.paymentId,
+    isUpgrade: data.isUpgrade,
+    transactionType: data.transactionType,
+    originalAmount: data.originalAmount,
+  });
+}
 
 }

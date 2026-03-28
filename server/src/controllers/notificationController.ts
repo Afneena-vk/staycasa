@@ -4,7 +4,8 @@ import { INotificationService } from "../services/interfaces/INotificationServic
 import { INotificationController } from "./interfaces/INotificationController";
 import { TOKENS } from "../config/tokens";
 import { RecipientModel } from "../models/notificationModel";
-import { STATUS_CODES} from "../utils/constants";
+import { STATUS_CODES, MESSAGES} from "../utils/constants";
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class NotificationController implements INotificationController {
@@ -27,16 +28,28 @@ export class NotificationController implements INotificationController {
       );
 
       res.status(result.status).json(result);
-    } catch (err) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
-    }
+ 
+    } catch (error) {
+  next(error);
+}
   }
 
   async getNotifications(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // const { recipientId, recipientModel } = req.params;
-   const recipientId = (req as any).userId;
-   const userType = (req as any).userType; 
+
+      const recipientId = req.userId;
+      const userType = req.userType;
+
+      
+
+if (!recipientId) {
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
+
+if (!userType) {
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
    
     const recipientModel =
       userType === "user"
@@ -51,8 +64,9 @@ export class NotificationController implements INotificationController {
       );
 
        res.status(result.status).json(result);
-    } catch (err) {
-       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
+  
+       } catch (error: unknown) {
+      next(error);
     }
   }
 
@@ -63,28 +77,44 @@ export class NotificationController implements INotificationController {
       const result = await this._notificationService.getNotificationById(notificationId);
 
       res.status(result.status).json(result);
-    } catch (err) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
+  
+       } catch (error: unknown) {
+      next(error);
     }
   }
 
   async markAsRead(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { notificationId } = req.params;
-       const userId = (req as any).userId;
+    
+      const userId= req.userId;
+
+if (!userId) {
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
 
       const result = await this._notificationService.markAsRead(notificationId,userId);
 
       res.status(result.status).json(result);
-    } catch (err) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
+    
+       } catch (error: unknown) {
+      next(error);
     }
   }
 
   async markAllAsRead(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const recipientId = (req as any).userId;
-      const userType = (req as any).userType;
+     
+      const userType = req.userType;
+      const recipientId = req.userId;
+
+if (!recipientId) {
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
+
+if (!userType) {
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
 
      const recipientModel =
       userType === "user"
@@ -99,8 +129,9 @@ export class NotificationController implements INotificationController {
       );
 
        res.status(result.status).json(result);
-    } catch (err) {
-       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
+    
+       } catch (error: unknown) {
+      next(error);
     }
   }
 
@@ -111,8 +142,9 @@ async deleteNotification(req: Request, res: Response, next: NextFunction): Promi
       const result = await this._notificationService.deleteNotification(notificationId);
 
        res.status(result.status).json(result);
-    } catch (err) {
-       res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ message: "Server error", error: err });
+    
+        } catch (error: unknown) {
+      next(error);
     }
   }
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
+import axios from "axios";
 
 const OwnerResetPassword = () => {
   const [formData, setFormData] = useState({
@@ -47,9 +48,22 @@ const OwnerResetPassword = () => {
       );
       toast.success("Password reset successful!");
       navigate("/owner/login");
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Password reset failed. Please try again.");
-    } finally {
+    
+    } catch (error: unknown) {
+  let message = "Password reset failed. Please try again.";
+
+  // Axios-specific errors
+  if (axios.isAxiosError(error)) {
+    message = error.response?.data?.error || error.message;
+  } 
+  // Generic JS errors
+  else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  toast.error(message);
+}
+     finally {
       setIsLoading(false);
     }
   };

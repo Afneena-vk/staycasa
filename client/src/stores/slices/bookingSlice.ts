@@ -2,6 +2,7 @@ import { StateCreator } from "zustand";
 import { BookingDTO , BookingDetailsDTO, BookingQuery, OwnerBookingStatsDto,OwnerBookingStatisDTo} from "../../types/booking";
 import { paymentService } from "../../services/paymentService";
 import { bookingService } from "../../services/bookingService";
+import axios from "axios";
 
 // export interface BookingQuery {
 //   page?: number;
@@ -14,6 +15,22 @@ import { bookingService } from "../../services/bookingService";
 //   sortBy?: string;
 //   sortOrder?: "asc" | "desc";
 // }
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 export interface BookingState {
       bookingData: {
@@ -153,15 +170,14 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
       isLoading: false,
       error: null,
     });
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error || error.message || "Failed to fetch bookings";
-    set({
-      bookings: [],
-      isLoading: false,
-      error: errorMessage,
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({
+        bookings: [],
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
+    }
 },
 
     fetchBookingDetails : async (bookingId: string) => {
@@ -169,8 +185,13 @@ export const createBookingSlice: StateCreator<BookingState> = (set,get) => ({
     try {
       const res = await bookingService. fetchBookingDetails(bookingId);
       set({ selectedBooking: res.booking, isLoading: false });
-    } catch (error: any) {
-      set({ selectedBooking: null, isLoading: false, error: error.response?.data?.error || error.message || "Failed to fetch booking" });
+    
+        } catch (error: unknown) {
+      set({
+        selectedBooking: null,
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
     }
   },
 
@@ -204,16 +225,14 @@ fetchOwnerBookings: async () => {
       isLoading: false,
       error: null,
     });
-  } catch (error: any) {
-    set({
-      bookings: [],
-      isLoading: false,
-      error:
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to fetch owner bookings",
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({
+        bookings: [],
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
+    }
 },
 
     fetchBookingDetailsForOwner : async (bookingId: string) => {
@@ -221,8 +240,13 @@ fetchOwnerBookings: async () => {
     try {
       const res = await bookingService. fetchBookingDetailsForOwner(bookingId);
       set({ selectedBooking: res.booking, isLoading: false });
-    } catch (error: any) {
-      set({ selectedBooking: null, isLoading: false, error: error.response?.data?.error || error.message || "Failed to fetch booking" });
+    
+        } catch (error: unknown) {
+      set({
+        selectedBooking: null,
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
     }
   },
 
@@ -261,13 +285,17 @@ fetchCancelBooking: async (bookingId: string) => {
       });
     }
     return res; 
-  } catch (err: any) {
-    set({
-      isLoading: false,
-      error: err.response?.data?.error || err.message || "Failed to cancel booking",
-    });
-    throw err;
-  }
+  
+     } catch (error: unknown) {
+      const message = getErrorMessage(error);
+
+      set({
+        isLoading: false,
+        error: message,
+      });
+
+      throw new Error(message);
+    }
 },
 
 fetchOwnerCancelBooking: async (bookingId: string) => {
@@ -290,17 +318,17 @@ fetchOwnerCancelBooking: async (bookingId: string) => {
       isLoading: false,
     }));
     
-  } catch (err: any) {
-        const message =
-      err.response?.data?.message || err.message || "Failed to cancel booking";
-    set({
-      isLoading: false,
-      error:message,
+  
+      } catch (error: unknown) {
+      const message = getErrorMessage(error);
 
-    });
-    // throw err;
-     throw { message };
-  }
+      set({
+        isLoading: false,
+        error: message,
+      });
+
+      throw new Error(message);
+    }
 },
 
 fetchAdminBookings: async () => {
@@ -332,16 +360,14 @@ fetchAdminBookings: async () => {
       totalPages: response.totalPages,
       isLoading: false,
     });
-  } catch (err: any) {
-    set({
-      bookings: [],
-      isLoading: false,
-      error:
-        err.response?.data?.error ||
-        err.message ||
-        "Failed to fetch admin bookings",
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({
+        bookings: [],
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
+    }
 },
 
 fetchBookingDetailsForAdmin: async (bookingId: string) => {
@@ -349,13 +375,14 @@ fetchBookingDetailsForAdmin: async (bookingId: string) => {
   try {
     const res = await bookingService.fetchBookingDetailsForAdmin(bookingId);
     set({ selectedBooking: res, isLoading: false }); 
-  } catch (error: any) {
-    set({
-      selectedBooking: null,
-      isLoading: false,
-      error: error.response?.data?.error || error.message || "Failed to fetch booking details",
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({
+        selectedBooking: null,
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
+    }
 },
 
 
@@ -365,15 +392,17 @@ fetchRetryPayment: async (bookingId: string) => {
     const response = await paymentService.retryPayment(bookingId);
     set({ isLoading: false });
     return response; 
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message || error.message || "Failed to retry payment";
-    set({
-      isLoading: false,
-      error: errorMessage,
-    });
-    throw error;
-  }
+  
+      } catch (error: unknown) {
+      const message = getErrorMessage(error);
+
+      set({
+        isLoading: false,
+        error: message,
+      });
+
+      throw new Error(message);
+    }
 },
 
 fetchOwnerBookingStatis: async() =>{
@@ -381,13 +410,14 @@ fetchOwnerBookingStatis: async() =>{
   try {
     const stats = await bookingService.fetchOwnerBookingStatis();
     set({ ownerBookingStatis: stats, isLoading: false });
-  } catch (err:any) {
-    set({
-      ownerBookingStatis: null,
-      isLoading: false,
-      error: err.response?.data?.message || err.message || "Failed to fetch stats",
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({
+        ownerBookingStatis: null,
+        isLoading: false,
+        error: getErrorMessage(error),
+      });
+    }
 },
 
 

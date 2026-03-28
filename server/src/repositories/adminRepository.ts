@@ -5,7 +5,7 @@ import User, {IUser} from '../models/userModel';
 import { BaseRepository } from './baseRepository';
 import Owner, {IOwner} from '../models/ownerModel';
 import { IAdminRepository, UserListQuery, UserListResult, OwnerListQuery, OwnerListResult} from './interfaces/IAdminRepository';
-
+import { FilterQuery, SortOrder } from 'mongoose';
 
 @injectable()
 export class AdminRepository extends BaseRepository<IAdmin> implements IAdminRepository {
@@ -28,7 +28,7 @@ export class AdminRepository extends BaseRepository<IAdmin> implements IAdminRep
     } = query;
 
   
-    const filter: any = {};
+    const filter: FilterQuery<IUser> = {};
 
     
     if (status !== 'all') {
@@ -44,8 +44,10 @@ export class AdminRepository extends BaseRepository<IAdmin> implements IAdminRep
     }
 
     
-    const sort: any = {};
-    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+const sort: { [key: string]: SortOrder } = {
+  [sortBy]: sortOrder === 'asc' ? 1 : -1
+};
 
     
     const skip = (page - 1) * limit;
@@ -77,7 +79,8 @@ export class AdminRepository extends BaseRepository<IAdmin> implements IAdminRep
     sortOrder = 'desc'
   } = query;
 
-  const filter: any = {};
+
+  const filter: FilterQuery<IOwner> = {};
   if (status !== 'all') {
     filter.isBlocked = status === 'blocked';
   }
@@ -89,8 +92,10 @@ export class AdminRepository extends BaseRepository<IAdmin> implements IAdminRep
     ];
   }
 
-  const sort: any = {};
-  sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const sort: { [key: string]: SortOrder } = {
+  [sortBy]: sortOrder === 'asc' ? 1 : -1
+};
 
   const skip = (page - 1) * limit;
 

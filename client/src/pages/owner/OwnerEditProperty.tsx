@@ -272,10 +272,14 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       replace: true,
     state: { success: "Property updated successfully!" }
   });
-    } catch (err: any) {
-      console.error("Error updating property:", err);
-      alert("Failed to update property");
-    }
+    
+} catch (err: unknown) {
+  if (err instanceof Error) {
+    alert("Failed to update property: " + err.message);
+  } else {
+    alert("Failed to update property");
+  }
+}
   };
 
   return (

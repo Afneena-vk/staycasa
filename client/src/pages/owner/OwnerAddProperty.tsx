@@ -178,10 +178,14 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
       setImagePreviews([]);
       setErrors({});
     
-  } catch (error: any) {
-    console.error("Error:", error);
-    alert("Failed to add property: " + (error.response?.data?.error || error.message));
+  
+   } catch (error: unknown) {
+  if (error instanceof Error) {
+    alert("Failed to add property: " + error.message);
+  } else {
+    alert("Failed to add property");
   }
+}
 };
 
   return (

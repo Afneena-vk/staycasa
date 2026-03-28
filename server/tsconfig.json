@@ -16,10 +16,15 @@
     "skipLibCheck": true,                               /* Skip type checking all .d.ts files. */
      "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    // "typeRoots": ["./src/types", "./node_modules/@types"]
 
   },
    "include": [
     "src/**/*",
     "server.ts"
   ],
+    "ts-node": {                     // ← ADD THIS BLOCK
+    "files": true
+  }
+  
 }

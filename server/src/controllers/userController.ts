@@ -11,6 +11,7 @@ import crypto from "crypto";
 import { FileStorageService } from "../utils/fileStorageService"; 
 import { container } from "../config/container";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class UserController implements IUserController {
@@ -29,14 +30,11 @@ export class UserController implements IUserController {
      res.status(result.status).json({
         message: result.message,
       });
-    } catch (error: any) {
-      //console.error("Registration error:", error);
-      logger.error("Registration error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+       } catch (error: unknown) {
+      next(error);
     }
   }
+
 
   async verifyOtp(
     req: Request,
@@ -47,22 +45,17 @@ export class UserController implements IUserController {
       const { email, otp } = req.body;
 
       if (!email || !otp) {
-        res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ message: "Email and OTP are required" });
-        return;
+
+          throw new AppError("Email and OTP are required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._userService.verifyOtp(email, otp);
       res.status(result.status).json({ message: result.message });
-    } catch (error: any) {
-      // console.error("OTP verification error:", error);
-      logger.error("OTP verification error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+      } catch (error: unknown) {
+         next(error);
     }
   }
+  
 
   async resendOtp(
     req: Request,
@@ -73,22 +66,17 @@ export class UserController implements IUserController {
       const { email } = req.body;
 
       if (!email) {
-        res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ error: "Email is required" });
-        return;
+
+          throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._userService.resendOtp(email);
       res.status(result.status).json({ message: result.message });
-    } catch (error: any) {
-      // console.error("OTP resend error:", error);
-      logger.error("OTP resend error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+      } catch (error: unknown) {
+      next(error);
     }
   }
+
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -147,15 +135,13 @@ export class UserController implements IUserController {
         accessToken: result.token,
         refreshToken: result.refreshToken,
         csrfToken: csrfToken,
-      });
-    } catch (error: any) {
-      //console.error("Login error:", error);
-      logger.error("Login error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+      }); 
+       } catch (error: unknown) {
+      next(error);
     }
   }
+
+ 
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -164,8 +150,16 @@ export class UserController implements IUserController {
 
  const accessToken = req.cookies["access-token"];
     const refreshToken = req.cookies["refresh-token"];
-    const userId = (req as any).userId;
-    const userType = (req as any).userType;
+
+
+      
+if (!req.userId || !req.userType) {
+
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+}
+
+const userId = req.userId;
+const userType = req.userType;
 
    
     const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
@@ -204,13 +198,12 @@ export class UserController implements IUserController {
       res
         .status(STATUS_CODES.OK)
         .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
-    } catch (error: any) {
-      logger.error("Logout error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+      } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
   async googleCallback(
     req: Request,
@@ -281,13 +274,20 @@ export class UserController implements IUserController {
     });
 
       res.redirect(`${process.env.FRONTEND_URL}/user/auth-success`);
-    } catch (error: any) {
-      logger.error("Google auth error: " + error.message);
-      res.redirect(
-        `${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`
-      );
-    }
+
+  } catch (error: unknown) {
+  if (error instanceof Error) {
+    logger.error("Google auth error: " + error.message);
+  } else {
+    logger.error("Google auth error: Unknown error");
   }
+
+  res.redirect(
+    `${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`
+  );
+}
+
+}
 
   async forgotPassword(
     req: Request,
@@ -298,23 +298,20 @@ export class UserController implements IUserController {
       const { email } = req.body;
 
       if (!email) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Email is required",
-        });
-        return;
+
+        throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._userService.forgotPassword(email);
       res.status(result.status).json({
         message: result.message,
       });
-    } catch (error: any) {
-      logger.error("Forgot password error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+          } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
   async resetPassword(
     req: Request,
@@ -325,17 +322,13 @@ export class UserController implements IUserController {
       const { email, otp, newPassword, confirmPassword } = req.body;
 
       if (!email || !otp || !newPassword || !confirmPassword) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "All fields are required",
-        });
-        return;
+
+        throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
       }
 
       if (newPassword !== confirmPassword) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: MESSAGES.ERROR.PASSWORD_MISMATCH,
-        });
-        return;
+
+        throw new AppError(MESSAGES.ERROR.PASSWORD_MISMATCH, STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._userService.resetPassword(
@@ -346,13 +339,12 @@ export class UserController implements IUserController {
       res.status(result.status).json({
         message: result.message,
       });
-    } catch (error: any) {
-      logger.error("Reset password error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+          } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
   async getProfile(
     req: Request,
@@ -360,19 +352,23 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = (req as any).userId;
-      const result = await this._userService.getUserProfile(userId);
+
+     if (!req.userId) {
+      //  res.status(401).json({ message: "User not authenticated" });
+      //  return;
+      throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
+    }
+      
+      // const result = await this._userService.getUserProfile(userId);
+       const result = await this._userService.getUserProfile(req.userId);
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Get user profile error:", error);
-      logger.error("Get user profile error: " + error.message);
-
-      res
-        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
+      } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
   async updateProfile(
     req: Request,
@@ -380,22 +376,25 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = (req as any).userId;
+    
+      if (!req.userId) {
+
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
+}
+
+const userId = req.userId;
       const result = await this._userService.updateUserProfile(
         userId,
         req.body
       );
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Update user profile error:", error);
-      logger.error("Update user profile error: " + error.message);
-
-      res
-        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
+          } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
   async uploadProfileImage(
     req: Request,
@@ -403,13 +402,19 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = (req as any).userId;
+
+
+      if (!req.userId) {
+
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
+}
+
+const userId = req.userId;
 
       if (!req.file) {
         res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ error: "No file uploaded" });
-        return;
+
+        throw new AppError("No file uploaded", STATUS_CODES.BAD_REQUEST);
       }
 
       // const imageUrl = (req.file as any).path;
@@ -423,27 +428,31 @@ export class UserController implements IUserController {
     const result = await this._userService.updateUserProfileImage(userId, fileData);
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Upload profile image error:", error);
-      res
-        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message || MESSAGES.ERROR.SERVER_ERROR });
+
+      } catch (error: unknown) {
+      next(error);
     }
   }
+
   async changePassword(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = (req as any).userId;
+
+      if (!req.userId) {
+  // res.status(401).json({ message: "User not authenticated" });
+  // return;
+  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
+}
+
+const userId = req.userId;
       const { currentPassword, newPassword } = req.body;
 
       if (!currentPassword || !newPassword) {
-        res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ error: "All fields are required" });
-        return;
+
+        throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._userService.changePassword(
@@ -453,13 +462,12 @@ export class UserController implements IUserController {
       );
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      logger.error("Change password error: " + error.message);
-      res
-        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message || "Server error" });
+    } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
     async getWallet(
     req: Request,
@@ -467,9 +475,15 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      // const ownerId = (req as any).userId;
-      // const result = await this._userService.getWallet(ownerId);
-    const userId = (req as any).userId;
+
+
+      if (!req.userId) {
+
+  throw new AppError("user is not authenticated", STATUS_CODES.BAD_REQUEST);
+}
+
+const userId = req.userId;
+    
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 6;
 
@@ -477,12 +491,12 @@ export class UserController implements IUserController {
       
     res.status(STATUS_CODES.OK).json(result);
 
-    } catch (error: any) {
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        message: error.message,
-      });
+   } catch (error: unknown) {
+      next(error);
     }
   }
+
+
 
 }
 

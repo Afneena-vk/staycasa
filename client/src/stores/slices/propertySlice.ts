@@ -1,13 +1,28 @@
 import { StateCreator } from "zustand";
-import { userService } from "../../services/userService";
+import { userService, UserPropertyFilters } from "../../services/userService";
 import {PropertyFormData } from "../../types/property";
 import { SiTryitonline } from "react-icons/si";
-import { ownerService } from "../../services/ownerService";
-import { adminService } from "../../services/adminService";
+import { ownerService, PropertyFilters } from "../../services/ownerService";
+import { adminService,  } from "../../services/adminService";
 
 import { Property, DestinationDto } from "../../types/property";
+import axios from "axios";
 
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
 
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 
 export interface PropertySlice {
@@ -26,12 +41,12 @@ export interface PropertySlice {
   fetchOwnerPropertyStats: () => Promise<void>;
   
   addProperty(propertyData: FormData): Promise<void>;
-  getOwnerProperties(params?:any): Promise<void>;
+  getOwnerProperties(params?: PropertyFilters): Promise<void>;
   getOwnerPropertyById(propertyId: string): Promise<void>;
   updateProperty: (propertyId: string, propertyData: FormData) => Promise<void>;  
   deleteProperty: (propertyId: string) => Promise<void>;
-  getAllPropertiesAdmin(params?:any): Promise<void>; 
-  getActivePropertiesForUser: (params?:any) => Promise<void>;
+  getAllPropertiesAdmin(params?: PropertyFilters): Promise<void>;
+  getActivePropertiesForUser(params?: UserPropertyFilters): Promise<void>;
   getActivePropertyById(propertyId:string):Promise<void>;
   getPropertyByAdmin(propertyId:string): Promise<void>;
   approveProperty(propertyId:string): Promise<void>;
@@ -80,17 +95,12 @@ export const createPropertySlice: StateCreator<
           error: null,
         }));
       }
-    } catch (error: any) {
-      //const errorMessage = error.response?.data?.error || error.message || "Failed to add property";
-      const errorMessage =
-  error.response?.data?.message || error.message || "Failed to add property";
 
-      set({ 
-        isLoading: false, 
-        error: errorMessage 
-      });
-      throw new Error(errorMessage);
-    }
+  } catch (error: unknown) {
+  const errorMessage = getErrorMessage(error);
+  set({ isLoading: false, error: errorMessage });
+  throw new Error(errorMessage);
+}
   },
 
   getOwnerProperties: async (params) => {
@@ -107,12 +117,12 @@ export const createPropertySlice: StateCreator<
         isLoading: false,
         error: null,
       });
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.error || error.message || "Failed to fetch properties";
-      set({ 
+
+    } catch (error: unknown) {
+      set({
         properties: [],
-        isLoading: false, 
-        error: errorMessage 
+        isLoading: false,
+        error: getErrorMessage(error),
       });
     }
   },
@@ -126,13 +136,12 @@ export const createPropertySlice: StateCreator<
         isLoading: false,
         error: null,
       });
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.error || error.message || "Failed to fetch property details";
+
+    } catch (error: unknown) {
       set({
         selectedProperty: null,
         isLoading: false,
-        error: errorMessage,
+        error: getErrorMessage(error),
       });
     }
   },
@@ -155,16 +164,11 @@ export const createPropertySlice: StateCreator<
         error: null,
       }));
     }
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Failed to update property";
-    set({
-      isLoading: false,
-      error: errorMessage,
-    });
-    throw new Error(errorMessage);
+
+    } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error);
+    set({ isLoading: false, error: errorMessage });
+    throw new Error(errorMessage); 
   }
 },
 
@@ -177,10 +181,11 @@ deleteProperty: async (propertyId: string) => {
       isLoading: false,
       error: null,
     }));
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.error || error.message || "Failed to delete property";
+
+    } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error);
     set({ isLoading: false, error: errorMessage });
-    throw new Error(errorMessage);
+    throw new Error(errorMessage); 
   }
 },
 
@@ -199,15 +204,10 @@ getActivePropertiesForUser: async (params) => {
       isLoading: false,
       error: null,
     });
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error || error.message || "Failed to fetch active properties";
-    set({
-      properties: [],
-      isLoading: false,
-      error: errorMessage,
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+    }
 },
 
 
@@ -222,18 +222,9 @@ getActivePropertiesForUser: async (params) => {
       error: null,
     });
       
-    } catch (error:any) {
-      const errorMessage =
-      error.response?.data?.error ||
-      error.message ||
-      "Failed to fetch property details";
-
-    set({
-      selectedProperty: null,
-      isLoading: false,
-      error: errorMessage,
-    });
   
+    } catch (error: unknown) {
+      set({ selectedProperty: null, isLoading: false, error: getErrorMessage(error) });
     }
 
   },
@@ -252,10 +243,10 @@ getAllPropertiesAdmin: async (params) =>{
       isLoading: false,
       error: null,
     });
-     } catch (error:any) {
-       const errorMessage = error.response?.data?.error || error.message || "Failed";
-    set({ isLoading: false, error: error.message });
-  }
+
+      } catch (error: unknown) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+    }
 },
 
 
@@ -269,15 +260,10 @@ getPropertyByAdmin: async (propertyId:string)=>{
        isLoading: false,
       error: null,
     })
-  } catch (error: any) {
-    const errorMessage =
-    error.response?.data?.error || error.message || "Failed to fetch property details";
-     set({
-      selectedProperty: null,
-      isLoading: false,
-      error: errorMessage,
-    });
-  }
+  
+    } catch (error: unknown) {
+      set({ selectedProperty: null, isLoading: false, error: getErrorMessage(error) });
+    }
 },
 
 approveProperty: async (propertyId:string)=>{
@@ -299,12 +285,12 @@ approveProperty: async (propertyId:string)=>{
 
     return response;
 
-    } catch (error: any) {
-      const errorMessage =
-      error.response?.data?.error || error.message || "Failed to approve property";
+ 
+      } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error);
     set({ isLoading: false, error: errorMessage });
-    throw new Error(errorMessage);
-    }
+    throw new Error(errorMessage); 
+  }
 },
 
 rejectProperty: async (propertyId: string) => {
@@ -330,9 +316,9 @@ rejectProperty: async (propertyId: string) => {
 
 
     return response;
-  } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.error || error.message || "Failed to reject property";
+ 
+    } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error);
     set({ isLoading: false, error: errorMessage });
     throw new Error(errorMessage);
   }
@@ -355,8 +341,9 @@ blockPropertyByAdmin: async (propertyId: string) => {
       error: null,
     }));
     return response; 
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.error || error.message || "Failed to block property";
+ 
+      } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error);
     set({ isLoading: false, error: errorMessage });
     throw new Error(errorMessage);
   }
@@ -379,10 +366,11 @@ unblockPropertyByAdmin: async (propertyId: string) => {
       error: null,
     }));
     return response;
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.error || error.message || "Failed to unblock property";
+  
+      } catch (error: unknown) {
+    const errorMessage = getErrorMessage(error);
     set({ isLoading: false, error: errorMessage });
-     throw new Error(errorMessage);
+    throw new Error(errorMessage);
   }
 },
 
@@ -400,10 +388,10 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
       totalCount: response.total,          
       currentPage: response.page,
     });
-  } catch (error: any) {
-    const errorMessage = error.response?.data?.error || error.message || "Failed to fetch destinations";
-    set({ isLoading: false, error: errorMessage });
-  }
+  
+      } catch (error: unknown) {
+      set({ isLoading: false, error: getErrorMessage(error) });
+    }
 },
 
 
@@ -412,9 +400,9 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
     try {
       const stats = await ownerService.fetchOwnerPropertyStats();
       set({ ownerPropertyStats: stats, isLoading: false });
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.error || error.message || "Failed to fetch property stats";
-      set({ isLoading: false, error: errorMessage });
+    
+    } catch (error: unknown) {
+      set({ isLoading: false, error: getErrorMessage(error) });
     }
   },
 
@@ -423,18 +411,10 @@ getDestinations: async (params?: { search?: string; page?: number; limit?: numbe
     try {
       const response = await userService.getLatestActiveProperties(limit);
        set({ latestProperties:  response.properties || [], isLoading: false, error: null });
-    } catch (error: any) {
-    const errorMessage =
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to load latest properties";
-
-    set({
-      latestProperties: [],
-      isLoading: false,
-      error: errorMessage,
-    });
-  }
+  
+      } catch (error: unknown) {
+      set({ latestProperties: [], isLoading: false, error: getErrorMessage(error) });
+    }
   },
 
 

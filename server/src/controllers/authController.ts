@@ -7,6 +7,7 @@ import crypto from "crypto";
 import { TOKENS } from "../config/tokens";
 import { container } from "../config/container";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
+import { AppError } from "../utils/AppError";
 
  class AuthController implements IAuthController{
     async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -21,12 +22,19 @@ import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlac
 
 
 
-    if (!refreshToken) {
-      res.status(STATUS_CODES.UNAUTHORIZED).json({ 
-        message: MESSAGES.ERROR.UNAUTHORIZED 
-      });
-      return;
-    }
+    // if (!refreshToken) {
+    //   res.status(STATUS_CODES.UNAUTHORIZED).json({ 
+    //     message: MESSAGES.ERROR.UNAUTHORIZED 
+    //   });
+    //   return;
+    // }
+
+          if (!refreshToken) {
+        throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.UNAUTHORIZED
+        );
+      }
 
    
     const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
@@ -34,23 +42,35 @@ import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlac
     );
     
     const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(refreshToken);
-    if (isBlacklisted) {
-      res.status(STATUS_CODES.UNAUTHORIZED).json({
-        message: MESSAGES.ERROR.INVALID_TOKEN
-      });
-      return;
-    }
+    // if (isBlacklisted) {
+    //   res.status(STATUS_CODES.UNAUTHORIZED).json({
+    //     message: MESSAGES.ERROR.INVALID_TOKEN
+    //   });
+    //   return;
+    // }
+
+      if (isBlacklisted) {
+        throw new AppError(
+          MESSAGES.ERROR.INVALID_TOKEN,
+          STATUS_CODES.UNAUTHORIZED
+        );
+      }
 
      if (!csrfToken || !storedCsrfToken || csrfToken !== storedCsrfToken) {
-        res.status(STATUS_CODES.FORBIDDEN).json({
-          message: "Invalid CSRF token"
-        });
-        return;
+        // res.status(STATUS_CODES.FORBIDDEN).json({
+        //   message: "Invalid CSRF token"
+        // });
+        // return;
+           throw new AppError("Invalid CSRF token", STATUS_CODES.FORBIDDEN);
       }
 
     const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
     if (!JWT_REFRESH_SECRET) {
-      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+      // throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+              throw new AppError(
+          MESSAGES.ERROR.JWT_SECRET_MISSING,
+          STATUS_CODES.INTERNAL_SERVER_ERROR
+        );
     }
 
     
@@ -62,7 +82,12 @@ import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlac
 
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
-      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+     // throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+         throw new AppError(
+          MESSAGES.ERROR.JWT_SECRET_MISSING,
+          STATUS_CODES.INTERNAL_SERVER_ERROR
+        );
+
     }
 
    
@@ -89,12 +114,16 @@ import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlac
       message: "Token refreshed successfully"
     });
 
-  } catch (error: any) {
-    logger.error("Refresh token error: " + error.message);
-    res.status(STATUS_CODES.UNAUTHORIZED).json({
-      message: MESSAGES.ERROR.INVALID_TOKEN
-    });
-  }
+  // } catch (error: any) {
+  //   logger.error("Refresh token error: " + error.message);
+  //   res.status(STATUS_CODES.UNAUTHORIZED).json({
+  //     message: MESSAGES.ERROR.INVALID_TOKEN
+  //   });
+  // }
+      } catch (error: unknown) {
+      logger.error("Refresh token error");
+      next(error);
+    }
     }
 }
 

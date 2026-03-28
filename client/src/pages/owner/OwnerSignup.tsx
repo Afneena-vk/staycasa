@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuthStore } from '../../stores/authStore';
+import axios from 'axios';
 
 type SignupFormData = {
   name: string;
@@ -29,8 +30,18 @@ const OwnerSignup = () => {
       setTempEmail(data.email);
       toast.success('Registration successful! Please verify OTP sent to your email.');
       navigate('/owner/otp-verification');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Registration failed');
+    
+       }   catch (error: unknown) {
+  let message = "Registration failed";
+
+  if (axios.isAxiosError(error)) {
+    message = error.response?.data?.message || error.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  toast.error(message);
+
     } finally {
       setIsLoading(false);
     }

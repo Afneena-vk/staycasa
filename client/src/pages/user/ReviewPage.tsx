@@ -35,13 +35,14 @@ const ReviewPage = () => {
       await submitReview(selectedBooking.id, { rating, reviewText });
       alert("Thanks for your review!");
       navigate(`/user/bookings/${bookingId}`);
-    } catch (err: any) {
-      // setError(err.message || "Failed to submit review");
-        setError(
-    err.response?.data?.error ||
-    err.message ||
-    "Failed to submit review"
-  );
+
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError("Failed to submit review");
+  }
+
     } finally {
       setLoading(false);
     }

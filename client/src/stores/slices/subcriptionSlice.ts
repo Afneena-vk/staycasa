@@ -2,6 +2,24 @@ import { StateCreator } from "zustand";
 import { subscriptionService } from "../../services/subscriptionService";
 import { SubscriptionPlanDto,UpdateSubscriptionPlanDto, CurrentSubscriptionDto, AdminSubscriptionDto, AdminSubscriptionFilterDto } from "../../types/subscription";
 
+import axios from "axios";
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
+
 export interface SubscriptionSlice {
   subscriptionLoading: boolean;
   subscriptionError: string | null;
@@ -51,11 +69,10 @@ export const createSubscriptionSlice: StateCreator<
     try {
       const plans = await subscriptionService.getAllPlans();
       set({ plans });
-    } catch (err: any) {
-      set({
-        subscriptionError:
-          err.response?.data?.error || err.message || "Failed to fetch plans",
-      });
+
+    } catch (err: unknown) {
+      set({ subscriptionError: getErrorMessage(err) || "Failed to fetch plans" });
+
     } finally {
       set({ subscriptionLoading: false });
     }
@@ -71,12 +88,11 @@ export const createSubscriptionSlice: StateCreator<
           p.id === updatedPlan.id ? updatedPlan : p
         ),
       }));
-    } catch (err: any) {
-      set({
-        subscriptionError:
-          err.response?.data?.error || err.message || "Failed to update plan",
-      });
-      throw err;
+
+        } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err) || "Failed to update plan";
+      set({ subscriptionError: errorMessage });
+      throw new Error(errorMessage);
     } finally {
       set({ subscriptionLoading: false });
     }
@@ -87,12 +103,9 @@ export const createSubscriptionSlice: StateCreator<
     try {
       const plans = await subscriptionService.getAllPlansforOwner();
       set({ plans });
-    } catch (err: any) {
-    //   set({ subscriptionError: err.message || "Failed to fetch plans" });
-          set({
-        subscriptionError:
-          err.response?.data?.message || "Failed to fetch plans",
-      });
+
+    } catch (err: unknown) {
+      set({ subscriptionError: getErrorMessage(err) || "Failed to fetch plans" });
     } finally {
       set({ subscriptionLoading: false });
     }
@@ -103,6 +116,8 @@ export const createSubscriptionSlice: StateCreator<
     try {
       const data = await subscriptionService.getCurrentSubscription();
       set({ currentSubscription: data });
+    // } catch (err: unknown) {
+    //   set({ subscriptionError: getErrorMessage(err) || "Failed to fetch current subscription" });
     } finally {
       set({ subscriptionLoading: false });
     }
@@ -152,11 +167,9 @@ subscribeToPlan: async (planId: string) => {
 
           const data = await subscriptionService.getCurrentSubscription();
           set({ currentSubscription: data });
-        } catch (err: any) {
-          set({
-            subscriptionError:
-              err.response?.data?.message || "Payment verification failed",
-          });
+
+        } catch (err: unknown) {
+            set({ subscriptionError: getErrorMessage(err) || "Payment verification failed" });
         } finally {
           set({ subscriptionLoading: false });
         }
@@ -172,11 +185,9 @@ subscribeToPlan: async (planId: string) => {
 
     const razorpay = new (window as any).Razorpay(options);
     razorpay.open();
-  } catch (err: any) {
-    set({
-      subscriptionError:
-        err.response?.data?.message || "Payment initialization failed",
-    });
+
+      } catch (err: unknown) {
+      set({ subscriptionError: getErrorMessage(err) || "Payment initialization failed" });
     set({ subscriptionLoading: false });
   }
 },
@@ -193,11 +204,9 @@ fetchAllAdminSubscriptions: async (filters) => {
       adminSubscriptionsPagination: res.pagination,
       adminSubscriptionRevenue: res.revenue,
     });
-  } catch (err: any) {
-    set({
-      subscriptionError:
-        err.response?.data?.message || "Failed to fetch subscriptions",
-    });
+
+  } catch (err: unknown) {
+   set({ subscriptionError: getErrorMessage(err) || "Failed to fetch subscriptions" });
   } finally {
     set({ subscriptionLoading: false });
   }
