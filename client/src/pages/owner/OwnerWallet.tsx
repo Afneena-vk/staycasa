@@ -1,10 +1,12 @@
 
 
 import { useEffect, useState } from "react";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import { ownerService } from "../../services/ownerService";
 //import OwnerSidebar from "../../components/Owner/OwnerSidebar";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const OwnerWallet = () => {
   const [wallet, setWallet] = useState<any>(null);
@@ -19,9 +21,19 @@ const [totalPages, setTotalPages] = useState(1);
          const data = await ownerService.getOwnerWallet(page, limit);
         setWallet(data);
          setTotalPages(data.totalPages);
-      } catch (error) {
-        console.error("Failed to fetch wallet", error);
-      }
+      
+      } catch (error: unknown) {
+  let message = "Failed to fetch wallet";
+
+  if (axios.isAxiosError(error)) {
+    message = error.response?.data?.message || error.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  console.error("Failed to fetch wallet:", message);
+  toast.error(message);
+}
     };
     fetchWallet();
   }, [page]);

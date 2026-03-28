@@ -17,6 +17,7 @@ import { OwnerLoginResponseDto, OwnerProfileResponseDto, OwnerProfileUpdateDto, 
 import { cloudinary } from '../config/cloudinary';
 import { Types } from "mongoose";
 import { ITransaction } from '../models/walletModel';
+import { AppError } from '../utils/AppError';
 
 @injectable()
 
@@ -33,22 +34,19 @@ import { ITransaction } from '../models/walletModel';
     const { name, email, phone, password, confirmPassword, businessName, businessAddress  } = data;
 
     if (!name || !email || !phone || !password || !confirmPassword || !businessName || !businessAddress) {
-      const error: any = new Error(MESSAGES.ERROR.MISSING_FIELDS);
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.MISSING_FIELDS, STATUS_CODES.BAD_REQUEST);
     }
 
     if (password !== confirmPassword) {
-      const error: any = new Error(MESSAGES.ERROR.PASSWORD_MISMATCH);
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.PASSWORD_MISMATCH, STATUS_CODES.BAD_REQUEST);
     }
 
     const existingOwner = await this._ownerRepository.findByEmail(email);
     if (existingOwner) {
-      const error: any = new Error(MESSAGES.ERROR.EMAIL_EXISTS);
-      error.status = STATUS_CODES.CONFLICT;
-      throw error;
+
+       throw new AppError(MESSAGES.ERROR.EMAIL_EXISTS, STATUS_CODES.CONFLICT);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -88,15 +86,14 @@ import { ITransaction } from '../models/walletModel';
       const owner = await this._ownerRepository.findByEmail(email);
   
       if (!owner) {
-        const error: any = new Error("Owner not found");
-        error.status = STATUS_CODES.NOT_FOUND;
-        throw error;
+
+        throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
       }
   
       if (owner.otp !== otp) {
-        const error: any = new Error("Invalid OTP");
-        error.status = STATUS_CODES.BAD_REQUEST;
-        throw error;
+
+        throw new AppError("Invalid OTP", STATUS_CODES.BAD_REQUEST);
+
       }
   
       owner.isVerified = true;
@@ -110,15 +107,13 @@ import { ITransaction } from '../models/walletModel';
         const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
-          const error: any = new Error("Owner not found");
-          error.status = STATUS_CODES.NOT_FOUND;
-          throw error;
+
+          throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
         }
     
         if (owner.isVerified) {
-          const error: any = new Error("Owner is already verified");
-          error.status = STATUS_CODES.BAD_REQUEST;
-          throw error;
+
+          throw new AppError("Owner is already verified", STATUS_CODES.BAD_REQUEST);
         }
     
        
@@ -140,35 +135,32 @@ import { ITransaction } from '../models/walletModel';
   const { email, password } = data;
 
   if (!email || !password) {
-    const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
-    error.status = STATUS_CODES.BAD_REQUEST;
-    throw error;
+
+     throw new AppError(MESSAGES.ERROR.INVALID_INPUT, STATUS_CODES.BAD_REQUEST);
   }
 
   const owner = await this._ownerRepository.findByEmail(email);
   if (!owner || !(await bcrypt.compare(password, owner.password))) {
-    const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
-    error.status = STATUS_CODES.UNAUTHORIZED;
-    throw error;
+
+     throw new AppError(MESSAGES.ERROR.INVALID_CREDENTIALS, STATUS_CODES.UNAUTHORIZED);
   }
 
   if (owner.isBlocked) {
-    const error: any = new Error("Owner is blocked");
-    error.status = STATUS_CODES.UNAUTHORIZED;
-    throw error;
+
+      throw new AppError("Owner is blocked", STATUS_CODES.UNAUTHORIZED);
   }
 
   if (!owner.isVerified) {
-    const error: any = new Error(MESSAGES.ERROR.UNAUTHORIZED);
-    error.status = STATUS_CODES.UNAUTHORIZED;
-    throw error;
+
+     throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
   }
 
   const JWT_SECRET = process.env.JWT_SECRET;
   const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
   if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
-    throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+    // throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+    throw new AppError( MESSAGES.ERROR.JWT_SECRET_MISSING, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
   const accessToken = jwt.sign(
@@ -190,15 +182,13 @@ import { ITransaction } from '../models/walletModel';
         const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
-          const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
-          error.status = STATUS_CODES.NOT_FOUND;
-          throw error;
+
+          throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
         }
     
         if (owner.isBlocked) {
-          const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
-          error.status = STATUS_CODES.FORBIDDEN;
-          throw error;
+
+           throw new AppError(MESSAGES.ERROR.FORBIDDEN, STATUS_CODES.FORBIDDEN);
         }
     
         
@@ -222,15 +212,13 @@ import { ITransaction } from '../models/walletModel';
         const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
-          const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
-          error.status = STATUS_CODES.NOT_FOUND;
-          throw error;
+
+           throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
         }
     
         if (owner.otp !== otp) {
-          const error: any = new Error(MESSAGES.ERROR.OTP_INVALID);
-          error.status = STATUS_CODES.BAD_REQUEST;
-          throw error;
+
+          throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
         }
     
      
@@ -252,9 +240,8 @@ async getOwnerProfile(ownerId: string): Promise<OwnerProfileResponseDto> {
   const owner = await this._ownerRepository.findById(ownerId);
   
   if (!owner) {
-    const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
-    error.status = STATUS_CODES.NOT_FOUND;
-    throw error;
+
+        throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
   return OwnerMapper.toProfileResponse(owner, "Profile retrieved successfully");
@@ -264,9 +251,8 @@ async updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<
   const owner = await this._ownerRepository.findById(ownerId);
   
   if (!owner) {
-    const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
-    error.status = STATUS_CODES.NOT_FOUND;
-    throw error;
+
+        throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
 
@@ -282,9 +268,8 @@ async updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<
   const updatedOwner = await this._ownerRepository.update(ownerId, updateData);
   
   if (!updatedOwner) {
-    const error: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
-    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw error;
+
+       throw new AppError(MESSAGES.ERROR.SERVER_ERROR, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
   return OwnerMapper.toProfileResponse(updatedOwner, "Profile updated successfully");
@@ -296,16 +281,14 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
       const owner = await this._ownerRepository.findById(ownerId);
       
       if (!owner) {
-        const error: any = new Error(MESSAGES.ERROR.VENDOR_NOT_FOUND);
-        error.status = STATUS_CODES.NOT_FOUND;
-        throw error;
+
+        throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
       }
 
       
       if (owner.approvalStatus === 'approved') {
-        const error: any = new Error(MESSAGES.ERROR.ALREADY_APPROVED);
-        error.status = STATUS_CODES.BAD_REQUEST;
-        throw error;
+
+         throw new AppError(MESSAGES.ERROR.ALREADY_APPROVED, STATUS_CODES.BAD_REQUEST);
       }
 
       
@@ -331,7 +314,7 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
 
        const admin = await this._adminRepository.findOne({});
 
-      if(admin){
+   if(admin){
     await this._notificationService.createNotification(
       admin._id.toString(),      
       "Admin",                     
@@ -343,9 +326,8 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
   }
       
       if (!updatedOwner) {
-        const error: any = new Error(MESSAGES.ERROR.UPLOAD_FAILED);
-        error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-        throw error;
+
+        throw new AppError(MESSAGES.ERROR.UPLOAD_FAILED, STATUS_CODES.INTERNAL_SERVER_ERROR);
       }
 
       return {
@@ -353,32 +335,30 @@ async uploadDocument(ownerId: string, file: Express.Multer.File): Promise<{ mess
         status: STATUS_CODES.OK,
         document: documentUrl
       };
-    } catch (error: any) {
-      throw error;
-    }
+
+     } catch (error: unknown) {
+  throw error;
+}
   }
 
 async changePassword(ownerId: string, currentPassword: string, newPassword: string): Promise<ChangePasswordResponseDto> {
   
   const owner = await this._ownerRepository.findById(ownerId);
   if (!owner) {
-    const error: any = new Error("Owner not found");
-    error.status = STATUS_CODES.NOT_FOUND;
-    throw error;
+
+      throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
   
   if (!owner.password) {
-    const error: any = new Error("Password not set for this owner");
-    error.status = STATUS_CODES.BAD_REQUEST;
-    throw error;
+
+      throw new AppError("Password not set for this owner", STATUS_CODES.BAD_REQUEST);
   }
 
   const isMatch = await bcrypt.compare(currentPassword, owner.password);
   if (!isMatch) {
-    const error: any = new Error("Current password is incorrect");
-    error.status = STATUS_CODES.BAD_REQUEST;
-    throw error;
+
+      throw new AppError("Current password is incorrect", STATUS_CODES.BAD_REQUEST);
   }
 
   
@@ -396,9 +376,8 @@ async changePassword(ownerId: string, currentPassword: string, newPassword: stri
     );
 
   if (!updatedOwner) {
-    const error: any = new Error("Failed to update password");
-    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw error;
+
+     throw new AppError("Failed to update password", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
     return {

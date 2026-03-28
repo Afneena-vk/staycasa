@@ -4,6 +4,7 @@ import { userService } from "../../services/userService";
 // import Header from "../../components/User/Header";
 // import Footer from "../../components/User/Footer";
 import { FaArrowUp, FaArrowDown } from "react-icons/fa";
+import axios from "axios";
 
 const UserWallet = () => {
   const [wallet, setWallet] = useState<any>(null);
@@ -17,9 +18,22 @@ const UserWallet = () => {
         const data = await userService.getUserWallet(page, limit);
         setWallet(data);
         setTotalPages(data.totalPages);
-      } catch (error) {
-        console.error("Failed to fetch wallet", error);
+     
+          } catch (error: unknown) {
+      let message = "Failed to fetch wallet";
+
+      if (axios.isAxiosError(error)) {
+        message =
+          error.response?.data?.message ||
+          error.message ||
+          message;
+      } else if (error instanceof Error) {
+        message = error.message;
       }
+
+      console.error(message);
+    }
+
     };
     fetchWallet();
   }, [page]);

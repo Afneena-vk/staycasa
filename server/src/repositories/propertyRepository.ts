@@ -2,6 +2,7 @@ import { injectable } from "tsyringe";
 import Property, { IProperty } from "../models/propertyModel";
 import { BaseRepository } from "./baseRepository";
 import { PipelineStage } from "mongoose";
+import { FilterQuery, SortOrder } from "mongoose";
 
 import {
   IPropertyRepository,
@@ -88,7 +89,8 @@ export class PropertyRepository
     //   totalPages: number;
     // }> {
 
-    const query: any = {};
+  
+    const query: FilterQuery<IProperty> = {};
 
     if (search) {
       query.$or = [
@@ -103,8 +105,10 @@ export class PropertyRepository
     query.status = status; 
   }
 
-    const sortQuery: any = {};
-    sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+    const sortQuery: { [key: string]: SortOrder } = {
+  [sortBy]: sortOrder === "asc" ? 1 : -1,
+};
 
     const skip = (page - 1) * limit;
 
@@ -134,7 +138,9 @@ export class PropertyRepository
     sortBy: string,
     sortOrder: string
   ): Promise<IPropertyListResult> {
-    const query: any = { ownerId };
+  
+
+      const query: FilterQuery<IProperty> = { ownerId };
 
     if (search) {
       query.$or = [
@@ -147,8 +153,11 @@ export class PropertyRepository
       ];
     }
 
-    const sortQuery: any = {};
-    sortQuery[sortBy] = sortOrder === "asc" ? 1 : -1;
+
+
+  const sortQuery: { [key: string]: SortOrder } = {
+    [sortBy]: sortOrder === "asc" ? 1 : -1,
+  };
 
     const skip = (page - 1) * limit;
 
@@ -178,10 +187,12 @@ export class PropertyRepository
     category?: string,
     facilities?: string[]
   ): Promise<IPropertyListResult> {
-    const matchStage: any = {
-      status: "active",
-      isRejected: false,
-    };
+
+
+    const matchStage: FilterQuery<IProperty> = {
+  status: "active",
+  isRejected: false,
+};
 
     if (search) {
       matchStage.$or = [
@@ -196,16 +207,15 @@ export class PropertyRepository
     if (category) matchStage.type = category;
     if (facilities?.length) matchStage.features = { $all: facilities };
 
-    const sortStage: any = {};
-    if (sortBy) {
-      sortStage[sortBy] = sortOrder === "asc" ? 1 : -1;
-    } else {
-      sortStage.createdAt = -1;
-    }
+
+      const sortStage: Record<string, 1 | -1> = sortBy
+    ? { [sortBy]: sortOrder === "asc" ? 1 : -1 }
+    : { createdAt: -1 };
 
     const skip = (page - 1) * limit;
 
-    const pipeline = [
+    // const pipeline = [
+      const pipeline: PipelineStage[] = [
       { $match: matchStage },
 
       {
@@ -243,41 +253,7 @@ export class PropertyRepository
     };
   }
 
-// async getDestinations(): Promise<DestinationDto[]> { 
-//  const result= await Property.aggregate([
-//     {
-//       $match: {
-//         isRejected: false,
-//         status: "active", 
-//       },
-//     },
-//     {
-//       $group: {
-//         _id: "$district",
-//         propertyCount: { $sum: 1 },
-//         image: { $first: "$images" },
-//       },
-//     },
-//     {
-//       $project: {
-//         _id: 0,
-//         district: "$_id",
-//         propertyCount: 1,
-//         image: { $arrayElemAt: ["$image", 0] },
-//       },
-//     },
-//     {
-//       $sort: { propertyCount: -1 },
-//     },
-//   ]);
 
-//     return result.map((r: any) => ({
-//       district: r.district,
-//       propertyCount: r.propertyCount,
-//       image: r.image || "",
-//     }));
-  
-// }
 
 async getDestinations(
   search?: string,
@@ -286,7 +262,8 @@ async getDestinations(
 ): Promise<{ data: DestinationDto[]; total: number; page: number; totalPages: number }> {
 
   
-  const matchCondition: any = {
+  
+  const matchCondition: FilterQuery<IProperty> = {
     isRejected: false,
     status: "active",
   };
@@ -308,6 +285,13 @@ async getDestinations(
   const total = totalResult.length;
   const totalPages = Math.ceil(total / limit);
   const skip = (page - 1) * limit;
+
+
+     type DestinationAgg = {
+      district: string;
+      propertyCount: number;
+      image?: string;
+    };
 
 
   const result = await Property.aggregate([
@@ -336,7 +320,8 @@ async getDestinations(
   ]);
 
   return {
-    data: result.map((r: any) => ({
+  
+     data: result.map((r: DestinationAgg) => ({
       district: r.district,
       propertyCount: r.propertyCount,
       image: r.image || "",

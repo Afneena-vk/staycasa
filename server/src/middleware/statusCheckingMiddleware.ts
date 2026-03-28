@@ -6,6 +6,7 @@ import { IUserRepository } from "../repositories/interfaces/IUserRepository";
 import { IOwnerRepository } from "../repositories/interfaces/IOwnerRepository";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 import jwt from "jsonwebtoken";
+import { AppError } from "../utils/AppError";
 
 export const checkUserStatus = async (
   req: Request,
@@ -13,8 +14,18 @@ export const checkUserStatus = async (
   next: NextFunction
 ) => {
   try {
-    const userId = (req as any).userId;
-    const userType = (req as any).userType;
+   
+    const userId = req.userId;
+    const userType = req.userType;
+
+        if (!userId) {
+           throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+        }
+
+        if (!userType) {
+           throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+        }
+
     const accessToken = req.cookies["access-token"];
     const refreshToken = req.cookies["refresh-token"];
 
@@ -57,10 +68,11 @@ export const checkUserStatus = async (
         res.clearCookie("refresh-token", { path: "/" });
         res.clearCookie("csrf-token", { path: "/" });
 
-        res.status(STATUS_CODES.NOT_FOUND).json({
-          error: "User not found",
-        });
-        return;
+        // res.status(STATUS_CODES.NOT_FOUND).json({
+        //   error: "User not found",
+        // });
+        // return;
+            throw new AppError("User not found", STATUS_CODES.NOT_FOUND);
       }
 
       if (user.status === "blocked") {
@@ -72,11 +84,16 @@ export const checkUserStatus = async (
         res.clearCookie("refresh-token", { path: "/" });
         res.clearCookie("csrf-token", { path: "/" });
 
-        res.status(STATUS_CODES.FORBIDDEN).json({
-          error: "Your account has been blocked",
-          blocked: true,
-        });
-        return;
+        // res.status(STATUS_CODES.FORBIDDEN).json({
+        //   error: "Your account has been blocked",
+        //   blocked: true,
+        // });
+        // return;
+         throw new AppError(
+          "Your account has been blocked",
+          STATUS_CODES.FORBIDDEN
+        );
+        
       }
     } else if (userType === "owner") {
       const ownerRepository = container.resolve<IOwnerRepository>(TOKENS.IOwnerRepository);
@@ -90,10 +107,11 @@ export const checkUserStatus = async (
         res.clearCookie("refresh-token", { path: "/" });
         res.clearCookie("csrf-token", { path: "/" });
 
-        res.status(STATUS_CODES.NOT_FOUND).json({
-          error: "Owner not found",
-        });
-        return;
+        // res.status(STATUS_CODES.NOT_FOUND).json({
+        //   error: "Owner not found",
+        // });
+        // return;
+         throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
       }
 
       if (owner.isBlocked) {
@@ -104,16 +122,23 @@ export const checkUserStatus = async (
         res.clearCookie("refresh-token", { path: "/" });
         res.clearCookie("csrf-token", { path: "/" });
 
-        res.status(STATUS_CODES.FORBIDDEN).json({
-          error: "Your account has been blocked",
-          blocked: true,
-        });
-        return;
+        // res.status(STATUS_CODES.FORBIDDEN).json({
+        //   error: "Your account has been blocked",
+        //   blocked: true,
+        // });
+        // return;
+        throw new AppError(
+          "Your account has been blocked",
+          STATUS_CODES.FORBIDDEN
+        );
       }
     }
 
     next();
-  } catch (error) {
+  // } catch (error) {
+  //   next(error);
+  // }
+    } catch (error: unknown) {
     next(error);
   }
 };

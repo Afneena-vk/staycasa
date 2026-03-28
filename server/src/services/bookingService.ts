@@ -15,6 +15,8 @@ import { BookingMapper } from '../mappers/bookingMapper';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import { IWalletRepository } from '../repositories/interfaces/IWalletRepository';
 import { INotificationService } from './interfaces/INotificationService';
+import { AppError } from '../utils/AppError';
+import { CreatePendingBookingResponseDto } from '../dtos/booking.dto';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -35,7 +37,8 @@ export class BookingService implements IBookingService {
   async calculateTotal(propertyId:string, rentalPeriod:number): Promise<CalculateTotalResponseDto> {
     const property = await this._propertyRepository.findByPropertyId(propertyId);
     if (!property) {
-    throw new Error(MESSAGES.ERROR.PROPERTY_NOT_FOUND);
+   
+    throw new AppError(MESSAGES.ERROR.PROPERTY_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
      const totalAmount =property.pricePerMonth * rentalPeriod;
      return BookingMapper.toCalculateTotalResponse(totalAmount)
@@ -57,10 +60,14 @@ export class BookingService implements IBookingService {
 //   }): Promise<{ totalAmount: number; razorpayOrderId: string }> {
   }): Promise<CreateRazorpayOrderResponseDto> {
        const property = await this._propertyRepository.findByPropertyId(propertyId);
-    if (!property) throw new Error(MESSAGES.ERROR.PROPERTY_NOT_FOUND);
-
+    // if (!property) throw new Error(MESSAGES.ERROR.PROPERTY_NOT_FOUND);
+  if (!property) {
+    // throw new Error(MESSAGES.ERROR.PROPERTY_NOT_FOUND);
+    throw new AppError(MESSAGES.ERROR.PROPERTY_NOT_FOUND, STATUS_CODES.NOT_FOUND);
+  }
      if (guests > property.maxGuests) {
-      throw new Error(`Maximum ${property.maxGuests} guests allowed.`);
+      //throw new Error(`Maximum ${property.maxGuests} guests allowed.`);
+      throw new AppError(`Maximum ${property.maxGuests} guests allowed.`, STATUS_CODES.BAD_REQUEST);
     }
 
      const checkInDate = new Date(moveInDate);
@@ -68,16 +75,22 @@ export class BookingService implements IBookingService {
     today.setHours(0, 0, 0, 0);
 
     if (checkInDate < today) {
-      throw new Error(MESSAGES.ERROR.INVALID_MOVE_IN_DATE);
+     // throw new Error(MESSAGES.ERROR.INVALID_MOVE_IN_DATE);
+       throw new AppError(
+    MESSAGES.ERROR.INVALID_MOVE_IN_DATE,
+    STATUS_CODES.BAD_REQUEST
+  );
     }
 
       if (
       rentalPeriod < property.minLeasePeriod ||
       rentalPeriod > property.maxLeasePeriod
     ) {
-      throw new Error(
-        `Lease period must be between ${property.minLeasePeriod} and ${property.maxLeasePeriod} months.`
-      );
+
+        throw new AppError(
+    `Lease period must be between ${property.minLeasePeriod} and ${property.maxLeasePeriod} months.`,
+    STATUS_CODES.BAD_REQUEST
+  );
     }
 
   const endDate = new Date(checkInDate);
@@ -91,7 +104,11 @@ export class BookingService implements IBookingService {
       );
 
     if (conflictBooking) {
-      throw new Error(MESSAGES.ERROR.PROPERTY_ALREADY_BOOKED);
+     // throw new Error(MESSAGES.ERROR.PROPERTY_ALREADY_BOOKED);
+       throw new AppError(
+    MESSAGES.ERROR.PROPERTY_ALREADY_BOOKED,
+    STATUS_CODES.CONFLICT
+  );
     }
  const amount = property.pricePerMonth * rentalPeriod * 100;
 
@@ -139,14 +156,23 @@ return BookingMapper.toCreateOrderResponse(
       .digest("hex");
 
     if (generated !== razorpay_signature) {
-      throw new Error(MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE);
+      //throw new Error(MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE);
+        throw new AppError(
+    MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE,
+    STATUS_CODES.BAD_REQUEST
+  );
+
     }
 
    
 const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
 if (payment.status !== "captured") {
-  throw new Error(MESSAGES.ERROR.PAYMENT_NOT_COMPLETED)
+ // throw new Error(MESSAGES.ERROR.PAYMENT_NOT_COMPLETED)
+   throw new AppError(
+    MESSAGES.ERROR.PAYMENT_NOT_COMPLETED,
+    STATUS_CODES.BAD_REQUEST
+  );
 }
 
 if (bookingId) {
@@ -159,7 +185,11 @@ if (bookingId) {
     });
 
     if (!existingBooking) {
-      throw new Error("Booking not found or not eligible for retry");
+     // throw new Error("Booking not found or not eligible for retry");
+     throw new AppError(
+       "Booking not found or not eligible for retry",
+       STATUS_CODES.NOT_FOUND
+     );
     }
 
     const updatedBooking = await this._bookingRepository.update(
@@ -206,8 +236,10 @@ if (bookingId) {
   }
 
      const property = await this._propertyRepository.findByPropertyId(propertyId);
-  if (!property) throw new Error("Property not found");
-    
+  //if (!property) throw new Error("Property not found");
+   if (!property) {
+  throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
+} 
    
 
 
@@ -221,7 +253,10 @@ if (bookingId) {
     startDate,
     endDate
   );
-  if (conflict) throw new Error("Property already booked");
+ // if (conflict) throw new Error("Property already booked");
+if (conflict) {
+  throw new AppError("Property already booked", STATUS_CODES.CONFLICT);
+}
 
   const totalCost = property.pricePerMonth * rentalPeriod;
 
@@ -274,10 +309,7 @@ console.log("Wallet payload:", {
       date: new Date()
     }
   );
-// } catch (error) {
-//   console.error(" Wallet credit failed:", error);
-//   throw error;
-// }
+
 
 
   
@@ -321,11 +353,16 @@ await this._notificationService.createNotification(
   userId: string;
   errorCode?: string;
   errorDescription?: string;
-}): Promise<any> {
+// }): Promise<any> {
+}): Promise<CreatePendingBookingResponseDto>{
   const { razorpay_order_id, propertyId, moveInDate, rentalPeriod, guests, userId, errorCode, errorDescription } = input;
 
   const property = await this._propertyRepository.findByPropertyId(propertyId);
-  if (!property) throw new Error("Property not found");
+  //if (!property) throw new Error("Property not found");
+
+if (!property) {
+  throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
+}
 
   const startDate = new Date(moveInDate);
   const endDate = new Date(startDate);
@@ -345,7 +382,7 @@ await this._notificationService.createNotification(
     rentPerMonth: property.pricePerMonth,
     totalCost,
     paymentMethod: "razorpay",
-    paymentId: razorpay_order_id, // Store the order ID
+    paymentId: razorpay_order_id, 
     paymentStatus: PaymentStatus.Failed,
     bookingStatus: BookingStatus.Pending,
     isCancelled: false,
@@ -378,15 +415,21 @@ async retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrd
   });
 
   if (!booking) {
-    throw new Error("Booking not found or not eligible for retry");
+    //throw new Error("Booking not found or not eligible for retry");
+      throw new AppError(
+    "Booking not found or not eligible for retry",
+    STATUS_CODES.NOT_FOUND
+  );
   }
 
   const property = await this._propertyRepository.findByPropertyId(
     booking.propertyId.toString()
   );
   
-  if (!property) throw new Error("Property not found");
-
+  //if (!property) throw new Error("Property not found");
+if (!property) {
+  throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
+}
   
   const conflict = await this._bookingRepository.findConflictingBookings(
     booking.propertyId.toString(),
@@ -395,7 +438,11 @@ async retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrd
   );
   
   if (conflict) {
-    throw new Error("Property no longer available for selected dates");
+    // throw new Error("Property no longer available for selected dates");
+      throw new AppError(
+    "Property no longer available for selected dates",
+    STATUS_CODES.CONFLICT
+  );
   }
 
   const amount = booking.totalCost * 100;
@@ -449,8 +496,12 @@ async getBookingDetails(bookingId: string, userId: string): Promise<BookingDetai
       userId
     );
 
-    if (!booking) {
-    throw new Error(MESSAGES.ERROR.BOOKING_NOT_FOUND);
+  if (!booking) {
+    //throw new Error(MESSAGES.ERROR.BOOKING_NOT_FOUND);
+   throw new AppError(
+    MESSAGES.ERROR.BOOKING_NOT_FOUND,
+    STATUS_CODES.NOT_FOUND
+   );
   }
 
   return BookingMapper.toBookingDetailsDto(booking);
@@ -515,62 +566,17 @@ async getOwnerBookingDetails(
   );
 
   if (!booking) {
-    throw new Error(MESSAGES.ERROR.BOOKING_NOT_FOUND);
+    //throw new Error(MESSAGES.ERROR.BOOKING_NOT_FOUND);
+    throw new AppError(
+    MESSAGES.ERROR.BOOKING_NOT_FOUND,
+    STATUS_CODES.NOT_FOUND
+    );
   }
 
   return BookingMapper.toBookingDetailsDto(booking);
 }
 
-// async getOwnerBookingStatistics(ownerId: string): Promise<OwnerBookingStatsDto> {
 
-//   const [allBookings,upcoming,ongoing,past,confirmedPaid,cancelled] = await Promise.all([
-
-//        this._bookingRepository.findAllByOwner(ownerId),
-//        this._bookingRepository.findOwnerBookingsByDate(ownerId, "upcoming"),
-//        this._bookingRepository.findOwnerBookingsByDate(ownerId, "ongoing"),
-//        this._bookingRepository.findOwnerBookingsByDate(ownerId, "past"),
-//        this._bookingRepository.findConfirmedPaidBookingsByOwner(ownerId),
-//        this._bookingRepository.findCancelledBookingsByOwner(ownerId)
-//   ])
-
-// const bookingsByStatus = allBookings.reduce((acc, b)=>{
-//    acc[b.bookingStatus] = (acc[b.bookingStatus] || 0) + 1;
-//    return acc;
-// },{} as Record<BookingStatus, number>);
-
-
-//   const revenue = {
-//     totalRevenue: confirmedPaid.reduce((sum,b)=>sum+b.totalCost,0),
-//     refundedAmount: cancelled.reduce((sum, b) => sum + (b.refundAmount || 0), 0),
-
-//   }
-
-//   const paymentStats = allBookings.reduce((acc,b)=>{
-//     acc[b.paymentStatus] =(acc[b.paymentStatus] || 0)+1;
-//     return acc;
-
-//   }, {} as Record<PaymentStatus, number>)
-
-//     const stats = {
-//     totalBookings: allBookings.length,
-//     bookingsByStatus,
-//     bookingsByTimeline: {
-//       upcoming: upcoming.length,
-//       ongoing: ongoing.length,
-//       past: past.length,
-//     },
-//     revenue,
-//     paymentStats,
-//   };
- 
-//   return BookingMapper.toOwnerBookingStatsDto(stats);
-
-// }
-
-// async getBookingOverview(): Promise<number> {
-//   const totalCount= await this._bookingRepository.countAllConfirmedBookings();
-//   return totalCount;
-// }
 
 async userCancellBooking(
   bookingId:string,
@@ -581,22 +587,36 @@ async userCancellBooking(
  const booking= await this._bookingRepository.findById(bookingId);
 
   if (!booking) {
-    throw new Error("Booking not found");
+    //throw new Error("Booking not found");
+      throw new AppError(
+    MESSAGES.ERROR.BOOKING_NOT_FOUND,
+    STATUS_CODES.NOT_FOUND
+  );
   }
 
     if (booking.userId._id.toString() !== userId) {
-    throw new Error("Unauthorized");
+   // throw new Error("Unauthorized");
+    throw new AppError("Unauthorized", STATUS_CODES.UNAUTHORIZED);
   }
 
     if (
     booking.bookingStatus !== BookingStatus.Confirmed ||
     booking.paymentStatus !== PaymentStatus.Completed
   ) {
-    throw new Error("Only confirmed and paid bookings can be cancelled");
+    //throw new Error("Only confirmed and paid bookings can be cancelled");
+    throw new AppError(
+    "Only confirmed and paid bookings can be cancelled",
+    STATUS_CODES.BAD_REQUEST
+    );
   }
 
     if (booking.isCancelled) {
-    throw new Error("Booking already cancelled");
+   // throw new Error("Booking already cancelled");
+   throw new AppError(
+    "Booking already cancelled",
+    STATUS_CODES.BAD_REQUEST
+   );
+
   }
 
   const property = booking.propertyId as unknown as {
@@ -615,7 +635,11 @@ const userName = user?.name || user?.email || "the user";
   const diffInDays =  (moveInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24);
 
     if (diffInDays < 5) {
-    throw new Error("Cancellation allowed only 5 days before move-in");
+    //throw new Error("Cancellation allowed only 5 days before move-in");
+    throw new AppError(
+    "Cancellation allowed only 5 days before move-in",
+    STATUS_CODES.BAD_REQUEST
+    );
   }
 
    const refundAmount = booking.totalCost;
@@ -626,7 +650,11 @@ const userName = user?.name || user?.email || "the user";
    );
 
    if (!cancelledBooking) {
-  throw new Error("Failed to cancel booking");
+  //throw new Error("Failed to cancel booking");
+    throw new AppError(
+    "Failed to cancel booking",
+    STATUS_CODES.INTERNAL_SERVER_ERROR
+  );
 }
 
    await this._walletRepository.creditWallet(
@@ -687,10 +715,22 @@ const userName = user?.name || user?.email || "the user";
 
 async ownerCancelBooking(bookingId: string, ownerId: string): Promise<CancelBookingResult> {
   const booking = await this._bookingRepository.findByIdAndOwner(bookingId,ownerId);
-    if (!booking) throw new Error("Booking not found or unauthorized");
+   // if (!booking) throw new Error("Booking not found or unauthorized");
 
-    if (booking.isCancelled) throw new Error("Booking already cancelled");
+ if (!booking) {
+  throw new AppError(
+    "Booking not found or unauthorized",
+    STATUS_CODES.NOT_FOUND
+  );
+}
 
+  //  if (booking.isCancelled) throw new Error("Booking already cancelled");
+if (booking.isCancelled) {
+  throw new AppError(
+    "Booking already cancelled",
+    STATUS_CODES.BAD_REQUEST
+  );
+}
 
     const property = booking.propertyId as unknown as {
   _id: string;
@@ -707,8 +747,13 @@ async ownerCancelBooking(bookingId: string, ownerId: string): Promise<CancelBook
     // refundAmount
     
   );
-  if (!cancelledBooking) throw new Error("Failed to cancel booking");
-
+  //if (!cancelledBooking) throw new Error("Failed to cancel booking");
+if (!cancelledBooking) {
+  throw new AppError(
+    "Failed to cancel booking",
+    STATUS_CODES.INTERNAL_SERVER_ERROR
+  );
+}
 
     if (booking.bookingStatus === BookingStatus.Confirmed &&
       booking.paymentStatus === PaymentStatus.Completed){
@@ -808,7 +853,8 @@ async getBookingDetailsForAdmin(bookingId: string): Promise<BookingDetailsDto> {
   const booking = await this._bookingRepository.findById(bookingId);
 
   if (!booking) {
-    throw new Error("Booking not found");
+    //throw new Error("Booking not found");
+    throw new AppError("Booking not found", STATUS_CODES.NOT_FOUND);
   }
 
   return BookingMapper.toBookingDetailsDto(booking);

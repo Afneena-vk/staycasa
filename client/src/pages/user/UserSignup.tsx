@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useAuthStore } from '../../stores/authStore';
 import Header from '../../components/User/Header';
 import Footer from '../../components/User/Footer';
+import axios from 'axios';
 
 type SignupFormData = {
   name: string;
@@ -29,8 +30,21 @@ const UserSignup = () => {
       setTempEmail(data.email); 
       toast.success('Registration successful! Please verify OTP sent to your email.');
       navigate('/user/otp-verification');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Registration failed');
+    
+      }  catch (error: unknown) {
+  let message = "Registration failed";
+
+  if (axios.isAxiosError(error)) {
+    message =
+      error.response?.data?.message ??
+      error.message ??
+      message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  toast.error(message);
+
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +53,7 @@ const UserSignup = () => {
   return ( 
        <>
       <Header />
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-28 px-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-12 pb-10 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Create User Account</h2>
         
@@ -141,7 +155,7 @@ const UserSignup = () => {
           
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            className="w-full bg-blue-950 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             disabled={isLoading}
           >
             {isLoading ? 'Signing up...' : 'Sign Up'}
@@ -151,7 +165,7 @@ const UserSignup = () => {
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <a href="/user/login" className="text-blue-500 hover:text-blue-700">
+            <a href="/user/login" className="text-blue-800 hover:text-blue-700">
               Log in
             </a>
           </p>

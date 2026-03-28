@@ -17,7 +17,7 @@ import { AdminMapper } from '../mappers/adminMapper';
 import { AdminLoginResponseDto, UsersListResponseDto, UserListQueryDto, UserDetailResponseDto, OwnerListQueryDto, OwnersListResponseDto, OwnerDetailResponseDto, UserStatisticsDto, AdminDashboardDTO } from '../dtos/admin.dto';
 import { ISubscriptionService } from './interfaces/ISubscriptionService';
 import { ISubscriptionRepository } from '../repositories/interfaces/ISubscriptionRepository';
-
+import { AppError } from '../utils/AppError';
 
 @injectable()
 export class AdminService implements IAdminService {
@@ -68,11 +68,10 @@ export class AdminService implements IAdminService {
                 "Users retrieved successfully"
             );
 
-        } catch (error: any) {
-            const customError: any = new Error("Failed to retrieve users list");
-            customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-            throw customError;
-        }
+
+      }   catch (error: unknown) {
+          throw new AppError("Failed to retrieve users list", STATUS_CODES.INTERNAL_SERVER_ERROR);
+      }
     }
 
 async blockUser(userId: string): Promise<{ message: string; status: number }> {
@@ -81,15 +80,13 @@ async blockUser(userId: string): Promise<{ message: string; status: number }> {
         const user = await this._adminRepository.findUserById(userId);
         
         if (!user) {
-            const error: any = new Error("User not found");
-            error.status = STATUS_CODES.NOT_FOUND;
-            throw error;
+
+              throw new AppError("User not found", STATUS_CODES.NOT_FOUND);
         }
 
         if (user.status === 'blocked') {
-            const error: any = new Error("User is already blocked");
-            error.status = STATUS_CODES.BAD_REQUEST;
-            throw error;
+
+              throw new AppError("User is already blocked", STATUS_CODES.BAD_REQUEST);
         }
 
         
@@ -100,14 +97,11 @@ async blockUser(userId: string): Promise<{ message: string; status: number }> {
             status: STATUS_CODES.OK
         };
 
-    } catch (error: any) {
-        if (error.status) {
-            throw error;
-        }
-        const customError: any = new Error("Failed to block user");
-        customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-        throw customError;
-    }
+
+    } catch (error: unknown) {
+  if (error instanceof AppError) throw error;
+  throw new AppError("Failed to block user", STATUS_CODES.INTERNAL_SERVER_ERROR);
+}
 }
 
 async unblockUser(userId: string): Promise<{ message: string; status: number }> {
@@ -116,15 +110,13 @@ async unblockUser(userId: string): Promise<{ message: string; status: number }> 
         const user = await this._adminRepository.findUserById(userId);
         
         if (!user) {
-            const error: any = new Error("User not found");
-            error.status = STATUS_CODES.NOT_FOUND;
-            throw error;
+
+             throw new AppError("User not found", STATUS_CODES.NOT_FOUND);
         }
 
         if (user.status === 'active') {
-            const error: any = new Error("User is already active");
-            error.status = STATUS_CODES.BAD_REQUEST;
-            throw error;
+
+            throw new AppError("User is already active", STATUS_CODES.BAD_REQUEST);
         }
 
         
@@ -135,42 +127,39 @@ async unblockUser(userId: string): Promise<{ message: string; status: number }> 
             status: STATUS_CODES.OK
         };
 
-    } catch (error: any) {
-        if (error.status) {
-            throw error;
-        }
-        const customError: any = new Error("Failed to unblock user");
-        customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-        throw customError;
-    }
+
+      }catch (error: unknown) {
+  if (error instanceof AppError) throw error;
+
+  throw new AppError("Some message", STATUS_CODES.INTERNAL_SERVER_ERROR);
+}
 }
 
 async getUserById(userId: string): Promise<UserDetailResponseDto> {
   try {
     
     if (!userId || userId.length !== 24) {
-      const error: any = new Error("Invalid user ID format");
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+       throw new AppError("Invalid user ID format", STATUS_CODES.BAD_REQUEST)
     }
 
     const user = await this._adminRepository.findUserById(userId);
     
     if (!user) {
-      const error: any = new Error("User not found");
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError("User not found", STATUS_CODES.NOT_FOUND);
     }
 
     return AdminMapper.toUserDetailResponse(user, "User details retrieved successfully");
 
-  } catch (error: any) {
-    if (error.status) {
-      throw error;
-    }
-    const customError: any = new Error("Failed to retrieve user details");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+
+  } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to retrieve user details",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -205,10 +194,14 @@ async getOwnersList(queryParams: OwnerListQueryDto): Promise<OwnersListResponseD
       validatedLimit,
       "Owners retrieved successfully"
     );
-  } catch (error) {
-    const customError: any = new Error("Failed to retrieve owners list");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+
+   } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to retrieve owners list",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -218,15 +211,13 @@ async blockOwner(ownerId: string): Promise<{ message: string; status: number }> 
     const owner = await this._adminRepository.findOwnerById(ownerId);
 
     if (!owner) {
-      const error: any = new Error("Owner not found");
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
     }
 
     if (owner.isBlocked) {
-      const error: any = new Error("Owner is already blocked");
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError("Owner is already blocked", STATUS_CODES.BAD_REQUEST);
     }
 
     
@@ -237,11 +228,14 @@ async blockOwner(ownerId: string): Promise<{ message: string; status: number }> 
       status: STATUS_CODES.OK
     };
 
-  } catch (error: any) {
-    if (error.status) throw error;
-    const customError: any = new Error("Failed to block owner");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to block owner",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -251,15 +245,13 @@ async unblockOwner(ownerId: string): Promise<{ message: string; status: number }
     const owner = await this._adminRepository.findOwnerById(ownerId);
 
     if (!owner) {
-      const error: any = new Error("Owner not found");
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
     }
 
     if (!owner.isBlocked) {
-      const error: any = new Error("Owner is already active");
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError("Owner is already active", STATUS_CODES.BAD_REQUEST);
     }
 
   
@@ -270,11 +262,14 @@ async unblockOwner(ownerId: string): Promise<{ message: string; status: number }
       status: STATUS_CODES.OK
     };
 
-  } catch (error: any) {
-    if (error.status) throw error;
-    const customError: any = new Error("Failed to unblock owner");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to unblock owner",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -282,17 +277,15 @@ async getOwnerById(ownerId: string): Promise<OwnerDetailResponseDto> {
   try {
     
     if (!ownerId || ownerId.length !== 24) {
-      const error: any = new Error("Invalid owner ID format");
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError("Invalid owner ID format", STATUS_CODES.BAD_REQUEST);
     }
 
     const owner = await this._adminRepository.findOwnerById(ownerId);
 
     if (!owner) {
-      const error: any = new Error("Owner not found");
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
     }
 
     return AdminMapper.toOwnerDetailResponse(
@@ -300,11 +293,14 @@ async getOwnerById(ownerId: string): Promise<OwnerDetailResponseDto> {
       "Owner details retrieved successfully"
     );
 
-  } catch (error: any) {
-    if (error.status) throw error;
-    const customError: any = new Error("Failed to retrieve owner details");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to retrieve owner details",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -314,17 +310,20 @@ async approveOwner(ownerId: string): Promise<{ message: string; status: number }
     const owner = await this._adminRepository.findOwnerById(ownerId);
 
     if (!owner) {
-      return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+      
+       throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     
     if (!owner.document) {
-      return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+      //return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+       throw new AppError(MESSAGES.ERROR.NO_DOCUMENTS, STATUS_CODES.BAD_REQUEST);
     }
 
    
     if (owner.approvalStatus === "approved") {
-      return { message: "Owner is already approved.", status: STATUS_CODES.BAD_REQUEST };
+      //return { message: "Owner is already approved.", status: STATUS_CODES.BAD_REQUEST };
+        throw new AppError("Owner is already approved.", STATUS_CODES.BAD_REQUEST);
     }
 
    
@@ -345,12 +344,16 @@ async approveOwner(ownerId: string): Promise<{ message: string; status: number }
 
 
    
-    return { message: "Invalid approval status", status: STATUS_CODES.BAD_REQUEST };
-  } catch (error: any) {
-    if (error.status) throw error;
-    const customError: any = new Error("Failed to approve owner");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+    // return { message: "Invalid approval status", status: STATUS_CODES.BAD_REQUEST };
+      throw new AppError("Invalid approval status", STATUS_CODES.BAD_REQUEST);
+
+    } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to approve owner",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
   
@@ -360,18 +363,21 @@ async rejectOwner(ownerId: string): Promise<{ message: string; status: number }>
     const owner = await this._adminRepository.findOwnerById(ownerId);
 
     if (!owner) {
-      return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+      // return { message: MESSAGES.ERROR.VENDOR_NOT_FOUND, status: STATUS_CODES.NOT_FOUND };
+       throw new AppError(MESSAGES.ERROR.VENDOR_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     
     if (!owner.document) {
-      return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+      //return { message: MESSAGES.ERROR.NO_DOCUMENTS, status: STATUS_CODES.BAD_REQUEST };
+     throw new AppError(MESSAGES.ERROR.NO_DOCUMENTS, STATUS_CODES.BAD_REQUEST);
     }
 
     
     if (owner.approvalStatus === "rejected") {
-      return { message: "Owner is already rejected.", status: STATUS_CODES.BAD_REQUEST };
-    }
+    //  return { message: "Owner is already rejected.", status: STATUS_CODES.BAD_REQUEST };
+     throw new AppError( "Owner is already rejected.", STATUS_CODES.BAD_REQUEST);
+  }
 
   
     if (owner.approvalStatus === "pending" || owner.approvalStatus === "approved") {
@@ -398,12 +404,16 @@ async rejectOwner(ownerId: string): Promise<{ message: string; status: number }>
                        
         );
     
-    return { message: "Invalid rejection status", status: STATUS_CODES.BAD_REQUEST };
-  } catch (error: any) {
-    if (error.status) throw error;
-    const customError: any = new Error("Failed to reject owner");
-    customError.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw customError;
+    //return { message: "Invalid rejection status", status: STATUS_CODES.BAD_REQUEST };
+       throw new AppError("Invalid rejection status", STATUS_CODES.BAD_REQUEST);
+
+   } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
+
+    throw new AppError(
+      "Failed to reject owner",
+      STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 }
 
@@ -455,25 +465,22 @@ async getAdminDashboardStats(): Promise<AdminDashboardDTO>{
         const { email, password } = data;
     
         if (!email || !password) {
-          const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
-          error.status = STATUS_CODES.BAD_REQUEST;
-          throw error;
+
+          throw new AppError(MESSAGES.ERROR.INVALID_INPUT, STATUS_CODES.BAD_REQUEST);
         }
     
         const admin = await this._adminRepository.findByEmail(email);
     
         if (!admin) {
-          const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
-          error.status = STATUS_CODES.UNAUTHORIZED;
-          throw error;
+
+          throw new AppError(MESSAGES.ERROR.INVALID_CREDENTIALS, STATUS_CODES.UNAUTHORIZED);
         }
     
         const isPasswordValid = await bcrypt.compare(password, admin.password || "");
     
         if (!isPasswordValid) {
-          const error: any = new Error("Invalid email or password");
-          error.status = STATUS_CODES.UNAUTHORIZED;
-          throw error;
+
+          throw new AppError("Invalid email or password", STATUS_CODES.UNAUTHORIZED);
         }
     
         const JWT_SECRET = process.env.JWT_SECRET;
@@ -481,7 +488,8 @@ async getAdminDashboardStats(): Promise<AdminDashboardDTO>{
     
        
          if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
-      throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+      // throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+      throw new AppError( MESSAGES.ERROR.JWT_SECRET_MISSING, STATUS_CODES.INTERNAL_SERVER_ERROR);
     }
     
        

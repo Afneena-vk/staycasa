@@ -32,3 +32,78 @@ export interface AdminDashboardStats {
   monthlyRevenue: MonthlyRevenueDTO[];
 }
 
+
+
+export interface UserListItem {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  status: "active" | "blocked";
+  isVerified: boolean;
+  profileImage?: { url: string; publicId: string };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UsersListResponseDto {
+  users: UserListItem[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  message: string;
+  status: number;
+}
+
+export interface UserDetailResponseDto {
+  user: UserListItem & {
+    address?: {
+      houseNo: string;
+      street: string;
+      city: string;
+      district: string;
+      state: string;
+      pincode: string;
+    };
+    googleId?: string;
+  };
+  message: string;
+  status: number;
+}
+
+export interface OwnerListItem {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  profileImage?: string;
+  businessAddress: string;
+  businessName: string;
+  document?: string;
+  status: "active" | "blocked";
+  isVerified: boolean;
+  approvalStatus: "pending" | "approved" | "rejected";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OwnersListResponseDto {
+  owners: OwnerListItem[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  message: string;
+  status: number;
+}
+
+export interface OwnerDetailResponseDto {
+  owner: OwnerListItem & {
+    // if owner has extra fields like documents or other details
+    document?: string;
+    businessAddress: string;
+    businessName: string;
+    approvalStatus: "pending" | "approved" | "rejected";
+  };
+  message: string;
+  status: number;
+}

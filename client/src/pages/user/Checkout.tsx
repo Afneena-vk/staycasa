@@ -9,6 +9,7 @@ import { userService } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import axios from "axios";
 
 const Checkout = () => {
   //const { propertyId } = useParams();
@@ -144,10 +145,21 @@ const isStartDateValid = (dateString: string) => {
 
     navigate("/user/payment");
 
-  } catch (err: any) {
-    const msg = err?.response?.data?.message || "Server error. Try again later.";
-    setErrors(prev => ({ ...prev, backend: msg }));
+  
+  } catch (error: unknown) {
+  let message = "Server error. Try again later.";
+
+  if (axios.isAxiosError(error)) {
+    message =
+      error.response?.data?.message ||
+      error.message ||
+      message;
+  } else if (error instanceof Error) {
+    message = error.message;
   }
+
+  setErrors((prev) => ({ ...prev, backend: message }));
+}
 };
 
   

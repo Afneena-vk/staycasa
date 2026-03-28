@@ -5,6 +5,7 @@ import { IBookingService } from "../services/interfaces/IBookingService";
 import { TOKENS } from "../config/tokens";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import logger from "../utils/logger";
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class BookingController implements IBookingController {
@@ -25,12 +26,9 @@ export class BookingController implements IBookingController {
       );
 
       res.status(result.status).json(result);
-    } catch (err: any) {
-      // res.status(500).json({ message: err.message || 'Server error' });
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        message: err.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -41,10 +39,15 @@ export class BookingController implements IBookingController {
   ): Promise<void> {
     try {
       const { propertyId, rentalPeriod, guests, moveInDate } = req.body;
-      const userId = (req as any).userId;
+      
+       const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       console.log("Request body:", req.body);
-      console.log("UserId:", (req as any).userId);
+      console.log("UserId:", req.userId);
 
       const orderData = await this._bookingService.createRazorpayOrder({
         propertyId,
@@ -54,13 +57,9 @@ export class BookingController implements IBookingController {
         moveInDate,
       });
       res.status(orderData.status).json(orderData);
-    } catch (err: any) {
-      console.error("Error creating Razorpay order:", err);
-      // res.status(err.status).json({ message: err.message || "Server error" });
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        message: err.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -87,7 +86,13 @@ export class BookingController implements IBookingController {
         guests,
         bookingId,
       } = req.body;
-      const userId = (req as any).userId;
+
+     
+      const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const result = await this._bookingService.verifyPayment({
         razorpay_payment_id,
@@ -102,12 +107,9 @@ export class BookingController implements IBookingController {
       });
 
       res.status(result.status).json(result);
-    } catch (err: any) {
-      // res.status(400).json({ message: err.message });
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        message: err.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -128,7 +130,13 @@ async createPendingBooking(
       errorDescription
     } = req.body;
     
-    const userId = (req as any).userId;
+   
+
+      const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
     const result = await this._bookingService.createPendingBooking({
       razorpay_order_id,
@@ -142,28 +150,30 @@ async createPendingBooking(
     });
 
     res.status(result.status).json(result);
-  } catch (err: any) {
-    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-      message: err.message || MESSAGES.ERROR.SERVER_ERROR,
-    });
-  }
+  
+    } catch (error) {
+      next(error);
+    }
 }  
 
 
 async retryPayment(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { bookingId } = req.params;
-    const userId = (req as any).userId;
+   
+
+       const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
     const result = await this._bookingService.retryPayment(bookingId, userId);
     res.status(result.status).json(result);
-  } catch (err: any) {
-    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-      message: err.message || MESSAGES.ERROR.SERVER_ERROR,
-    });
-  }
+  
+     } catch (error) {
+      next(error);
+    }
 }
 
 
@@ -173,7 +183,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const userId = (req as any).userId;
+     
+
+      const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const {
         page,
@@ -206,10 +222,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         }
       );
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: error.message || "Something went wrong" });
+ 
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -220,7 +235,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
   ): Promise<void> {
     try {
       const { bookingId } = req.params;
-      const userId = (req as any).userId;
+     
+
+      const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const booking = await this._bookingService.getBookingDetails(
         bookingId,
@@ -232,11 +253,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         status: STATUS_CODES.OK,
         booking,
       });
-    } catch (error: any) {
-      res.status(STATUS_CODES.NOT_FOUND).json({
-        status: STATUS_CODES.NOT_FOUND,
-        message: error.message || MESSAGES.ERROR.BOOKING_NOT_FOUND,
-      });
+  
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -252,10 +271,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
       );
       console.log("the blocked dates are:", blockedDates);
       res.status(200).json({ status: 200, blockedDates });
-    } catch (err: any) {
-      res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ status: STATUS_CODES.INTERNAL_SERVER_ERROR, message: err.message || "Server error" });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -265,7 +283,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const ownerId = (req as any).userId;
+      
+       const ownerId = req.userId;
+
+      if (!ownerId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
+
       console.log("Owner ID:", ownerId);
 
       const {
@@ -301,10 +325,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
       );
 
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Failed to fetch owner bookings",
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -315,7 +338,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
   ): Promise<void> {
     try {
       const { bookingId } = req.params;
-      const ownerId = (req as any).userId;
+      
+
+      const ownerId = req.userId;
+
+      if (!ownerId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const booking = await this._bookingService.getOwnerBookingDetails(
         bookingId,
@@ -326,11 +355,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         status: STATUS_CODES.OK,
         booking,
       });
-    } catch (error: any) {
-      res.status(STATUS_CODES.NOT_FOUND).json({
-        status: STATUS_CODES.NOT_FOUND,
-        message: error.message || MESSAGES.ERROR.BOOKING_NOT_FOUND,
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -359,7 +386,12 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
   ): Promise<void> {
     try {
       const { bookingId } = req.params;
-      const userId = (req as any).userId;
+    
+      const userId = req.userId;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const result = await this._bookingService.userCancellBooking(
         bookingId,
@@ -369,12 +401,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         status: STATUS_CODES.OK,
         data: result,
       });
-    } catch (error: unknown) {
-      console.error(error);
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error:
-          error instanceof Error ? error.message : "Failed to cancel booking",
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -385,7 +414,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
   ): Promise<void> {
     try {
       const { bookingId } = req.params;
-      const ownerId = (req as any).userId;
+      
+
+      const ownerId = req.userId;
+
+      if (!ownerId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const result = await this._bookingService.ownerCancelBooking(
         bookingId,
@@ -396,11 +431,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         status: STATUS_CODES.OK,
         data: result,
       });
-    } catch (error: unknown) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error:
-          error instanceof Error ? error.message : "Failed to cancel booking",
-      });
+    
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -442,11 +475,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         status: STATUS_CODES.OK,
         data: result,
       });
-    } catch (error: unknown) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error:
-          error instanceof Error ? error.message : "Failed to fetch bookings",
-      });
+ 
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -471,14 +502,9 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
         status: STATUS_CODES.OK,
         data: bookingDetails,
       });
-    } catch (error: unknown) {
-      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch booking details",
-      });
+ 
+   } catch (error) {
+      next(error);
     }
   }
 
@@ -488,7 +514,13 @@ async getOwnerBookingStats(
   next: NextFunction
 ): Promise<void> {
   try {
-    const ownerId = (req as any).userId;
+   
+
+      const ownerId = req.userId;
+
+      if (!ownerId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
     const stats = await this._bookingService.getOwnerBookingStats(ownerId);
 
@@ -496,12 +528,10 @@ async getOwnerBookingStats(
       status: STATUS_CODES.OK,
       data: stats,
     });
-  } catch (err: any) {
-    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-      status: STATUS_CODES.INTERNAL_SERVER_ERROR,
-      message: err.message || MESSAGES.ERROR.SERVER_ERROR,
-    });
-  }
+  
+    } catch (error) {
+      next(error);
+   }
 }
 
 

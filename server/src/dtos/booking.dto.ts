@@ -207,5 +207,12 @@ export interface OwnerBookingStatsDTo {
   };
 }
 
+export interface CreatePendingBookingResponseDto {
+  status: number;
+  message: string;
+  booking: BookingResponseDto;
+  canRetry: boolean;
+}
+
 
 

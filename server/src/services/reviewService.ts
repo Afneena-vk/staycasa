@@ -91,7 +91,7 @@ export class ReviewService implements IReviewService {
    
     await this._bookingRepository.update(bookingId, {
       reviewSubmitted: true,
-    } as any);
+    });
 
     
     const { averageRating, totalReviews } = await this._reviewRepository.calculatePropertyRating(
@@ -102,7 +102,7 @@ export class ReviewService implements IReviewService {
     await this._propertyRepository.update(booking.propertyId.toString(), {
       averageRating,
       totalReviews,
-    } as any);
+    });
 
     return ReviewMapper.toResponseDto(review);
   }
@@ -136,10 +136,11 @@ async toggleReviewVisibility(reviewId: string, hide: boolean): Promise<ReviewRes
     review.propertyId
   );
 
-    await this._propertyRepository.update(review.propertyId.toString(), {
+
+     await this._propertyRepository.update(review.propertyId.toString(), {
     averageRating,
     totalReviews,
-  } as any);
+  });
 
   return ReviewMapper.toResponseDto(review);
 }

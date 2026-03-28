@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 //import ModernAdminLayout from "../../layouts/admin/AdminLayout";
 import { useAuthStore } from "../../stores/authStore";
+import { toast } from "react-toastify";
 
 const AdminAllSubscriptionsPage = () => {
   const {
@@ -67,6 +68,12 @@ const AdminAllSubscriptionsPage = () => {
     });
   }, [filters, fetchAllAdminSubscriptions]);
 
+  useEffect(() => {
+  if (subscriptionError) {
+    toast.error(subscriptionError);
+  }
+}, [subscriptionError]);
+
   return (
     // <ModernAdminLayout>
       <div className="space-y-6">
@@ -122,39 +129,29 @@ const AdminAllSubscriptionsPage = () => {
           </select>
         </div>
 
-        {/* Table */}
-        {/* {subscriptionLoading ? (
-          <p>Loading subscriptions...</p>
-        ) : subscriptionError ? (
-          <p className="text-red-500">{subscriptionError}</p>
-        ) : (
-          <div className="bg-slate-900 rounded-xl overflow-x-auto"> */}
-          {subscriptionError ? (
-  <p className="text-red-500">{subscriptionError}</p>
-) : (
-  <div className="relative bg-slate-900 rounded-xl overflow-x-auto">
+{/* Table */}
+        <div className="relative bg-slate-900 rounded-xl overflow-x-auto">
 
-    {/* {subscriptionLoading && (
-      <div className="absolute inset-0 bg-slate-900/60 flex items-center justify-center z-10">
-        <div className="text-sm text-slate-300 animate-pulse">
-          Updating results...
+  {/* Show error WITHOUT removing table */}
+  {subscriptionError && (
+    <p className="text-red-500 text-center py-2">
+      {subscriptionError}
+    </p>
+  )}
+
+  {/* Show loader ONLY if no data */}
+  {subscriptionLoading && adminSubscriptions.length === 0 ? (
+    <p className="text-center py-6 text-slate-400">
+      Loading subscriptions...
+    </p>
+  ) : (
+    <>
+      {/* existing updating indicator stays */}
+      {subscriptionLoading && adminSubscriptions.length > 0 && (
+        <div className="absolute top-2 right-4 text-xs text-slate-400">
+          Updating...
         </div>
-      </div>
-    )} */}
-   
-  
-{/* 
-  {subscriptionLoading && (
-    <span className="text-sm text-slate-400 animate-pulse">
-      Updating...
-    </span>
-  )} */}
-  {subscriptionLoading && adminSubscriptions.length > 0 && (
-  <div className="absolute top-2 right-4 text-xs text-slate-400">
-    Updating...
-  </div>
-)}
-
+      )}
             <table className="w-full text-sm text-left text-slate-300">
               <thead className="bg-slate-800">
                 <tr>
@@ -189,8 +186,63 @@ const AdminAllSubscriptionsPage = () => {
                 ))}
               </tbody>
             </table>
+ 
+    </>
+  )}
+</div>
+
+        {/* Table */}
+
+          {/* {subscriptionError ? (
+  <p className="text-red-500">{subscriptionError}</p>
+) : (
+  <div className="relative bg-slate-900 rounded-xl overflow-x-auto">
+
+
+   
+
+  {subscriptionLoading && adminSubscriptions.length > 0 && (
+  <div className="absolute top-2 right-4 text-xs text-slate-400">
+    Updating...
+  </div>
+)}
+
+            <table className="w-full text-sm text-left text-slate-300">
+              <thead className="bg-slate-800">
+                <tr>
+                  <th className="p-3">Owner</th>
+                  <th className="p-3">Email</th>
+                  <th className="p-3">Plan</th>
+                  <th className="p-3">Status</th>
+                  <th className="p-3">Start</th>
+                  <th className="p-3">End</th>
+                  <th className="p-3">Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                {adminSubscriptions.map((sub) => (
+                
+                  <tr
+  key={sub.id}
+  className="border-t border-slate-800 hover:bg-slate-800/50 transition-colors duration-150"
+>
+                    <td className="p-3">{sub.owner.name}</td>
+                    <td className="p-3">{sub.owner.email}</td>
+                    <td className="p-3">{sub.plan.name}</td>
+                    <td className="p-3">{sub.status}</td>
+                    <td className="p-3">
+                      {new Date(sub.startDate).toLocaleDateString()}
+                    </td>
+                    <td className="p-3">
+                      {new Date(sub.endDate).toLocaleDateString()}
+                    </td>
+                    <td className="p-3">{sub.transactionType}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
+        )} */}
 
 
 

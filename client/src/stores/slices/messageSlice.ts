@@ -3,6 +3,23 @@ import { StateCreator } from 'zustand';
 //import { MessageDTO, ConversationListItem } from '../../types/message';
 import { MessageResponseDTO, ConversationListDTO } from '../../types/message';
 import { messageService } from '../../services/messageService';
+import axios from "axios";
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 export interface MessageSlice {
   // messages: MessageDTO[];
@@ -38,8 +55,12 @@ export const createMessageSlice: StateCreator<MessageSlice> = (set, get) => ({
     try {
       const messages = await messageService.getConversation(ownerId, propertyId, role);
       set({ messages, messageLoading: false });
-    } catch (err: any) {
-      set({ messageError: err.message || 'Failed to fetch messages', messageLoading: false });
+   
+    } catch (error: unknown) {
+      set({
+        messageError: getErrorMessage(error),
+        messageLoading: false,
+      });
     }
   },
 
@@ -48,8 +69,12 @@ export const createMessageSlice: StateCreator<MessageSlice> = (set, get) => ({
     try {
       const conversationList = await messageService.getConversationList(role);
       set({ conversationList, messageLoading: false });
-    } catch (err: any) {
-      set({ messageError: err.message, messageLoading: false });
+   
+   } catch (error: unknown) {
+      set({
+        messageError: getErrorMessage(error),
+        messageLoading: false,
+      });
     }
   },
 
@@ -66,8 +91,12 @@ export const createMessageSlice: StateCreator<MessageSlice> = (set, get) => ({
           m.senderId === senderId && m.propertyId === propertyId ? { ...m, isRead: true } : m
         ),
       }));
-    } catch (err: any) {
-      console.error('markMessagesRead failed', err);
+  
+        } catch (error: unknown) {
+      console.error(
+        "markMessagesRead failed:",
+        getErrorMessage(error)
+      );
     }
   },
 

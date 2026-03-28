@@ -1,5 +1,5 @@
 import { IBooking } from "../../models/bookingModel";
-import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto, OwnerBookingStatsDTo} from "../../dtos/booking.dto";
+import { VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto, OwnerBookingStatsDTo, CreatePendingBookingResponseDto} from "../../dtos/booking.dto";
 
 export interface IRazorpayOrderInput {
   propertyId: string;
@@ -98,7 +98,7 @@ createPendingBooking(input: {
   userId: string;
   errorCode?: string;
   errorDescription?: string;
-}): Promise<any>;
+ }): Promise<CreatePendingBookingResponseDto>;
 
 retryPayment(bookingId: string, userId: string): Promise<CreateRazorpayOrderResponseDto>
 

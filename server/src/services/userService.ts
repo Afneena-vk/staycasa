@@ -15,6 +15,7 @@ import { UserLoginResponseDto, UserGoogleAuthResponseDto, UserProfileUpdateDto, 
 import { Types } from 'mongoose';
 import { ITransaction } from '../models/walletModel';
 import { FileStorageService } from '../utils/fileStorageService';
+import { AppError } from '../utils/AppError';
 
 @injectable()
 export class UserService implements IUserService {
@@ -28,22 +29,19 @@ export class UserService implements IUserService {
     const { name, email, phone, password, confirmPassword } = data;
 
     if (!name || !email || !phone || !password || !confirmPassword) {
-      const error: any = new Error(MESSAGES.ERROR.MISSING_FIELDS);
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.MISSING_FIELDS, STATUS_CODES.BAD_REQUEST);
     }
 
     if (password !== confirmPassword) {
-      const error: any = new Error(MESSAGES.ERROR.PASSWORD_MISMATCH);
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+       throw new AppError(MESSAGES.ERROR.PASSWORD_MISMATCH, STATUS_CODES.BAD_REQUEST);
     }
 
     const existingUser = await this._userRepository.findByEmail(email);
     if (existingUser) {
-      const error: any = new Error(MESSAGES.ERROR.EMAIL_EXISTS);
-      error.status = STATUS_CODES.CONFLICT;
-      throw error;
+
+       throw new AppError(MESSAGES.ERROR.EMAIL_EXISTS,  STATUS_CODES.CONFLICT);
     }
 
 
@@ -69,15 +67,14 @@ export class UserService implements IUserService {
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
-      const error: any = new Error("User not found");
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     if (user.otp !== otp) {
-      const error: any = new Error("Invalid OTP");
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+        throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
+
     }
 
     user.isVerified = true;
@@ -92,15 +89,13 @@ export class UserService implements IUserService {
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
-      const error: any = new Error("User not found");
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     if (user.isVerified) {
-      const error: any = new Error("User is already verified");
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+       throw new AppError("User is already verified", STATUS_CODES.BAD_REQUEST);
     }
 
    
@@ -122,30 +117,27 @@ export class UserService implements IUserService {
     const { email, password } = data;
 
     if (!email || !password) {
-      const error: any = new Error(MESSAGES.ERROR.INVALID_INPUT);
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.INVALID_INPUT, STATUS_CODES.BAD_REQUEST);
     }
 
     const user = await this._userRepository.findByEmail(email);
 
    
     if (!user || !(await bcrypt.compare(password, user.password || ""))){
-      const error: any = new Error(MESSAGES.ERROR.INVALID_CREDENTIALS);
-      error.status = STATUS_CODES.UNAUTHORIZED;
-      throw error;
+
+        throw new AppError(MESSAGES.ERROR.INVALID_CREDENTIALS, STATUS_CODES.UNAUTHORIZED);
+
     }
 
     if (user.status === "blocked") {
-      const error: any = new Error("user is blocked");
-      error.status = STATUS_CODES.UNAUTHORIZED;
-      throw error;
+
+      throw new AppError("user is blocked", STATUS_CODES.UNAUTHORIZED);
     }
 
     if (!user.isVerified) {
-      const error: any = new Error(MESSAGES.ERROR.UNAUTHORIZED);
-      error.status = STATUS_CODES.UNAUTHORIZED;
-      throw error;
+
+       throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
     }
 
 
@@ -155,7 +147,8 @@ export class UserService implements IUserService {
 
 
      if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
-    throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+
+    throw new AppError( MESSAGES.ERROR.JWT_SECRET_MISSING, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
 
@@ -200,7 +193,8 @@ export class UserService implements IUserService {
   const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 
      if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
-    throw new Error(MESSAGES.ERROR.JWT_SECRET_MISSING);
+
+    throw new AppError(MESSAGES.ERROR.JWT_SECRET_MISSING, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
  
@@ -223,15 +217,13 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
-      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+        throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     if (user.status === "blocked") {
-      const error: any = new Error(MESSAGES.ERROR.FORBIDDEN);
-      error.status = STATUS_CODES.FORBIDDEN;
-      throw error;
+
+       throw new AppError(MESSAGES.ERROR.FORBIDDEN, STATUS_CODES.FORBIDDEN);
     }
 
     
@@ -255,15 +247,13 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
-      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+        throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     if (user.otp !== otp) {
-      const error: any = new Error(MESSAGES.ERROR.OTP_INVALID);
-      error.status = STATUS_CODES.BAD_REQUEST;
-      throw error;
+
+       throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
     }
 
     
@@ -286,9 +276,8 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
 
 
     if (!user) {
-      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     return UserMapper.toProfileResponse(user, "Profile retrieved successfully");
@@ -301,9 +290,8 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
     const user = await this._userRepository.findById(userId);
 
     if (!user) {
-      const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
-      error.status = STATUS_CODES.NOT_FOUND;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
     
@@ -326,9 +314,8 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
     const updatedUser = await this._userRepository.update(userId, updateData);
 
     if (!updatedUser) {
-      const error: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
-      error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-      throw error;
+
+      throw new AppError(MESSAGES.ERROR.SERVER_ERROR, STATUS_CODES.INTERNAL_SERVER_ERROR);
     }
 
     return UserMapper.toProfileResponse(updatedUser, "Profile updated successfully");
@@ -339,9 +326,8 @@ async updateUserProfileImage(userId: string, fileData: { url: string; publicId: 
   const user = await this._userRepository.findById(userId);
 
   if (!user) {
-    const error: any = new Error(MESSAGES.ERROR.USER_NOT_FOUND);
-    error.status = STATUS_CODES.NOT_FOUND;
-    throw error;
+
+     throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
     if (user.profileImage?.publicId) {
@@ -359,9 +345,8 @@ async updateUserProfileImage(userId: string, fileData: { url: string; publicId: 
   });
 
   if (!updatedUser) {
-    const error: any = new Error(MESSAGES.ERROR.SERVER_ERROR);
-    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw error;
+
+     throw new AppError(MESSAGES.ERROR.SERVER_ERROR, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
   return UserMapper.toProfileResponse(updatedUser, "Profile image updated successfully");
@@ -371,23 +356,21 @@ async changePassword(userId: string, currentPassword: string, newPassword: strin
   
   const user = await this._userRepository.findById(userId);
   if (!user) {
-    const error: any = new Error("User not found");
-    error.status = STATUS_CODES.NOT_FOUND;
-    throw error;
+
+     throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
   }
 
   
   if (!user.password) {
-    const error: any = new Error("Password not set for this user");
-    error.status = STATUS_CODES.BAD_REQUEST;
-    throw error;
+
+    throw new AppError("Password not set for this user", STATUS_CODES.BAD_REQUEST);
   }
 
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) {
-    const error: any = new Error("Current password is incorrect");
-    error.status = STATUS_CODES.BAD_REQUEST;
-    throw error;
+
+    throw new AppError("Current password is incorrect", STATUS_CODES.BAD_REQUEST);
+
   }
 
   
@@ -396,9 +379,8 @@ async changePassword(userId: string, currentPassword: string, newPassword: strin
   
   const updatedUser = await this._userRepository.update(userId, { password: hashedPassword });
   if (!updatedUser) {
-    const error: any = new Error("Failed to update password");
-    error.status = STATUS_CODES.INTERNAL_SERVER_ERROR;
-    throw error;
+
+     throw new AppError("Failed to update password", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 
 await this._notificationService.createNotification(
@@ -416,30 +398,7 @@ await this._notificationService.createNotification(
   };
 }
 
-// async getWallet(userId: string) {
-  
-// const wallet = await this._walletRepository.getWalletWithBookings(new Types.ObjectId(userId),"user");
 
-//   if (!wallet) {
-//     return {
-//       balance: 0,
-//       transactions: [],
-//     };
-//   }
-
-//     const validTransactions = wallet.transactions.filter(
-//     (tx) => tx.bookingId !== null
-//   );
-// const balance = validTransactions.reduce((sum, tx) => sum + tx.amount, 0);
-//   return {
-//     // balance: wallet.balance,
-//     balance,
-//     // transactions: wallet.transactions.sort(
-//       transactions: validTransactions.sort(
-//       (a, b) => b.date.getTime() - a.date.getTime()
-//     ),
-//   };
-// }
 
 
 async getWallet(ownerId: string, page: number, limit: number): Promise<{

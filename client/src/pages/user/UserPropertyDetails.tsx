@@ -11,7 +11,7 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Review from "../../components/common/Review";
 import StarRating from "../../components/common/StarRating";
-
+import axios from "axios";
 
 import {
   FaBed,
@@ -622,14 +622,22 @@ const visibleReviews = showAllReviews
 
         setAvailabilityMessage(data.message);
        // alert(data.message);
-      } catch (err:any) {
-        console.error(err);
-        //alert("Error checking availability");
-         //</div></div>setAvailabilityMessage("Error checking availability");
-         setAvailabilityMessage(
-        err.response?.data?.message || "Error checking availability"
-      );
-      }
+      
+      } catch (err: unknown) {
+  let message = "Error checking availability";
+
+  if (axios.isAxiosError(err)) {
+    message =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      message;
+  } else if (err instanceof Error) {
+    message = err.message;
+  }
+
+  setAvailabilityMessage(message);
+}
     }}
     //className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium"
   >

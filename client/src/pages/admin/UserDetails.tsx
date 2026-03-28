@@ -3,7 +3,19 @@ import { useParams, useNavigate } from "react-router-dom";
 //import AdminLayout from "../../layouts/admin/AdminLayout";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
+import axios from "axios";
 
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message || error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 interface Address {
   houseNo: string;
@@ -52,14 +64,10 @@ const UserDetails = () => {
      
       const response = await adminService.getUserDetails(userId); 
       setUser(response.user);
-    } catch (err: any) {
-      console.error('Error fetching user details:', err);
-      setError(
-        err.response?.data?.message || 
-        err.response?.data?.error || 
-        err.message || 
-        'Failed to fetch user details'
-      );
+    
+     } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setLoading(false);
     }
@@ -88,13 +96,10 @@ const UserDetails = () => {
 
      
       await fetchUserDetails();
-    } catch (err: any) {
-      console.error(`Error ${action}ing user:`, err);
-      setError(
-        err.response?.data?.message || 
-        err.response?.data?.error || 
-        `Failed to ${action} user`
-      );
+   
+    }catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setActionLoading(false);
     }

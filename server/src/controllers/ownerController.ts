@@ -10,6 +10,7 @@ import crypto from 'crypto'
 import { container } from "../config/container";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 import jwt from "jsonwebtoken";
+import { AppError } from "../utils/AppError";
 
 @injectable()
 export class OwnerController implements IOwnerController {
@@ -28,11 +29,10 @@ export class OwnerController implements IOwnerController {
       res.status(result.status).json({
         message: result.message,
       });
-    } catch (error: any) {
-      logger.error("Registartion failed", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+
+    } catch (error: unknown) {
+      logger.error("Registration failed", error);
+      next(error); 
     }
   }
   async verifyOtp(
@@ -44,19 +44,16 @@ export class OwnerController implements IOwnerController {
       const { email, otp } = req.body;
 
       if (!email || !otp) {
-        res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ message: "Email and OTP are required" });
-        return;
+
+        throw new AppError("Email and OTP are required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._ownerService.verifyOtp(email, otp);
       res.status(result.status).json({ message: result.message });
-    } catch (error: any) {
-      logger.error("OTP verification error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+
+      } catch (error: unknown) {
+      logger.error("OTP verification error", error);
+      next(error);
     }
   }
 
@@ -69,20 +66,16 @@ export class OwnerController implements IOwnerController {
       const { email } = req.body;
 
       if (!email) {
-        res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ error: "Email is required" });
-        return;
+
+         throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._ownerService.resendOtp(email);
       res.status(result.status).json({ message: result.message });
-    } catch (error: any) {
-      //console.error("OTP resend error:", error);
-      logger.error("OTP resend error:", error);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+
+    } catch (error: unknown) {
+      logger.error("OTP resend error", error);
+      next(error);
     }
   }
 
@@ -96,21 +89,21 @@ export class OwnerController implements IOwnerController {
           const csrfToken = this.generateCsrfToken();
 
 
-        res.cookie("access-token", result.token, {
+      res.cookie("access-token", result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       // sameSite: "strict",
-       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: accessTokenMaxAge,
       path: "/",
     });
 
 
-         res.cookie("refresh-token", result.refreshToken, {
+      res.cookie("refresh-token", result.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       // sameSite: "strict",
-       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: refreshTokenMaxAge,
       path: "/",
     });
@@ -143,13 +136,10 @@ export class OwnerController implements IOwnerController {
         csrfToken: csrfToken,
       });
 
-      //res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      console.error("Owner login error:", error);
-      logger.error('Login error: " + error.message');
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+
+    } catch (error: unknown) {
+      logger.error("Owner login error", error);
+      next(error);
     }
   }
 
@@ -161,8 +151,18 @@ export class OwnerController implements IOwnerController {
 
        const accessToken = req.cookies["access-token"];
           const refreshToken = req.cookies["refresh-token"];
-          const userId = (req as any).userId;
-          const userType = (req as any).userType;
+
+
+                const userId = req.userId;
+                const userType = req.userType;
+
+      if (!userId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
+
+            if (!userType) {
+           throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+        }
       
          
           const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
@@ -199,11 +199,10 @@ export class OwnerController implements IOwnerController {
       res
         .status(STATUS_CODES.OK)
         .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
-    } catch (error: any) {
-      logger.error("Logout error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+
+    } catch (error: unknown) {
+      logger.error("Logout error", error);
+      next(error);
     }
   }
 
@@ -216,21 +215,18 @@ export class OwnerController implements IOwnerController {
       const { email } = req.body;
 
       if (!email) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Email is required",
-        });
-        return;
+
+         throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._ownerService.forgotPassword(email);
       res.status(result.status).json({
         message: result.message,
       });
-    } catch (error: any) {
-      logger.error("Forgot password error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+ 
+    } catch (error: unknown) {
+      logger.error("Forgot password error", error);
+      next(error);
     }
   }
 
@@ -243,17 +239,13 @@ export class OwnerController implements IOwnerController {
       const { email, otp, newPassword, confirmPassword } = req.body;
 
       if (!email || !otp || !newPassword || !confirmPassword) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "All fields are required",
-        });
-        return;
+
+        throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
       }
 
       if (newPassword !== confirmPassword) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: MESSAGES.ERROR.PASSWORD_MISMATCH,
-        });
-        return;
+   
+          throw new AppError(MESSAGES.ERROR.PASSWORD_MISMATCH, STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._ownerService.resetPassword(
@@ -264,11 +256,10 @@ export class OwnerController implements IOwnerController {
       res.status(result.status).json({
         message: result.message,
       });
-    } catch (error: any) {
-      logger.error("Reset password error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+   
+    } catch (error: unknown) {
+      logger.error("Reset password error", error);
+      next(error);
     }
   }
 
@@ -278,16 +269,19 @@ export class OwnerController implements IOwnerController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const ownerId = (req as any).userId;
+   
+       const ownerId = req.userId;
+
+      if (!ownerId) {
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
       const result = await this._ownerService.getOwnerProfile(ownerId);
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Get owner profile error:", error);
-      logger.error("Get profile error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+   
+        } catch (error: unknown) {
+      logger.error("Get owner profile error", error);
+      next(error);
     }
   }
 
@@ -297,19 +291,23 @@ export class OwnerController implements IOwnerController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const ownerId = (req as any).userId;
+      // const ownerId = (req as any).userId;
+      const ownerId = req.userId;
+
+      if (!ownerId) {
+        
+         throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
       const result = await this._ownerService.updateOwnerProfile(
         ownerId,
         req.body
       );
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      console.error("Update owner profile error:", error);
-      logger.error("Update profile error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+ 
+    } catch (error: unknown) {
+      logger.error("Update profile error", error);
+      next(error);
     }
   }
 
@@ -319,16 +317,19 @@ export class OwnerController implements IOwnerController {
     next: NextFunction
   ): Promise<void> {
     try {
-      // const ownerId = req.user?.userId;
-      const ownerId = (req as any).userId;
+
+       const ownerId = req.userId;
+
+      if (!ownerId) {
+   
+         throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const file = req.file as Express.Multer.File;
 
       if (!file) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: MESSAGES.ERROR.NO_DOCUMENTS,
-        });
-        return;
+
+         throw new AppError(MESSAGES.ERROR.NO_DOCUMENTS, STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._ownerService.uploadDocument(ownerId, file);
@@ -337,12 +338,10 @@ export class OwnerController implements IOwnerController {
         message: result.message,
         documents: result.document,
       });
-    } catch (error: any) {
-      console.error("Document upload error:", error);
-      logger.error("Document upload error: " + error.message);
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        error: error.message || MESSAGES.ERROR.SERVER_ERROR,
-      });
+
+        } catch (error: unknown) {
+      logger.error("Document upload error", error);
+      next(error);
     }
   }
 
@@ -352,14 +351,18 @@ export class OwnerController implements IOwnerController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const ownerId = (req as any).userId;
+  
+       const ownerId = req.userId;
       const { currentPassword, newPassword } = req.body;
 
+      if (!ownerId) {
+   
+        throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
+
       if (!currentPassword || !newPassword) {
-        res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ error: "All fields are required" });
-        return;
+   
+        throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._ownerService.changePassword(
@@ -369,11 +372,10 @@ export class OwnerController implements IOwnerController {
       );
 
       res.status(result.status).json(result);
-    } catch (error: any) {
-      logger.error("Change password error: " + error.message);
-      res
-        .status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message || "Server error" });
+  
+    } catch (error: unknown) {
+      logger.error("Change password error", error);
+      next(error);
     }
   }
 
@@ -383,17 +385,22 @@ export class OwnerController implements IOwnerController {
     next: NextFunction
   ): Promise<void> {
     try {
-    const ownerId = (req as any).userId;
+   
+      const ownerId = req.userId;
+
+      if (!ownerId) {
+  
+         throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
     const page = parseInt(req.query.page as string) || 1; 
     const limit = parseInt(req.query.limit as string) || 10;
     const result = await this._ownerService.getWallet(ownerId, page, limit);
       // const result = await this._ownerService.getWallet(ownerId);
 
       res.status(STATUS_CODES.OK).json(result);
-    } catch (error: any) {
-      res.status(error.status || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
-        message: error.message,
-      });
+ 
+      } catch (error: unknown) {
+      next(error);
     }
   }
 }

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { paymentService } from "../../services/paymentService";
 import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
+import axios from "axios";
 
 declare global {
   interface Window {
@@ -217,11 +218,22 @@ const PaymentPage = () => {
     )
    openRazorpayCheckout(orderData);
 
-  } catch (error:any) {
-       console.error("Payment error:", error);
-    // setErrorMessage("Something went wrong. Please try again.")
-      const msg = error?.response?.data?.message || "Something went wrong. Please try again.";
-      setErrorMessage(msg);
+  
+  } catch (error: unknown) {
+  console.error("Payment error:", error);
+
+  let message = "Something went wrong. Please try again.";
+
+  if (axios.isAxiosError(error)) {
+    message =
+      error.response?.data?.message ||
+      error.message ||
+      message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  setErrorMessage(message);
   } finally {
     setLoadingPayment(false);
    }

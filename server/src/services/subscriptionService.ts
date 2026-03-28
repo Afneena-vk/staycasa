@@ -91,15 +91,16 @@ async createSubscriptionOrder(ownerId: string, planId: string): Promise<Razorpay
       currency: order.currency,
       receipt: order.receipt!,
     };
-
-  } catch (err: any) {
-    console.error(" Create Subscription Order Error:");
-    console.error(err);
-    console.error(err?.message);
-    console.error(err?.stack);
+      } catch (err: unknown) {  
+    if (err instanceof Error) {
+      console.error(err.message);
+      console.error(err.stack);
+    }
     throw err;
   }
 }
+
+
 
 
 
@@ -173,17 +174,18 @@ async verifySubscriptionPayment(
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 30); 
 
-    await this._subscriptionRepository.create({
-      ownerId,
-      planId: data.planId,
-      startDate,
-      endDate,
-      status: "Active",
-      paymentId: data.paymentId,
-      isUpgrade: false,
-      transactionType: "New",
-      originalAmount: plan.price,
-    } as any);
+
+    await this._subscriptionRepository.createSubscription({
+  ownerId,
+  planId: data.planId,
+  startDate,
+  endDate,
+  status: "Active",
+  paymentId: data.paymentId,
+  isUpgrade: false,
+  transactionType: "New",
+  originalAmount: plan.price,
+});
   }
 
   async getCurrentSubscription(ownerId: string): Promise<CurrentSubscriptionDto> {

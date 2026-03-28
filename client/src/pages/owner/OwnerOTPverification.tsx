@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuthStore } from '../../stores/authStore';
+import axios from 'axios';
 
 type OtpFormData = {
   otp: string;
@@ -64,8 +65,17 @@ const OwnerOTPVerification = () => {
       await verifyOTP(tempEmail, data.otp, 'owner');
       toast.success('OTP verified successfully!');
       navigate('/owner/login');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'OTP verification failed');
+    
+      } catch (error: unknown) {
+    let message = 'OTP verification failed';
+
+    if (axios.isAxiosError(error)) {
+      message = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
+
+    toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +94,17 @@ const OwnerOTPVerification = () => {
       setTimer(60);
       setTimerActive(true);
       toast.success('New OTP has been sent to your email');
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to resend OTP');
+    
+      } catch (error: unknown) {
+    let message = 'Failed to resend OTP';
+
+    if (axios.isAxiosError(error)) {
+      message = error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
+
+    toast.error(message);
     } finally {
       setIsResending(false);
     }

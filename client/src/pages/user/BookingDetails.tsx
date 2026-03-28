@@ -6,6 +6,7 @@ import { useAuthStore } from "../../stores/authStore";
 // import Header from "../../components/User/Header";
 // import Footer from "../../components/User/Footer";
 import { paymentService } from "../../services/paymentService";
+import axios from "axios";
 
 const BookingDetails = () => {
   const { bookingId } = useParams();
@@ -32,8 +33,20 @@ const BookingDetails = () => {
       
       openRazorpayCheckout(orderData);
 
-        } catch (error: any) {
-      setErrorMessage(error?.message || "Failed to retry payment");
+
+      } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    setErrorMessage(
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to retry payment"
+    );
+  } else if (error instanceof Error) {
+    setErrorMessage(error.message);
+  } else {
+    setErrorMessage("Failed to retry payment");
+  }
+
     } finally {
       setLoadingPayment(false);
     }
@@ -139,9 +152,20 @@ const handleCancelBooking = async () => {
   try {
     const res = await fetchCancelBooking(b.id);
     alert(res.message);
-  } catch (err: any) {
-    alert(err.response?.data?.error || err.message || "Cancellation failed");
+  
+  } catch (error: unknown) {
+  if (axios.isAxiosError(error)) {
+    alert(
+      error.response?.data?.message ||
+      error.message ||
+      "Cancellation failed"
+    );
+  } else if (error instanceof Error) {
+    alert(error.message);
+  } else {
+    alert("Cancellation failed");
   }
+}
 };
 
 

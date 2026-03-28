@@ -5,6 +5,27 @@ import { useAuthStore } from "../../stores/authStore";
 import { toast } from "react-toastify";
 import ChangePassword from "../common/ChangePassword";
 
+import axios from "axios";
+
+ const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+       error.response?.data?.error ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
+
+
+
 interface ProfileData {
   name: string;
   email: string;
@@ -79,9 +100,11 @@ const OwnerProfile = () => {
          
           updateUserData(profileData);
         }
-      } catch (error: any) {
-        console.error("Failed to load profile:", error);
-        toast.error(error.response?.data?.error || "Failed to load profile data");
+      
+      } catch (error: unknown) {
+  console.error("Failed to load profile:", error);
+  toast.error(getErrorMessage(error));
+
       } finally {
         setLoading(false);
         setInitialLoad(false);
@@ -192,8 +215,10 @@ const handleDocumentUpload = async () => {
       const fileInput = document.getElementById("documentUpload") as HTMLInputElement;
       if (fileInput) fileInput.value = "";
     }
-  } catch (error: any) {
-    toast.error(error.response?.data?.error || "Upload failed. Try again later.");
+  
+  } catch (error: unknown) {
+  toast.error(getErrorMessage(error));
+
   } finally {
     setUploading(false);
   }
@@ -234,9 +259,11 @@ const handleDocumentUpload = async () => {
           }));
         }
       }
-    } catch (error: any) {
-      console.error("Profile update failed:", error);
-      toast.error(error.response?.data?.error || "Failed to update profile");
+    
+    } catch (error: unknown) {
+  console.error("Profile update failed:", error);
+  toast.error(getErrorMessage(error));
+
     } finally {
       setSaving(false);
     }

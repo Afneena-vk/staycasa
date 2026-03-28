@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
+import axios from "axios";
 
 const UserForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -18,8 +19,20 @@ const UserForgotPassword = () => {
       setTempEmail(email);
       toast.success("Password reset OTP sent to your email!");
       navigate("/user/reset-password");
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to send reset email. Please try again.");
+  
+    } catch (error: unknown) {
+  let message = "Failed to send reset email. Please try again.";
+
+  if (axios.isAxiosError(error)) {
+    message =
+      error.response?.data?.message ||
+      error.message ||
+      message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+
+  toast.error(message);
     } finally {
       setIsLoading(false);
     }

@@ -19,6 +19,25 @@ import ChangePassword from "../common/ChangePassword";
 // import Header from "./Header";
 // import Footer from "./Footer";
 
+import axios from "axios";
+
+ const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+       error.response?.data?.error ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
+
 interface Address {
   houseNo: string;
   street: string;
@@ -115,11 +134,11 @@ const [uploadingImage, setUploadingImage] = useState(false);
           setProfile(profileData);
           updateUserData(profileData);
         }
-      } catch (error: any) {
-        console.error("Failed to load profile:", error);
-        toast.error(
-          error.response?.data?.error || "Failed to load profile data"
-        );
+      
+      } catch (error: unknown) {
+  console.error("Failed to load profile:", error);
+  toast.error(getErrorMessage(error));
+
       } finally {
         setLoading(false);
         setInitialLoad(false);
@@ -168,10 +187,13 @@ if (newProfileImage) {
   updateUserData({ ...userData, profileImage: newProfileImage });
 }
 
-    return response.imageUrl || response.profileImage;
-  } catch (error: any) {
-    toast.error('Failed to upload image');
-    throw error;
+    // return response.imageUrl || response.profileImage;
+    return newProfileImage;
+  
+  } catch (error: unknown) {
+  toast.error(getErrorMessage(error));
+  throw error;
+
   } finally {
     setUploadingImage(false);
   }
@@ -250,9 +272,11 @@ if (newProfileImage) {
         setImageFile(null);
         setImagePreview(null);
       }
-    } catch (error: any) {
-      console.error("Profile update failed:", error);
-      toast.error(error.response?.data?.error || "Failed to update profile");
+    
+    } catch (error: unknown) {
+  console.error("Profile update failed:", error);
+  toast.error(getErrorMessage(error));
+
     } finally {
       setSaving(false);
     }
@@ -322,7 +346,8 @@ if (newProfileImage) {
                 />
               ) : (
                 <div className="w-28 h-28 rounded-full bg-blue-950 flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-md">
-                  {profile.name?.charAt(0).toUpperCase() || "U"}
+                  {/* {profile.name?.charAt(0).toUpperCase() || "U"} */}
+                     {profile.name?.trim()?.[0]?.toUpperCase() || "U"}
                 </div>
               )}
 
@@ -374,16 +399,17 @@ if (newProfileImage) {
                       // toast.success("Profile image uploaded successfully");
                       // setImageFile(null);
                       // setImagePreview(null);
-                      if (imageUrl) {
-          toast.success("Profile image uploaded successfully");
-          setProfile(prev => ({ ...prev, profileImage: imageUrl }));
-          setImageFile(null);
-          setImagePreview(null);
-        }
-                    } catch (err) {
-                      console.error(err);
-                      toast.error("Failed to upload image");
+                   if (imageUrl) {
+                       toast.success("Profile image uploaded successfully");
+                       setProfile(prev => ({ ...prev, profileImage: imageUrl }));
+                       setImageFile(null);
+                       setImagePreview(null);
                     }
+                    
+                    } catch (error: unknown) {
+  console.error(error);
+  toast.error(getErrorMessage(error));
+}
                   }}
                   className="absolute bottom-2 right-2 bg-green-600 text-white p-2 rounded-full shadow-md hover:bg-green-700 transition disabled:opacity-50"
                   disabled={uploadingImage}

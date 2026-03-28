@@ -1,6 +1,23 @@
 import { StateCreator } from "zustand";
 import { reviewService} from "../../services/reviewService";
 import { SubmitReviewDTO, ReviewResponseDTO, PropertyReviewDTO } from "../../types/review";
+import axios from "axios";
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.message ||
+      error.message ||
+      "Something went wrong"
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 export interface ReviewSlice {
   reviewLoading: boolean;
@@ -34,17 +51,14 @@ export const createReviewSlice: StateCreator<
     set({ reviewLoading: true, reviewError: null });
     try {
       await reviewService.submitReview(bookingId, data);
-    } catch (err: any) {
-      set({
-        reviewError:
-          err.response?.data?.error ||
-          err.message ||
-          "Failed to submit review",
-      });
-      throw err;
-    } finally {
-      set({ reviewLoading: false });
-    }
+   
+      } catch (err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    set({ reviewError: errorMessage });
+    throw new Error(errorMessage); 
+  } finally {
+    set({ reviewLoading: false });
+  }
   },
 
   fetchReviews: async (propertyId) => {
@@ -52,8 +66,10 @@ export const createReviewSlice: StateCreator<
     try {
       const reviews = await reviewService.getReviewsByPropertyId(propertyId);
       set({ reviews });
-    } catch (err: any) {
-      set({ reviewError: err.response?.data?.error || err.message || "Failed to fetch reviews" });
+    
+      } catch (err: unknown) {
+    const errorMessage = getErrorMessage(err);
+    set({ reviewError: errorMessage });
     } finally {
       set({ reviewLoading: false });
     }
@@ -65,12 +81,10 @@ export const createReviewSlice: StateCreator<
     const reviews =
       await reviewService.getReviewsByPropertyIdForAdmin(propertyId);
     set({ reviews });
-  } catch (err: any) {
+ 
+    } catch (err: unknown) {
     set({
-      reviewError:
-        err.response?.data?.error ||
-        err.message ||
-        "Failed to fetch admin reviews",
+      reviewError: getErrorMessage(err),
     });
   } finally {
     set({ reviewLoading: false });
@@ -90,10 +104,10 @@ toggleReviewVisibility: async (reviewId: string, hide: boolean) => {
           : r
       ),
     }));
-  } catch (err: unknown) {
-    let errorMessage = "Failed to toggle review visibility";
-    if (err instanceof Error) errorMessage = err.message;
-    set({ reviewError: errorMessage });
+ 
+   } catch (err: unknown) {
+  set({ reviewError: getErrorMessage(err) || "Failed to toggle review visibility" });
+
   } finally {
     set({ reviewLoading: false });
   }
@@ -105,12 +119,10 @@ fetchReviewsForOwner: async (propertyId) => {
     const reviews =
       await reviewService.getReviewsByPropertyIdForOwner(propertyId);
     set({ reviews });
-  } catch (err: any) {
+  
+    } catch (err: unknown) {
     set({
-      reviewError:
-        err.response?.data?.error ||
-        err.message ||
-        "Failed to fetch owner reviews",
+      reviewError: getErrorMessage(err),
     });
   } finally {
     set({ reviewLoading: false });

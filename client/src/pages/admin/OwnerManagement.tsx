@@ -12,6 +12,19 @@ import FilterSelect from "../../components/Admin/common/FilterSelect";
 import AlertMessage from "../../components/Admin/common/AlertMessage";
 import DataTable from "../../components/Admin/common/DataTable";
 import Pagination from "../../components/Admin/common/Pagination";
+import axios from "axios";
+
+const getErrorMessage = (error: unknown): string => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message || error.message;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return "Something went wrong";
+};
 
 interface Owner {
   id: string;
@@ -142,11 +155,21 @@ const OwnerManagement: React.FC = () => {
         sortBy: "createdAt",
         sortOrder: "desc",
       });
-      setOwners(response.owners);
+    //  setOwners(response.owners);
+    setOwners(
+  response.owners.map((o) => ({
+    ...o,
+    createdAt: new Date(o.createdAt),
+    updatedAt: new Date(o.updatedAt),
+  }))
+);
       setTotalPages(response.totalPages);
       setTotalCount(response.totalCount);
-    } catch (error) {
-      console.error("Failed to fetch owners:", error);
+    // } catch (error) {
+    //   console.error("Failed to fetch owners:", error);
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setLoading(false);
     }
@@ -181,8 +204,10 @@ const OwnerManagement: React.FC = () => {
       );
       setSuccess(res?.message || "Owner approved successfully");
       setError(null);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to approve owner");
+    
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setActionLoading(null);
     }
@@ -196,8 +221,10 @@ const OwnerManagement: React.FC = () => {
       setOwners((prev) =>
         prev.map((o) => (o.id === ownerId ? { ...o, approvalStatus: "rejected" } : o))
       );
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to reject owner");
+    
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setActionLoading(null);
     }
@@ -211,8 +238,10 @@ const OwnerManagement: React.FC = () => {
       setOwners((prev) =>
         prev.map((o) => (o.id === ownerId ? { ...o, status: "blocked" } : o))
       );
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to block owner");
+    
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setActionLoading(null);
     }
@@ -226,8 +255,10 @@ const OwnerManagement: React.FC = () => {
       setOwners((prev) =>
         prev.map((o) => (o.id === ownerId ? { ...o, status: "active" } : o))
       );
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to unblock owner");
+    
+    } catch (err: unknown) {
+  setError(getErrorMessage(err));
+
     } finally {
       setActionLoading(null);
     }

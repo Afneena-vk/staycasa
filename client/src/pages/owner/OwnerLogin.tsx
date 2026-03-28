@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
+import axios from "axios";
 
 const OwnerLogin = () => {
   const [formData, setFormData] = useState({
@@ -57,8 +58,16 @@ const OwnerLogin = () => {
       await login(formData.email, formData.password, "owner");
       toast.success("Login successful!");
       navigate("/owner/dashboard"); 
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Login failed. Please try again.");
+    
+    } catch (error: unknown) {
+  let message = "Login failed. Please try again.";
+  if (axios.isAxiosError(error)) {
+    message = error.response?.data?.message || error.message;
+  } else if (error instanceof Error) {
+    message = error.message;
+  }
+  toast.error(message);
+
     } finally {
       setIsLoading(false);
     }

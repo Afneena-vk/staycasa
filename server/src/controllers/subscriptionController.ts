@@ -30,7 +30,8 @@ async getAllPlans(req: Request, res: Response, next: NextFunction): Promise<void
 
   async createSubscriptionOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const ownerId = (req as any).userId;
+  
+   const ownerId = req.userId!;
     const { planId } = req.body;
 
     const order = await this._subscriptionService.createSubscriptionOrder(ownerId, planId);
@@ -48,7 +49,8 @@ async getAllPlans(req: Request, res: Response, next: NextFunction): Promise<void
 
 async verifySubscriptionPayment(req: Request, res: Response, next: NextFunction) {
   try {
-    const ownerId = (req as any).userId;
+   
+     const ownerId = req.userId!;
     const { planId, razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
 
     await this._subscriptionService.verifySubscriptionPayment(
@@ -71,7 +73,8 @@ async verifySubscriptionPayment(req: Request, res: Response, next: NextFunction)
 
   async subscribe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const ownerId = (req as any).userId; 
+  
+      const ownerId = req.userId!;
       const { planId, paymentId } = req.body;
 
       if (!planId || !paymentId) {
@@ -91,7 +94,8 @@ async verifySubscriptionPayment(req: Request, res: Response, next: NextFunction)
 
 async getCurrentSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const ownerId = (req as any).userId; 
+ 
+      const ownerId = req.userId!;
       const data = await this._subscriptionService.getCurrentSubscription(ownerId);
 
       res.status(STATUS_CODES.OK).json({
