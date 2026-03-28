@@ -83,7 +83,7 @@ const UserPropertyDetails = () => {
   const [mainIndex, setMainIndex] = useState(0);
   const [galleryOpen, setGalleryOpen] = useState(false);
  
-const PREVIEW_COUNT = 2;
+const PREVIEW_COUNT = 1;
 const [showAllReviews, setShowAllReviews] = useState(false);
 
 const visibleReviews = showAllReviews

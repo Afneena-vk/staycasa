@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
 //import OwnerSidebar from "../../components/Owner/OwnerSidebar";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 const OwnerSubscriptionPage = () => {
   const {
@@ -21,6 +22,17 @@ const OwnerSubscriptionPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const userData = useAuthStore((state) => state.userData);
   const isApproved = userData?.approvalStatus === "approved";
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    action: null | (() => Promise<void>);
+}>({ title: "", message: "", action: null });
+
+const openConfirmModal = (title: string, message: string, action: () => Promise<void>) => {
+  setConfirmConfig({ title, message, action });
+  setIsConfirmOpen(true);
+};
 
   useEffect(() => {
     fetchPlansForOwner();
@@ -102,16 +114,31 @@ const OwnerSubscriptionPage = () => {
                   </div>
 <button
   disabled={subscriptionLoading || !isApproved}
-  onClick={() => {
-    if (!isApproved) return;
+  // onClick={() => {
+  //   if (!isApproved) return;
 
-    const confirmed = window.confirm(
-      `Are you sure you want to subscribe to the "${plan.name}" plan for ₹${plan.price}?`
-    );
-    if (confirmed) {
-      subscribeToPlan(plan.id);
+  //   const confirmed = window.confirm(
+  //     `Are you sure you want to subscribe to the "${plan.name}" plan for ₹${plan.price}?`
+  //   );
+  //   if (confirmed) {
+  //     subscribeToPlan(plan.id);
+  //   }
+  // }}
+onClick={() => {
+  if (!isApproved) return;
+
+  openConfirmModal(
+    `Subscribe to "${plan.name}"?`,
+    `Are you sure you want to subscribe to the "${plan.name}" plan for ₹${plan.price}?`,
+    async () => { // ✅ make it async
+      try {
+        await subscribeToPlan(plan.id); // wait for subscription
+      } finally {
+        setIsConfirmOpen(false); // close modal after completion
+      }
     }
-  }}
+  );
+}}
   className="mt-6 w-full rounded-xl bg-indigo-600 text-white py-2 font-medium hover:bg-indigo-700 transition disabled:opacity-60"
 >
   {!isApproved
@@ -126,6 +153,14 @@ const OwnerSubscriptionPage = () => {
               ))}
             </div>
           </div>
+          <ConfirmModal
+  isOpen={isConfirmOpen}
+  title={confirmConfig.title}
+  message={confirmConfig.message}
+  isLoading={subscriptionLoading}
+  onCancel={() => setIsConfirmOpen(false)}
+  onConfirm={() => confirmConfig.action && confirmConfig.action()}
+/>
         </div>
 
   );

@@ -10,6 +10,7 @@ import PageHeader from "../../components/Admin/common/PageHeader";
 import SearchInput from "../../components/Admin/common/SearchInput";
 import FilterSelect from "../../components/Admin/common/FilterSelect";
 import Pagination from "../../components/Admin/common/Pagination";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 interface Property {
   id: string;
@@ -66,6 +67,13 @@ const OwnerProperties = () => {
   const deleteProperty = useAuthStore((state) => state.deleteProperty);
   const totalPages = useAuthStore((state) => state.totalPages);
   const currentSubscription = useAuthStore((state) => state.currentSubscription);
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    action: null | (() => Promise<void>);
+ }>({ title: "", message: "", action: null });
 
   const subscriptionLoading = useAuthStore(
   (state) => state.subscriptionLoading
@@ -129,16 +137,33 @@ const propertyLimitReached = usedProperties >= maxProperties;
     }
   };
 
-  const handleDelete = async (propertyId: string) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
-    try {
-      await deleteProperty(propertyId);
-      toast.success("Property deleted successfully!");
-    } catch (err) {
-      console.error("Error deleting property:", err);
-      toast.error("Failed to delete property.");
+ const openConfirmModal = (
+  title: string,
+  message: string,
+  action: () => Promise<void>
+) => {
+  setConfirmConfig({ title, message, action });
+  setIsConfirmOpen(true);
+};
+
+
+  const handleDelete = (propertyId: string) => {
+  openConfirmModal(
+    "Delete Property",
+    "Are you sure you want to delete this property?",
+    async () => {
+      try {
+        await deleteProperty(propertyId);
+        toast.success("Property deleted successfully!");
+      } catch (err) {
+        console.error("Error deleting property:", err);
+        toast.error("Failed to delete property.");
+      } finally {
+        setIsConfirmOpen(false);
+      }
     }
-  };
+  );
+};
 
   const handleClearSearch = () => {
     setSearchTerm("");
@@ -368,6 +393,14 @@ const propertyLimitReached = usedProperties >= maxProperties;
             itemLabel="properties"
             onPageChange={setCurrentPage}
           />
+          <ConfirmModal
+  isOpen={isConfirmOpen}
+  title={confirmConfig.title}
+  message={confirmConfig.message}
+  isLoading={isLoading}
+  onCancel={() => setIsConfirmOpen(false)}
+  onConfirm={() => confirmConfig.action && confirmConfig.action()}
+/>
         </>
       ) : null}
     </div>

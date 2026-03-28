@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
 import { toast } from "react-toastify";
+import ConfirmModal from "../../components/common/ConfirmModal";
 
 interface Owner {
   id: string;
@@ -41,35 +42,52 @@ const OwnerDetails: React.FC = () => {
     }
   };
 
-  
-  const handleBlockToggle = async () => {
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState({
+   title: "",
+   message: "",
+   action: null as null | (() => Promise<void>),
+}); 
+
+const openConfirmModal = (
+  title: string,
+  message: string,
+  action: () => Promise<void>
+) => {
+  setConfirmConfig({ title, message, action });
+  setIsConfirmOpen(true);
+};
+
+
+const handleBlockToggle = () => {
   if (!owner) return;
 
-  const action = owner.status === "blocked" ? "unblock" : "block";
+  const actionType = owner.status === "blocked" ? "unblock" : "block";
 
-  
-  const confirmAction = window.confirm(
-    `Are you sure you want to ${action} this owner?`
-  );
+  openConfirmModal(
+    `${actionType === "block" ? "Block" : "Unblock"} Owner`,
+    `Are you sure you want to ${actionType} this owner?`,
+    async () => {
+      try {
+        setActionLoading(true);
 
-  if (!confirmAction) return;
-
-  try {
-    setActionLoading(true);
-    if (owner.status === "blocked") {
-      await adminService.unblockOwner(owner.id);
-      toast.success("Owner unblocked");
-    } else {
-      await adminService.blockOwner(owner.id);
-      toast.success("Owner blocked");
+        if (owner.status === "blocked") {
+          await adminService.unblockOwner(owner.id);
+          toast.success("Owner unblocked");
+        } else {
+          await adminService.blockOwner(owner.id);
+          toast.success("Owner blocked");
+        }
+setOwner(prev => prev ? { ...prev, status: actionType === "block" ? "blocked" : "active" } : prev);
+        // await fetchOwnerDetails();
+      } catch (error) {
+        toast.error(`Failed to ${actionType} owner`);
+      } finally {
+        setActionLoading(false);
+        setIsConfirmOpen(false); 
+      }
     }
-    fetchOwnerDetails();
-  } catch {
-    // toast.error("Action failed");
-    toast.error(`Failed to ${action} owner`);
-  } finally {
-    setActionLoading(false);
-  }
+  );
 };
 
   useEffect(() => {
@@ -265,6 +283,14 @@ const OwnerDetails: React.FC = () => {
 )}
 
         </div>
+        <ConfirmModal
+  isOpen={isConfirmOpen}
+  title={confirmConfig.title}
+  message={confirmConfig.message}
+  isLoading={actionLoading}
+  onCancel={() => setIsConfirmOpen(false)}
+  onConfirm={() => confirmConfig.action && confirmConfig.action()}
+/>
       </div>
     // </AdminLayout>
   );

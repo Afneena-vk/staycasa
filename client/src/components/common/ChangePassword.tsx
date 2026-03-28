@@ -7,6 +7,7 @@ import { useAuthStore } from "../../stores/authStore";
 //   userId?: string; 
 // }
 import axios from "axios";
+import ConfirmModal from "./ConfirmModal";
 
  const getErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
@@ -33,6 +34,7 @@ const ChangePassword: React.FC = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const validate = () => {
     if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
@@ -46,10 +48,8 @@ const ChangePassword: React.FC = () => {
     return true;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
 
+   const handleConfirmChange = async () => {
     if (!userData?.id) {
       toast.error("User not found");
       return;
@@ -57,13 +57,14 @@ const ChangePassword: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await authService.changePassword({
-        userId : userData.id,
-        currentPassword,
-        newPassword,
-      },
-      authType as "user" | "owner" 
-    );
+      const response = await authService.changePassword(
+        {
+          userId: userData.id,
+          currentPassword,
+          newPassword,
+        },
+        authType as "user" | "owner"
+      );
 
       if (response.status === 200) {
         toast.success(response.message || "Password changed successfully");
@@ -71,17 +72,23 @@ const ChangePassword: React.FC = () => {
         setNewPassword("");
         setConfirmPassword("");
       }
-   
-        } catch (error: unknown) {
-  
-      const message = getErrorMessage(error);
-      toast.error(message);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
+      setShowModal(false); // close modal after submit
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    setShowModal(true); 
+  };
+
+
   return (
+      <>
     <form onSubmit={handleSubmit} className="mt-6 space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -139,6 +146,16 @@ const ChangePassword: React.FC = () => {
         </button>
       </div>
     </form>
+         {showModal && (
+        <ConfirmModal
+          title="Confirm Password Change"
+          message="Are you sure you want to change your password?"
+            isOpen={showModal} 
+          onConfirm={handleConfirmChange}
+          onCancel={() => setShowModal(false)}
+        />
+      )}
+        </>
   );
 };
 

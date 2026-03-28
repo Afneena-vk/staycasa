@@ -7,6 +7,8 @@ import { useAuthStore } from "../../stores/authStore";
 // import Footer from "../../components/User/Footer";
 import { paymentService } from "../../services/paymentService";
 import axios from "axios";
+import ConfirmModal from "../../components/common/ConfirmModal";
+import { toast } from "react-toastify";
 
 const BookingDetails = () => {
   const { bookingId } = useParams();
@@ -19,6 +21,17 @@ const BookingDetails = () => {
  const [errorMessage, setErrorMessage] = useState("");
  const navigate = useNavigate();
 
+
+const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+const [confirmConfig, setConfirmConfig] = useState<{
+  title: string;
+  message: string;
+  action: null | (() => Promise<void>);
+}>({
+  title: "",
+  message: "",
+  action: null,
+});
 
  const handleRetryPayment = async () => {
     if (!selectedBooking) return;
@@ -142,30 +155,46 @@ const BookingDetails = () => {
          !b.isCancelled &&            
          b.bookingStatus === "confirmed" &&  
          b.paymentStatus === "completed" &&  
-         diffInDays >= 5;        
+         diffInDays >= 5;      
+         
+         
+const openConfirmModal = (
+  title: string,
+  message: string,
+  action: () => Promise<void>
+) => {
+  setConfirmConfig({ title, message, action });
+  setIsConfirmOpen(true);
+};     
 
-const handleCancelBooking = async () => {
+
+
+const handleCancelBooking = () => {
   if (!b) return;
 
-  if (!window.confirm("Are you sure you want to cancel this booking?")) return;
-
-  try {
-    const res = await fetchCancelBooking(b.id);
-    alert(res.message);
-  
-  } catch (error: unknown) {
-  if (axios.isAxiosError(error)) {
-    alert(
-      error.response?.data?.message ||
-      error.message ||
-      "Cancellation failed"
-    );
-  } else if (error instanceof Error) {
-    alert(error.message);
-  } else {
-    alert("Cancellation failed");
-  }
-}
+  openConfirmModal(
+    "Cancel Booking",
+    "Are you sure you want to cancel this booking?",
+    async () => {
+      try {
+        const res = await fetchCancelBooking(b.id);
+        toast.success(res.message);
+    
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          toast.error(
+            error.response?.data?.message || error.message || "Cancellation failed"
+          );
+        } else if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Cancellation failed");
+        }
+      } finally {
+        setIsConfirmOpen(false);
+      }
+    }
+  );
 };
 
 
@@ -410,7 +439,14 @@ const handleCancelBooking = async () => {
 
         </div>
       </div>
-
+<ConfirmModal
+  isOpen={isConfirmOpen}
+  title={confirmConfig.title}
+  message={confirmConfig.message}
+  isLoading={loadingPayment} // optional, show spinner while action runs
+  onCancel={() => setIsConfirmOpen(false)}
+  onConfirm={() => confirmConfig.action && confirmConfig.action()}
+/>
       {/* <Footer /> */}
     </>
   );

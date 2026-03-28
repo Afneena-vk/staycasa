@@ -12,7 +12,8 @@ import AlertMessage from "../../components/Admin/common/AlertMessage";
 import DataTable from "../../components/Admin/common/DataTable";
 import Pagination from "../../components/Admin/common/Pagination";  
 import axios from "axios";
-
+import ConfirmModal from "../../components/common/ConfirmModal";
+import { toast } from "react-toastify";
 
 const getErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
@@ -83,6 +84,14 @@ const unblockUser = useAuthStore((state) => state.unblockUser);
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "blocked">("all");
   const [sortValue, setSortValue] = useState("createdAt-desc");
 
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    action: null | (() => Promise<void>);
+  }>({ title: "", message: "", action: null });
+
   const limit = 10;
 
   const sortBy = sortValue.split("-")[0] as "name" | "email" | "createdAt";
@@ -140,33 +149,42 @@ const unblockUser = useAuthStore((state) => state.unblockUser);
     setCurrentPage(1);
   };
 
+  const openConfirmModal = (title: string, message: string, action: () => Promise<void>) => {
+    setConfirmConfig({ title, message, action });
+    setIsConfirmOpen(true);
+  };
+
   // ─ Actions
-  const toggleUserStatus = async (userId: string, currentStatus: string) => {
-    const action = currentStatus === "Active" ? "block" : "unblock";
-    if (!window.confirm("Are you sure want to change the status")) return;
 
-    try {
-      //const response = await api.patch(`/admin/users/${userId}/${action}`);
+ const toggleUserStatus = (userId: string, currentStatus: string) => {
+    const actionType = currentStatus === "Active" ? "block" : "unblock";
+
+    openConfirmModal(
+      `${actionType === "block" ? "Block" : "Unblock"} User`,
+      `Are you sure you want to ${actionType} this user?`,
+      async () => {
+        try {
+          setLoading(true);
           let res;
+          if (actionType === "block") res = await blockUser(userId);
+          else res = await unblockUser(userId);
 
-    if (action === "block") {
-      res = await blockUser(userId);
-    } else {
-      res = await unblockUser(userId);
-    }
-      setUsers((prev) =>
-        prev.map((user) =>
-          user.id === userId
-            ? { ...user, status: currentStatus === "Active" ? "Blocked" : "Active" }
-            : user
-        )
-      );
-      // setSuccess(response.data.message);
-        setSuccess(res.message);
-    
-    } catch (err: unknown) {
-  setError(getErrorMessage(err));
-}
+          setUsers((prev) =>
+            prev.map((user) =>
+              user.id === userId ? { ...user, status: currentStatus === "Active" ? "Blocked" : "Active" } : user
+            )
+          );
+          // setSuccess(res.message);
+             toast.success(res.message);
+        } catch (err: unknown) {
+          // setError(getErrorMessage(err));
+          toast.error(getErrorMessage(err));
+        } finally {
+          setIsConfirmOpen(false);
+          setLoading(false);
+        }
+      }
+    );
   };
 
   const handleViewUser = (userId: string) => {
@@ -315,6 +333,14 @@ const unblockUser = useAuthStore((state) => state.unblockUser);
         limit={limit}
         itemLabel="users"
         onPageChange={setCurrentPage}
+      />
+          <ConfirmModal
+        isOpen={isConfirmOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        isLoading={loading}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={() => confirmConfig.action && confirmConfig.action()}
       />
     </div>
   );
