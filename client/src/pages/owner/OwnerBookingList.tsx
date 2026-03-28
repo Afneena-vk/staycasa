@@ -11,7 +11,8 @@ import SearchInput from "../../components/Admin/common/SearchInput";
 import FilterSelect from "../../components/Admin/common/FilterSelect";
 import DataTable from "../../components/Admin/common/DataTable";
 import Pagination from "../../components/Admin/common/Pagination";
-
+import ConfirmModal from "../../components/common/ConfirmModal";
+import { toast } from "react-toastify";
 
 const bookingStatusOptions = [
   { value: "", label: "All Status" },
@@ -79,6 +80,15 @@ const OwnerBookings = () => {
   const [searchTerm, setSearchTerm] = useState(search);
   const navigate = useNavigate();
 
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    action: null | (() => Promise<void>);
+  }>({ title: "", message: "", action: null });
+
+  const [modalLoading, setModalLoading] = useState(false);
+
   useEffect(() => {
     fetchOwnerBookings();
   }, [page, limit, search, status, paymentStatus, bookingType, sortBy, sortOrder]);
@@ -95,14 +105,37 @@ const OwnerBookings = () => {
     setFilters({ search: "", page: 1 });
   };
 
+    const openConfirmModal = (title: string, message: string, action: () => Promise<void>) => {
+    setConfirmConfig({ title, message, action });
+    setIsConfirmOpen(true);
+  };
 
-  const handleOwnerCancel = async (bookingId: string) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
-    try {
-      await fetchOwnerCancelBooking(bookingId);
-    } catch {
-      alert("Failed to cancel booking");
-    }
+  // const handleOwnerCancel = async (bookingId: string) => {
+  //   if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+  //   try {
+  //     await fetchOwnerCancelBooking(bookingId);
+  //   } catch {
+  //     alert("Failed to cancel booking");
+  //   }
+  // };
+
+    const handleOwnerCancel = (bookingId: string) => {
+    openConfirmModal(
+      "Cancel Booking",
+      "Are you sure you want to cancel this booking?",
+      async () => {
+        try {
+          setModalLoading(true);
+          await fetchOwnerCancelBooking(bookingId);
+          toast.success("Booking cancelled successfully");
+        } catch (err) {
+          toast.error("Failed to cancel booking");
+        } finally {
+          setIsConfirmOpen(false);
+          setModalLoading(false);
+        }
+      }
+    );
   };
 
   if (isLoading && bookings.length === 0) {
@@ -295,6 +328,14 @@ const OwnerBookings = () => {
         limit={limit}
         itemLabel="bookings"
         onPageChange={(p) => setFilters({ page: p })}
+      />
+       <ConfirmModal
+        isOpen={isConfirmOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        isLoading={modalLoading}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={() => confirmConfig.action && confirmConfig.action()}
       />
     </div>
   );

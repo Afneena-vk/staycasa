@@ -4,6 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
 import axios from "axios";
+import ConfirmModal from "../../components/common/ConfirmModal";
+import { toast } from "react-toastify";
 
 const getErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {
@@ -54,6 +56,13 @@ const UserDetails = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    title: string;
+    message: string;
+    action: null | (() => Promise<void>);
+  }>({ title: "", message: "", action: null });
+
   const fetchUserDetails = async () => {
     if (!userId) return;
 
@@ -73,37 +82,44 @@ const UserDetails = () => {
     }
   };
 
-  
-  const toggleUserStatus = async () => {
+
+    const openConfirmModal = (title: string, message: string, action: () => Promise<void>) => {
+    setConfirmConfig({ title, message, action });
+    setIsConfirmOpen(true);
+  };
+
+    const toggleUserStatus = () => {
     if (!user) return;
 
-    const action = user.status === "active" ? "block" : "unblock";
+    const actionType = user.status === "active" ? "block" : "unblock";
 
-      const confirmAction = window.confirm(
-    `Are you sure you want to ${action} this user?`
-  );
+    openConfirmModal(
+      `${actionType === "block" ? "Block" : "Unblock"} User`,
+      `Are you sure you want to ${actionType} this user?`,
+      async () => {
+        try {
+          setActionLoading(true);
+          if (actionType === "block") {
+            await adminService.blockUser(user.id);
+            toast.success("User blocked");
+          } else {
+            await adminService.unblockUser(user.id);
+            toast.success("User unblocked");
+          }
 
-  if (!confirmAction) return;
-    
-    try {
-      setActionLoading(true);
-      
-      if (action === "block") {
-        await adminService.blockUser(user.id);
-      } else {
-        await adminService.unblockUser(user.id);
+           setUser(prev => prev ? { ...prev, status: actionType === "block" ? "blocked" : "active" } : prev);
+          //await fetchUserDetails();
+        } catch (err: unknown) {
+          toast.error(`Failed to ${actionType} user`);
+        } finally {
+          setActionLoading(false);
+          setIsConfirmOpen(false);
+        }
       }
-
-     
-      await fetchUserDetails();
-   
-    }catch (err: unknown) {
-  setError(getErrorMessage(err));
-
-    } finally {
-      setActionLoading(false);
-    }
+    );
   };
+  
+
 
   useEffect(() => {
     fetchUserDetails();
@@ -372,6 +388,14 @@ const UserDetails = () => {
             )}
           </div>
         </div>
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        isLoading={actionLoading}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={() => confirmConfig.action && confirmConfig.action()}
+      />
       </div>
     // </AdminLayout>
   );
