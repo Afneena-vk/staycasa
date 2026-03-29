@@ -80,6 +80,25 @@ getAllAdminSubscriptions: async (
   };
 },
 
+createUpgradeOrder: async (planId: string) => {
+  const res = await api.post(
+    OWNER_API.CREATE_UPGRADE_ORDER,
+    { planId }
+  );
+  return res.data.order;
+},
 
+verifyUpgradePayment: async (payload: {
+  planId: string;
+  razorpayPaymentId: string;
+  razorpayOrderId: string;
+  razorpaySignature: string;
+}) => {
+  const res = await api.post(
+    OWNER_API.VERIFY_UPGRADE_PAYMENT,
+    payload
+  );
+  return res.data;
+},
 
 };

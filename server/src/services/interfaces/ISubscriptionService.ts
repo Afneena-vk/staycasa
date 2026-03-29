@@ -2,7 +2,7 @@
 
 
 import { SubscriptionPlanResponseDto } from "../../dtos/subscriptionPlan.dto";
-import { CreateSubscriptionDto, CurrentSubscriptionDto, RazorpayOrderDto, AdminSubscriptionDto, AdminSubscriptionFilterDto, AdminSubscriptionListResponseDto } from "../../dtos/subscription.dto";
+import { CreateSubscriptionDto, CurrentSubscriptionDto, RazorpayOrderDto, AdminSubscriptionDto, AdminSubscriptionFilterDto, AdminSubscriptionListResponseDto, UpgradeOrderResponseDto } from "../../dtos/subscription.dto";
 
 export interface ISubscriptionService {
   getAllPlans(): Promise<SubscriptionPlanResponseDto[]>;
@@ -31,5 +31,14 @@ export interface ISubscriptionService {
  getAllSubscriptions(
   filters: AdminSubscriptionFilterDto
 ): Promise<AdminSubscriptionListResponseDto> 
+
+createUpgradeOrder(ownerId: string, newPlanId: string): Promise<UpgradeOrderResponseDto>;
+verifyUpgradePayment(
+  ownerId: string,
+  newPlanId: string,
+  razorpayPaymentId: string,
+  razorpayOrderId: string,
+  razorpaySignature: string
+): Promise<void>;
 
 }

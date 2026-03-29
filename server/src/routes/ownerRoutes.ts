@@ -213,6 +213,19 @@ ownerRoutes.get(
    subscriptionController.getCurrentSubscription.bind(subscriptionController)
 );
 
+ownerRoutes.post(
+  "/subscription/upgrade/create-order",
+  authMiddleware(["owner"]),
+  subscriptionController.createUpgradeOrder.bind(subscriptionController)
+);
+
+ownerRoutes.post(
+  "/subscription/upgrade/verify-payment",
+  authMiddleware(["owner"]),
+  subscriptionController.verifyUpgradePayment.bind(subscriptionController)
+);
+
+
 
 // ownerRoutes.get(
 //   "/chat/:propertyId/:ownerId",

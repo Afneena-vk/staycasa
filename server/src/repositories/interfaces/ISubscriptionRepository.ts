@@ -3,7 +3,7 @@ import { IBaseRepository } from "./IBaseRepository";
 import { ISubscription } from "../../models/subscription";
 import { AdminSubscriptionFilterDto } from "../../dtos/subscription.dto";
 import { IAdminSubscriptionAggregate } from "../../dtos/adminSubscriptionAggregate";
-
+import { Types } from "mongoose";
 
 export interface CreateSubscriptionInput {
   ownerId: string;
@@ -15,6 +15,8 @@ export interface CreateSubscriptionInput {
   isUpgrade: boolean;
   transactionType: "New" | "Renewal" | "Upgrade";
   originalAmount?: number;
+  proratedAmount?: number;
+  upgradedFrom?: Types.ObjectId;
 }
 
 export interface ISubscriptionRepository extends IBaseRepository<ISubscription> {

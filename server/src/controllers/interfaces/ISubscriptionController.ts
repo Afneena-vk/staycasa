@@ -8,4 +8,7 @@ export interface ISubscriptionController {
   createSubscriptionOrder(req: Request, res: Response, next: NextFunction): Promise<void>;
   verifySubscriptionPayment(req: Request, res: Response, next: NextFunction): Promise<void>;
   getAllSubscriptions(req: Request, res: Response, next: NextFunction): Promise<void>;
+
+  createUpgradeOrder(req: Request, res: Response, next: NextFunction): Promise<void>;
+  verifyUpgradePayment(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

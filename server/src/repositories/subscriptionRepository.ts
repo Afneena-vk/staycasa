@@ -270,6 +270,8 @@ async createSubscription(data: CreateSubscriptionInput): Promise<ISubscription> 
     isUpgrade: data.isUpgrade,
     transactionType: data.transactionType,
     originalAmount: data.originalAmount,
+    proratedAmount: data.proratedAmount,
+    upgradedFrom: data.upgradedFrom,
   });
 }
 

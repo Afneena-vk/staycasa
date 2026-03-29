@@ -45,7 +45,7 @@ export interface SubscriptionSlice {
   fetchCurrentSubscription: () => Promise<void>;
   subscribeToPlan: (planId: string) => Promise<void>;
   fetchAllAdminSubscriptions: (filters: AdminSubscriptionFilterDto) => Promise<void>;
- 
+  upgradeSubscription: (planId: string) => Promise<void>;
 }
 
 export const createSubscriptionSlice: StateCreator<
@@ -212,5 +212,60 @@ fetchAllAdminSubscriptions: async (filters) => {
   }
 },
 
+
+upgradeSubscription: async (planId: string) => {
+  set({
+    subscriptionLoading: true,
+    subscriptionError: null,
+    subscriptionMessage: null,
+  });
+
+  try {
+    const order = await subscriptionService.createUpgradeOrder(planId);
+
+    if (!(window as any).Razorpay) {
+      throw new Error("Razorpay SDK not loaded");
+    }
+
+    const options: any = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      name: "Your App Name",
+      description: "Upgrade Subscription",
+
+      handler: async function (response: any) {
+        try {
+          await subscriptionService.verifyUpgradePayment({
+            planId,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+
+          set({
+            subscriptionMessage: "Subscription upgraded successfully 🎉",
+          });
+
+          const data = await subscriptionService.getCurrentSubscription();
+          set({ currentSubscription: data });
+
+        } catch (err: unknown) {
+          set({ subscriptionError: getErrorMessage(err) });
+        } finally {
+          set({ subscriptionLoading: false });
+        }
+      },
+    };
+
+    const razorpay = new (window as any).Razorpay(options);
+    razorpay.open();
+
+  } catch (err: unknown) {
+    set({ subscriptionError: getErrorMessage(err) });
+    set({ subscriptionLoading: false });
+  }
+},
 
 });

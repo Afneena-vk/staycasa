@@ -87,6 +87,9 @@ export const OWNER_API = {
   CREATE_SUBSCRIPTION_ORDER: "/owner/subscription/create-order",
   VERIFY_SUBSCRIPTION_PAYMENT: "/owner/subscription/verify-payment",
 
+  CREATE_UPGRADE_ORDER: "/owner/subscription/upgrade/create-order",
+  VERIFY_UPGRADE_PAYMENT: "/owner/subscription/upgrade/verify-payment",
+
   MESSAGES: '/owner/messages',
   CONVERSATION: (ownerId: string, propertyId: string) => `/owner/messages/${ownerId}/${propertyId}`,
   MARK_READ: '/owner/messages/read',
