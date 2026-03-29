@@ -73,4 +73,17 @@ export interface AdminSubscriptionListResponseDto {
   revenue: number; 
 }
 
+export interface CreateUpgradeDto {
+  planId: string;
+  paymentId: string;
+}
 
+export interface UpgradeOrderResponseDto {
+  id: string;
+  amount: number;
+  currency: string;
+  receipt: string;
+  proratedAmount: number;
+  currentPlan: string;
+  newPlan: string;
+}

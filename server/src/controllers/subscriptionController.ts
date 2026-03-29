@@ -165,6 +165,42 @@ async getAllSubscriptions(req: Request, res: Response, next: NextFunction): Prom
   }
 }
 
+async createUpgradeOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId = req.userId!;
+    const { planId } = req.body;
 
+    const order = await this._subscriptionService.createUpgradeOrder(ownerId, planId);
+
+    res.status(STATUS_CODES.OK).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async verifyUpgradePayment(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const ownerId = req.userId!;
+    const { planId, razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
+
+    await this._subscriptionService.verifyUpgradePayment(
+      ownerId,
+      planId,
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature
+    );
+
+    res.status(STATUS_CODES.OK).json({
+      success: true,
+      message: "Subscription upgraded successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 }
