@@ -5,6 +5,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import ImageCropper from "../../components/ImageCropper";
 import { FaTimes } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const OwnerEditProperty: React.FC = () => {
   const { propertyId } = useParams<{ propertyId: string }>();
@@ -274,11 +275,13 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   });
     
 } catch (err: unknown) {
-  if (err instanceof Error) {
-    alert("Failed to update property: " + err.message);
-  } else {
-    alert("Failed to update property");
-  }
+  // if (err instanceof Error) {
+  //   alert("Failed to update property: " + err.message);
+  // } else {
+  //   alert("Failed to update property");
+  // }
+    const message = err instanceof Error ? err.message : "Failed to update property";
+    toast.error(message);
 }
   };
 

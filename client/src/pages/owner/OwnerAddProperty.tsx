@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import ImageCropper from "../../components/ImageCropper"; 
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-toastify";
 
 const AddProperty: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -154,7 +154,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
    
       await addProperty(formData);
     
-      // alert("Property added successfully!");
+    
       navigate("/owner/properties");
       
       setTitle("");
@@ -178,13 +178,12 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
       setImagePreviews([]);
       setErrors({});
     
-  
-   } catch (error: unknown) {
-  if (error instanceof Error) {
-    alert("Failed to add property: " + error.message);
-  } else {
-    alert("Failed to add property");
-  }
+} catch (error: unknown) {
+ 
+  const message =
+    error instanceof Error ? error.message : "Failed to add property";
+   
+    toast.error(message);
 }
 };
 

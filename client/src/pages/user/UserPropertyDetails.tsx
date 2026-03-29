@@ -608,7 +608,8 @@ const visibleReviews = showAllReviews
     variant="checkBlue"
     onClick={async () => {
       if (!checkIn || !rentalPeriod) {
-        alert("check in date and rental Period are needed");
+        //alert("check in date and rental Period are needed");
+        setAvailabilityMessage("Check-in date and rental period are required");
         return;
       }
 

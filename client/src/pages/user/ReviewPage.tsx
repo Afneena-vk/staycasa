@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
+import { toast } from "react-toastify";
 // import Header from "../../components/User/Header";
 // import Footer from "../../components/User/Footer";
 
@@ -33,15 +34,22 @@ const ReviewPage = () => {
 
     try {
       await submitReview(selectedBooking.id, { rating, reviewText });
-      alert("Thanks for your review!");
+      //alert("Thanks for your review!");
+       toast.success("Thanks for your review!");
       navigate(`/user/bookings/${bookingId}`);
 
     } catch (err: unknown) {
-  if (err instanceof Error) {
-    setError(err.message);
-  } else {
-    setError("Failed to submit review");
-  }
+  // if (err instanceof Error) {
+  //   setError(err.message);
+  // } else {
+  //   setError("Failed to submit review");
+  // }
+      const message =
+      err instanceof Error ? err.message : "Failed to submit review";
+
+    toast.error(message);
+
+    setError(message);
 
     } finally {
       setLoading(false);
