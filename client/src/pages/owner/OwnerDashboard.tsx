@@ -9,7 +9,11 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,  } from 'recharts';
 
 const COLORS = ["#38a169", "#ecc94b", "#e53e3e", "#4299e1"];
 const PROPERTY_COLORS = ["#ecc94b", "#38a169", "#e53e3e", "#718096"]; 
@@ -105,61 +109,6 @@ const propertyPieData = useMemo(() => {
 }, [ownerPropertyStats]);
 
  
-  // const stats = useMemo(() => {
-  //   // if (!ownerBookingStats) return [];
-  //      if (!ownerBookingStatis) return [];
-
-  //   return [
-  //     {
-  //       title: "Total Bookings",
-  //       value: ownerBookingStats.totalBookings,
-  //       icon: <FaCalendarAlt />,
-  //       color: "from-indigo-500 to-indigo-700",
-  //     },
-  //     {
-  //       title: "Upcoming Bookings",
-  //       value: ownerBookingStats.bookingsByTimeline.upcoming,
-  //       icon: <FaClock />,
-  //       color: "from-blue-500 to-blue-700",
-  //     },
-  //     {
-  //       title: "Ongoing Bookings",
-  //       value: ownerBookingStats.bookingsByTimeline.ongoing,
-  //       icon: <FaCalendarAlt />,
-  //       color: "from-emerald-500 to-emerald-700",
-  //     },
-  //     {
-  //       title: "Past Bookings",
-  //       value: ownerBookingStats.bookingsByTimeline.past,
-  //       icon: <FaCalendarAlt />,
-  //       color: "from-slate-500 to-slate-700",
-  //     },
-  //     {
-  //       title: "Confirmed Bookings",
-  //       value: ownerBookingStats.bookingsByStatus.confirmed,
-  //       icon: <FaCheckCircle />,
-  //       color: "from-green-500 to-green-700",
-  //     },
-  //     {
-  //       title: "Cancelled Bookings",
-  //       value: ownerBookingStats.bookingsByStatus.cancelled,
-  //       icon: <FaTimesCircle />,
-  //       color: "from-red-500 to-red-700",
-  //     },
-  //     {
-  //       title: "Total Revenue",
-  //       value: `₹${ownerBookingStats.revenue.totalRevenue}`,
-  //       icon: <FaWallet />,
-  //       color: "from-purple-500 to-purple-700",
-  //     },
-  //     {
-  //       title: "Refunded Amount",
-  //       value: `₹${ownerBookingStats.revenue.refundedAmount}`,
-  //       icon: <FaWallet />,
-  //       color: "from-orange-500 to-orange-700",
-  //     },
-  //   ];
-  // }, [ownerBookingStats]);
 
   return (
     // <OwnerLayout>
@@ -283,24 +232,18 @@ const propertyPieData = useMemo(() => {
         <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl shadow-md p-6">
   <h2 className="text-lg font-bold mb-4">Property Status Overview</h2>
   <ResponsiveContainer width="100%" height={300}>
-    <PieChart>
-      <Pie
-        data={propertyPieData}
-        dataKey="value"
-        nameKey="name"
-        cx="50%"
-        cy="50%"
-        outerRadius={100}
-        fill="#8884d8"
-        label
-      >
-        {propertyPieData.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={PROPERTY_COLORS[index % PROPERTY_COLORS.length]} />
-        ))}
-      </Pie>
-      <Tooltip />
-      <Legend verticalAlign="bottom" height={36} />
-    </PieChart>
+            <BarChart data={propertyPieData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value">
+                {propertyPieData.map((entry, index) => (
+                  <Cell key={index} fill={PROPERTY_COLORS[index % PROPERTY_COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
   </ResponsiveContainer>
 </div>
 </div>
@@ -310,3 +253,26 @@ const propertyPieData = useMemo(() => {
 };
 
 export default OwnerDashboard;
+
+
+
+
+
+    // <PieChart>
+    //   <Pie
+    //     data={propertyPieData}
+    //     dataKey="value"
+    //     nameKey="name"
+    //     cx="50%"
+    //     cy="50%"
+    //     outerRadius={100}
+    //     fill="#8884d8"
+    //     label
+    //   >
+    //     {propertyPieData.map((entry, index) => (
+    //       <Cell key={`cell-${index}`} fill={PROPERTY_COLORS[index % PROPERTY_COLORS.length]} />
+    //     ))}
+    //   </Pie>
+    //   <Tooltip />
+    //   <Legend verticalAlign="bottom" height={36} />
+    // </PieChart>

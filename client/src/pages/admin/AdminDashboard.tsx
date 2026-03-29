@@ -5,7 +5,7 @@ import { useAuthStore } from "../../stores/authStore";
 import DashboardPieChart from "../../components/common/DashboardPieChart";
 import RevenueLineChart from "../../components/common/RevenueLineChart";
 import { Clock, IndianRupee } from "lucide-react";
-
+import DashboardBarChart from "../../components/common/DashboardBarChart";
 
 const getPendingCount = (
   data: { status: string; count: number }[] | undefined
@@ -107,8 +107,10 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <DashboardPieChart title="Users" data={dashboardStats.users} />
           <DashboardPieChart title="Owners" data={dashboardStats.owners} />
-          <DashboardPieChart title="Properties" data={dashboardStats.properties} />
-          <DashboardPieChart title="Bookings" data={dashboardStats.bookings} />
+          {/* <DashboardPieChart title="Properties" data={dashboardStats.properties} />
+          <DashboardPieChart title="Bookings" data={dashboardStats.bookings} /> */}
+          <DashboardBarChart title="Properties" data={dashboardStats.properties} />
+          <DashboardBarChart title="Bookings" data={dashboardStats.bookings} />
         </div>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* <RevenueLineChart data={dashboardStats.monthlyRevenue} /> */}
