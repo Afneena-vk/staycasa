@@ -273,7 +273,6 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
   }
 
   static toOwnerBookingStatsDTo(
-    // stats: { _id: string; count: number; totalRevenue?: number; refundedAmount?: number }[]
     stats: AggregationResult[]
   ): OwnerBookingStatsDTo {
 
@@ -289,9 +288,7 @@ static toBookingDetailsDto(booking: IBooking): BookingDetailsDto {
     };
 
     for (const item of stats) {
-      // if (item._id in result) {
-      //   result[item._id as keyof OwnerBookingStatsDTo] = item.count;
-      // }
+
       if (
         item._id === "confirmed" ||
         item._id === "pending" ||

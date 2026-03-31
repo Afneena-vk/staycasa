@@ -1,4 +1,3 @@
-
 import { IBaseRepository } from "./IBaseRepository";
 import { ISubscription } from "../../models/subscription";
 import { AdminSubscriptionFilterDto } from "../../dtos/subscription.dto";
@@ -20,22 +19,19 @@ export interface CreateSubscriptionInput {
 }
 
 export interface ISubscriptionRepository extends IBaseRepository<ISubscription> {
+  findActiveByOwnerId(ownerId: string): Promise<ISubscription | null>;
+  expireExpiredSubscriptions(): Promise<void>;
 
-findActiveByOwnerId(ownerId: string): Promise<ISubscription | null>;
-expireExpiredSubscriptions(): Promise<void>;
+  getAllSubscriptions(filters: AdminSubscriptionFilterDto): Promise<{
+    data: IAdminSubscriptionAggregate[];
+    total: number;
+    totalRevenue: number;
+  }>;
 
-// getAllSubscriptions(filters: AdminSubscriptionFilterDto): Promise<{ data: ISubscription[]; total: number }>;
-getAllSubscriptions(filters: AdminSubscriptionFilterDto
-// ): Promise<{ data: IAdminSubscriptionAggregate[]; total: number }>;
-): Promise<{
-  data: IAdminSubscriptionAggregate[];
-  total: number;
-  totalRevenue: number;
-}>
+  getTotalRevenue(): Promise<number>;
+  getMonthlyRevenue(
+    year?: number,
+  ): Promise<{ month: string; revenue: number }[]>;
 
-getTotalRevenue(): Promise<number>;
-getMonthlyRevenue(year?: number): Promise<{ month: string; revenue: number }[]>;
-
-createSubscription(data: CreateSubscriptionInput): Promise<ISubscription>
-
+  createSubscription(data: CreateSubscriptionInput): Promise<ISubscription>;
 }

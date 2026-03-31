@@ -8,7 +8,7 @@ import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import jwt from "jsonwebtoken";
 import logger from "../utils/logger";
 import crypto from "crypto";
-import { FileStorageService } from "../utils/fileStorageService"; 
+import { FileStorageService } from "../utils/fileStorageService";
 import { container } from "../config/container";
 import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlacklistRepository";
 import { AppError } from "../utils/AppError";
@@ -16,10 +16,10 @@ import { AppError } from "../utils/AppError";
 @injectable()
 export class UserController implements IUserController {
   constructor(
-    @inject(TOKENS.IUserService) private _userService: IUserService
-  ) {}  
+    @inject(TOKENS.IUserService) private _userService: IUserService,
+  ) {}
 
-    private generateCsrfToken(): string {
+  private generateCsrfToken(): string {
     return crypto.randomBytes(32).toString("hex");
   }
 
@@ -27,56 +27,54 @@ export class UserController implements IUserController {
     try {
       const result = await this._userService.registerUser(req.body);
 
-     res.status(result.status).json({
+      res.status(result.status).json({
         message: result.message,
       });
-       } catch (error: unknown) {
+    } catch (error: unknown) {
       next(error);
     }
   }
 
-
   async verifyOtp(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const { email, otp } = req.body;
 
       if (!email || !otp) {
-
-          throw new AppError("Email and OTP are required", STATUS_CODES.BAD_REQUEST);
+        throw new AppError(
+          "Email and OTP are required",
+          STATUS_CODES.BAD_REQUEST,
+        );
       }
 
       const result = await this._userService.verifyOtp(email, otp);
       res.status(result.status).json({ message: result.message });
-      } catch (error: unknown) {
-         next(error);
+    } catch (error: unknown) {
+      next(error);
     }
   }
-  
 
   async resendOtp(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const { email } = req.body;
 
       if (!email) {
-
-          throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
+        throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._userService.resendOtp(email);
       res.status(result.status).json({ message: result.message });
-      } catch (error: unknown) {
+    } catch (error: unknown) {
       next(error);
     }
   }
-
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -85,40 +83,34 @@ export class UserController implements IUserController {
       const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
       const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
 
+      const csrfToken = this.generateCsrfToken();
 
-       const csrfToken = this.generateCsrfToken();
-
-    
-
-       res.cookie("access-token", result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: accessTokenMaxAge,
-      path: "/",
-    });
-
-   
+      res.cookie("access-token", result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: accessTokenMaxAge,
+        path: "/",
+      });
 
       res.cookie("refresh-token", result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",    
-      maxAge: refreshTokenMaxAge,
-      path: "/",
-    });
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: refreshTokenMaxAge,
+        path: "/",
+      });
 
-     
-    res.cookie("csrf-token", csrfToken, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: refreshTokenMaxAge,
-      path: "/",
-    });
+      res.cookie("csrf-token", csrfToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: refreshTokenMaxAge,
+        path: "/",
+      });
 
       res.status(result.status).json({
         message: result.message,
@@ -135,86 +127,75 @@ export class UserController implements IUserController {
         accessToken: result.token,
         refreshToken: result.refreshToken,
         csrfToken: csrfToken,
-      }); 
-       } catch (error: unknown) {
+      });
+    } catch (error: unknown) {
       next(error);
     }
   }
 
- 
-
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // res.clearCookie("user-auth-token", { path: "/" });
-      // res.clearCookie("user-refresh-token", { path: "/" });
+      const accessToken = req.cookies["access-token"];
+      const refreshToken = req.cookies["refresh-token"];
 
- const accessToken = req.cookies["access-token"];
-    const refreshToken = req.cookies["refresh-token"];
+      if (!req.userId || !req.userType) {
+        throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.UNAUTHORIZED,
+        );
+      }
 
+      const userId = req.userId;
+      const userType = req.userType;
 
-      
-if (!req.userId || !req.userType) {
-
-  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
-}
-
-const userId = req.userId;
-const userType = req.userType;
-
-   
-    const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
-      TOKENS.ITokenBlacklistRepository
-    );
-
-    
-    if (accessToken) {
-      const decoded = jwt.decode(accessToken) as { exp: number };
-      await tokenBlacklistRepo.addToken(
-        accessToken,
-        'access',
-        userId,
-        userType,
-        new Date(decoded.exp * 1000)
+      const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
+        TOKENS.ITokenBlacklistRepository,
       );
-    }
 
-    if (refreshToken) {
-      const decoded = jwt.decode(refreshToken) as { exp: number };
-      await tokenBlacklistRepo.addToken(
-        refreshToken,
-        'refresh',
-        userId,
-        userType,
-        new Date(decoded.exp * 1000)
-      );
-    }
+      if (accessToken) {
+        const decoded = jwt.decode(accessToken) as { exp: number };
+        await tokenBlacklistRepo.addToken(
+          accessToken,
+          "access",
+          userId,
+          userType,
+          new Date(decoded.exp * 1000),
+        );
+      }
 
+      if (refreshToken) {
+        const decoded = jwt.decode(refreshToken) as { exp: number };
+        await tokenBlacklistRepo.addToken(
+          refreshToken,
+          "refresh",
+          userId,
+          userType,
+          new Date(decoded.exp * 1000),
+        );
+      }
 
-
-    res.clearCookie("access-token", { path: "/" });
-    res.clearCookie("refresh-token", { path: "/" });
-    res.clearCookie("csrf-token", { path: "/" });
+      res.clearCookie("access-token", { path: "/" });
+      res.clearCookie("refresh-token", { path: "/" });
+      res.clearCookie("csrf-token", { path: "/" });
 
       res
         .status(STATUS_CODES.OK)
         .json({ message: MESSAGES.SUCCESS.LOGOUT || "Logout successful" });
-      } catch (error: unknown) {
+    } catch (error: unknown) {
       next(error);
     }
   }
 
-
-
   async googleCallback(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const user = req.user as any;
       if (!user) {
         res.redirect(
-          `${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`
+          `${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`,
         );
         return;
       }
@@ -224,81 +205,58 @@ const userType = req.userType;
       const accessTokenMaxAge = Number(process.env.USER_ACCESS_TOKEN_MAX_AGE);
       const refreshTokenMaxAge = Number(process.env.USER_REFRESH_TOKEN_MAX_AGE);
 
+      const csrfToken = this.generateCsrfToken();
 
-       const csrfToken = this.generateCsrfToken();
-
-
-      // res.cookie("user-auth-token", result.token, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   maxAge: 15 * 60 * 1000,
-      //   path: "/",
-      //   sameSite: "lax",
-      // });
-
-    
-       res.cookie("access-token", result.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: accessTokenMaxAge,
-      path: "/",
-    });
-
-      // res.cookie("user-refresh-token", result.refreshToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   maxAge: 7 * 24 * 60 * 60 * 1000,
-      //   path: "/",
-      //   sameSite: "lax",
-      // });
+      res.cookie("access-token", result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: accessTokenMaxAge,
+        path: "/",
+      });
 
       res.cookie("refresh-token", result.refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",    
-      maxAge: refreshTokenMaxAge,
-      path: "/",
-    });
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: refreshTokenMaxAge,
+        path: "/",
+      });
 
-     
-    res.cookie("csrf-token", csrfToken, {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      // sameSite: "strict",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      maxAge: refreshTokenMaxAge,
-      path: "/",
-    });
+      res.cookie("csrf-token", csrfToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        maxAge: refreshTokenMaxAge,
+        path: "/",
+      });
 
       res.redirect(`${process.env.FRONTEND_URL}/user/auth-success`);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        logger.error("Google auth error: " + error.message);
+      } else {
+        logger.error("Google auth error: Unknown error");
+      }
 
-  } catch (error: unknown) {
-  if (error instanceof Error) {
-    logger.error("Google auth error: " + error.message);
-  } else {
-    logger.error("Google auth error: Unknown error");
+      res.redirect(
+        `${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`,
+      );
+    }
   }
-
-  res.redirect(
-    `${process.env.FRONTEND_URL}/user/login?error=google_auth_failed`
-  );
-}
-
-}
 
   async forgotPassword(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const { email } = req.body;
 
       if (!email) {
-
         throw new AppError("Email is required", STATUS_CODES.BAD_REQUEST);
       }
 
@@ -306,159 +264,84 @@ const userType = req.userType;
       res.status(result.status).json({
         message: result.message,
       });
-          } catch (error: unknown) {
+    } catch (error: unknown) {
       next(error);
     }
   }
 
-
-
   async resetPassword(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const { email, otp, newPassword, confirmPassword } = req.body;
 
       if (!email || !otp || !newPassword || !confirmPassword) {
-
         throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
       }
 
       if (newPassword !== confirmPassword) {
-
-        throw new AppError(MESSAGES.ERROR.PASSWORD_MISMATCH, STATUS_CODES.BAD_REQUEST);
+        throw new AppError(
+          MESSAGES.ERROR.PASSWORD_MISMATCH,
+          STATUS_CODES.BAD_REQUEST,
+        );
       }
 
       const result = await this._userService.resetPassword(
         email,
         otp,
-        newPassword
+        newPassword,
       );
       res.status(result.status).json({
         message: result.message,
       });
-          } catch (error: unknown) {
+    } catch (error: unknown) {
       next(error);
     }
   }
-
-
 
   async getProfile(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
+      if (!req.userId) {
+        //  res.status(401).json({ message: "User not authenticated" });
+        //  return;
+        throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.BAD_REQUEST,
+        );
+      }
 
-     if (!req.userId) {
-      //  res.status(401).json({ message: "User not authenticated" });
-      //  return;
-      throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
-    }
-      
       // const result = await this._userService.getUserProfile(userId);
-       const result = await this._userService.getUserProfile(req.userId);
+      const result = await this._userService.getUserProfile(req.userId);
 
       res.status(result.status).json(result);
-      } catch (error: unknown) {
+    } catch (error: unknown) {
       next(error);
     }
   }
-
-
 
   async updateProfile(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
-    
       if (!req.userId) {
+        throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.BAD_REQUEST,
+        );
+      }
 
-  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
-}
-
-const userId = req.userId;
+      const userId = req.userId;
       const result = await this._userService.updateUserProfile(
         userId,
-        req.body
-      );
-
-      res.status(result.status).json(result);
-          } catch (error: unknown) {
-      next(error);
-    }
-  }
-
-
-
-  async uploadProfileImage(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-
-
-      if (!req.userId) {
-
-  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
-}
-
-const userId = req.userId;
-
-      if (!req.file) {
-        res
-
-        throw new AppError("No file uploaded", STATUS_CODES.BAD_REQUEST);
-      }
-
-      // const imageUrl = (req.file as any).path;
-
-      // const result = await this._userService.updateUserProfileImage(
-      //   userId,
-      //   imageUrl
-      // );
-    const fileData = await FileStorageService.upload(req.file);
-
-    const result = await this._userService.updateUserProfileImage(userId, fileData);
-
-      res.status(result.status).json(result);
-
-      } catch (error: unknown) {
-      next(error);
-    }
-  }
-
-  async changePassword(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-
-      if (!req.userId) {
-  // res.status(401).json({ message: "User not authenticated" });
-  // return;
-  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.BAD_REQUEST);
-}
-
-const userId = req.userId;
-      const { currentPassword, newPassword } = req.body;
-
-      if (!currentPassword || !newPassword) {
-
-        throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
-      }
-
-      const result = await this._userService.changePassword(
-        userId,
-        currentPassword,
-        newPassword
+        req.body,
       );
 
       res.status(result.status).json(result);
@@ -467,37 +350,97 @@ const userId = req.userId;
     }
   }
 
-
-
-    async getWallet(
+  async uploadProfileImage(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
-
-
       if (!req.userId) {
+        throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.BAD_REQUEST,
+        );
+      }
 
-  throw new AppError("user is not authenticated", STATUS_CODES.BAD_REQUEST);
-}
+      const userId = req.userId;
 
-const userId = req.userId;
-    
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 6;
+      if (!req.file) {
+        res;
 
-    const result = await this._userService.getWallet(userId, page, limit);
-      
-    res.status(STATUS_CODES.OK).json(result);
+        throw new AppError("No file uploaded", STATUS_CODES.BAD_REQUEST);
+      }
 
-   } catch (error: unknown) {
+      const fileData = await FileStorageService.upload(req.file);
+
+      const result = await this._userService.updateUserProfileImage(
+        userId,
+        fileData,
+      );
+
+      res.status(result.status).json(result);
+    } catch (error: unknown) {
       next(error);
     }
   }
 
+  async changePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      if (!req.userId) {
+        throw new AppError(
+          MESSAGES.ERROR.UNAUTHORIZED,
+          STATUS_CODES.BAD_REQUEST,
+        );
+      }
 
+      const userId = req.userId;
+      const { currentPassword, newPassword } = req.body;
 
+      if (!currentPassword || !newPassword) {
+        throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
+      }
+
+      const result = await this._userService.changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+      );
+
+      res.status(result.status).json(result);
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
+
+  async getWallet(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      if (!req.userId) {
+        throw new AppError(
+          "user is not authenticated",
+          STATUS_CODES.BAD_REQUEST,
+        );
+      }
+
+      const userId = req.userId;
+
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 6;
+
+      const result = await this._userService.getWallet(userId, page, limit);
+
+      res.status(STATUS_CODES.OK).json(result);
+    } catch (error: unknown) {
+      next(error);
+    }
+  }
 }
 
 //export default new UserController();

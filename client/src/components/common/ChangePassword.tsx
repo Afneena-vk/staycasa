@@ -3,9 +3,7 @@ import { authService } from "../../services/authService";
 import { toast } from "react-toastify";
 import { FaLock, FaSpinner, FaSave } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
-// interface ChangePasswordProps {
-//   userId?: string; 
-// }
+
 import axios from "axios";
 import ConfirmModal from "./ConfirmModal";
 
@@ -76,7 +74,7 @@ const ChangePassword: React.FC = () => {
       toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
-      setShowModal(false); // close modal after submit
+      setShowModal(false); 
     }
   };
 

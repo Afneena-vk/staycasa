@@ -57,7 +57,7 @@ static toDto(subscription: IAdminSubscriptionAggregate): AdminSubscriptionDto {
     };
   }
 
-//   static toDtoList(subscriptions: ISubscription[]): AdminSubscriptionDto[] {
+
 static toDtoList(subscriptions: IAdminSubscriptionAggregate[]): AdminSubscriptionDto[] {
     return subscriptions.map(this.toDto);
   }  

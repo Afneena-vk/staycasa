@@ -6,11 +6,10 @@ import { FilterQuery, SortOrder } from "mongoose";
 
 import {
   IPropertyRepository,
-  IPropertyListResult,DestinationDto
+  IPropertyListResult,
+  DestinationDto,
 } from "./interfaces/IPropertyRepository";
 import { Types } from "mongoose";
-
-
 
 @injectable()
 export class PropertyRepository
@@ -31,7 +30,7 @@ export class PropertyRepository
 
   async updateStatus(
     propertyId: string,
-    status: string
+    status: string,
   ): Promise<IProperty | null> {
     return await this.model
       .findByIdAndUpdate(propertyId, { status }, { new: true })
@@ -43,7 +42,7 @@ export class PropertyRepository
     return Property.findById(propertyId).exec();
   }
   async findByPropertyIdForAdmin(
-    propertyId: string
+    propertyId: string,
   ): Promise<IProperty | null> {
     return Property.findById(propertyId)
       .populate("ownerId", "name email phone businessName businessAddress")
@@ -52,7 +51,7 @@ export class PropertyRepository
 
   async updateProperty(
     propertyId: string,
-    data: Partial<IProperty>
+    data: Partial<IProperty>,
   ): Promise<IProperty | null> {
     return await this.model
       .findByIdAndUpdate(propertyId, data, { new: true })
@@ -61,7 +60,7 @@ export class PropertyRepository
 
   async deleteByOwner(
     ownerId: string,
-    propertyId: string
+    propertyId: string,
   ): Promise<IProperty | null> {
     return await this.model
       .findOneAndDelete({
@@ -71,25 +70,14 @@ export class PropertyRepository
       .exec();
   }
 
-  // async getAllProperties(): Promise<IProperty[]>{
-  //     console.log(" Fetching properties from database...");
-  //   return await this.model.find().sort({createdAt:-1}).exec();
-  // }
   async getAllProperties(
     page: number,
     limit: number,
     search: string,
     sortBy: string,
     sortOrder: string,
-    status?: string
+    status?: string,
   ): Promise<IPropertyListResult> {
-    // ): Promise<{
-    //   properties: IProperty[];
-    //   totalCount: number;
-    //   totalPages: number;
-    // }> {
-
-  
     const query: FilterQuery<IProperty> = {};
 
     if (search) {
@@ -101,14 +89,13 @@ export class PropertyRepository
       ];
     }
 
-  if (status) {
-    query.status = status; 
-  }
-
+    if (status) {
+      query.status = status;
+    }
 
     const sortQuery: { [key: string]: SortOrder } = {
-  [sortBy]: sortOrder === "asc" ? 1 : -1,
-};
+      [sortBy]: sortOrder === "asc" ? 1 : -1,
+    };
 
     const skip = (page - 1) * limit;
 
@@ -136,11 +123,9 @@ export class PropertyRepository
     limit: number,
     search: string,
     sortBy: string,
-    sortOrder: string
+    sortOrder: string,
   ): Promise<IPropertyListResult> {
-  
-
-      const query: FilterQuery<IProperty> = { ownerId };
+    const query: FilterQuery<IProperty> = { ownerId };
 
     if (search) {
       query.$or = [
@@ -153,11 +138,9 @@ export class PropertyRepository
       ];
     }
 
-
-
-  const sortQuery: { [key: string]: SortOrder } = {
-    [sortBy]: sortOrder === "asc" ? 1 : -1,
-  };
+    const sortQuery: { [key: string]: SortOrder } = {
+      [sortBy]: sortOrder === "asc" ? 1 : -1,
+    };
 
     const skip = (page - 1) * limit;
 
@@ -185,14 +168,12 @@ export class PropertyRepository
     sortBy?: string,
     sortOrder?: string,
     category?: string,
-    facilities?: string[]
+    facilities?: string[],
   ): Promise<IPropertyListResult> {
-
-
     const matchStage: FilterQuery<IProperty> = {
-  status: "active",
-  isRejected: false,
-};
+      status: "active",
+      isRejected: false,
+    };
 
     if (search) {
       matchStage.$or = [
@@ -207,15 +188,14 @@ export class PropertyRepository
     if (category) matchStage.type = category;
     if (facilities?.length) matchStage.features = { $all: facilities };
 
-
-      const sortStage: Record<string, 1 | -1> = sortBy
-    ? { [sortBy]: sortOrder === "asc" ? 1 : -1 }
-    : { createdAt: -1 };
+    const sortStage: Record<string, 1 | -1> = sortBy
+      ? { [sortBy]: sortOrder === "asc" ? 1 : -1 }
+      : { createdAt: -1 };
 
     const skip = (page - 1) * limit;
 
     // const pipeline = [
-      const pipeline: PipelineStage[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
 
       {
@@ -253,145 +233,140 @@ export class PropertyRepository
     };
   }
 
+  async getDestinations(
+    search?: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    data: DestinationDto[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
+    const matchCondition: FilterQuery<IProperty> = {
+      isRejected: false,
+      status: "active",
+    };
 
-
-async getDestinations(
-  search?: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<{ data: DestinationDto[]; total: number; page: number; totalPages: number }> {
-
-  
-  
-  const matchCondition: FilterQuery<IProperty> = {
-    isRejected: false,
-    status: "active",
-  };
-
-  if (search) {
-    matchCondition.district = { $regex: search, $options: "i" };
-  }
-
-  
-  const totalResult = await Property.aggregate([
-    { $match: matchCondition },
-    // { $group: { _id: "$district" } },
-        {
-      $group: {
-        _id: { $toLower: "$district" }
-      }
+    if (search) {
+      matchCondition.district = { $regex: search, $options: "i" };
     }
-  ]);
-  const total = totalResult.length;
-  const totalPages = Math.ceil(total / limit);
-  const skip = (page - 1) * limit;
 
+    const totalResult = await Property.aggregate([
+      { $match: matchCondition },
+      // { $group: { _id: "$district" } },
+      {
+        $group: {
+          _id: { $toLower: "$district" },
+        },
+      },
+    ]);
+    const total = totalResult.length;
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
 
-     type DestinationAgg = {
+    type DestinationAgg = {
       district: string;
       propertyCount: number;
       image?: string;
     };
 
-
-  const result = await Property.aggregate([
-    { $match: matchCondition },
-    {
-      $group: {
-        // _id: "$district",
-        _id: { $toLower: "$district" },
-        propertyCount: { $sum: 1 },
-        image: { $first: "$images" },
-        originalDistrict: { $first: "$district" } 
+    const result = await Property.aggregate([
+      { $match: matchCondition },
+      {
+        $group: {
+          // _id: "$district",
+          _id: { $toLower: "$district" },
+          propertyCount: { $sum: 1 },
+          image: { $first: "$images" },
+          originalDistrict: { $first: "$district" },
+        },
       },
-    },
-    {
-      $project: {
-        _id: 0,
-        // district: "$_id",
-         district: "$originalDistrict",
-        propertyCount: 1,
-        image: { $arrayElemAt: ["$image", 0] },
+      {
+        $project: {
+          _id: 0,
+          // district: "$_id",
+          district: "$originalDistrict",
+          propertyCount: 1,
+          image: { $arrayElemAt: ["$image", 0] },
+        },
       },
-    },
-    { $sort: { propertyCount: -1 } }, 
-    { $skip: skip },
-    { $limit: limit },
-  ]);
+      { $sort: { propertyCount: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
 
-  return {
-  
-     data: result.map((r: DestinationAgg) => ({
-      district: r.district,
-      propertyCount: r.propertyCount,
-      image: r.image || "",
-    })),
-    total,
-    page,
-    totalPages,
-  };
-}
+    return {
+      data: result.map((r: DestinationAgg) => ({
+        district: r.district,
+        propertyCount: r.propertyCount,
+        image: r.image || "",
+      })),
+      total,
+      page,
+      totalPages,
+    };
+  }
 
   async getPropertiesByDistrict(district: string) {
     return Property.find({
       district,
       isRejected: false,
-      status:"active" 
+      status: "active",
     }).populate("ownerId");
   }
 
-  
-
-async getPropertyStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]> {
-  return this.model.aggregate([
-    { $match: { ownerId: new Types.ObjectId(ownerId) } },
-    { $group: { _id: "$status", count: { $sum: 1 } } }
-  ]);
-}
-
+  async getPropertyStatusStatsByOwner(
+    ownerId: string,
+  ): Promise<{ _id: string; count: number }[]> {
+    return this.model.aggregate([
+      { $match: { ownerId: new Types.ObjectId(ownerId) } },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]);
+  }
 
   async getPropertyStatusCounts(): Promise<{ _id: string; count: number }[]> {
     return await Property.aggregate([
       {
         $group: {
-          _id: '$status',
-          count: { $sum: 1 }
-        }
-      }
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
     ]);
   }
 
   async countByOwnerId(ownerId: string): Promise<number> {
-  return await this.model.countDocuments({ ownerId }).exec();
-}
+    return await this.model.countDocuments({ ownerId }).exec();
+  }
 
-// async getLatestActiveProperties(limit: number): Promise<IProperty[]> {
-  
-// }
+  // async getLatestActiveProperties(limit: number): Promise<IProperty[]> {
 
-async getLatestActiveProperties(limit: number): Promise<IProperty[]> {
-  // const pipeline = [
-  const pipeline: PipelineStage[] = [
-    { 
-      $match: { 
-        status: "active", 
-        isRejected: false 
-      } 
-    },
-    {
-      $lookup: {
-        from: "owners",
-        localField: "ownerId",
-        foreignField: "_id",
-        as: "owner",
+  // }
+
+  async getLatestActiveProperties(limit: number): Promise<IProperty[]> {
+    // const pipeline = [
+    const pipeline: PipelineStage[] = [
+      {
+        $match: {
+          status: "active",
+          isRejected: false,
+        },
       },
-    },
-    { $unwind: "$owner" },
-    { $match: { "owner.isBlocked": false } },
-    { $sort: { createdAt: -1 } },
-    { $limit: limit },
-  ];
+      {
+        $lookup: {
+          from: "owners",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "owner",
+        },
+      },
+      { $unwind: "$owner" },
+      { $match: { "owner.isBlocked": false } },
+      { $sort: { createdAt: -1 } },
+      { $limit: limit },
+    ];
 
-  return Property.aggregate(pipeline);
-}
+    return Property.aggregate(pipeline);
+  }
 }

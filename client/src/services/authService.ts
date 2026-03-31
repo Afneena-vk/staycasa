@@ -101,24 +101,7 @@ export const authService = {
     return response.data;
   },
 
-  // changePassword: async (
-  //   data: { userId?: string; currentPassword: string; newPassword: string },
-  //   type: "user" | "owner"
-  // ) => {
-  //   let url = "";
 
-  //   switch (type) {
-  //     case "user":
-  //       url = "/user/change-password";
-  //       break;
-  //     case "owner":
-  //       url = "/owner/change-password";
-  //       break;
-  //   }
-
-  //   const response = await api.put(url, data);
-  //   return response.data;
-  // },
   changePassword: async (
   data: { userId?: string; currentPassword: string; newPassword: string },
   type: "user" | "owner"

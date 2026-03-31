@@ -69,13 +69,7 @@ export class BookingController implements IBookingController {
     next: NextFunction
   ): Promise<void> {
     try {
-      //const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-
-      // await this._bookingService.verifyPayment(
-      //   razorpay_payment_id,
-      //   razorpay_order_id,
-      //   razorpay_signature
-      // );
+      
       const {
         razorpay_payment_id,
         razorpay_order_id,
@@ -362,22 +356,6 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
   }
 
 
-
-  // async getBookingOverview(
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction
-  // ): Promise<void> {
-  //   try {
-  //     const totalCount = await this._bookingService.getBookingOverview();
-  //     res.status(STATUS_CODES.OK).json({
-  //       status: STATUS_CODES.OK,
-  //       totalCount,
-  //     });
-  //   } catch (err) {
-  //     res.status(500).json({ message: "Something went wrong" });
-  //   }
-  // }
 
   async userCancelBooking(
     req: Request,

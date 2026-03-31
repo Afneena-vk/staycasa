@@ -23,7 +23,7 @@ const ConfirmModal: FC<ConfirmModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  // Close on ESC key
+ 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel();

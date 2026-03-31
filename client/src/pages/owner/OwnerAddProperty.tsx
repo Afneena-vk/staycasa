@@ -322,6 +322,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
         <div>
         <input
           type="number"
+          min={1}  
           placeholder="Price per Month"
           value={pricePerMonth}
           onChange={(e) => setPricePerMonth(Number(e.target.value))}
@@ -336,6 +337,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
           <div>
           <input
             type="number"
+            min={0}
             placeholder="Bedrooms"
             value={bedrooms}
             onChange={(e) => setBedrooms(Number(e.target.value))}
@@ -346,6 +348,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
           <div>
           <input
             type="number"
+            min={0}
             placeholder="Bathrooms"
             value={bathrooms}
             onChange={(e) => setBathrooms(Number(e.target.value))}
@@ -370,6 +373,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
         {/* Max Guests */}
         <input
           type="number"
+          min={0} 
           placeholder="Max Guests Allowed"
           value={maxGuests}
           onChange={(e) => setMaxGuests(Number(e.target.value))}
@@ -381,6 +385,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
         <div className="grid grid-cols-2 gap-4">
           <input
             type="number"
+            min={0} 
             placeholder="Min Lease Period (months)"
             value={minLeasePeriod}
             onChange={(e) => setMinLeasePeriod(Number(e.target.value))}
@@ -390,6 +395,7 @@ const { addProperty, isLoading, error, clearError } = useAuthStore();
           {errors.minLeasePeriod && <p className="text-red-500 text-xs mt-1">{errors.minLeasePeriod}</p>}
           <input
             type="number"
+            min={0} 
             placeholder="Max Lease Period (months)"
             value={maxLeasePeriod}
             onChange={(e) => setMaxLeasePeriod(Number(e.target.value))}

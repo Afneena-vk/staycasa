@@ -156,7 +156,7 @@ return BookingMapper.toCreateOrderResponse(
       .digest("hex");
 
     if (generated !== razorpay_signature) {
-      //throw new Error(MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE);
+    
         throw new AppError(
     MESSAGES.ERROR.INVALID_PAYMENT_SIGNATURE,
     STATUS_CODES.BAD_REQUEST
@@ -168,7 +168,7 @@ return BookingMapper.toCreateOrderResponse(
 const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
 if (payment.status !== "captured") {
- // throw new Error(MESSAGES.ERROR.PAYMENT_NOT_COMPLETED)
+
    throw new AppError(
     MESSAGES.ERROR.PAYMENT_NOT_COMPLETED,
     STATUS_CODES.BAD_REQUEST

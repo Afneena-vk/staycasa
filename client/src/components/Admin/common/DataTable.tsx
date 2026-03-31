@@ -1,11 +1,11 @@
 import React from "react";
 
 interface DataTableProps {
-  children: React.ReactNode;       // <thead> + <tbody> go here
-  loading?: boolean;               // shows "Updating..." overlay when refetching
-  isEmpty?: boolean;               // triggers empty state row
+  children: React.ReactNode;      
+  loading?: boolean;               
+  isEmpty?: boolean;              
   emptyMessage?: string;
-  colSpan?: number;                // number of columns for empty state cell
+  colSpan?: number;                
 }
 
 const DataTable: React.FC<DataTableProps> = ({

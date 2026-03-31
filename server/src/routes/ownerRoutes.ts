@@ -227,28 +227,6 @@ ownerRoutes.post(
 
 
 
-// ownerRoutes.get(
-//   "/chat/:propertyId/:ownerId",
-//   authMiddleware(["owner"]),
-//   checkUserStatus,
-//   messageController.getChat.bind(messageController)
-// );
-
-
-// ownerRoutes.post(
-//   "/chat/send",
-//   authMiddleware(["owner"]),
-//   checkUserStatus,
-//   messageController.sendMessage.bind(messageController)
-// );
-
-// ownerRoutes.patch(
-//   "/chat/read",
-//   authMiddleware(["owner"]),
-//   checkUserStatus,
-//   messageController.markAsRead.bind(messageController)
-// );
-
 ownerRoutes.get(
   '/messages/:ownerId/:propertyId',
   authMiddleware(['owner']),

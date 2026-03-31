@@ -417,19 +417,6 @@ async rejectOwner(ownerId: string): Promise<{ message: string; status: number }>
   }
 }
 
-// async adminUserStatistics(): Promise<UserStatisticsDto> {
-//   try {
-//     //const { totalUsers, activeUsers, blockedUsers } = await this._userRepository.getUserStatistics();
-//     // return { totalUsers, activeUsers, blockedUsers };
-//     const stats = await this._userRepository.getUserStatistics();
-    
-//     return AdminMapper.toUserStatisticsDto(stats)
-//   } catch (err) {
-//     throw new Error("Failed to fetch user statistics");
-//   }
-// }
-
-
 async getAdminDashboardStats(): Promise<AdminDashboardDTO>{
     const [
     userStats,

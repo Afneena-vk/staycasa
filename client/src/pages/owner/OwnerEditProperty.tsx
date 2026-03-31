@@ -445,6 +445,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 </label>
           <input
             type="number"
+            min={1}  
             placeholder="Price per Month"
             value={pricePerMonth}
             onChange={(e) => setPricePerMonth(Number(e.target.value))}
@@ -461,6 +462,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 </label>
             <input
               type="number"
+              min={0} 
               placeholder="Bedrooms"
               value={bedrooms}
               onChange={(e) => setBedrooms(Number(e.target.value))}
@@ -472,6 +474,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     <label htmlFor="bathrooms"  className="block font-medium mb-1">Bathrooms</label>
             <input
               type="number"
+              min={0} 
               placeholder="Bathrooms"
               value={bathrooms}
               onChange={(e) => setBathrooms(Number(e.target.value))}
@@ -501,6 +504,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   <label htmlFor="maxGuests">Maximum Guests Allowed</label>
           <input
             type="number"
+            min={0} 
             placeholder="Max Guests Allowed"
             value={maxGuests}
             onChange={(e) => setMaxGuests(Number(e.target.value))}
@@ -515,6 +519,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     <label htmlFor="minLeasePeriod">Min Lease Period (Months)</label>
             <input
               type="number"
+              min={0} 
               placeholder="Min Lease Period (months)"
               value={minLeasePeriod}
               onChange={(e) => setMinLeasePeriod(Number(e.target.value))}
@@ -527,6 +532,7 @@ const handleFeaturesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     <label htmlFor="maxLeasePeriod">Max Lease Period (Months)</label>
             <input
               type="number"
+              min={0} 
               placeholder="Max Lease Period (months)"
               value={maxLeasePeriod}
               onChange={(e) => setMaxLeasePeriod(Number(e.target.value))}

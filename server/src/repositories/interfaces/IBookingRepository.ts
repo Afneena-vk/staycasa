@@ -17,10 +17,6 @@ export interface FindByUserOptions {
 
 
 
-// export interface BookedRange {
-//   moveInDate: Date;
-//   endDate: Date;
-// }
 
 export interface IBookingRepository extends IBaseRepository<IBooking>{
     getConfirmedBookingsByPropertyId(propertyId:string): Promise<IBooking[]>;

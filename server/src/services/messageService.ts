@@ -61,15 +61,15 @@ export class MessageService implements IMessageService {
 
     return MessageMapper.toDTO(message);
 
-    //return this._messageRepository.create(data as any);
+    
 }
 
   async markAsRead(receiverId: string, senderId: string, propertyId: string): Promise<void> {
-    //return this._messageRepository.markAsRead(receiverId, senderId, propertyId);
+   
      await this._messageRepository.markAsRead(receiverId, senderId, propertyId);
   }
 
-  // async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<any[]> {
+ 
    async getConversationList(userId: string, userModel: 'User' | 'Owner'): Promise<ConversationListDTO[]> {
     return this._messageRepository.getConversationList(userId, userModel);
   }

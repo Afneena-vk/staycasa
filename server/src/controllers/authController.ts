@@ -12,22 +12,13 @@ import { AppError } from "../utils/AppError";
  class AuthController implements IAuthController{
     async refreshToken(req: Request, res: Response, next: NextFunction): Promise<void> {
          try {
-    // const refreshToken = req.cookies["user-refresh-token"] || 
-    //                     req.cookies["owner-refresh-token"] || 
-    //                     req.cookies["admin-refresh-token"] ||
-    //                     req.body.refreshToken;
+
       const refreshToken = req.cookies["refresh-token"];
       const csrfToken = req.headers["x-csrf-token"] as string;
       const storedCsrfToken = req.cookies["csrf-token"];
 
 
 
-    // if (!refreshToken) {
-    //   res.status(STATUS_CODES.UNAUTHORIZED).json({ 
-    //     message: MESSAGES.ERROR.UNAUTHORIZED 
-    //   });
-    //   return;
-    // }
 
           if (!refreshToken) {
         throw new AppError(
@@ -42,12 +33,7 @@ import { AppError } from "../utils/AppError";
     );
     
     const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(refreshToken);
-    // if (isBlacklisted) {
-    //   res.status(STATUS_CODES.UNAUTHORIZED).json({
-    //     message: MESSAGES.ERROR.INVALID_TOKEN
-    //   });
-    //   return;
-    // }
+    
 
       if (isBlacklisted) {
         throw new AppError(
@@ -57,10 +43,7 @@ import { AppError } from "../utils/AppError";
       }
 
      if (!csrfToken || !storedCsrfToken || csrfToken !== storedCsrfToken) {
-        // res.status(STATUS_CODES.FORBIDDEN).json({
-        //   message: "Invalid CSRF token"
-        // });
-        // return;
+        
            throw new AppError("Invalid CSRF token", STATUS_CODES.FORBIDDEN);
       }
 
@@ -114,12 +97,7 @@ import { AppError } from "../utils/AppError";
       message: "Token refreshed successfully"
     });
 
-  // } catch (error: any) {
-  //   logger.error("Refresh token error: " + error.message);
-  //   res.status(STATUS_CODES.UNAUTHORIZED).json({
-  //     message: MESSAGES.ERROR.INVALID_TOKEN
-  //   });
-  // }
+  
       } catch (error: unknown) {
       logger.error("Refresh token error");
       next(error);

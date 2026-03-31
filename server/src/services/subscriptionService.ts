@@ -354,12 +354,12 @@ private async _processUpgrade(ownerId: string, newPlanId: string, paymentId: str
   const credit = (remainingDays / totalDays) * currentPlan.price;
   const proratedAmount = Math.max(0, Math.round(newPlan.price - credit));
 
-  // Expire the current subscription
+  
   await this._subscriptionRepository.update(currentSubscription._id.toString(), {
     status: "Expired",
   } as any);
 
-  // Create new upgraded subscription (same endDate as old one)
+
   await this._subscriptionRepository.createSubscription({
     ownerId,
     planId: newPlanId,

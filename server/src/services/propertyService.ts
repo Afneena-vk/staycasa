@@ -296,11 +296,7 @@ async getAllProperties(filters: {
       page
     );
 
-  // } catch (error: any) {
-  //   const err: any = new Error(error.message || MESSAGES.ERROR.SERVER_ERROR);
-  //   err.status = error.status || STATUS_CODES.INTERNAL_SERVER_ERROR;
-  //   throw err;
-  // }
+ 
     } catch (error: unknown) {
     if (error instanceof AppError) throw error;
 

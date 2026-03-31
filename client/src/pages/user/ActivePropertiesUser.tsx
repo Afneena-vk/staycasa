@@ -77,19 +77,7 @@ const ActivePropertiesUser: React.FC = () => {
     setPage(1);
   };
 
-  // if (isLoading)
-  //   return (
-  //     <div className="flex items-center justify-center min-h-[60vh]">
-  //       <p className="text-gray-500 text-lg animate-pulse">Loading properties...</p>
-  //     </div>
-  //   );
 
-  // if (error)
-  //   return (
-  //     <div className="flex items-center justify-center min-h-[60vh]">
-  //       <p className="text-red-500 text-lg">{error}</p>
-  //     </div>
-  //   );
 
   const isFilterApplied =
     searchQuery.trim() !== "" ||

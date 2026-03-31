@@ -4,17 +4,6 @@ import { paymentService } from "../../services/paymentService";
 import { bookingService } from "../../services/bookingService";
 import axios from "axios";
 
-// export interface BookingQuery {
-//   page?: number;
-//   limit?: number;
-//   search?: string;
-//   status?: string;
-//   paymentStatus?: string;
-//   startDate?: string;
-//   endDate?: string;
-//   sortBy?: string;
-//   sortOrder?: "asc" | "desc";
-// }
 
 const getErrorMessage = (error: unknown): string => {
   if (axios.isAxiosError(error)) {

@@ -48,13 +48,7 @@ async findByUserId(userId: string): Promise<IBooking[]> {
 }
 
 
-// const isBookingIdSearch =
-//     typeof search === "string" && search.startsWith("BK");
-// match:
-// //         !isBookingIdSearch && search
-//   const filteredBookings = isBookingIdSearch
-//     ? bookings
-//     : bookings.filter(b => b.propertyId);
+
 
 async findByUserWithQuery(
   userId: string,
@@ -79,13 +73,7 @@ async findByUserWithQuery(
   if (status) query.bookingStatus = status;
   if (paymentStatus) query.paymentStatus = paymentStatus;
 
- 
-  // if (startDate) {
-  //   query.endDate = { $gte: new Date(startDate) };
-  // }
-  // if (endDate) {
-  //   query.endDate = { $lt: new Date(endDate) };
-  // }
+
 
   const today= new Date();
 today.setHours(0,0,0,0);

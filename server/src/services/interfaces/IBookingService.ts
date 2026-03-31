@@ -27,16 +27,7 @@ export interface IPaymentVerificationInput {
 }
 
 export interface UserBookingsQueryOptions {
-  // search?: string;
-  // status?: string;
-  // paymentStatus?: string;
-  // startDate?: string; // ISO string from query
-  // endDate?: string;   // ISO string from query
-  // page?: string;      // from query params
-  // limit?: string;     // from query params
-  // sortField?: keyof IBooking;
-  // sortOrder?: "asc" | "desc";
-   page?: number;
+  page?: number;
   limit?: number;
   search?: string;
   status?: string;

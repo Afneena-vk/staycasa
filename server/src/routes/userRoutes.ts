@@ -241,28 +241,6 @@ userRoutes.delete(
 );
 
 
-// userRoutes.get(
-//   "/chat/:propertyId/:ownerId",
-//   authMiddleware(["user"]),
-//   checkUserStatus,
-//   messageController.getChat.bind(messageController)
-// );
-
-
-// userRoutes.post(
-//   "/chat/send",
-//   authMiddleware(["user"]),
-//   checkUserStatus,
-//   messageController.sendMessage.bind(messageController)
-// );
-
-// userRoutes.patch(
-//   "/chat/read",
-//   authMiddleware(["user"]),
-//   checkUserStatus,
-//   messageController.markAsRead.bind(messageController)
-// );
-
 userRoutes.get(
   '/messages/:ownerId/:propertyId',
   authMiddleware(['user']),

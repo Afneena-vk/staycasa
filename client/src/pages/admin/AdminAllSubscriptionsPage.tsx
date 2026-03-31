@@ -191,61 +191,7 @@ const AdminAllSubscriptionsPage = () => {
   )}
 </div>
 
-        {/* Table */}
-
-          {/* {subscriptionError ? (
-  <p className="text-red-500">{subscriptionError}</p>
-) : (
-  <div className="relative bg-slate-900 rounded-xl overflow-x-auto">
-
-
-   
-
-  {subscriptionLoading && adminSubscriptions.length > 0 && (
-  <div className="absolute top-2 right-4 text-xs text-slate-400">
-    Updating...
-  </div>
-)}
-
-            <table className="w-full text-sm text-left text-slate-300">
-              <thead className="bg-slate-800">
-                <tr>
-                  <th className="p-3">Owner</th>
-                  <th className="p-3">Email</th>
-                  <th className="p-3">Plan</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Start</th>
-                  <th className="p-3">End</th>
-                  <th className="p-3">Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adminSubscriptions.map((sub) => (
-                
-                  <tr
-  key={sub.id}
-  className="border-t border-slate-800 hover:bg-slate-800/50 transition-colors duration-150"
->
-                    <td className="p-3">{sub.owner.name}</td>
-                    <td className="p-3">{sub.owner.email}</td>
-                    <td className="p-3">{sub.plan.name}</td>
-                    <td className="p-3">{sub.status}</td>
-                    <td className="p-3">
-                      {new Date(sub.startDate).toLocaleDateString()}
-                    </td>
-                    <td className="p-3">
-                      {new Date(sub.endDate).toLocaleDateString()}
-                    </td>
-                    <td className="p-3">{sub.transactionType}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )} */}
-
-
-
+  
 {/* Pagination */}
 {adminSubscriptionsPagination &&
   adminSubscriptionsPagination.totalPages > 1 && (

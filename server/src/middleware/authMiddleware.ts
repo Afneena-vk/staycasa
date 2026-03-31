@@ -7,83 +7,43 @@ import { ITokenBlacklistRepository } from "../repositories/interfaces/ITokenBlac
 import { AppError } from "../utils/AppError";
 
 export const authMiddleware = (allowedRoles: string[]) => {
-  return async(req: Request, res: Response, next: NextFunction) => {
-    //const token = req.cookies["auth-token"];
-    // let token: string | undefined;
-    //  if (allowedRoles.includes("admin")) {
-    //   token = req.cookies["admin-auth-token"];
-    // } else if (allowedRoles.includes("owner")) {
-    //   token = req.cookies["owner-auth-token"];  
-    // } else if (allowedRoles.includes("user")) {
-    //   token = req.cookies["user-auth-token"];
-    // }
-
-     const token = req.cookies["access-token"];
-      //const token = req.cookies["access-token"] || req.headers["authorization"];
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies["access-token"];
 
     if (!token) {
-      // res
-      //   .status(STATUS_CODES.UNAUTHORIZED)
-      //   .json({ message: MESSAGES.ERROR.UNAUTHORIZED });
-      // return;
-              throw new AppError(
-          MESSAGES.ERROR.UNAUTHORIZED,
-          STATUS_CODES.UNAUTHORIZED
-        );
+      throw new AppError(
+        MESSAGES.ERROR.UNAUTHORIZED,
+        STATUS_CODES.UNAUTHORIZED,
+      );
     }
 
-    try { 
-
-
+    try {
       const tokenBlacklistRepo = container.resolve<ITokenBlacklistRepository>(
-        TOKENS.ITokenBlacklistRepository
+        TOKENS.ITokenBlacklistRepository,
       );
 
-          const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(token);
+      const isBlacklisted = await tokenBlacklistRepo.isBlacklisted(token);
       if (isBlacklisted) {
-        // res
-        //   .status(STATUS_CODES.UNAUTHORIZED)
-        //   .json({ message: "token is blacklisted" });
-        // return;
-                throw new AppError("Token is blacklisted", STATUS_CODES.UNAUTHORIZED);
+        throw new AppError("Token is blacklisted", STATUS_CODES.UNAUTHORIZED);
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
         userId: string;
-       // type: string;
+        // type: string;
         type: "user" | "admin" | "owner";
       };
 
       if (!allowedRoles.includes(decoded.type)) {
-        // res
-        //   .status(STATUS_CODES.FORBIDDEN)
-        //   .json({ message: MESSAGES.ERROR.FORBIDDEN });
-
-        // return;
-                throw new AppError(
-          MESSAGES.ERROR.FORBIDDEN,
-          STATUS_CODES.FORBIDDEN
-        );
+        throw new AppError(MESSAGES.ERROR.FORBIDDEN, STATUS_CODES.FORBIDDEN);
       }
-
-
 
       req.userId = decoded.userId;
       req.userType = decoded.type;
 
       next();
-    // } catch (error) {
-    //   res
-    //     .status(STATUS_CODES.UNAUTHORIZED)
-    //     .json({ message: MESSAGES.ERROR.INVALID_TOKEN });
-    //   return;
-    // }
-        } catch (error: unknown) {
+    } catch (error: unknown) {
       next(
-        new AppError(
-          MESSAGES.ERROR.INVALID_TOKEN,
-          STATUS_CODES.UNAUTHORIZED
-        )
+        new AppError(MESSAGES.ERROR.INVALID_TOKEN, STATUS_CODES.UNAUTHORIZED),
       );
     }
   };

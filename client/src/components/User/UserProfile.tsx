@@ -337,7 +337,8 @@ if (newProfileImage) {
               //   <img
               //     src={userData.profileImage}
               //     alt="Profile"
-               ) : profile.profileImage ? (
+              //  ) : profile.profileImage ? (
+              ) : profile.profileImage?.url ? (
                 <img
                   // src={profile.profileImage}
                   src={profile.profileImage?.url}

@@ -22,7 +22,7 @@ const Pagination: React.FC<PaginationProps> = ({
   const start = (currentPage - 1) * limit + 1;
   const end = Math.min(currentPage * limit, totalCount);
 
-  // Build page number array with ellipsis
+  
   const getPageNumbers = (): (number | "...")[] => {
     if (totalPages <= 7) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
