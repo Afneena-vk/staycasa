@@ -486,4 +486,28 @@ async getBookingStatusStatsByOwner(ownerId: string) {
     ]);
   }
 
+
+  async findConflictingBookingsWithSession(
+  propertyId: string,
+  start: Date,
+  end: Date,
+  session: mongoose.ClientSession
+): Promise<IBooking | null> {
+  return Booking.findOne({
+    propertyId,
+    bookingStatus: BookingStatus.Confirmed,
+    isCancelled: false,
+    moveInDate: { $lte: end },
+    endDate: { $gte: start },
+  }).session(session);
+}
+
+async createWithSession(
+  data: Partial<IBooking>,
+  session: mongoose.ClientSession
+): Promise<IBooking> {
+  const [booking] = await Booking.create([data], { session });
+  return booking;
+}
+
 }

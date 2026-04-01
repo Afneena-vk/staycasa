@@ -9,6 +9,7 @@ import crypto from "crypto";
 import { IPaymentVerificationInput} from "./interfaces/IBookingService";
 import { IBooking } from '../models/bookingModel';
 import mongoose from 'mongoose';
+import { IProperty } from '../models/propertyModel';
 import { BookingStatus, PaymentStatus } from "../models/status/status";
 import { BookingResponseDto, VerifyPaymentResponseDto, CalculateTotalResponseDto, CreateRazorpayOrderResponseDto, BookingListItemDto, BookingDetailsDto, OwnerBookingStatsDto, CancelBookingResult, BookingListForAdminDto, OwnerBookingStatsDTo} from '../dtos/booking.dto';
 import { BookingMapper } from '../mappers/bookingMapper';
@@ -233,70 +234,76 @@ if (bookingId) {
       "Payment successful. Booking confirmed!",
       property!
     );
+  } 
+
+  const session = await mongoose.startSession();
+
+
+let booking: IBooking;
+let property: IProperty;
+
+try {
+      session.startTransaction();
+
+  const foundProperty = await this._propertyRepository.findByPropertyId(propertyId);
+  if (!foundProperty) {
+    throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
   }
-
-     const property = await this._propertyRepository.findByPropertyId(propertyId);
-  //if (!property) throw new Error("Property not found");
-   if (!property) {
-  throw new AppError("Property not found", STATUS_CODES.NOT_FOUND);
-} 
-   
-
+  property = foundProperty;
 
   const startDate = new Date(moveInDate);
   const endDate = new Date(startDate);
   endDate.setMonth(endDate.getMonth() + rentalPeriod);
 
-  
-  const conflict = await this._bookingRepository.findConflictingBookings(
+  //  Conflict check inside session
+  const conflict = await this._bookingRepository.findConflictingBookingsWithSession(
     propertyId,
     startDate,
-    endDate
+    endDate,
+    session
   );
- // if (conflict) throw new Error("Property already booked");
-if (conflict) {
-  throw new AppError("Property already booked", STATUS_CODES.CONFLICT);
-}
+
+  if (conflict) {
+    throw new AppError("Property already booked", STATUS_CODES.CONFLICT);
+  }
+
+
 
   const totalCost = property.pricePerMonth * rentalPeriod;
 
- const booking = await this._bookingRepository.create({
+  //Create booking
+  booking = await this._bookingRepository.createWithSession(
+    {
+      userId: new mongoose.Types.ObjectId(userId),
+      ownerId: property.ownerId as any,
+      propertyId: new mongoose.Types.ObjectId(propertyId),
+      moveInDate: startDate,
+      endDate,
+      rentalPeriod,
+      guests,
+      rentPerMonth: property.pricePerMonth,
+      totalCost,
+      paymentMethod: "razorpay",
+      paymentId: razorpay_payment_id,
+      paymentStatus: PaymentStatus.Completed,
+      bookingStatus: BookingStatus.Confirmed,
+      isCancelled: false,
+      refundAmount: 0,
+    },
+    session
+  );
 
-    userId: new mongoose.Types.ObjectId(userId),
-    ownerId: property.ownerId as any,
-    propertyId: new mongoose.Types.ObjectId(propertyId),
-    moveInDate: startDate,
-    endDate,
-    rentalPeriod,
-    guests,
-    rentPerMonth: property.pricePerMonth,
-    totalCost,
-    paymentMethod: "razorpay",
-    paymentId: razorpay_payment_id,
-    paymentStatus:  PaymentStatus.Completed,
-    bookingStatus:  BookingStatus.Confirmed,
-    isCancelled: false,
-    refundAmount: 0
-  });
 
+      await this._propertyRepository.updateWithSession(
+      propertyId,
+      { isBooked: true },
+      session
+    );
 
-await this._propertyRepository.update(propertyId, { isBooked: true });
+  // Wallet update
+  const ownerId = new mongoose.Types.ObjectId(property.ownerId.toString());
 
-
-//const ownerId = property.ownerId as mongoose.Types.ObjectId;
-const ownerId = new mongoose.Types.ObjectId(
-  property.ownerId.toString()
-);
-console.log("OwnerId:", ownerId);
-console.log("OwnerId type:", typeof ownerId);
-console.log("Wallet payload:", {
-  type: "credit",
-  amount: totalCost,
-  bookingId: booking._id,
-});
- 
-
-  await this._walletRepository.creditWallet(
+  await this._walletRepository.creditWalletWithSession(
     ownerId,
     "owner",
     {
@@ -306,21 +313,31 @@ console.log("Wallet payload:", {
       bookingId: booking._id,
       paymentMethod: "razorpay",
       paymentId: razorpay_payment_id,
-      date: new Date()
-    }
+      date: new Date(),
+    },
+    session
   );
 
+  //await this._propertyRepository.update(propertyId, { isBooked: true });
 
 
-  
-const populatedBooking = await this._bookingRepository.findById(booking._id.toString());
+  await session.commitTransaction();
+
+} finally {
+  session.endSession();
+}
+
+
+const populatedBooking = await this._bookingRepository.findById(
+  booking._id.toString()
+);
 
 await this._notificationService.createNotification(
   userId,
   "User",
   "booking",
   "Booking Confirmed",
-  `Your booking for ${property.title} from ${startDate.toDateString()} to ${endDate.toDateString()} is confirmed.`,
+  `Your booking for ${property.title} from ${new Date(moveInDate).toDateString()} has been confirmed.`,
   booking._id.toString()
 );
 
@@ -329,20 +346,17 @@ await this._notificationService.createNotification(
   "Owner",
   "booking",
   "New Booking Received",
-  `Your property ${property.title} has been booked by ${userId}. Booking dates: ${startDate.toDateString()} - ${endDate.toDateString()}.`,
+  `Your property ${property.title} has been booked.`,
   booking._id.toString()
 );
 
+return BookingMapper.toVerifyPaymentResponse(
+  populatedBooking || booking,
+  "Booking confirmed successfully",
+  property
+);
 
- return BookingMapper.toVerifyPaymentResponse(
-      populatedBooking || booking,
-      "Booking confirmed successfully",
-      property
-    );
-
-  
-  }
-
+}
 
   async createPendingBooking(input: {
   razorpay_order_id: string;

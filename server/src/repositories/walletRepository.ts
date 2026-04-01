@@ -3,6 +3,7 @@ import Wallet, { IWallet, ITransaction } from "../models/walletModel";
 import { BaseRepository } from "./baseRepository";
 import {IWalletRepository} from  './interfaces/IWalletRepository';
 import { Types } from "mongoose";
+import mongoose from "mongoose";
 
 @injectable()
 export class WalletRepository extends BaseRepository<IWallet> implements IWalletRepository {
@@ -83,6 +84,25 @@ async getWalletWithBookings(
     transactions: paginatedTransactions,
     totalTransactions: wallet.transactions.length,
   };
+}
+
+async creditWalletWithSession(
+  userId: Types.ObjectId,
+  userType: "user" | "owner",
+  transaction: ITransaction,
+  session: mongoose.ClientSession
+): Promise<IWallet> {
+  const wallet = await this.model.findOneAndUpdate(
+    { userId, userType },
+    {
+      $inc: { balance: transaction.amount },
+      $push: { transactions: transaction },
+    },
+    { new: true, upsert: true, session }
+  );
+
+  if (!wallet) throw new Error("Failed to credit wallet");
+  return wallet;
 }
 
 
