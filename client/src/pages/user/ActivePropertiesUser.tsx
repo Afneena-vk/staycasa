@@ -100,7 +100,8 @@ const ActivePropertiesUser: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
 
       {/* ── STICKY SEARCH + SORT BAR ── */}
-      <div className="sticky top-16 z-40 bg-gray-50 border-b border-gray-200 shadow-sm">
+      {/* <div className="sticky top-16 z-40 bg-gray-50 border-b border-gray-200 shadow-sm"> */}
+      <div className="sticky top-16 z-40 backdrop-blur-md bg-white/80 border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
 
           {/* Search */}
@@ -210,85 +211,34 @@ const ActivePropertiesUser: React.FC = () => {
               <>
                 {/* <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"> */}
                 <div className="flex flex-col gap-6">
-                  {/* {properties.map((property: Property) => (
-                    <div
-                      key={property.id}
-                      onClick={() => navigate(`/user/properties/${property.id}`)}
-                      className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer overflow-hidden"
-                    >
-                   
-                      <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
-      
-                        {property.images?.[0] && (
-  <img
-    src={property.images[0]}
-    alt={property.title}
-    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-  />
-)}
-                      </div>
 
-                      <div className="p-4 space-y-2">
-                        <h3 className="text-sm font-semibold text-gray-900 truncate">
-                          {property.title}
-                        </h3>
-                        <p className="text-xs text-gray-400 truncate">
-                          {property.city}, {property.district}, {property.state}
-                        </p>
-
-                        <div className="flex items-center gap-1">
-                          {property.totalReviews > 0 ? (
-                            <>
-                              <StarRating rating={property.averageRating} />
-                              <span className="text-xs text-gray-400">
-                                ({property.totalReviews})
-                              </span>
-                            </>
-                          ) : (
-                            <div className="flex gap-0.5">
-                              {[...Array(5)].map((_, i) => (
-                                <FaStar key={i} className="text-gray-200 text-xs" />
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        <p className="text-sm font-bold text-blue-950">
-                          ₹{property.pricePerMonth}
-                          <span className="text-xs font-normal text-gray-400">/month</span>
-                        </p>
-                      </div>
-                    </div>
-                  ))} */}
-
-                  {properties.map((property: Property) => (
+{properties.map((property: Property) => (
   <div
     key={property.id}
     onClick={() => navigate(`/user/properties/${property.id}`)}
-    // className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex"
-     className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex flex-col sm:flex-row"
+    className="group bg-white/90 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col sm:flex-row hover:-translate-y-1"
   >
-    
-    {/* Property Image */}
-    {/* <div className="w-64 h-48 bg-gray-100 shrink-0"> */}
-    <div className="w-full sm:w-64 h-48 sm:h-auto bg-gray-100 shrink-0">
+    {/* Image */}
+    <div className="w-full sm:w-64 h-48 sm:h-auto bg-gray-100 overflow-hidden relative">
       {property.images?.[0] && (
         <img
           src={property.images[0]}
           alt={property.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
       )}
+
+      {/* Overlay gradient */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition" />
     </div>
 
-    {/* Property Details */}
-    {/* <div className="flex flex-col justify-between p-5 flex-1"> */}
-     <div className="flex flex-col justify-between p-4 sm:p-5 flex-1">
+    {/* Details */}
+    <div className="flex flex-col justify-between p-4 sm:p-5 flex-1">
 
       <div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold text-gray-900">
+        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-900 transition">
           {property.title}
         </h3>
 
@@ -315,34 +265,35 @@ const ActivePropertiesUser: React.FC = () => {
           )}
         </div>
 
-        {/* Property Details */}
+        {/* Info */}
         <p className="text-sm text-gray-600">
           {property.bedrooms} Bedrooms • {property.bathrooms} Bathrooms • {property.maxGuests} Guests
         </p>
 
-        {/* Lease Period */}
         <p className="text-sm text-gray-600 mt-1">
           Lease: {property.minLeasePeriod} - {property.maxLeasePeriod} months
         </p>
 
         {/* Features */}
-        <div className="flex flex-wrap gap-2 mt-2">
+        <div className="flex flex-wrap gap-2 mt-3">
           {property.features.slice(0, 4).map((feature, index) => (
             <span
               key={index}
-              className="text-xs bg-gray-100 px-2 py-1 rounded"
+              className="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-medium"
             >
               {feature}
             </span>
           ))}
         </div>
-
       </div>
 
       {/* Price */}
-      {/* <div className="flex justify-end"> */}
-       <div className="mt-3 sm:mt-0 flex justify-end">
-        <p className="text-xl font-bold text-blue-950">
+      <div className="mt-4 sm:mt-0 flex justify-between items-center">
+        <span className="text-xs text-gray-400 hidden sm:block">
+          View details →
+        </span>
+
+        <p className="text-xl font-bold bg-gradient-to-r from-blue-950 to-blue-700 bg-clip-text text-transparent">
           ₹{property.pricePerMonth}
           <span className="text-sm text-gray-500 font-normal">
             {" "} / month
@@ -353,6 +304,7 @@ const ActivePropertiesUser: React.FC = () => {
     </div>
   </div>
 ))}
+ 
                 </div>
 
                 {/* ── PAGINATION ── */}
@@ -370,7 +322,9 @@ const ActivePropertiesUser: React.FC = () => {
                   <button
                     disabled={page >= totalPages}
                     onClick={() => setPage(page + 1)}
-                    className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm disabled:opacity-40 hover:bg-blue-800 transition-colors"
+                    // className="px-4 py-2 bg-blue-950 text-white rounded-lg text-sm disabled:opacity-40 hover:bg-blue-800 transition-colors"
+                     className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
+                    // className="px-4 py-2 bg-gradient-to-r from-blue-950 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
                   >
                     Next
                   </button>
@@ -386,3 +340,98 @@ const ActivePropertiesUser: React.FC = () => {
 };
 
 export default ActivePropertiesUser;
+
+
+
+
+//                   {properties.map((property: Property) => (
+//   <div
+//     key={property.id}
+//     onClick={() => navigate(`/user/properties/${property.id}`)}
+//     // className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex"
+//      className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition cursor-pointer overflow-hidden flex flex-col sm:flex-row"
+//   >
+    
+
+//     <div className="w-full sm:w-64 h-48 sm:h-auto bg-gray-100 shrink-0">
+//       {property.images?.[0] && (
+//         <img
+//           src={property.images[0]}
+//           alt={property.title}
+//           className="w-full h-full object-cover"
+//         />
+//       )}
+//     </div>
+
+//     {/* Property Details */}
+
+//      <div className="flex flex-col justify-between p-4 sm:p-5 flex-1">
+
+//       <div>
+
+//         {/* Title */}
+//         <h3 className="text-lg font-semibold text-gray-900">
+//           {property.title}
+//         </h3>
+
+//         {/* Location */}
+//         <p className="text-sm text-gray-500 mb-2">
+//           {property.city}, {property.district}, {property.state}
+//         </p>
+
+//         {/* Rating */}
+//         <div className="flex items-center gap-2 mb-2">
+//           {property.totalReviews > 0 ? (
+//             <>
+//               <StarRating rating={property.averageRating} />
+//               <span className="text-sm text-gray-500">
+//                 ({property.totalReviews})
+//               </span>
+//             </>
+//           ) : (
+//             <div className="flex text-gray-300">
+//               {[...Array(5)].map((_, i) => (
+//                 <FaStar key={i} />
+//               ))}
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Property Details */}
+//         <p className="text-sm text-gray-600">
+//           {property.bedrooms} Bedrooms • {property.bathrooms} Bathrooms • {property.maxGuests} Guests
+//         </p>
+
+//         {/* Lease Period */}
+//         <p className="text-sm text-gray-600 mt-1">
+//           Rent: {property.minLeasePeriod} - {property.maxLeasePeriod} months
+//         </p>
+
+//         {/* Features */}
+//         <div className="flex flex-wrap gap-2 mt-2">
+//           {property.features.slice(0, 4).map((feature, index) => (
+//             <span
+//               key={index}
+//               className="text-xs bg-gray-100 px-2 py-1 rounded"
+//             >
+//               {feature}
+//             </span>
+//           ))}
+//         </div>
+
+//       </div>
+
+//       {/* Price */}
+//       {/* <div className="flex justify-end"> */}
+//        <div className="mt-3 sm:mt-0 flex justify-end">
+//         <p className="text-xl font-bold text-blue-950">
+//           ₹{property.pricePerMonth}
+//           <span className="text-sm text-gray-500 font-normal">
+//             {" "} / month
+//           </span>
+//         </p>
+//       </div>
+
+//     </div>
+//   </div>
+// ))}

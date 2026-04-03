@@ -82,46 +82,16 @@ const UserLanding: React.FC = () => {
       {/* <Header /> */}
 
       {/* HERO SECTION */}
-      {/* <section className="relative overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900 text-white pt-28 pb-24">
-        <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] opacity-10" />
-        <div className="relative container mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-            Find Your Perfect Stay, <br className="hidden md:block" /> Month by
-            Month
-          </h1>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-blue-100">
-            Flexible monthly stays in verified vacation homes, villas and
-            apartments. Designed for comfort, work, and lifestyle.
-          </p>
-
-          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <button
-              onClick={handleBookStay}
-              className="bg-white text-blue-950 font-semibold px-10 py-4 rounded-xl hover:bg-gray-100 transition shadow-lg"
-            >
-              Explore Stays
-            </button>
-
-            <Link
-              to="/owner/signup"
-              className="border border-white/70 text-white font-semibold px-10 py-4 rounded-xl hover:bg-white hover:text-blue-950 transition"
-            >
-              Become a Host
-            </Link>
-          </div>
-        </div>
-      </section> */}
-      {/* HERO SECTION */}
 <section className="relative h-[90vh] min-h-[600px] w-full overflow-hidden text-white">
   {/* Background Image */}
   <img
-    src="https://res.cloudinary.com/dvqdfv7yt/image/upload/images_5_detqkr.jpg"
+    src={HERO_IMAGE}
     alt="Vacation home stay"
     className="absolute inset-0 h-full w-full object-cover"
   />
 
-  {/* Dark Overlay */}
-  <div className="absolute inset-0 bg-black/50" />
+  {/* Overlay */}
+  <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/30" />
 
   {/* Content */}
   <div className="relative z-10 container mx-auto px-6 h-full flex flex-col justify-center items-center text-center">
@@ -148,45 +118,76 @@ const UserLanding: React.FC = () => {
         Become a Host
       </Link>
     </div>
+
+    {/* Scroll Down Indicator */}
+    <div className="absolute bottom-8 animate-bounce">
+      <span className="text-2xl text-white">⌄</span>
+    </div>
   </div>
 </section>
 
 
       {/* LATEST PROPERTIES */}
-      <section className="py-20">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-blue-950">
-              Latest Stays
-            </h2>
-            <button
-              onClick={handleBookStay}
-              className="text-blue-900 font-medium hover:underline"
-            >
-              View all →
-            </button>
-          </div>
+<section className="py-20 bg-gray-50">
+  <div className="container mx-auto px-6">
+    <div className="flex items-center justify-between mb-10">
+      <h2 className="text-3xl md:text-4xl font-bold text-blue-950">
+        Latest Stays
+      </h2>
+      <button
+        onClick={handleBookStay}
+        className="text-blue-900 font-medium hover:underline"
+      >
+        View all →
+      </button>
+    </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-72 bg-gray-200 animate-pulse rounded-2xl"
-                />
-              ))}
-            </div>
-          ) : latestProperties.length === 0 ? (
-            <p className="text-center text-gray-500">
-              No properties available right now.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {latestCards}
-            </div>
-          )}
+    {isLoading ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="h-72 bg-gray-200 animate-pulse rounded-2xl"
+          />
+        ))}
+      </div>
+    ) : latestProperties.length === 0 ? (
+      <p className="text-center text-gray-500">
+        No properties available right now.
+      </p>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+        {latestCards}
+      </div>
+    )}
+  </div>
+</section>
+
+<section className="py-20 bg-white">
+  <div className="container mx-auto px-6 text-center">
+    <h2 className="text-3xl md:text-4xl font-bold text-blue-950 mb-10">
+      Why Choose Staycasa
+    </h2>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+      {[
+        { icon: "🏡", title: "Verified Homes", desc: "Stay at verified and safe properties." },
+        { icon: "💳", title: "Easy Payments", desc: "Flexible monthly payment options." },
+        { icon: "📍", title: "Prime Locations", desc: "Homes in top cities and neighborhoods." },
+        { icon: "⭐", title: "Customer Support", desc: "24/7 assistance for hassle-free stay." },
+      ].map((feature) => (
+        <div
+          key={feature.title}
+          className="bg-blue-50 rounded-2xl p-6 hover:shadow-xl transition"
+        >
+          <div className="text-4xl mb-4">{feature.icon}</div>
+          <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+          <p className="text-gray-600 text-sm">{feature.desc}</p>
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* FOOTER */}
       {/* <Footer /> */}
