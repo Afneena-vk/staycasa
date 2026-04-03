@@ -56,6 +56,7 @@ const [confirmConfig, setConfirmConfig] = useState<{
     );
   } else if (error instanceof Error) {
     setErrorMessage(error.message);
+    toast.error(error.message);
   } else {
     setErrorMessage("Failed to retry payment");
   }
