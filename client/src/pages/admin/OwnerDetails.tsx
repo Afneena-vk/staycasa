@@ -128,12 +128,6 @@ setOwner(prev => prev ? { ...prev, status: actionType === "block" ? "blocked" : 
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/admin/owners")}
-              className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
-            >
-              ← Back to Owners
-            </button>
             <div>
               <h1 className="text-2xl font-semibold text-gray-800">Owner Details</h1>
               <p className="text-sm text-gray-600">Complete information about the owner</p>
@@ -157,7 +151,7 @@ setOwner(prev => prev ? { ...prev, status: actionType === "block" ? "blocked" : 
         {/* Details Card */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-8">
+          <div className="bg-gradient-to-r  from-blue-900 to-blue-800   px-6 py-8">
             <div className="flex items-center gap-6">
               {owner.profileImage ? (
                 <img

@@ -65,13 +65,6 @@ const visibleReviews = showAllReviews
   return (
     // <AdminLayout>
       <div className="p-8 max-w-6xl mx-auto space-y-8">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="text-blue-600 hover:text-blue-800 font-medium"
-        >
-          ← Back to Properties
-        </button>
 
         {/* Property Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">

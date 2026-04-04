@@ -63,7 +63,7 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
         <button
           key={link.name}
           onClick={handleLogout}
-          className="group flex items-center space-x-3 py-3 px-4 w-full text-left rounded-xl transition-all duration-200 hover:bg-red-600/20 text-red-400"
+          className="group flex items-center space-x-3 py-3 px-4 w-full text-left rounded-xl transition-all duration-200 text-slate-400 hover:bg-red-500/10 hover:text-red-400"
         >
           <div className="w-5 h-5 flex items-center justify-center">
             <Icon size={18} />
@@ -79,10 +79,10 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
         to={link.path}
         onClick={handleLinkClick}
         title={collapsed ? link.name : undefined}
-        className={`group flex items-center space-x-3 py-3 px-4 rounded-xl transition-all duration-200 ${
+           className={`group flex items-center space-x-3 py-3 px-4 rounded-xl transition-colors duration-100 ${
           isActive
-            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-[1.02]"
-            : "hover:bg-slate-700/50 text-slate-300 hover:text-white"
+            ?"bg-blue-500/15 text-blue-400"
+            :"text-slate-400 hover:bg-slate-800 hover:text-white"
         }`}
       >
         <div className="w-5 h-5 flex items-center justify-center">

@@ -112,7 +112,7 @@ const OwnerSubscriptionPage = () => {
                   <h3 className="text-lg font-bold">{plan.name}</h3>
                   <p className="text-gray-500 text-sm">{plan.duration}</p>
 
-                  <p className="text-3xl font-bold mt-4 text-indigo-600">
+                  <p className="text-3xl font-bold mt-4 text-blue-900">
                     ₹{plan.price}
                   </p>
 
@@ -158,7 +158,7 @@ const OwnerSubscriptionPage = () => {
                       }
                     );
                   }}
-                  className="mt-6 w-full rounded-xl bg-indigo-600 text-white py-2 font-medium hover:bg-indigo-700 transition disabled:opacity-60"
+                  className="mt-6 w-full rounded-xl bg-blue-900 text-white py-2 font-medium hover:bg-blue-700 transition disabled:opacity-60"
                 >
                   {!isApproved
                     ? "Approval Pending"

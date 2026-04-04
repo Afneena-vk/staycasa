@@ -250,7 +250,7 @@ const unblockUser = useAuthStore((state) => state.unblockUser);
             {["Username", "Email", "Phone", "Status", "Actions"].map((h) => (
               <th
                 key={h}
-                className="px-5 py-3.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                className="px-5 py-3.5 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider"
               >
                 {h}
               </th>
@@ -270,7 +270,7 @@ const unblockUser = useAuthStore((state) => state.unblockUser);
                       className="w-8 h-8 rounded-full object-cover ring-2 ring-slate-100"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-950 flex items-center justify-center text-white text-xs font-bold">
                       {user.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -314,7 +314,7 @@ const unblockUser = useAuthStore((state) => state.unblockUser);
                   </button>
                   <button
                     onClick={() => handleViewUser(user.id)}
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-900 hover:bg-blue-100 border border-blue-200 transition"
                   >
                     View Details
                   </button>
