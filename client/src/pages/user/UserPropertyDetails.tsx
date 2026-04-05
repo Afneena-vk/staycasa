@@ -18,7 +18,7 @@ import {
   FaShieldAlt, FaRegClock, FaCheckCircle,
 } from "react-icons/fa";
  
-type Maybe<T> = T | null | undefined;
+//type Maybe<T> = T | null | undefined;
  
 const IconForFeature = ({ feature }: { feature: string }) => {
   const low = feature.toLowerCase();
@@ -63,7 +63,7 @@ const UserPropertyDetails = () => {
   const reviewLoading         = useAuthStore((s) => s.reviewLoading);
  
   const [checkIn,              setCheckIn]              = useState<string>("");
-  const [checkOut,             setCheckOut]             = useState<string>("");
+  // const [checkOut,             setCheckOut]             = useState<string>("");
   const [guests,               setGuests]               = useState<number>(1);
   const [availabilityMessage,  setAvailabilityMessage]  = useState<string | null>(null);
   const [rentalPeriod,         setRentalPeriod]         = useState(property?.minLeasePeriod || 1);

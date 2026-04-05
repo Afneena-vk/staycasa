@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import { ownerService } from "../../services/ownerService";
 import { OwnerProfile, ProfileResponse } from "../../types/owner";
 

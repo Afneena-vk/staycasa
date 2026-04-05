@@ -42,7 +42,7 @@ export interface MessageSlice {
   clearMessages: () => void;
 }
 
-export const createMessageSlice: StateCreator<MessageSlice> = (set, get) => ({
+export const createMessageSlice: StateCreator<MessageSlice> = (set) => ({
   messages: [],
   conversationList: [],
   messageLoading: false,

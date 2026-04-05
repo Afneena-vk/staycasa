@@ -1,15 +1,15 @@
 
 
 import { useState, useEffect } from "react";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaMapMarkerAlt,
+  // FaUser,
+  // FaEnvelope,
+  // FaPhone,
+  // FaMapMarkerAlt,
   FaUpload,
-  FaSave,
+  // FaSave,
   FaSpinner,
 } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";

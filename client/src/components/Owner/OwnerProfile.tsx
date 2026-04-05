@@ -159,7 +159,7 @@ const validate = () => {
       }
       
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (_e) => {
         //const base64String = e.target?.result as string;
         // setProfile({ ...profile, profileImage: base64String });
         setProfile({ ...profile });

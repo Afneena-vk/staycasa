@@ -3,8 +3,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 //import { NotificationBell } from "../../pages/user/NotificationBell";
 import {
-  FaBars,
-  FaTimes,
+  // FaBars,
+  // FaTimes,
   FaHome,
   FaUsers,
   FaCrown,
@@ -13,9 +13,9 @@ import {
   FaCog,
   FaConciergeBell,
   FaSignOutAlt,
-  FaChevronLeft,
+  // FaChevronLeft,
 } from "react-icons/fa";
-import { useState } from "react";
+// import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 
 const navLinks = [
@@ -30,11 +30,12 @@ const navLinks = [
 
 interface AdminSidebarProps {
   collapsed: boolean;
-  onToggle: () => void;
+   onToggle: () => void;
   onMobileClose?: () => void;
 }
 
-const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps) => {
+ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps) => {
+// const AdminSidebar = ({ collapsed, onMobileClose }: AdminSidebarProps) => {
   const location = useLocation();
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -149,6 +150,7 @@ const AdminSidebar = ({ collapsed, onToggle, onMobileClose }: AdminSidebarProps)
               </div>
             </div>
           )}
+           <button onClick={onToggle} style={{ display: "none" }} />
           {/* <div className="flex items-center space-x-2">
             <NotificationBell role="Admin" />
             <button

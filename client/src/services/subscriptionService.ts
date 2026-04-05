@@ -3,7 +3,7 @@ import { ADMIN_API, OWNER_API } from "../constants/apiRoutes";
 import {
   SubscriptionPlanDto,
   UpdateSubscriptionPlanDto,
-  AdminSubscriptionDto,
+  //AdminSubscriptionDto,
   AdminSubscriptionFilterDto,
   AdminSubscriptionListResponseDto
 } from "../types/subscription";

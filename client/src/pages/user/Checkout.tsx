@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 // import Header from "../../components/User/Header";
 // import Footer from "../../components/User/Footer";
 import { useAuthStore } from "../../stores/authStore";
-import { authService } from "../../services/authService";
+// import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import { useNavigate } from "react-router-dom";
 import ReactDatePicker from "react-datepicker";
@@ -14,7 +14,7 @@ import axios from "axios";
 const Checkout = () => {
   //const { propertyId } = useParams();
 const { propertyId } = useParams<{ propertyId: string }>();
-const today = new Date().toISOString().split("T")[0];
+// const today = new Date().toISOString().split("T")[0];
   
   const getActivePropertyById = useAuthStore(
     (state) => state.getActivePropertyById

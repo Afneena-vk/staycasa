@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 // import Header from "../../components/User/Header";
 // import Footer from "../../components/User/Footer";
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 import { paymentService } from "../../services/paymentService";
-import { authService } from "../../services/authService";
+// import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import axios from "axios";
 
@@ -17,7 +17,7 @@ declare global {
 
 
 const PaymentPage = () => {
-  const { propertyId } = useParams<{ propertyId: string }>();
+  // const { propertyId } = useParams<{ propertyId: string }>();
   const [paymentMethod, setPaymentMethod] = useState<"wallet" | "razorpay" | "">("");
   const property = useAuthStore((state) => state.selectedProperty);
   const bookingData = useAuthStore(state => state.bookingData)
@@ -32,10 +32,10 @@ const PaymentPage = () => {
 
  
 
-  const previewTotal =
-  property?.pricePerMonth && bookingData?.rentalPeriod
-    ? property.pricePerMonth * bookingData.rentalPeriod
-    : 0;
+  // const previewTotal =
+  // property?.pricePerMonth && bookingData?.rentalPeriod
+  //   ? property.pricePerMonth * bookingData.rentalPeriod
+  //   : 0;
 
   useEffect(() => {
    

@@ -12,20 +12,20 @@ import FilterSelect from "../../components/Admin/common/FilterSelect";
 import Pagination from "../../components/Admin/common/Pagination";
 import ConfirmModal from "../../components/common/ConfirmModal";
 
-interface Property {
-  id: string;
-  title: string;
-  type: string;
-  description: string;
-  city: string;
-  state: string;
-  pricePerMonth: number;
-  bedrooms: number;
-  bathrooms: number;
-  images: string[];
-  status: "pending" | "active" | "blocked" | "booked" | "rejected";
-  createdAt: Date;
-}
+// interface Property {
+//   id: string;
+//   title: string;
+//   type: string;
+//   description: string;
+//   city: string;
+//   state: string;
+//   pricePerMonth: number;
+//   bedrooms: number;
+//   bathrooms: number;
+//   images: string[];
+//   status: "pending" | "active" | "blocked" | "booked" | "rejected";
+//   createdAt: Date;
+// }
 
 const sortOptions = [
   { value: "createdAt-desc", label: "Newest" },

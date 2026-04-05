@@ -5,7 +5,7 @@ import { tokenService } from "../../utils/tokenService";
 import { useSessionChecker } from "../../hooks/useSessionChecker";
 
 const SessionManager: React.FC = () => {
-  const { isAuthenticated, authType, logout } = useAuthStore();
+  const { isAuthenticated, authType, logout: _logout } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 

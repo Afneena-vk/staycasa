@@ -15,10 +15,10 @@ const BookingDetails = () => {
 //   const { selectedBooking, fetchBookingDetails, cancelBooking } =
  const { selectedBooking, fetchBookingDetails, fetchCancelBooking} = useAuthStore();
  const fetchRetryPayment = useAuthStore((state) => state.fetchRetryPayment);
- const bookingData = useAuthStore((state) => state.bookingData);
+//  const bookingData = useAuthStore((state) => state.bookingData);
 
  const [loadingPayment, setLoadingPayment] = useState(false);
- const [errorMessage, setErrorMessage] = useState("");
+//  const [errorMessage, setErrorMessage] = useState("");
  const navigate = useNavigate();
 
 
@@ -38,7 +38,7 @@ const [confirmConfig, setConfirmConfig] = useState<{
     
     try {
       setLoadingPayment(true);
-      setErrorMessage("");
+      // setErrorMessage("");
       
       
       const orderData = await fetchRetryPayment(selectedBooking.bookingId);
@@ -49,16 +49,18 @@ const [confirmConfig, setConfirmConfig] = useState<{
 
       } catch (error: unknown) {
   if (axios.isAxiosError(error)) {
-    setErrorMessage(
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to retry payment"
-    );
+    // setErrorMessage(
+    //   error.response?.data?.message ||
+    //   error.message ||
+    //   "Failed to retry payment"
+    // );
+      toast.error(error.response?.data?.message || error.message || "Failed to retry payment");
   } else if (error instanceof Error) {
-    setErrorMessage(error.message);
+    // setErrorMessage(error.message);
     toast.error(error.message);
   } else {
-    setErrorMessage("Failed to retry payment");
+    // setErrorMessage("Failed to retry payment");
+    toast.error("Failed to retry payment");
   }
 
     } finally {
@@ -102,7 +104,8 @@ const [confirmConfig, setConfirmConfig] = useState<{
        modal: {
         ondismiss: function () {
           console.log("Razorpay modal closed by user during retry");
-          setErrorMessage("Payment cancelled. You can try again.");
+          // setErrorMessage("Payment cancelled. You can try again.");
+           toast.info("Payment cancelled. You can try again.");
         },
       },
 
@@ -118,7 +121,8 @@ const [confirmConfig, setConfirmConfig] = useState<{
     
     rzp.on('payment.failed', function (response: any) {
       console.error("Retry Payment Failed:", response.error);
-      setErrorMessage(response.error.description || "Payment failed. Please try again.");
+      // setErrorMessage(response.error.description || "Payment failed. Please try again.");
+       toast.error(response.error.description || "Payment failed. Please try again.");
     });
     
     rzp.open();
@@ -201,33 +205,33 @@ const handleCancelBooking = () => {
 
 
 
-      const getStatusColor = (status: string, type: "booking" | "payment") => {
-    if (type === "booking") {
-      switch (status) {
-        case "confirmed":
-          return "bg-green-100 text-green-800";
-        case "pending":
-          return "bg-yellow-100 text-yellow-800";
-        case "cancelled":
-          return "bg-red-100 text-red-800";
-        default:
-          return "bg-gray-100 text-gray-800";
-      }
-    } else {
-      switch (status) {
-        case "completed":
-          return "bg-green-100 text-green-800";
-        case "pending":
-          return "bg-yellow-100 text-yellow-800";
-        case "failed":
-          return "bg-red-100 text-red-800";
-        case "refunded":
-          return "bg-blue-100 text-blue-800";
-        default:
-          return "bg-gray-100 text-gray-800";
-      }
-    }
-  };
+  //     const getStatusColor = (status: string, type: "booking" | "payment") => {
+  //   if (type === "booking") {
+  //     switch (status) {
+  //       case "confirmed":
+  //         return "bg-green-100 text-green-800";
+  //       case "pending":
+  //         return "bg-yellow-100 text-yellow-800";
+  //       case "cancelled":
+  //         return "bg-red-100 text-red-800";
+  //       default:
+  //         return "bg-gray-100 text-gray-800";
+  //     }
+  //   } else {
+  //     switch (status) {
+  //       case "completed":
+  //         return "bg-green-100 text-green-800";
+  //       case "pending":
+  //         return "bg-yellow-100 text-yellow-800";
+  //       case "failed":
+  //         return "bg-red-100 text-red-800";
+  //       case "refunded":
+  //         return "bg-blue-100 text-blue-800";
+  //       default:
+  //         return "bg-gray-100 text-gray-800";
+  //     }
+  //   }
+  // };
 
   return (
     <>

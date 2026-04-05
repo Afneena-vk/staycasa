@@ -1,6 +1,6 @@
 import { StateCreator } from "zustand";
 import { reviewService} from "../../services/reviewService";
-import { SubmitReviewDTO, ReviewResponseDTO, PropertyReviewDTO } from "../../types/review";
+import { SubmitReviewDTO,  PropertyReviewDTO } from "../../types/review";
 import axios from "axios";
 
 const getErrorMessage = (error: unknown): string => {

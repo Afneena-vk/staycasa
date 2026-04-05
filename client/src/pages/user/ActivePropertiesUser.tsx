@@ -10,7 +10,7 @@ import { FaStar } from "react-icons/fa";
 const ActivePropertiesUser: React.FC = () => {
   const properties = useAuthStore((state) => state.properties);
   const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error);
+  // const error = useAuthStore((state) => state.error);
   const navigate = useNavigate();
   const getActivePropertiesForUser = useAuthStore(
     (state) => state.getActivePropertiesForUser

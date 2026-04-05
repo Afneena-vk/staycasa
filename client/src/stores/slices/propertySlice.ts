@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
 import { userService, UserPropertyFilters } from "../../services/userService";
-import {PropertyFormData } from "../../types/property";
-import { SiTryitonline } from "react-icons/si";
+//import {PropertyFormData } from "../../types/property";
+//import { SiTryitonline } from "react-icons/si";
 import { ownerService, PropertyFilters } from "../../services/ownerService";
 import { adminService,  } from "../../services/adminService";
 
@@ -66,7 +66,7 @@ export const createPropertySlice: StateCreator<
   [],
   [],
   PropertySlice
-> = (set, get) => ({
+> = (set) => ({
   properties: [],
   latestProperties: [],
   selectedProperty: null,

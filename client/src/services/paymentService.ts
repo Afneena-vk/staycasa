@@ -1,6 +1,6 @@
 import { api } from "../api/api";
 import { USER_API } from "../constants/apiRoutes";
-import BookingDetails from "../pages/user/BookingDetails";
+//import BookingDetails from "../pages/user/BookingDetails";
 
 
 export const paymentService = {

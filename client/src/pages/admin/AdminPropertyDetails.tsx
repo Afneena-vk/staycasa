@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 //import AdminLayout from "../../layouts/admin/AdminLayout";
 import Review from "../../components/common/Review";
@@ -26,7 +26,7 @@ const visibleReviews = showAllReviews
   ? reviews
   : reviews.slice(0, PREVIEW_COUNT);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (propertyId) {

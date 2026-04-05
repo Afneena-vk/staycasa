@@ -113,7 +113,13 @@ const propertyPieData = useMemo(() => {
   return (
     // <OwnerLayout>
       // <div>
-      <div className="p-6">
+      // <div className="p-6">
+      <div className="p-6 relative">
+  {loadingStats && (
+    <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-slate-800/50 z-50">
+      <p className="text-lg font-semibold">Loading stats...</p>
+    </div>
+  )}
         {/* Page Title */}
         <h1 className="text-2xl font-bold mb-6 text-slate-800 dark:text-slate-100">
           Dashboard Overview
@@ -219,7 +225,10 @@ const propertyPieData = useMemo(() => {
                 fill="#8884d8"
                 label
               >
-                {pieData.map((entry, index) => (
+                {/* {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))} */}
+             {pieData.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -238,8 +247,13 @@ const propertyPieData = useMemo(() => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="value">
+              {/* <Bar dataKey="value">
                 {propertyPieData.map((entry, index) => (
+                  <Cell key={index} fill={PROPERTY_COLORS[index % PROPERTY_COLORS.length]} />
+                ))}
+              </Bar> */}
+                            <Bar dataKey="value">
+                {propertyPieData.map((_, index) => (
                   <Cell key={index} fill={PROPERTY_COLORS[index % PROPERTY_COLORS.length]} />
                 ))}
               </Bar>

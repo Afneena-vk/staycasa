@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuthStore } from '../../stores/authStore'; 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -119,6 +119,7 @@ return "Something went wrong";
               {/* SUBMIT BUTTON */}
               <button
                 type="submit"
+                disabled={loading}
                 // className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
                 className="w-full text-sm font-medium bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-2 rounded-lg hover:opacity-90 transition flex justify-center items-center gap-2"
               >

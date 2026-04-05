@@ -40,14 +40,14 @@ interface User {
   updatedAt: string;
 }
 
-interface UsersResponse {
-  users: User[];
-  totalCount: number;
-  currentPage: number;
-  totalPages: number;
-  message: string;
-  status: number;
-}
+// interface UsersResponse {
+//   users: User[];
+//   totalCount: number;
+//   currentPage: number;
+//   totalPages: number;
+//   message: string;
+//   status: number;
+// }
 
 const statusOptions = [
   { value: "all", label: "All Status" },
