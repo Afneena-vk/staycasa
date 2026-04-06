@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../stores/authStore";
@@ -85,7 +85,10 @@ const OwnerLogin = () => {
           alt="STACASA Homestay"
           className="w-auto max-w-full h-auto rounded-xl shadow-lg"
         />
-        <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2>
+        {/* <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2> */}
+        <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-950 to-blue-600 bg-clip-text text-transparent tracking-tight mt-6">
+          STAYCASA
+        </h2>
         <p className="text-gray-700 text-sm mt-2 text-center px-4">
           List your property and start hosting guests from around the world
         </p>
@@ -95,11 +98,18 @@ const OwnerLogin = () => {
       <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-10">
         <div className="w-full max-w-md">
 
-          <h2 className="text-3xl font-extrabold text-gray-900 text-center">
+          {/* <h2 className="text-3xl font-extrabold text-gray-900 text-center">
             Owner Login
           </h2>
           <p className="text-sm text-gray-600 text-center mt-2">
             Welcome back! Please sign in to your account
+          </p> */}
+          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-950 to-blue-800 bg-clip-text text-transparent">
+           Welcome Back!
+          </h2>
+
+          <p className="text-sm text-gray-500 text-center mt-2 mb-6">
+            Login to manage your properties and bookings
           </p>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -152,7 +162,8 @@ const OwnerLogin = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
+              // className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
+               className="w-full text-sm font-medium bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
             >
               {isLoading ? "Signing in..." : "Sign In"}
             </button>

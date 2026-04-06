@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuthStore } from '../../stores/authStore'; 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -56,7 +56,10 @@ return "Something went wrong";
             alt="STACASA Homestay"
             className="w-auto max-w-full h-auto rounded-xl shadow-lg"
           />
-          <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2>
+          {/* <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2> */}
+          <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-950 to-blue-600 bg-clip-text text-transparent tracking-tight mt-6">
+            STAYCASA
+          </h2>
           <p className="text-gray-700 text-sm mt-2 text-center px-4">
             Admin panel for managing properties and users
           </p>
@@ -65,12 +68,18 @@ return "Something went wrong";
         {/* RIGHT SIDE – ADMIN LOGIN */}
         <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-10">
           <div className="w-full max-w-md">
-
+{/* 
             <h2 className="text-3xl font-extrabold text-gray-900 text-center">
               Admin Login
             </h2>
             <p className="text-sm text-gray-600 text-center mt-2">
               Sign in to access the admin dashboard
+            </p> */}
+            <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-950 to-blue-800 bg-clip-text text-transparent">
+             Admin Login
+            </h2>
+            <p className="text-sm text-gray-500 text-center mt-2">
+              Access dashboard and manage platform
             </p>
 
             {error && (
@@ -110,7 +119,9 @@ return "Something went wrong";
               {/* SUBMIT BUTTON */}
               <button
                 type="submit"
-                className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
+                disabled={loading}
+                // className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium"
+                className="w-full text-sm font-medium bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-2 rounded-lg hover:opacity-90 transition flex justify-center items-center gap-2"
               >
                 Login
               </button>

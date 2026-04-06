@@ -60,14 +60,25 @@ const OwnerSignup = () => {
           alt="STACASA Homestay"
           className="w-auto max-w-full h-auto rounded-xl shadow-lg"
         />
-        <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2>
+        {/* <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2> */}
+        <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-950 to-blue-600 bg-clip-text text-transparent tracking-tight mt-6">
+         STAYCASA
+        </h2>
         <p className="text-gray-700 text-sm mt-2 text-center px-4">
           List your property and start hosting guests from around the world
         </p>
       </div>
        
        <div className="w-full md:w-1/2 p-8 md:p-10">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create Owner Account</h2>
+        {/* <h2 className="text-2xl font-bold mb-6 text-center">Create Owner Account</h2> */}
+        <h2 className="text-3xl font-bold mb-2 text-center bg-gradient-to-r from-blue-950 to-blue-800 bg-clip-text text-transparent">
+         Create Owner Account
+          </h2>
+
+         <p className="text-gray-500 mb-6 text-center">
+            Start hosting and earn from your property
+         </p>        
+
 
         <form onSubmit={handleSubmit(onSubmit)}>
           {/* Name */}
@@ -172,7 +183,8 @@ const OwnerSignup = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md"
+            // className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md"
+            className="w-full text-sm font-medium bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
             disabled={isLoading}
           >
             {isLoading ? 'Signing up...' : 'Sign Up'}
@@ -182,7 +194,7 @@ const OwnerSignup = () => {
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <a href="/owner/login" className="text-blue-500 hover:text-blue-700">Log in</a>
+            <a href="/owner/login" className="text-blue-700 hover:underline">Log in</a>
           </p>
         </div>
       </div>

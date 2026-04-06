@@ -72,7 +72,9 @@ const UserLogin = () => {
               alt="Homestay"
               className="w-auto max-w-full h-auto rounded-xl shadow-lg"
             />
-            <h2 className="text-gray-900 text-2xl font-bold mt-6">STACASA</h2>
+           <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-950 to-blue-600 bg-clip-text text-transparent tracking-tight mt-6">
+            STAYCASA
+           </h2>
             <p className="text-gray-800 text-sm mt-2 text-center px-4">
               Find your perfect homestay for a short-term stay
             </p>
@@ -80,7 +82,9 @@ const UserLogin = () => {
 
           {/* Right Panel - Login Form */}
           <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
+            <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-950 to-blue-800 bg-clip-text text-transparent">
+            Welcome Back!
+            </h2>
             <p className="text-gray-500 mb-6">Login to book your perfect vacation stay</p>
 
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -107,7 +111,7 @@ const UserLogin = () => {
                     placeholder="Password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900"
+                    className="px-4  py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900"
                   />
                   {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                 </div>
@@ -126,7 +130,8 @@ const UserLogin = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-2 px-4 bg-blue-950 text-white rounded-md hover:bg-blue-800 transition flex justify-center items-center gap-2"
+                  className="w-full text-sm font-medium bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
+                //className="w-full py-2 px-4 bg-gradient-to-r from-blue-900 to-blue-700 text-white transition flex justify-center items-center gap-2"
               >
                 {isLoading && <span className="animate-spin h-5 w-5 border-2 border-white rounded-full border-t-transparent"></span>}
                 {isLoading ? "Signing in..." : "Sign in"}

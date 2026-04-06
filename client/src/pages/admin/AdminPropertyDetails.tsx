@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 //import AdminLayout from "../../layouts/admin/AdminLayout";
 import Review from "../../components/common/Review";
@@ -26,7 +26,7 @@ const visibleReviews = showAllReviews
   ? reviews
   : reviews.slice(0, PREVIEW_COUNT);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     if (propertyId) {
@@ -65,13 +65,6 @@ const visibleReviews = showAllReviews
   return (
     // <AdminLayout>
       <div className="p-8 max-w-6xl mx-auto space-y-8">
-        {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="text-blue-600 hover:text-blue-800 font-medium"
-        >
-          ← Back to Properties
-        </button>
 
         {/* Property Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">

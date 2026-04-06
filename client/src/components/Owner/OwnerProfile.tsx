@@ -159,7 +159,7 @@ const validate = () => {
       }
       
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (_e) => {
         //const base64String = e.target?.result as string;
         // setProfile({ ...profile, profileImage: base64String });
         setProfile({ ...profile });
@@ -417,7 +417,7 @@ const handleDocumentUpload = async () => {
             <div className="md:col-span-2 flex justify-end">
               <button
                 type="submit"
-                className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 bg-blue-950  text-white px-6 py-3 rounded-xl shadow-md hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={saving}
               >
                 {saving ? (
@@ -503,7 +503,7 @@ const handleDocumentUpload = async () => {
                 <button
                   onClick={handleDocumentUpload}
                   disabled={uploading}
-                  className="flex items-center gap-2 bg-indigo-600 text-white px-5 py-2 rounded-lg shadow hover:bg-indigo-700 transition disabled:opacity-50"
+                  className="flex items-center gap-2 bg-blue-950  text-white px-5 py-2 rounded-lg shadow hover:bg-blue-800 transition disabled:opacity-50"
                 >
                   {uploading ? (
                     <>

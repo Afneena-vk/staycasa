@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 //import AdminLayout from "../../layouts/admin/AdminLayout";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
 import axios from "axios";
 import ConfirmModal from "../../components/common/ConfirmModal";
@@ -179,13 +179,7 @@ const UserDetails = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/admin/users')}
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-800"
-            >
-              <span>←</span>
-              Back to Users
-            </button>
+
             <div>
               <h1 className="text-2xl font-semibold text-gray-800">User Details</h1>
               <p className="text-sm text-gray-600">Complete information about the user</p>
@@ -224,7 +218,7 @@ const UserDetails = () => {
         {/* User Details Card */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           {/* Profile Header */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-8">
+          <div className="bg-gradient-to-r from-blue-900 to-blue-800 px-6 py-8">
             <div className="flex items-center gap-6">
              {user.profileImage?.url ? (
   <img

@@ -74,8 +74,10 @@ const BookingDetails = lazy(() => import("./pages/user/BookingDetails"));
 const Destination = lazy(() => import("./pages/user/Destination"));
 const ReviewPage = lazy(() => import("./pages/user/ReviewPage"));
 // const ChatWindow = lazy(() => import("./pages/user/ChatWindow"));
-const ChatWindow = lazy(() => import("./pages/user/ChatPage"));
+//const ChatWindow = lazy(() => import("./pages/user/ChatPage"));
 const UserLayout = lazy(() => import("./layouts/user/UserLayout"));
+const About = lazy(() => import("./pages/user/AboutPage.tsx"));
+const Contact = lazy(() => import("./pages/user/Contact.tsx"));
 
 const App = () => {
   return (
@@ -333,6 +335,8 @@ const App = () => {
               />
 
               <Route path="destination" element={<Destination />} />
+              <Route path="about" element={<About />} />
+              <Route path="contact" element={<Contact />} />
 
               <Route
                 path="wallet"

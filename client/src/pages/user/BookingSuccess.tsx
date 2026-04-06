@@ -6,7 +6,7 @@ import { useAuthStore } from "../../stores/authStore";
 
 const BookingSuccess: React.FC = () => {
   const location = useLocation();
-  const { booking, property, paymentId, orderId } = location.state || {};
+  const { booking, property} = location.state || {};
 
   const clearBookingData = useAuthStore((state) => state.clearBookingData);
 

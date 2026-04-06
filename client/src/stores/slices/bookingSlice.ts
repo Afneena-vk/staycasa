@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { BookingDTO , BookingDetailsDTO, BookingQuery, OwnerBookingStatsDto,OwnerBookingStatisDTo} from "../../types/booking";
+import { BookingDTO , BookingDetailsDTO, BookingQuery,OwnerBookingStatisDTo} from "../../types/booking";
 import { paymentService } from "../../services/paymentService";
 import { bookingService } from "../../services/bookingService";
 import axios from "axios";
@@ -291,7 +291,7 @@ fetchOwnerCancelBooking: async (bookingId: string) => {
   set({ isLoading: true, error: null });
 
   try {
-    const res = await bookingService.ownerCancelBooking(bookingId);
+   // const res = await bookingService.ownerCancelBooking(bookingId);
 
    
     set((state) => ({

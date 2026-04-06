@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import {userService}from "../../services/userService";
 import { UserProfile,UserProfileResponse } from "../../types/user";
 
@@ -7,7 +7,8 @@ import { UserProfile,UserProfileResponse } from "../../types/user";
 
 export interface UserSlice {
   getUserProfile(): Promise<UserProfileResponse>;
-  updateUserProfile(profileData: Partial<UserProfile>): Promise<UserProfileResponse>;
+  //updateUserProfile(profileData: Partial<UserProfile>): Promise<UserProfileResponse>;
+   updateUserProfile(profileData: Omit<Partial<UserProfile>, "profileImage">): Promise<UserProfileResponse>;
 
 }
 
@@ -39,7 +40,8 @@ export const createUserSlice: StateCreator<
     }
   },
 
-  updateUserProfile: async (profileData) => {
+  // updateUserProfile: async (profileData) => {
+   updateUserProfile: async (profileData: Omit<Partial<UserProfile>, "profileImage">) => {
     try {
       const response = await userService.updateUserProfile(profileData);
       const currentState = get();

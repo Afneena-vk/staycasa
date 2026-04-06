@@ -186,7 +186,8 @@ const BookingList = () => {
         <button
           disabled={page <= 1}
           onClick={() => setFilters({ page: page - 1 })}
-          className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40 hover:bg-blue-900 transition"
+          // className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40 hover:bg-blue-900 transition"
+          className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
         >
           Previous
         </button>
@@ -196,7 +197,8 @@ const BookingList = () => {
         <button
           disabled={page >= totalPages}
           onClick={() => setFilters({ page: page + 1 })}
-          className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40 hover:bg-blue-900 transition"
+          // className="px-4 py-2 bg-blue-950 text-white rounded disabled:opacity-40 hover:bg-blue-900 transition"
+           className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
         >
           Next
         </button>

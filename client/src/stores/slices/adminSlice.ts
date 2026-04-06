@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import { adminService } from "../../services/adminService";
-import { UserFilters,UserStatistics, AdminDashboardStats, UsersListResponseDto, UserDetailResponseDto,OwnersListResponseDto, OwnerDetailResponseDto } from "../../types/admin";
+import { UserFilters, AdminDashboardStats, UsersListResponseDto, UserDetailResponseDto,OwnersListResponseDto, OwnerDetailResponseDto } from "../../types/admin";
 
 
 
@@ -32,7 +32,7 @@ export const createAdminSlice: StateCreator<
   [],
   [],
   AdminSlice
-> = (set, get) => ({
+> = (set) => ({
 
     //adminUserStatistics: null,
     dashboardStats: null,

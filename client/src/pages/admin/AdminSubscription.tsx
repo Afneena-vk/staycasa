@@ -135,7 +135,7 @@ const AdminSubscriptionsPage = () => {
          <div className="flex justify-end">
           <button
             onClick={() => navigate("/admin/subscriptions/all")}
-            className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm w-full sm:w-auto"
+            className="px-4 py-2 rounded-lg bg-blue-900 hover:bg-blue-700 text-white text-sm w-full sm:w-auto"
           >
             View All Subscriptions
           </button>
@@ -259,7 +259,7 @@ const AdminSubscriptionsPage = () => {
                       ) : (
                         <button
                           onClick={() => startEdit(plan)}
-                          className="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white"
+                          className="px-3 py-1 rounded bg-blue-900 hover:bg-blue-700 text-white"
                         >
                           Edit
                         </button>

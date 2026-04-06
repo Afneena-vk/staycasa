@@ -48,19 +48,27 @@ const [totalPages, setTotalPages] = useState(1);
         </h1>
 
         {/* Wallet Balance Card */}
-        <div className="bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl p-8 shadow-lg mb-8 flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div>
-            <p className="text-sm font-medium uppercase opacity-75">
-              Current Balance
-            </p>
-            <h2 className="text-3xl md:text-4xl font-bold mt-2">
-              ₹{wallet.balance}
-            </h2>
-          </div>
-          <div className="mt-4 md:mt-0 text-sm opacity-75">
-            Updated just now
-          </div>
-        </div>
+<div className="relative overflow-hidden rounded-2xl border border-blue-100 shadow-sm bg-gradient-to-br from-blue-950 via-blue-800 to-blue-500 p-6 md:p-8 mb-8">
+  
+  {/* Glow effect */}
+  <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full"></div>
+  <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/5 rounded-full"></div>
+
+  <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center">
+    <div>
+      <p className="text-xs uppercase tracking-wider text-white/60 font-semibold">
+        Current Balance
+      </p>
+      <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-2">
+        ₹{wallet.balance}
+      </h2>
+    </div>
+
+    <div className="mt-3 md:mt-0 text-xs text-white/60">
+      Updated just now
+    </div>
+  </div>
+</div>
 
         {/* Transactions Section */}
         <div className="bg-white rounded-xl shadow-lg p-6">
@@ -94,13 +102,13 @@ const [totalPages, setTotalPages] = useState(1);
                   </div>
                   <div className="flex items-center gap-2 mt-2 md:mt-0">
                     {tx.type === "credit" ? (
-                      <FaArrowDown className="text-green-500" />
+                      <FaArrowDown className="text-grey-800" />
                     ) : (
                       <FaArrowUp className="text-red-500" />
                     )}
                     <span
                       className={`font-semibold ${
-                        tx.type === "credit" ? "text-green-600" : "text-red-600"
+                        tx.type === "credit" ? "text-grey-800" : "text-red-600"
                       }`}
                     >
                       {tx.type === "credit" ? "+" : "-"}₹{tx.amount}
@@ -115,15 +123,17 @@ const [totalPages, setTotalPages] = useState(1);
   <button
     disabled={page <= 1}
     onClick={() => setPage(prev => prev - 1)}
-    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+    // className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
   >
     Previous
   </button>
-  <span className="px-2 py-2">{page} / {totalPages}</span>
+  <span className="px-2 py-2">Page {page} of {totalPages}</span>
   <button
     disabled={page >= totalPages}
     onClick={() => setPage(prev => prev + 1)}
-    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+    // className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+         className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
   >
     Next
   </button>

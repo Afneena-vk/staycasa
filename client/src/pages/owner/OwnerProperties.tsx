@@ -12,20 +12,20 @@ import FilterSelect from "../../components/Admin/common/FilterSelect";
 import Pagination from "../../components/Admin/common/Pagination";
 import ConfirmModal from "../../components/common/ConfirmModal";
 
-interface Property {
-  id: string;
-  title: string;
-  type: string;
-  description: string;
-  city: string;
-  state: string;
-  pricePerMonth: number;
-  bedrooms: number;
-  bathrooms: number;
-  images: string[];
-  status: "pending" | "active" | "blocked" | "booked" | "rejected";
-  createdAt: Date;
-}
+// interface Property {
+//   id: string;
+//   title: string;
+//   type: string;
+//   description: string;
+//   city: string;
+//   state: string;
+//   pricePerMonth: number;
+//   bedrooms: number;
+//   bathrooms: number;
+//   images: string[];
+//   status: "pending" | "active" | "blocked" | "booked" | "rejected";
+//   createdAt: Date;
+// }
 
 const sortOptions = [
   { value: "createdAt-desc", label: "Newest" },
@@ -220,7 +220,7 @@ const propertyLimitReached = usedProperties >= maxProperties;
           disabled={!isApproved || !hasActiveSubscription || propertyLimitReached}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition ${
             isApproved && hasActiveSubscription
-              ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+              ? "bg-blue-900 hover:bg-blue-700 text-white"
               : "bg-slate-200 cursor-not-allowed text-slate-400"
           }`}
         >
@@ -297,7 +297,7 @@ const propertyLimitReached = usedProperties >= maxProperties;
 
                       {/* Price + actions */}
                       <div className="mt-4 flex items-center justify-between gap-2">
-                        <span className="text-sm font-bold text-indigo-600">
+                        <span className="text-sm font-bold text-blue-800">
                           ₹{priceFormatted}
                           <span className="text-xs font-medium text-slate-400">
                             /mo
@@ -311,7 +311,7 @@ const propertyLimitReached = usedProperties >= maxProperties;
                               navigate(`/owner/properties/${property.id}`)
                             }
                             title="View"
-                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition"
+                            className="p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 transition"
                           >
                             <FaEye size={13} />
                           </button>

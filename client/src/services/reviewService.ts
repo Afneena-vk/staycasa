@@ -1,6 +1,6 @@
 import { api } from "../api/api";
 import { ADMIN_API, USER_API, OWNER_API } from "../constants/apiRoutes";
-import { SubmitReviewDTO, ReviewResponseDTO, PropertyReviewDTO } from "../types/review";
+import { SubmitReviewDTO,  PropertyReviewDTO } from "../types/review";
 
 export const reviewService = {
   submitReview: async (bookingId: string, data: SubmitReviewDTO) => {

@@ -22,7 +22,7 @@ export const useChat = ({ otherUserId, otherUserModel, propertyId, role }: UseCh
     typingUsers,
     onlineUsers,
     clearMessages,
-    userData,
+    // userData,
   } = useAuthStore();
 
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);

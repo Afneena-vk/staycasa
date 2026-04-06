@@ -340,7 +340,7 @@ const openConfirmModal = (
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-blue-900 border-t-transparent rounded-full animate-spin" />
           <p className="text-sm text-slate-500 font-medium">Loading owners…</p>
         </div>
       </div>
@@ -405,7 +405,7 @@ const openConfirmModal = (
                       className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br  from-blue-400 to-blue-950  flex items-center justify-center text-white text-sm font-bold">
                       {owner.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -428,7 +428,7 @@ const openConfirmModal = (
                 {owner.document ? (
                   <button
                     onClick={() => setSelectedDoc(owner.document!)}
-                    className="text-xs font-medium text-blue-600 hover:text-blue-800 underline underline-offset-2 transition"
+                    className="text-xs font-medium text-blue-900 hover:text-blue-600 underline underline-offset-2 transition"
                   >
                     View Document
                   </button>
@@ -514,7 +514,7 @@ const openConfirmModal = (
                   <button
                     onClick={() => handleViewOwner(owner.id)}
                     title="View Details"
-                    className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition"
+                    className="p-1.5 rounded-lg text-blue-900 hover:bg-blue-50 transition"
                   >
                     <Eye size={17} />
                   </button>

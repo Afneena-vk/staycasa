@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 //import OwnerLayout from "../../layouts/owner/OwnerLayout";
 import { useAuthStore } from "../../stores/authStore";
@@ -87,7 +87,7 @@ const visibleReviews = showAllReviews
           </div>
         </div>
         <div className="text-right mt-4 md:mt-0">
-          <p className="text-2xl font-semibold text-blue-600">
+          <p className="text-2xl font-semibold text-blue-800">
             ₹{selectedProperty.pricePerMonth.toLocaleString()} / month
           </p>
           {/* <div className="flex items-center justify-end text-yellow-500 mt-1"> */}
@@ -103,7 +103,7 @@ const visibleReviews = showAllReviews
     <>
       <StarRating rating={selectedProperty.averageRating} />
       <span className="text-sm text-gray-600">
-        {selectedProperty.averageRating.toFixed(1)} (
+        {selectedProperty.averageRating.toFixed(1)} 
         {/* {selectedProperty.totalReviews} reviews) */}
       </span>
     </>
@@ -125,19 +125,19 @@ const visibleReviews = showAllReviews
       {/* Highlights */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         <div className="flex items-center gap-2">
-          <FaBed className="text-blue-500" />
+          <FaBed className="text-blue-600" />
           <span>{selectedProperty.bedrooms} Bedrooms</span>
         </div>
         <div className="flex items-center gap-2">
-          <FaBath className="text-blue-500" />
+          <FaBath className="text-blue-600" />
           <span>{selectedProperty.bathrooms} Bathrooms</span>
         </div>
         <div className="flex items-center gap-2">
-          <FaUsers className="text-blue-500" />
+          <FaUsers className="text-blue-600" />
           <span>Max {selectedProperty.maxGuests} Guests</span>
         </div>
         <div className="flex items-center gap-2">
-          <FaCouch className="text-blue-500" />
+          <FaCouch className="text-blue-600" />
           <span>{selectedProperty.furnishing}</span>
         </div>
       </div>
@@ -167,7 +167,7 @@ const visibleReviews = showAllReviews
   {reviews.length > PREVIEW_COUNT && (
     <button
       onClick={() => setShowAllReviews((prev) => !prev)}
-      className="mt-4 text-blue-600 font-medium hover:underline"
+      className="mt-4 text-blue-700 font-medium hover:underline"
     >
       {showAllReviews
         ? "Show less reviews"

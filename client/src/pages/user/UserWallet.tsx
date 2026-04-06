@@ -55,21 +55,53 @@ const UserWallet = () => {
 
       {/* <main className="flex-1 max-w-7xl mx-auto px-4 md:px-10 py-8"> */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-6 md:py-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-8">  </h1>
+        {/* <h1 className="text-4xl font-bold text-gray-800 mb-8">  </h1> */}
+        <div className="mb-6">
+  <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+    Wallet
+  </h1>
+  <p className="text-sm text-slate-500 mt-1">
+    Manage your balance and track transactions
+  </p>
+</div>
 
         {/* Wallet Balance Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 flex flex-col md:flex-row justify-between items-start md:items-center mb-10 border border-gray-100">
-          <div>
-            <p className="text-sm font-medium text-gray-400 uppercase tracking-wider">
-              Current Balance
-            </p>
-            <h2 className="text-3xl font-extrabold text-gray-900 mt-2">₹{wallet.balance}</h2>
-            {/* <h2 className="text-3xl sm:text-5xl font-extrabold text-gray-900 mt-2">₹{wallet.balance}</h2> */}
-          </div>
-          <div className="mt-4 md:mt-0 text-gray-500 text-sm">
-            Updated just now
-          </div>
-        </div>
+
+        <div className="relative overflow-hidden rounded-2xl border border-blue-100 shadow-sm bg-gradient-to-br from-blue-900 via-blue-700 to-blue-500 p-6 md:p-8 mb-8">
+  
+  {/* Glow effect */}
+  <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full"></div>
+  <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-white/5 rounded-full"></div>
+
+  <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center">
+    <div>
+      <p className="text-xs uppercase tracking-wider text-white/60 font-semibold">
+        Current Balance
+      </p>
+      <h2 className="text-3xl md:text-4xl font-extrabold text-white mt-2">
+        ₹{wallet.balance}
+      </h2>
+    </div>
+
+    <div className="mt-3 md:mt-0 text-xs text-white/60">
+      Updated just now
+    </div>
+  </div>
+</div>
+
+
+
+<div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
+
+  {/* Section Header */}
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="text-lg font-bold text-slate-900">
+      Transactions
+    </h2>
+    <span className="text-xs text-slate-400">
+      Page {page} of {totalPages}
+    </span>
+  </div>
 
         {/* Transactions Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -117,18 +149,22 @@ const UserWallet = () => {
   <button
     disabled={page <= 1}
     onClick={() => setPage(prev => prev - 1)}
-    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+    // className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+    className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
   >
     Previous
   </button>
-  <span className="px-2 py-2">{page} / {totalPages}</span>
+  {/* <span className="px-2 py-2">{page} / {totalPages}</span> */}
+    <span className="px-2 py-2">Page {page} of {totalPages}</span>
   <button
     disabled={page >= totalPages}
     onClick={() => setPage(prev => prev + 1)}
-    className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+    // className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+     className="px-5 py-2 bg-gradient-to-r from-blue-900 to-blue-700 text-white rounded-lg text-sm disabled:opacity-40 hover:opacity-90 transition"
   >
     Next
   </button>
+</div>
 </div>
 
       </main>

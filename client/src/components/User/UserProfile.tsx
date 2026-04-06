@@ -1,15 +1,15 @@
 
 
 import { useState, useEffect } from "react";
-import { authService } from "../../services/authService";
+//import { authService } from "../../services/authService";
 import { userService } from "../../services/userService";
 import {
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaMapMarkerAlt,
+  // FaUser,
+  // FaEnvelope,
+  // FaPhone,
+  // FaMapMarkerAlt,
   FaUpload,
-  FaSave,
+  // FaSave,
   FaSpinner,
 } from "react-icons/fa";
 import { useAuthStore } from "../../stores/authStore";
@@ -297,273 +297,232 @@ if (newProfileImage) {
     );
   }
 
-  return (
-    <>
-      {/* <Header /> */}
-      {/* <main className="min-h-screen bg-gray-50 pt-24 pb-16 px-4 flex justify-center"> */}
-      <main className="min-h-screen bg-gray-50 pt-20 md:pt-18 pb-12 px-4 sm:px-6 flex justify-center">
-        {/* <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-gray-200 p-8"> */}
-        <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8">
-          {/* Profile Header */}
-          {/* <div className="flex items-center gap-6 border-b pb-6 mb-6"> */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 border-b pb-6 mb-6">
-            
-              <div className="relative">
-    {/* {userData?.profileImage ? (
-      <img
-        src={userData.profileImage}
-        alt="Profile"
-        className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
-      />
-    ) : (
-      <div className="w-28 h-28 rounded-full bg-blue-950 flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-md">
-        {profile.name?.charAt(0).toUpperCase() || "U"}
-      </div>
-    )}
+ 
+return (
+  <div className="bg-slate-100 min-h-screen pt-20 pb-20 px-4 flex justify-center">
+    <div className="w-full max-w-4xl flex flex-col gap-6">
 
-              {/* <label */}
-                {/* htmlFor="profileImage"
-                className="absolute bottom-2 right-2 bg-blue-950 text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-indigo-700 transition"
-              >
-                <FaUpload size={14} />
-              </label> */} 
-              {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="Profile Preview"
-                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
-                />
-              // ) : userData?.profileImage ? (
-              //   <img
-              //     src={userData.profileImage}
-              //     alt="Profile"
-              //  ) : profile.profileImage ? (
-              ) : profile.profileImage?.url ? (
-                <img
-                  // src={profile.profileImage}
-                  src={profile.profileImage?.url}
-                  alt="Profile"
-                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
-                />
-              ) : (
-                <div className="w-28 h-28 rounded-full bg-blue-950 flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-md">
-                  {/* {profile.name?.charAt(0).toUpperCase() || "U"} */}
-                     {profile.name?.trim()?.[0]?.toUpperCase() || "U"}
-                </div>
-              )}
+      {/* PROFILE HEADER */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row items-center gap-6">
 
-              {/* Cancel button */}
-              {imagePreview && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setImageFile(null);
-                    setImagePreview(null);
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600"
-                  disabled={saving || uploadingImage}
-                >
-                  ✕
-                </button>
-              )}
-
-              <label
-                htmlFor="profileImage"
-                className="absolute bottom-2 right-2 bg-blue-950 text-white p-2 rounded-full cursor-pointer shadow-md hover:bg-indigo-700 transition disabled:opacity-50"
-              >
-                {/* {uploadingImage ? (
-                  <FaSpinner className="animate-spin" size={14} />
-                ) : ( */}
-                  <FaUpload size={14} />
-                {/* )} */}
-              </label>  
-
-              <input
-                type="file"
-                id="profileImage"
-                // accept="image/*"
-                accept="image/jpeg,image/jpg,image/png"
-                className="hidden"
-                onChange={handleImageUpload}
-                // disabled={saving}
-                //disabled={saving || uploadingImage}
-                disabled={uploadingImage}
-              />
-              {imageFile && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      const imageUrl = await uploadImage();
-                      //if (imageUrl) setProfile((prev) => ({ ...prev, profileImage: imageUrl }));
-
-                      // toast.success("Profile image uploaded successfully");
-                      // setImageFile(null);
-                      // setImagePreview(null);
-                   if (imageUrl) {
-                       toast.success("Profile image uploaded successfully");
-                       setProfile(prev => ({ ...prev, profileImage: imageUrl }));
-                       setImageFile(null);
-                       setImagePreview(null);
-                    }
-                    
-                    } catch (error: unknown) {
-  console.error(error);
-  toast.error(getErrorMessage(error));
-}
-                  }}
-                  className="absolute bottom-2 right-2 bg-green-600 text-white p-2 rounded-full shadow-md hover:bg-green-700 transition disabled:opacity-50"
-                  disabled={uploadingImage}
-                >
-                  {uploadingImage ? <FaSpinner className="animate-spin" size={14} /> : "Upload"}
-                </button>
-              )}
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-blue-950">
-                {profile.name}
-              </h2>
-              <p className="text-blue-950">{profile.email}</p>
-            </div>
-          </div>
-
-          {/* Profile Form */}
-          <form
-            onSubmit={handleSubmit}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6"
-          >
-            {/* Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                <FaUser className="inline mr-2" /> Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={profile.name}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-                
-                disabled={saving}
-              /> 
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                <FaEnvelope className="inline mr-2" /> Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={profile.email}
-                className="w-full px-4 py-2 rounded-xl border bg-gray-100 outline-none cursor-not-allowed"
-                disabled
-                title="Email cannot be changed"
-              />
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                <FaPhone className="inline mr-2" /> Phone
-              </label>
-              <input
-                type="text"
-                name="phone"
-                value={profile.phone}
-                onChange={handleChange}
-                className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-               
-                disabled={saving}
-              />
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-
-            </div>
-
-            {/* Address fields */}
-            {profile.address &&
-              (Object.keys(profile.address) as (keyof Address)[]).map(
-                (field) => (
-                  <div key={field} className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      <FaMapMarkerAlt className="inline mr-2" />{" "}
-                      {field.charAt(0).toUpperCase() + field.slice(1)}
-                    </label>
-                    <input
-                      type="text"
-                      name={field}
-                      value={profile.address?.[field] || ""}
-                      onChange={(e) => handleChange(e, field)}
-                      className="w-full px-4 py-2 rounded-xl border focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-gray-100"
-                      disabled={saving}
-                    />
-                    {errors[field] && <p className="text-red-500 text-xs mt-1">{errors[field]}</p>}
-                  </div>
-                )
-              )}
-
-            {/* Save Button */}
-            <div className="md:col-span-2 flex justify-end">
-              <button
-                type="submit"
-                className="flex items-center gap-2 bg-blue-950 text-white px-6 py-3 rounded-xl shadow-md hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={saving}
-              >
-                {saving ? (
-                  <>
-                    <FaSpinner className="animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <FaSave />
-                    Save Changes
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-          {/* <div className="mt-6 md:col-span-2 flex justify-start">
-            <button
-              type="button"
-              onClick={() => setShowChangePasswordModal(true)}
-              className="bg-green-600 text-white px-6 py-3 rounded-xl shadow-md hover:bg-green-700 transition"
-            >
-              Change Password
-            </button>
-          </div> */}
-    <div className="mt-2 flex justify-end">
-  <p
-    className="text-red-600 font-medium cursor-pointer hover:underline"
-    onClick={() => setShowChangePasswordModal(true)}
-  >
-    Change Password?
-  </p>
-</div>
-   
-  {/* Modal */}
-          {showChangePasswordModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-50">
-              <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-lg">
-                <button
-                  onClick={() => setShowChangePasswordModal(false)}
-                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl font-bold"
-                >
-                  ✕
-                </button>
-                <h2 className="text-2xl font-bold text-blue-950 mb-4">Change Password</h2>
-                <ChangePassword />
-              </div>
+        <div className="relative">
+          {imagePreview ? (
+            <img
+              src={imagePreview}
+              className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+            />
+          ) : profile.profileImage?.url ? (
+            <img
+              src={profile.profileImage.url}
+              className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+            />
+          ) : (
+            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-900 to-blue-500 flex items-center justify-center text-white text-4xl font-bold shadow-md">
+              {profile.name?.trim()?.[0]?.toUpperCase() || "U"}
             </div>
           )}
 
+          {imagePreview && (
+            <button
+              type="button"
+              onClick={() => {
+                setImageFile(null);
+                setImagePreview(null);
+              }}
+              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 text-xs"
+              disabled={saving || uploadingImage}
+            >
+              ✕
+            </button>
+          )}
+
+          <label
+            htmlFor="profileImage"
+            className="absolute bottom-2 right-2 bg-blue-900 text-white p-2 rounded-full cursor-pointer"
+          >
+            <FaUpload size={12} />
+          </label>
+
+          <input
+            type="file"
+            id="profileImage"
+            accept="image/jpeg,image/jpg,image/png"
+            className="hidden"
+            onChange={handleImageUpload}
+            disabled={uploadingImage}
+          />
+
+          {imageFile && (
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const imageUrl = await uploadImage();
+
+                  if (imageUrl) {
+                    toast.success("Profile image uploaded successfully");
+                    setProfile((prev) => ({ ...prev, profileImage: imageUrl }));
+                    setImageFile(null);
+                    setImagePreview(null);
+                  }
+                } catch (error) {
+                  console.error(error);
+                  toast.error(getErrorMessage(error));
+                }
+              }}
+              className="absolute bottom-2 right-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs shadow-md hover:bg-green-700"
+              disabled={uploadingImage}
+            >
+              {uploadingImage ? (
+                <FaSpinner className="animate-spin" size={12} />
+              ) : (
+                "Upload"
+              )}
+            </button>
+          )}
         </div>
-      </main>
-      {/* <Footer /> */}
-    </>
-  );
+
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">
+            {profile.name}
+          </h2>
+          <p className="text-slate-500">{profile.email}</p>
+        </div>
+      </div>
+
+      {/* PROFILE FORM */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+
+        {/* Title */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-1 h-5 bg-gradient-to-b from-blue-900 to-blue-500 rounded" />
+          <h3 className="text-base font-bold text-slate-900">
+            Profile Information
+          </h3>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        >
+
+          {/* NAME */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+              Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={profile.name}
+              onChange={handleChange}
+              className="w-full border border-slate-300 px-3 py-2 rounded-lg text-sm bg-slate-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+              disabled={saving}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            )}
+          </div>
+
+          {/* EMAIL */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+              Email
+            </label>
+            <input
+              type="email"
+              value={profile.email}
+              className="w-full border border-slate-300 px-3 py-2 rounded-lg text-sm bg-gray-100 cursor-not-allowed"
+              disabled
+            />
+          </div>
+
+          {/* PHONE */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+              Phone
+            </label>
+            <input
+              type="text"
+              name="phone"
+              value={profile.phone}
+              onChange={handleChange}
+              className="w-full border border-slate-300 px-3 py-2 rounded-lg text-sm bg-slate-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+              disabled={saving}
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+            )}
+          </div>
+
+          {/* ADDRESS */}
+          {profile.address &&
+            (Object.keys(profile.address) as (keyof Address)[]).map((field) => (
+              <div key={field} className="md:col-span-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
+                <input
+                  type="text"
+                  name={field}
+                  value={profile.address?.[field] || ""}
+                  onChange={(e) => handleChange(e, field)}
+                  className="w-full border border-slate-300 px-3 py-2 rounded-lg text-sm bg-slate-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  disabled={saving}
+                />
+                {errors[field] && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors[field]}
+                  </p>
+                )}
+              </div>
+            ))}
+
+          {/* BUTTON */}
+          <div className="md:col-span-2 flex justify-end">
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-gradient-to-r from-blue-900 to-blue-600 text-white rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "Save Changes"}
+            </button>
+          </div>
+        </form>
+
+        {/* CHANGE PASSWORD */}
+        <div className="mt-4 text-right">
+          <span
+            className="text-blue-600 font-medium cursor-pointer hover:underline"
+            onClick={() => setShowChangePasswordModal(true)}
+          >
+            Change Password?
+          </span>
+        </div>
+      </div>
+
+      {/* MODAL */}
+      {showChangePasswordModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 w-full max-w-md relative">
+            <button
+              onClick={() => setShowChangePasswordModal(false)}
+              className="absolute top-3 right-3 text-gray-500"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-lg font-bold mb-4">
+              Change Password
+            </h2>
+            <ChangePassword />
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+);
+
 };
 
 export default UserProfile;

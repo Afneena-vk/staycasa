@@ -55,7 +55,10 @@ const UserSignup = () => {
       <Header />
     <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-12 pb-10 px-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create User Account</h2>
+       {/*  <h2 className="text-2xl font-bold mb-6 text-center">Create User Account</h2> */}
+       <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-950 to-blue-800 bg-clip-text text-transparent">
+  Create User Account
+</h2>
         
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
@@ -155,7 +158,7 @@ const UserSignup = () => {
           
           <button
             type="submit"
-            className="w-full bg-blue-950 hover:bg-blue-800 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            className="w-full text-sm font-medium bg-gradient-to-r from-blue-900 to-blue-700 text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
             disabled={isLoading}
           >
             {isLoading ? 'Signing up...' : 'Sign Up'}
@@ -165,7 +168,7 @@ const UserSignup = () => {
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
-            <a href="/user/login" className="text-blue-800 hover:text-blue-700">
+            <a href="/user/login" className="text-blue-800 hover:text-blue-700 hover:underline">
               Log in
             </a>
           </p>
