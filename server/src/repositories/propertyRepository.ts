@@ -3,6 +3,7 @@ import Property, { IProperty } from "../models/propertyModel";
 import { BaseRepository } from "./baseRepository";
 import { PipelineStage } from "mongoose";
 import { FilterQuery, SortOrder } from "mongoose";
+import mongoose from "mongoose";
 
 import {
   IPropertyRepository,
@@ -369,4 +370,17 @@ export class PropertyRepository
 
     return Property.aggregate(pipeline);
   }
+
+async updateWithSession(
+  propertyId: string,
+  data: Partial<IProperty>,
+  session: mongoose.ClientSession
+): Promise<IProperty | null> {
+  return Property.findByIdAndUpdate(
+    propertyId,
+    { $set: data },
+    { new: true, session }
+  );
+}
+
 }

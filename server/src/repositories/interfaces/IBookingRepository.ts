@@ -1,6 +1,7 @@
 import { IBaseRepository } from './IBaseRepository';
 import { IBooking } from "../../models/bookingModel";
 import { BookingStatus } from '../../models/status/status';
+import mongoose from 'mongoose';
 
 export interface FindByUserOptions {
   search?: string;
@@ -42,4 +43,18 @@ export interface IBookingRepository extends IBaseRepository<IBooking>{
     markCompletedBookings(today: Date): Promise<number>
     getBookingStatusStatsByOwner(ownerId: string): Promise<{ _id: string; count: number }[]>;
     getBookingStatusCounts(): Promise<{ _id: string; count: number }[]>;
+
+
+    findConflictingBookingsWithSession(
+       propertyId: string,
+       start: Date,
+       end: Date,
+       session: mongoose.ClientSession
+     ): Promise<IBooking | null>;
+
+    createWithSession(
+      data: Partial<IBooking>,
+      session: mongoose.ClientSession
+    ): Promise<IBooking>;
+
 }

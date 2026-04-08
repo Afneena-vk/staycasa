@@ -1,6 +1,7 @@
 import { IBaseRepository } from './IBaseRepository';
 import { IProperty } from '../../models/propertyModel';
 import { PropertyStatus } from '../../models/status/status';
+import mongoose from 'mongoose';
 
 export interface IPropertyListResult {
   properties: IProperty[];
@@ -73,4 +74,11 @@ getOwnerProperties (ownerId: string,
    getPropertyStatusCounts(): Promise<{ _id: string; count: number }[]>;
    countByOwnerId(ownerId: string): Promise<number>;
    getLatestActiveProperties(limit:number):Promise<IProperty[]>;
+
+  updateWithSession(
+   propertyId: string,
+   data: Partial<IProperty>,
+   session: mongoose.ClientSession
+ ): Promise<IProperty | null>;
+
 }
