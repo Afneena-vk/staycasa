@@ -26,12 +26,55 @@ export class UserService implements IUserService {
   ) {}
 
   async registerUser(data: SignupData): Promise<{ status: number; message: string }> {
-    const { name, email, phone, password, confirmPassword } = data;
+    
+
+  let { name, email, phone, password, confirmPassword } = data;
+
+  name = name?.trim();
+  email = email?.trim().toLowerCase();
+  phone = phone?.trim();
+
+  password = password;
+  confirmPassword = confirmPassword;
 
     if (!name || !email || !phone || !password || !confirmPassword) {
 
       throw new AppError(MESSAGES.ERROR.MISSING_FIELDS, STATUS_CODES.BAD_REQUEST);
     }
+
+
+
+if (
+  name.length < 3 ||
+  !/^[A-Za-z\s'.-]+$/.test(name) ||
+  !/[A-Za-z]/.test(name)
+) {
+  throw new AppError(
+    "Enter a valid name",
+    STATUS_CODES.BAD_REQUEST
+  );
+}
+
+
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  if (!emailRegex.test(email)) {
+    throw new AppError("Invalid email format", STATUS_CODES.BAD_REQUEST);
+  }
+
+
+  const phoneRegex = /^[6-9]\d{9}$/;
+  if (!phoneRegex.test(phone)) {
+    throw new AppError("Invalid phone number", STATUS_CODES.BAD_REQUEST);
+  }
+
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    throw new AppError(
+      "Password must be at least 8 characters and include letter, number and special character",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }
 
     if (password !== confirmPassword) {
 
@@ -49,6 +92,8 @@ export class UserService implements IUserService {
     const otp = OTPService.generateOTP(); 
     console.log("Generated OTP:", otp);
 
+    const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
     await this._userRepository.create({
       name,
       email,
@@ -56,6 +101,7 @@ export class UserService implements IUserService {
       password: hashedPassword,
       isVerified: false,
       otp,
+      otpExpiresAt,
     });
 
     await OTPService.sendOTP(email, otp);
@@ -67,18 +113,20 @@ export class UserService implements IUserService {
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
-
       throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
     }
 
+  if (!user.otpExpiresAt || user.otpExpiresAt < new Date()) {
+    throw new AppError("OTP expired", STATUS_CODES.BAD_REQUEST);
+  }
+
     if (user.otp !== otp) {
-
         throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
-
     }
 
     user.isVerified = true;
     user.otp = undefined;
+    user.otpExpiresAt = undefined;
     await user.save();
 
     return { status: STATUS_CODES.OK, message: "User verified successfully" };
@@ -98,8 +146,20 @@ export class UserService implements IUserService {
        throw new AppError("User is already verified", STATUS_CODES.BAD_REQUEST);
     }
 
+  const cooldown = 60 * 1000; 
+
+  if (
+    user.otpExpiresAt &&
+    (user.otpExpiresAt.getTime() - Date.now()) > (5 * 60 * 1000 - cooldown)
+  ) {
+    throw new AppError(
+      "Please wait before requesting a new OTP",
+      STATUS_CODES.TOO_MANY_REQUESTS
+    );
+  }    
    
     const otp = OTPService.generateOTP();
+    user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     console.log("New OTP is:", otp);
     
     user.otp = otp;
@@ -214,6 +274,17 @@ export class UserService implements IUserService {
 
 
 async forgotPassword(email: string): Promise<{ status: number; message: string }> {
+
+
+  email = email?.trim().toLowerCase();
+
+
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+  if (!emailRegex.test(email)) {
+    throw new AppError("Invalid email format", STATUS_CODES.BAD_REQUEST);
+  }
+
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
@@ -232,6 +303,7 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
 
     
     user.otp = otp;
+    user.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     await user.save();
 
     
@@ -243,25 +315,58 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
     };
   }
 
-  async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
+ 
+   async resetPassword(email: string, otp: string, newPassword: string,  confirmPassword: string): Promise<{ status: number; message: string }> { 
+
+
+  email = email?.trim().toLowerCase();
+  otp = otp?.trim();
+
+    if (!email || !otp || !newPassword) {
+    throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
+  }
+
     const user = await this._userRepository.findByEmail(email);
 
     if (!user) {
 
         throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
-    }
+    }  
 
-    if (user.otp !== otp) {
 
+if (!user.otpExpiresAt || user.otpExpiresAt < new Date()) {
+  throw new AppError("OTP expired", STATUS_CODES.BAD_REQUEST);
+}
+
+
+    
+    if (!user.otp || user.otp !== otp) {
        throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
     }
 
+
     
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  
+
+  if (!passwordRegex.test(newPassword)) {
+    throw new AppError(
+      "Password must be at least 8 characters and include letter, number and special character",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }
+
+if (newPassword !== confirmPassword) {
+  throw new AppError("Passwords do not match", STATUS_CODES.BAD_REQUEST);
+}
+
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     
     user.password = hashedPassword;
     user.otp = undefined;
+    user.otpExpiresAt = undefined;
     await user.save();
 
     return { 
@@ -287,6 +392,7 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
     userId: string,
     data: UserProfileUpdateDto
   ): Promise<UserProfileResponseDto> {
+
     const user = await this._userRepository.findById(userId);
 
     if (!user) {
@@ -297,21 +403,98 @@ async getUserProfile(userId: string): Promise<UserProfileResponseDto> {
     
     const updateData: Partial<IUser> = {};
 
-    if (data.name) updateData.name = data.name;
-    if (data.phone) updateData.phone = data.phone;
+    // if (data.name) updateData.name = data.name;
+    // if (data.phone) updateData.phone = data.phone;
 
-    if (data.address) {
-      updateData.address = {
-        houseNo: data.address.houseNo ?? user.address?.houseNo ?? "",
-        street: data.address.street ?? user.address?.street ?? "",
-        city: data.address.city ?? user.address?.city ?? "",
-        district: data.address.district ?? user.address?.district ?? "",
-        state: data.address.state ?? user.address?.state ?? "",
-        pincode: data.address.pincode ?? user.address?.pincode ?? "",
-      };
+      if (data.name !== undefined) {
+    const name = data.name.trim();
+
+    if (!name) {
+      throw new AppError("Name is required", STATUS_CODES.BAD_REQUEST);
     }
 
-    const updatedUser = await this._userRepository.update(userId, updateData);
+
+
+if (
+  name.length < 3 ||
+  !/^[A-Za-z\s'.-]+$/.test(name) ||
+  !/[A-Za-z]/.test(name)
+) {
+  throw new AppError(
+    "Enter a valid name",
+    STATUS_CODES.BAD_REQUEST
+  );
+}
+
+    updateData.name = name;
+  }
+
+    if (data.phone !== undefined) {
+    const phone = data.phone?.trim() || "";
+
+    if (phone && !/^[6-9]\d{9}$/.test(phone)) {
+      throw new AppError(
+        "Invalid phone number",
+        STATUS_CODES.BAD_REQUEST
+      );
+    }
+
+    updateData.phone = phone;
+  }
+
+
+ if (data.address) {
+  const { houseNo, street, city, district, state, pincode } = data.address;
+
+  const isAllEmpty =
+    !houseNo?.trim() &&
+    !street?.trim() &&
+    !city?.trim() &&
+    !district?.trim() &&
+    !state?.trim() &&
+    !pincode?.trim();
+
+ 
+  if (isAllEmpty) {
+    // updateData.address = undefined; // or skip setting
+  } else {
+   
+    if (
+      !houseNo?.trim() ||
+      !street?.trim() ||
+      !city?.trim() ||
+      !district?.trim() ||
+      !state?.trim() ||
+      !pincode?.trim()
+    ) {
+      throw new AppError(
+        "All address fields are required",
+        STATUS_CODES.BAD_REQUEST
+      );
+    }
+
+    
+    if (!/^\d{6}$/.test(pincode)) {
+      throw new AppError(
+        "Pincode must be 6 digits",
+        STATUS_CODES.BAD_REQUEST
+      );
+    }
+
+    
+    updateData.address = {
+      houseNo: houseNo.trim(),
+      street: street.trim(),
+      city: city.trim(),
+      district: district.trim(),
+      state: state.trim(),
+      pincode: pincode.trim(),
+    };
+  }
+} 
+
+    // const updatedUser = await this._userRepository.update(userId, updateData);
+    const updatedUser = await this._userRepository.updateUserSafe(userId, updateData);
 
     if (!updatedUser) {
 
@@ -372,6 +555,26 @@ async changePassword(userId: string, currentPassword: string, newPassword: strin
     throw new AppError("Current password is incorrect", STATUS_CODES.BAD_REQUEST);
 
   }
+
+  
+   if (currentPassword === newPassword) {
+    throw new AppError(
+      "New password must be different from current password",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }
+
+   const passwordRegex =
+    // /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+
+  if (!passwordRegex.test(newPassword)) {
+    throw new AppError(
+      "Password must be at least 8 characters and include letter, number and special character",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }
+
 
   
   const hashedPassword = await bcrypt.hash(newPassword, 10);

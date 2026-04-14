@@ -44,6 +44,24 @@ async getUserStatistics(): Promise<UserStatistics>{
     ]);
   }
 
+
+async updateUserSafe(
+  id: string,
+  data: Partial<IUser>
+): Promise<IUser | null> {
+
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([_, value]) => value !== undefined)
+  );
+
+  return await User.findByIdAndUpdate(
+    id,
+    { $set: cleanData }, 
+    { new: true, runValidators: true }
+  ).exec();
+}
+
+
 }
 
 //export default new UserRepository();

@@ -292,6 +292,7 @@ export class UserController implements IUserController {
         email,
         otp,
         newPassword,
+        confirmPassword
       );
       res.status(result.status).json({
         message: result.message,

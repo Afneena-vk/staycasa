@@ -27,6 +27,7 @@ export interface IUser extends Document {
   status: 'active' | 'blocked';
   isVerified: boolean;
   otp?: string;
+  otpExpiresAt?: Date;
   googleId?: string;
   address?: Address;
   createdAt: Date;
@@ -61,6 +62,7 @@ const userSchema = new Schema<IUser>(
     status: {type: String,enum: ['active', 'blocked'],default: 'active'},
     isVerified: {type: Boolean,default: false},
     otp: {type: String,default: null},
+    otpExpiresAt: { type: Date, default: null },
     googleId: {type: String,default: null},
     address: {
         type: addressSchema,

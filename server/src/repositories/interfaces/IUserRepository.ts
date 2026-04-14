@@ -15,5 +15,7 @@ export interface IUserRepository extends IBaseRepository<IUser> {
   findByEmail(email: string): Promise<IUser | null>;
   findByGoogleId(googleId: string): Promise<IUser | null>;
   getUserStatistics(): Promise<UserStatistics>  
-  getUserStatusCounts(): Promise<{ _id: string; count: number }[]>;      
+  getUserStatusCounts(): Promise<{ _id: string; count: number }[]>; 
+  updateUserSafe(id: string, data: Partial<IUser>): Promise<IUser | null>
+  
 }

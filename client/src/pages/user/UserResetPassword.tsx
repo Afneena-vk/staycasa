@@ -33,14 +33,37 @@ const UserResetPassword = () => {
       return;
     }
 
-    if (formData.newPassword !== formData.confirmPassword) {
+    
+    const otp = formData.otp.trim();
+    const newPassword = formData.newPassword;
+    const confirmPassword = formData.confirmPassword;
+
+
+
+    if (!otp || !newPassword || !confirmPassword) {
+      toast.error("All fields are required");
+      setIsLoading(false);
+      return;
+    }
+
+
+        if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
       setIsLoading(false);
       return;
     }
 
-const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/;
-  if (!passwordRegex.test(formData.newPassword)) {
+
+      const otpRegex = /^\d{6}$/;
+    if (!otpRegex.test(otp)) {
+      toast.error("Invalid OTP");
+      setIsLoading(false);
+      return;
+    }
+
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  
+    if (!passwordRegex.test(newPassword)){
     toast.error(
       "Password must be at least 8 characters long and include a letter, number, and special character."
     );
@@ -51,9 +74,12 @@ const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\
     try {
       await resetPassword(
         tempEmail,
-        formData.otp,
-        formData.newPassword,
-        formData.confirmPassword,
+        otp,               
+        newPassword,         
+        confirmPassword,
+        // formData.otp,
+        // formData.newPassword,
+        // formData.confirmPassword,
         "user"
       );
       toast.success("Password reset successful!");

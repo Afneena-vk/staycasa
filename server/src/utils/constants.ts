@@ -13,7 +13,7 @@ export const ROLES = {
     NOT_FOUND: 404,
     CONFLICT: 409,
     INTERNAL_SERVER_ERROR: 500,
-    
+    TOO_MANY_REQUESTS: 429, 
   };
   
   export const MESSAGES = {

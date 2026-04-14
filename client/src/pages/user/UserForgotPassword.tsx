@@ -12,11 +12,23 @@ const UserForgotPassword = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+  if (!emailRegex.test(email.trim())) {
+    toast.error("Please enter a valid email address");
+    return;
+  } 
+    
     setIsLoading(true);
 
     try {
-      await forgotPassword(email, "user");
-      setTempEmail(email);
+      // await forgotPassword(email, "user");
+      // setTempEmail(email);
+
+    await forgotPassword(email.trim(), "user");
+    setTempEmail(email.trim());
+      
       toast.success("Password reset OTP sent to your email!");
       navigate("/user/reset-password");
   
@@ -59,7 +71,6 @@ const UserForgotPassword = () => {
               name="email"
               type="email"
               autoComplete="email"
-              required
               className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder="Enter your email address"
               value={email}

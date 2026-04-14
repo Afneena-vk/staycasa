@@ -221,19 +221,54 @@ if (newProfileImage) {
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!profile.name.trim()) newErrors.name = "Name is required";
+ const name = profile.name.trim();
+  if (!name) {
+    newErrors.name = "Name is required";
+  } else if (name.length < 3) {
+    newErrors.name = "Name must be at least 3 characters";
 
-    if (profile.phone && !/^\d{10}$/.test(profile.phone.trim()))
-      newErrors.phone = "Phone must be 10 digits";
+  } else if (!/^[A-Za-z\s'.-]+$/.test(name) || !/[A-Za-z]/.test(name)) {
+  newErrors.name = "Enter a valid name";
+}  
 
-    if (profile.address) {
-      Object.entries(profile.address).forEach(([key, value]) => {
-        if (!value.trim()) newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;  
-          if (key === "pincode" && value.trim() && !/^\d+$/.test(value)) {
-      newErrors[key] = "Pincode must contain only numbers";
+
+    //   newErrors.phone = "Phone must be 10 digits";
+
+  if (profile.phone) {
+    const phone = profile.phone.trim();
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      newErrors.phone = "Enter a valid 10-digit phone number";
     }
-      });
+  }
+
+
+
+ if (profile.address) {
+  const { houseNo, street, city, district, state, pincode } = profile.address;
+
+  const isAllEmpty =
+    !houseNo.trim() &&
+    !street.trim() &&
+    !city.trim() &&
+    !district.trim() &&
+    !state.trim() &&
+    !pincode.trim();
+
+
+  if (!isAllEmpty) {
+    if (!houseNo.trim()) newErrors.houseNo = "House No is required";
+    if (!street.trim()) newErrors.street = "Street is required";
+    if (!city.trim()) newErrors.city = "City is required";
+    if (!district.trim()) newErrors.district = "District is required";
+    if (!state.trim()) newErrors.state = "State is required";
+
+    if (!pincode.trim()) {
+      newErrors.pincode = "Pincode is required";
+    } else if (!/^\d{6}$/.test(pincode)) {
+      newErrors.pincode = "Pincode must be 6 digits";
     }
+  }
+} 
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -254,7 +289,7 @@ if (newProfileImage) {
 
       const updateData = {
         name: profile.name,
-        phone: profile.phone,
+        phone: profile.phone  ?? "", 
         address: profile.address,
          ...(profileImageUrl && { profileImage: profileImageUrl }),
       };
@@ -445,7 +480,8 @@ return (
             <input
               type="text"
               name="phone"
-              value={profile.phone}
+              // value={profile.phone}
+              value={profile.phone ?? ""}
               onChange={handleChange}
               className="w-full border border-slate-300 px-3 py-2 rounded-lg text-sm bg-slate-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
               disabled={saving}

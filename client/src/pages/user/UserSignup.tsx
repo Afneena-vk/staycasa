@@ -18,7 +18,8 @@ type SignupFormData = {
 };
 
 const UserSignup = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>();
+    const { register, handleSubmit, getValues, formState: { errors } } = useForm<SignupFormData>();
+
   const navigate = useNavigate();
   const { signup, setTempEmail } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +27,21 @@ const UserSignup = () => {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setIsLoading(true);
-      await signup(data, 'user');
-      setTempEmail(data.email); 
+
+     const cleanedData = {
+      name: data.name.trim(),
+      email: data.email.trim().toLowerCase(),
+      phone: data.phone.trim(),
+
+      password: data.password,
+      confirmPassword: data.confirmPassword
+    };
+
+      // await signup(data, 'user');
+      // setTempEmail(data.email); 
+      await signup(cleanedData, 'user'); 
+      setTempEmail(cleanedData.email);
+
       toast.success('Registration successful! Please verify OTP sent to your email.');
       navigate('/user/otp-verification');
     
@@ -70,7 +84,21 @@ const UserSignup = () => {
               type="text"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your Name"
-              {...register('name', { required: 'Name is required' })}
+              
+              {...register('name', {
+  required: 'Name is required',
+  minLength: {
+    value: 3,
+    message: 'Name must be at least 3 characters'
+  },
+
+    pattern: {
+    value: /^[A-Za-z\s'.-]+$/,
+    message: 'Only letters, spaces, ".", "-" and "\'" are allowed'
+  },
+  validate: (value) =>
+    /[A-Za-z]/.test(value) || 'Enter a valid name'
+})}
             />
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
@@ -107,9 +135,9 @@ const UserSignup = () => {
               {...register('phone', { 
                 required: 'Phone number is required',
                 pattern: {
-                  value: /^[0-9]{10}$/,
-                  message: 'Phone number must be 10 digits'
-                }
+  value: /^[6-9]\d{9}$/,
+  message: 'Enter a valid Indian phone number'
+}
               })}
             />
             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
@@ -131,7 +159,8 @@ const UserSignup = () => {
                   message: 'Password must be at least 8 characters'
                 },
                  pattern: {
-      value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/,
+      // value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/,
+         value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       message: 'Password must include a letter, number, and special character'
     }
               })}
@@ -150,7 +179,9 @@ const UserSignup = () => {
               placeholder="********"
               {...register('confirmPassword', { 
                 required: 'Please confirm your password',
-                validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+                // validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+                     validate: (value) =>
+                    value === getValues('password') || 'Passwords do not match'
               })}
             />
             {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}

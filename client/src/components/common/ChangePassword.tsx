@@ -35,14 +35,32 @@ const ChangePassword: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
 
   const validate = () => {
-    if (!currentPassword.trim() || !newPassword.trim() || !confirmPassword.trim()) {
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
       toast.error("All fields are required");
       return false;
-    }
+    } 
     if (newPassword !== confirmPassword) {
       toast.error("New password and confirm password do not match");
       return false;
     }
+  const passwordRegex =
+  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+
+    if (!passwordRegex.test(newPassword)) {
+    toast.error(
+      "Password must be at least 8 characters and include letter, number and special character"
+    );
+    return false;
+  }
+
+    if (currentPassword === newPassword) {
+    toast.error("New password must be different from current password");
+    return false;
+  }
+
+
     return true;
   };
 
