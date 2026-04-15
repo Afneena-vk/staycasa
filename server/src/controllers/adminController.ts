@@ -57,7 +57,8 @@ export class AdminController implements IAdminController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId } = req.params;
+      // const { userId } = req.params;
+      const userId = req.params.userId;
 
       if (!userId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -67,7 +68,10 @@ export class AdminController implements IAdminController {
         return;
       }
 
-      const result = await this._adminService.blockUser(userId);
+       const id = Array.isArray(userId) ? userId[0] : userId;
+
+      // const result = await this._adminService.blockUser(userId);
+        const result = await this._adminService.blockUser(id);
 
       res.status(result.status).json({
         message: result.message,
@@ -85,7 +89,8 @@ export class AdminController implements IAdminController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId } = req.params;
+      // const { userId } = req.params;
+      const userId = req.params.userId;
 
       if (!userId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -95,7 +100,11 @@ export class AdminController implements IAdminController {
         return;
       }
 
-      const result = await this._adminService.unblockUser(userId);
+      const id = Array.isArray(userId) ? userId[0] : userId;
+
+      //const result = await this._adminService.unblockUser(userId);
+
+      const result = await this._adminService.unblockUser(id);
 
       res.status(result.status).json({
         message: result.message,
