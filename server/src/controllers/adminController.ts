@@ -16,6 +16,7 @@ import {
 import logger from "../utils/logger";
 import crypto from "crypto"
 import { AppError } from "../utils/AppError";
+import { parseParam } from "../utils/parseParam";
 
 @injectable()
 export class AdminController implements IAdminController {
@@ -122,7 +123,8 @@ export class AdminController implements IAdminController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId } = req.params;
+      // const { userId } = req.params;
+      const userId = parseParam(req.params.userId);
 
       if (!userId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -166,7 +168,8 @@ export class AdminController implements IAdminController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { ownerId } = req.params;
+      // const { ownerId } = req.params;
+      const ownerId = parseParam(req.params.ownerId);
 
       if (!ownerId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -194,7 +197,8 @@ export class AdminController implements IAdminController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { ownerId } = req.params;
+      // const { ownerId } = req.params;
+      const ownerId = parseParam(req.params.ownerId);
 
       if (!ownerId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -222,7 +226,8 @@ export class AdminController implements IAdminController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { ownerId } = req.params;
+      // const { ownerId } = req.params;
+      const ownerId = parseParam(req.params.ownerId);
 
       if (!ownerId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -243,7 +248,8 @@ export class AdminController implements IAdminController {
 
   async approveOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { ownerId } = req.params;
+      // const { ownerId } = req.params;
+      const ownerId = parseParam(req.params.ownerId);
       if (!ownerId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
           error: "Owner ID is required",
@@ -261,7 +267,8 @@ export class AdminController implements IAdminController {
 
   async rejectOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { ownerId } = req.params;
+      // const { ownerId } = req.params;
+      const ownerId = parseParam(req.params.ownerId);
       if (!ownerId) {
         res.status(STATUS_CODES.BAD_REQUEST).json({
           error: "Owner ID is required",
