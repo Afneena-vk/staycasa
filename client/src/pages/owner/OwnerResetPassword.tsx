@@ -28,22 +28,63 @@ const OwnerResetPassword = () => {
 
     if (!tempEmail) {
       toast.error("Email not found. Please start the reset process again.");
+       setIsLoading(false);
       navigate("/owner/forgot-password");
       return;
     }
 
-    if (formData.newPassword !== formData.confirmPassword) {
+    const otp = formData.otp.trim();
+
+    const newPassword = formData.newPassword;
+    const confirmPassword = formData.confirmPassword;
+
+
+
+    if (!otp || !newPassword || !confirmPassword) {
+      toast.error("All fields are required");
+      setIsLoading(false);
+      return;
+    }
+
+
+        if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
       setIsLoading(false);
       return;
     }
 
+const otpRegex = /^\d{6}$/;
+if (!otpRegex.test(otp)) {
+  toast.error("Invalid OTP");
+  setIsLoading(false);
+  return;
+}
+
+const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+if (!passwordRegex.test(newPassword)) {
+  toast.error(
+    "Password must be at least 8 characters long and include a letter, number, and special character."
+  );
+  setIsLoading(false);
+  return;
+}
+
+    // if (formData.newPassword !== formData.confirmPassword) {
+    //   toast.error("Passwords do not match");
+    //   setIsLoading(false);
+    //   return;
+    // }
+
     try {
       await resetPassword(
         tempEmail,
-        formData.otp,
-        formData.newPassword,
-        formData.confirmPassword,
+        otp,               
+        newPassword,         
+        confirmPassword,
+        // formData.otp,
+        // formData.newPassword,
+        // formData.confirmPassword,
         "owner"
       );
       toast.success("Password reset successful!");
@@ -54,7 +95,7 @@ const OwnerResetPassword = () => {
 
   // Axios-specific errors
   if (axios.isAxiosError(error)) {
-    message = error.response?.data?.error || error.message;
+    message = error.response?.data?.message || error.message;
   } 
   // Generic JS errors
   else if (error instanceof Error) {

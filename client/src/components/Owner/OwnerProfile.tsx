@@ -129,13 +129,42 @@ const OwnerProfile = () => {
 const validate = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!profile.name.trim()) newErrors.name = "Name is required";
-    if (!profile.phone.trim()) newErrors.phone = "Phone is required";
-    else if (!/^\d{10}$/.test(profile.phone.trim()))
-      newErrors.phone = "Phone must be 10 digits";
+  const name = profile.name.trim();
+  if (!name) {
+    newErrors.name = "Name is required";
+  } else if (name.length < 3) {
+    newErrors.name = "Name must be at least 3 characters";
+  } else if (!/^[A-Za-z\s'.-]+$/.test(name) || !/[A-Za-z]/.test(name)) {
+    newErrors.name = "Enter a valid name";
+  }
 
-    if (!profile.businessName.trim()) newErrors.businessName = "Business name is required";
-    if (!profile.businessAddress.trim()) newErrors.businessAddress = "Business address is required";
+   const phone = profile.phone.trim();
+  if (!phone) {
+    newErrors.phone = "Phone is required";
+  } else if (!/^[6-9]\d{9}$/.test(phone)) {
+    newErrors.phone = "Enter a valid 10-digit phone number";
+  }
+
+  
+   const businessName = profile.businessName.trim();
+  if (!businessName) {
+    newErrors.businessName = "Business name is required";
+  } else if (businessName.length < 2) {
+    newErrors.businessName = "Business name is too short";
+  }
+
+   const businessAddress = profile.businessAddress.trim();
+  if (!businessAddress) {
+    newErrors.businessAddress = "Business address is required";
+  } 
+
+    // if (!profile.name.trim()) newErrors.name = "Name is required";
+    // if (!profile.phone.trim()) newErrors.phone = "Phone is required";
+    // else if (!/^\d{10}$/.test(profile.phone.trim()))
+    //   newErrors.phone = "Phone must be 10 digits";
+
+    // if (!profile.businessName.trim()) newErrors.businessName = "Business name is required";
+    // if (!profile.businessAddress.trim()) newErrors.businessAddress = "Business address is required";
 
     setErrors(newErrors);
 
@@ -235,11 +264,14 @@ const handleDocumentUpload = async () => {
       
      
       const updateData = {
-        name: profile.name,
-        phone: profile.phone,
-        businessName: profile.businessName,
-        businessAddress: profile.businessAddress,
-        
+        // name: profile.name,
+        // phone: profile.phone,
+        // businessName: profile.businessName,
+        // businessAddress: profile.businessAddress,
+          name: profile.name.trim(),
+          phone: profile.phone.trim(),
+          businessName: profile.businessName.trim(),
+          businessAddress: profile.businessAddress.trim(),
       };
 
       const response = await updateOwnerProfile(updateData);

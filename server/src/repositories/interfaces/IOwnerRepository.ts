@@ -8,4 +8,5 @@ export interface IOwnerRepository extends IBaseRepository<IOwner> {
   findByPhone(phone: string): Promise<IOwner | null>;
   updateDocument(ownerId: string, document: string): Promise<IOwner | null>;
   getOwnerStatusCounts(): Promise<{ _id: string; count: number }[]>;
+  updateOwnerSafe(id: string, data: Partial<IOwner>): Promise<IOwner | null>
 }

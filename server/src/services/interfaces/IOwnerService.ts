@@ -26,7 +26,7 @@ export interface OwnerSignupData {
 
   forgotPassword(email: string): Promise<{ message: string; status: number }>;
 
-  resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string; status: number }>;
+  resetPassword(email: string, otp: string, newPassword: string, confirmPassword: string): Promise<{ message: string; status: number }>;
 
   loginOwner(data: OwnerLoginData): Promise<OwnerLoginResponseDto>;
 

@@ -18,7 +18,8 @@ type SignupFormData = {
 };
 
 const OwnerSignup = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>();
+  // const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>();
+  const { register, handleSubmit, getValues, formState: { errors } } = useForm<SignupFormData>();
   const navigate = useNavigate();
   const { signup, setTempEmail } = useAuthStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +27,22 @@ const OwnerSignup = () => {
   const onSubmit = async (data: SignupFormData) => {
     try {
       setIsLoading(true);
-      await signup(data, 'owner');
-      setTempEmail(data.email);
+
+const cleanedData = {
+  name: data.name.trim(),
+  email: data.email.trim().toLowerCase(),
+  phone: data.phone.trim(),
+  password: data.password,
+  confirmPassword: data.confirmPassword,
+  businessName: data.businessName.trim(),
+  businessAddress: data.businessAddress.trim()
+};
+
+await signup(cleanedData, 'owner');
+setTempEmail(cleanedData.email);
+
+      // await signup(data, 'owner');
+      // setTempEmail(data.email);
       toast.success('Registration successful! Please verify OTP sent to your email.');
       navigate('/owner/otp-verification');
     
@@ -87,7 +102,20 @@ const OwnerSignup = () => {
             <input
               id="name"
               type="text"
-              {...register('name', { required: 'Name is required' })}
+              // {...register('name', { required: 'Name is required' })}
+{...register('name', {
+  required: 'Name is required',
+  minLength: {
+    value: 3,
+    message: 'Name must be at least 3 characters'
+  },
+  pattern: {
+    value: /^[A-Za-z\s'.-]+$/,
+    message: 'Only letters, spaces, ".", "-" and "\'" are allowed'
+  },
+  validate: (value) =>
+    /[A-Za-z]/.test(value) || 'Enter a valid name'
+})}              
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Your Name"
             />
@@ -100,7 +128,14 @@ const OwnerSignup = () => {
             <input
               id="email"
               type="email"
-              {...register('email', { required: 'Email is required' })}
+              // {...register('email', { required: 'Email is required' })}
+              {...register('email', {
+  required: 'Email is required',
+  pattern: {
+    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+    message: 'Invalid email address'
+  }
+})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Email"
             />
@@ -113,7 +148,14 @@ const OwnerSignup = () => {
             <input
               id="phone"
               type="tel"
-              {...register('phone', { required: 'Phone number is required' })}
+              // {...register('phone', { required: 'Phone number is required' })} 
+{...register('phone', {
+  required: 'Phone number is required',
+  pattern: {
+    value: /^[6-9]\d{9}$/,
+    message: 'Enter a valid Indian phone number'
+  }
+})}              
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Phone Number"
             />
@@ -126,7 +168,14 @@ const OwnerSignup = () => {
             <input
               id="businessName"
               type="text"
-              {...register('businessName', { required: 'Business name is required' })}
+              // {...register('businessName', { required: 'Business name is required' })}
+              {...register('businessName', {
+  required: 'Business name is required',
+  minLength: {
+    value: 2,
+    message: 'Business name must be at least 2 characters'
+  }
+})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Business Name"
             />
@@ -139,7 +188,14 @@ const OwnerSignup = () => {
             <input
               id="businessAddress"
               type="text"
-              {...register('businessAddress', { required: 'Business address is required' })}
+              // {...register('businessAddress', { required: 'Business address is required' })}
+              {...register('businessAddress', {
+  required: 'Business address is required',
+  minLength: {
+    value: 5,
+    message: 'Address must be at least 5 characters'
+  }
+})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="Business Address"
             />
@@ -154,9 +210,11 @@ const OwnerSignup = () => {
               type="password"
               {...register('password', { required: 'Password is required', minLength: { value: 8, message: 'Minimum 8 characters' },
                  pattern: {
-        value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/,
-        message: 'Must include a letter, number, and special character',
-      },
+        // value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]).{8,}$/,
+        // message: 'Must include a letter, number, and special character',
+    value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    message: 'Password must include a letter, number, and special character'        
+      }
               
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -173,7 +231,9 @@ const OwnerSignup = () => {
               type="password"
               {...register('confirmPassword', {
                 required: 'Please confirm your password',
-                validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+                // validate: (value, formValues) => value === formValues.password || 'Passwords do not match'
+                validate: (value) =>
+                value === getValues('password') || 'Passwords do not match'                
               })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md"
               placeholder="********"

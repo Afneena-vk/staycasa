@@ -322,7 +322,7 @@ async forgotPassword(email: string): Promise<{ status: number; message: string }
   email = email?.trim().toLowerCase();
   otp = otp?.trim();
 
-    if (!email || !otp || !newPassword) {
+    if (!email || !otp || !newPassword ||  !confirmPassword) {
     throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
   }
 

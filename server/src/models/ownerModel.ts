@@ -17,7 +17,8 @@ export interface IOwner extends Document {
   approvalStatus: OwnerStatus;
   isVerified: boolean;
   otp?: string|null;
-  otpExpires?: Date|null;
+  // otpExpires?: Date|null;
+   otpExpiresAt?: Date|null;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -42,7 +43,8 @@ const ownerSchema = new Schema<IOwner>(
     },
     isVerified: {type: Boolean,default: false},
     otp: {type: String,default: null },
-    otpExpires: {type: Date}
+    // otpExpires: {type: Date}
+     otpExpiresAt: { type: Date, default: null },
   },
   {
     timestamps: true 

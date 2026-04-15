@@ -50,6 +50,22 @@ export class OwnerRepository extends BaseRepository<IOwner> implements IOwnerRep
     ]);
   }
 
+  async updateOwnerSafe(
+  id: string,
+  data: Partial<IOwner>
+): Promise<IOwner | null> {
+
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([_, value]) => value !== undefined)
+  );
+
+  return await Owner.findByIdAndUpdate(
+    id,
+    { $set: cleanData },
+    { new: true, runValidators: true }
+  ).exec();
+}
+
 
 }
 

@@ -245,6 +245,7 @@ export class OwnerController implements IOwnerController {
         email,
         otp,
         newPassword,
+        confirmPassword
       );
       res.status(result.status).json({
         message: result.message,

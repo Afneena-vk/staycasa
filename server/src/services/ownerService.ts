@@ -18,6 +18,7 @@ import { cloudinary } from '../config/cloudinary';
 import { Types } from "mongoose";
 import { ITransaction } from '../models/walletModel';
 import { AppError } from '../utils/AppError';
+import { IOwner } from '../models/ownerModel';
 
 @injectable()
 
@@ -31,17 +32,62 @@ import { AppError } from '../utils/AppError';
 
 
   async registerOwner(data: OwnerSignupData): Promise<{ status: number;message: string }> {
-    const { name, email, phone, password, confirmPassword, businessName, businessAddress  } = data;
+    // const { name, email, phone, password, confirmPassword, businessName, businessAddress  } = data;
+     let { name, email, phone, password, confirmPassword, businessName, businessAddress  } = data;
+
+  name = name?.trim();
+  email = email?.trim().toLowerCase();
+  phone = phone?.trim();
+  businessName = businessName?.trim();
+  businessAddress = businessAddress?.trim();    
 
     if (!name || !email || !phone || !password || !confirmPassword || !businessName || !businessAddress) {
 
       throw new AppError(MESSAGES.ERROR.MISSING_FIELDS, STATUS_CODES.BAD_REQUEST);
     }
 
+  if (
+    name.length < 3 ||
+    !/^[A-Za-z\s'.-]+$/.test(name) ||
+    !/[A-Za-z]/.test(name)
+  ) {
+    throw new AppError("Enter a valid name", STATUS_CODES.BAD_REQUEST);
+  }
+
+
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  if (!emailRegex.test(email)) {
+    throw new AppError("Invalid email format", STATUS_CODES.BAD_REQUEST);
+  }  
+  
+  const phoneRegex = /^[6-9]\d{9}$/;
+  if (!phoneRegex.test(phone)) {
+    throw new AppError("Invalid phone number", STATUS_CODES.BAD_REQUEST);
+  }
+
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  if (!passwordRegex.test(password)) {
+    throw new AppError(
+      "Password must be at least 8 characters and include letter, number and special character",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }  
+
     if (password !== confirmPassword) {
 
       throw new AppError(MESSAGES.ERROR.PASSWORD_MISMATCH, STATUS_CODES.BAD_REQUEST);
     }
+
+  if (businessName.length < 2) {
+    throw new AppError("Business name too short", STATUS_CODES.BAD_REQUEST);
+  }
+
+  if (businessAddress.length < 5) {
+    throw new AppError("Business address too short", STATUS_CODES.BAD_REQUEST);
+  }
+
+
 
     const existingOwner = await this._ownerRepository.findByEmail(email);
     if (existingOwner) {
@@ -50,7 +96,9 @@ import { AppError } from '../utils/AppError';
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const otp = OTPService.generateOTP(); 
+     const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
     console.log("Generated OTP:", otp);
     const owner =await this._ownerRepository.create({
         name,
@@ -61,6 +109,7 @@ import { AppError } from '../utils/AppError';
         businessAddress,
         isVerified: false,
         otp,
+        otpExpiresAt
       });
 
 
@@ -89,6 +138,12 @@ import { AppError } from '../utils/AppError';
 
         throw new AppError("Owner not found", STATUS_CODES.NOT_FOUND);
       }
+
+      
+        if (!owner.otpExpiresAt || owner.otpExpiresAt < new Date()) {
+          throw new AppError("OTP expired", STATUS_CODES.BAD_REQUEST);
+        }
+      
   
       if (owner.otp !== otp) {
 
@@ -98,7 +153,9 @@ import { AppError } from '../utils/AppError';
   
       owner.isVerified = true;
       owner.otp = undefined;
+      owner.otpExpiresAt = undefined;
       await owner.save();
+      
   
       return { status: STATUS_CODES.OK, message: "Owner verified successfully" };
     }
@@ -116,8 +173,21 @@ import { AppError } from '../utils/AppError';
           throw new AppError("Owner is already verified", STATUS_CODES.BAD_REQUEST);
         }
     
+
+          const cooldown = 60 * 1000; 
+
+        if (
+            owner.otpExpiresAt &&
+             (owner.otpExpiresAt.getTime() - Date.now()) > (5 * 60 * 1000 - cooldown)
+        ) {
+            throw new AppError(
+           "Please wait before requesting a new OTP",
+           STATUS_CODES.TOO_MANY_REQUESTS
+        );
+   }    
        
         const otp = OTPService.generateOTP();
+         owner.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
         console.log("New OTP is:", otp);
         
         owner.otp = otp;
@@ -179,6 +249,16 @@ import { AppError } from '../utils/AppError';
 }
 
     async forgotPassword(email: string): Promise<{ status: number; message: string }> {
+
+         email = email?.trim().toLowerCase();
+
+
+         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+         if (!emailRegex.test(email)) {
+            throw new AppError("Invalid email format", STATUS_CODES.BAD_REQUEST);
+        }      
+
         const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
@@ -197,6 +277,7 @@ import { AppError } from '../utils/AppError';
     
         
         owner.otp = otp;
+        owner.otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
         await owner.save();
     
         
@@ -208,25 +289,50 @@ import { AppError } from '../utils/AppError';
         };
       }
     
-      async resetPassword(email: string, otp: string, newPassword: string): Promise<{ status: number; message: string }> {
+      async resetPassword(email: string, otp: string, newPassword: string, confirmPassword: string): Promise<{ status: number; message: string }> {
+
+        email = email?.trim().toLowerCase();
+         otp = otp?.trim();
+
+        if (!email || !otp || !newPassword || !confirmPassword) {
+          throw new AppError("All fields are required", STATUS_CODES.BAD_REQUEST);
+        }
+
         const owner = await this._ownerRepository.findByEmail(email);
     
         if (!owner) {
 
            throw new AppError(MESSAGES.ERROR.USER_NOT_FOUND, STATUS_CODES.NOT_FOUND);
         }
-    
-        if (owner.otp !== otp) {
 
-          throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
+        if (!owner.otpExpiresAt || owner.otpExpiresAt < new Date()) {
+           throw new AppError("OTP expired", STATUS_CODES.BAD_REQUEST);
         }
     
-     
+        if (!owner.otp || owner.otp !== otp) {
+           throw new AppError(MESSAGES.ERROR.OTP_INVALID, STATUS_CODES.BAD_REQUEST);
+        }        
+    
+          const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+  
+
+        if (!passwordRegex.test(newPassword)) {
+            throw new AppError(
+               "Password must be at least 8 characters and include letter, number and special character",
+                STATUS_CODES.BAD_REQUEST
+          );
+        }
+
+         if (newPassword !== confirmPassword) {
+          throw new AppError("Passwords do not match", STATUS_CODES.BAD_REQUEST);
+        }
+
         const hashedPassword = await bcrypt.hash(newPassword, 10);
     
         
         owner.password = hashedPassword;
         owner.otp = undefined;
+        owner.otpExpiresAt = undefined;
         await owner.save();
     
         return { 
@@ -256,16 +362,63 @@ async updateOwnerProfile(ownerId: string, data: OwnerProfileUpdateDto): Promise<
   }
 
 
-  //const updateData: Partial<IOwner> = {};
-  const updateData: Partial<OwnerProfileUpdateDto> = {};
+  const updateData: Partial<IOwner> = {};
+  // const updateData: Partial<OwnerProfileUpdateDto> = {};
 
-  if (data.name) updateData.name = data.name;
-  if (data.phone) updateData.phone = data.phone;
-  if (data.businessName) updateData.businessName = data.businessName;
-  if (data.businessAddress) updateData.businessAddress = data.businessAddress;
-  //if (data.profileImage) updateData.profileImage = data.profileImage;
+  if (data.name !== undefined) {
+    const name = data.name.trim();
 
-  const updatedOwner = await this._ownerRepository.update(ownerId, updateData);
+    if (!name) {
+      throw new AppError("Name is required", STATUS_CODES.BAD_REQUEST);
+    }
+
+    if (
+      name.length < 3 ||
+      !/^[A-Za-z\s'.-]+$/.test(name) ||
+      !/[A-Za-z]/.test(name)
+    ) {
+      throw new AppError("Enter a valid name", STATUS_CODES.BAD_REQUEST);
+    }
+
+    updateData.name = name;
+  }
+
+   if (data.phone !== undefined) {
+    const phone = data.phone.trim();
+
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      throw new AppError("Invalid phone number", STATUS_CODES.BAD_REQUEST);
+    }
+
+    updateData.phone = phone;
+  } 
+
+    if (data.businessName !== undefined) {
+    const businessName = data.businessName.trim();
+
+    if (!businessName || businessName.length < 2) {
+      throw new AppError("Business name is required", STATUS_CODES.BAD_REQUEST);
+    }
+
+    updateData.businessName = businessName;
+  }
+
+  if (data.businessAddress !== undefined) {
+    const address = data.businessAddress.trim();
+
+    if (!address) {
+      throw new AppError("Business address is required", STATUS_CODES.BAD_REQUEST);
+    }
+
+    updateData.businessAddress = address;
+  }
+
+
+  // const updatedOwner = await this._ownerRepository.update(ownerId, updateData);
+    const updatedOwner = await this._ownerRepository.updateOwnerSafe(
+    ownerId,
+    updateData
+  );
   
   if (!updatedOwner) {
 
@@ -361,6 +514,25 @@ async changePassword(ownerId: string, currentPassword: string, newPassword: stri
       throw new AppError("Current password is incorrect", STATUS_CODES.BAD_REQUEST);
   }
 
+    if (currentPassword === newPassword) {
+    throw new AppError(
+      "New password must be different from current password",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }
+
+
+  const passwordRegex =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+  if (!passwordRegex.test(newPassword)) {
+    throw new AppError(
+      "Password must be at least 8 characters and include letter, number and special character",
+      STATUS_CODES.BAD_REQUEST
+    );
+  }
+
+
   
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
@@ -379,6 +551,14 @@ async changePassword(ownerId: string, currentPassword: string, newPassword: stri
 
      throw new AppError("Failed to update password", STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
+
+    await this._notificationService.createNotification(
+    ownerId,
+    "Owner",
+    "system",
+    "Password Changed",
+    "Your password was changed successfully. If this wasn’t you, please contact support immediately."
+  );
 
     return {
     message: "Password changed successfully",
