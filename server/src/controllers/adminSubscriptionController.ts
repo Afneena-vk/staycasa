@@ -4,6 +4,8 @@ import { TOKENS } from "../config/tokens";
 import { IAdminSubscriptionService } from "../services/interfaces/IAdminSubscriptionService";
 import { IAdminSubscriptionController } from "./interfaces/IAdminSubscriptionController";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
+import { AppError } from "../utils/AppError";
+import { parseParam } from "../utils/parseParam";
 
 @injectable()
 export class AdminSubscriptionController implements IAdminSubscriptionController {
@@ -36,8 +38,17 @@ export class AdminSubscriptionController implements IAdminSubscriptionController
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { planId } = req.params;
+      // const { planId } = req.params;
+      const planId = parseParam(req.params.planId);
+
+
+    if (!planId) {
+      throw new AppError("Plan ID is required", STATUS_CODES.BAD_REQUEST);
+    }
+
       const { price, duration, maxProperties } = req.body;
+
+      
 
       const updatedPlan = await this._adminSubscriptionService.updatePlan(
         planId,

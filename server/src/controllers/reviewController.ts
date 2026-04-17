@@ -8,6 +8,7 @@ import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import logger from '../utils/logger';
 import { CreateReviewDto } from '../dtos/review.dto';
 import { AppError } from '../utils/AppError';
+import { parseParam } from '../utils/parseParam';
 
 @injectable()
 export class ReviewController implements IReviewController {
@@ -21,7 +22,13 @@ export class ReviewController implements IReviewController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { bookingId } = req.params;
+      // const { bookingId } = req.params;
+
+      const bookingId = parseParam(req.params.bookingId);
+
+     if (!bookingId) {
+       throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+     }
 
       const userId = req.userId!;
       const reviewData: CreateReviewDto = req.body;
@@ -57,7 +64,13 @@ async getReviewsByProperty(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { propertyId } = req.params;
+    // const { propertyId } = req.params;
+
+    const propertyId = parseParam(req.params.propertyId);
+
+    if (!propertyId) {
+      throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
     const reviews = await this._reviewService.getReviewsByPropertyId(propertyId);
 
@@ -77,7 +90,13 @@ async getReviewsByPropertyForAdmin(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { propertyId } = req.params;
+    // const { propertyId } = req.params;
+
+    const propertyId = parseParam(req.params.propertyId);
+
+    if (!propertyId) {
+       throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
     const reviews = await this._reviewService.getReviewsByPropertyForAdmin(propertyId);
 
@@ -93,7 +112,14 @@ async getReviewsByPropertyForAdmin(
 
 async toggleReviewVisibility(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { reviewId } = req.params;
+    // const { reviewId } = req.params;
+
+    const reviewId = parseParam(req.params.reviewId);
+
+  if (!reviewId) {
+     throw new AppError("Review ID is required", STATUS_CODES.BAD_REQUEST);
+  }
+
     const { hide } = req.body; 
 
     if (typeof hide !== 'boolean') {
@@ -117,7 +143,13 @@ async toggleReviewVisibility(req: Request, res: Response, next: NextFunction): P
 
 async getReviewsByPropertyForOwner(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { propertyId } = req.params;
+    // const { propertyId } = req.params;
+
+    const propertyId = parseParam(req.params.propertyId);
+
+    if (!propertyId) {
+      throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+    }
     
     const ownerId = req.userId!; 
 

@@ -6,6 +6,7 @@ import { IMessageService } from '../services/interfaces/IMessageService';
 import { TOKENS } from '../config/tokens';
 import { STATUS_CODES, MESSAGES } from '../utils/constants';
 import { AppError } from '../utils/AppError';
+import { parseParam } from '../utils/parseParam';
 
 @injectable()
 export class MessageController implements IMessageController {
@@ -15,7 +16,9 @@ export class MessageController implements IMessageController {
 
   async getConversation(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { ownerId, propertyId } = req.params;
+      // const { ownerId, propertyId } = req.params;
+      const ownerId = parseParam(req.params.ownerId);
+      const propertyId = parseParam(req.params.propertyId);
       
 
        const userId = req.userId;
@@ -27,6 +30,10 @@ export class MessageController implements IMessageController {
 
         if (!userType) {
            throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+        }
+
+        if (!ownerId || !propertyId) {
+            throw new AppError("Owner ID and Property ID are required", STATUS_CODES.BAD_REQUEST);
         }
 
       const resolvedUserId = userType === 'user' ? userId : ownerId;

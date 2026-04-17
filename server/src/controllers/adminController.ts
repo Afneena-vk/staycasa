@@ -61,12 +61,9 @@ export class AdminController implements IAdminController {
       // const { userId } = req.params;
       const userId = req.params.userId;
 
+
       if (!userId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "User ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
+       throw new AppError("User ID is required", STATUS_CODES.BAD_REQUEST);
       }
 
        const id = Array.isArray(userId) ? userId[0] : userId;
@@ -93,13 +90,9 @@ export class AdminController implements IAdminController {
       // const { userId } = req.params;
       const userId = req.params.userId;
 
-      if (!userId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "User ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
-      }
+     if (!userId) {
+       throw new AppError("User ID is required", STATUS_CODES.BAD_REQUEST);
+     }
 
       const id = Array.isArray(userId) ? userId[0] : userId;
 
@@ -126,13 +119,9 @@ export class AdminController implements IAdminController {
       // const { userId } = req.params;
       const userId = parseParam(req.params.userId);
 
-      if (!userId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "User ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
-      }
+    if (!userId) {
+      throw new AppError("User ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
       const result = await this._adminService.getUserById(userId);
 
@@ -172,11 +161,7 @@ export class AdminController implements IAdminController {
       const ownerId = parseParam(req.params.ownerId);
 
       if (!ownerId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Owner ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
+       throw new AppError("Owner ID is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._adminService.blockOwner(ownerId);
@@ -200,12 +185,9 @@ export class AdminController implements IAdminController {
       // const { ownerId } = req.params;
       const ownerId = parseParam(req.params.ownerId);
 
+      
       if (!ownerId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Owner ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
+       throw new AppError("Owner ID is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._adminService.unblockOwner(ownerId);
@@ -229,12 +211,9 @@ export class AdminController implements IAdminController {
       // const { ownerId } = req.params;
       const ownerId = parseParam(req.params.ownerId);
 
+
       if (!ownerId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Owner ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
+       throw new AppError("Owner ID is required", STATUS_CODES.BAD_REQUEST);
       }
 
       const result = await this._adminService.getOwnerById(ownerId);
@@ -250,13 +229,12 @@ export class AdminController implements IAdminController {
     try {
       // const { ownerId } = req.params;
       const ownerId = parseParam(req.params.ownerId);
+
+      
       if (!ownerId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Owner ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
+       throw new AppError("Owner ID is required", STATUS_CODES.BAD_REQUEST);
       }
+
       const result = await this._adminService.approveOwner(ownerId);
       res.status(result.status).json(result);
     
@@ -269,13 +247,12 @@ export class AdminController implements IAdminController {
     try {
       // const { ownerId } = req.params;
       const ownerId = parseParam(req.params.ownerId);
+
+     
       if (!ownerId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          error: "Owner ID is required",
-          status: STATUS_CODES.BAD_REQUEST,
-        });
-        return;
+       throw new AppError("Owner ID is required", STATUS_CODES.BAD_REQUEST);
       }
+
       const result = await this._adminService.rejectOwner(ownerId);
       res.status(result.status).json(result);
     

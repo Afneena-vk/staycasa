@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema, ObjectId } from 'mongoose';
-
+// import mongoose, { Document, Schema, ObjectId } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 interface Address {
     houseNo: string;
@@ -16,14 +16,16 @@ interface Address {
 }
 
 export interface IUser extends Document {
-  _id: ObjectId;
+  
+  _id: Types.ObjectId;
   name: string;
   email: string;
   password?: string;
   phone?: string;
   // profileImage?: string;
    profileImage?: ProfileImage | null;
-  bookings?: ObjectId;
+  // bookings?: ObjectId;
+  bookings?: Types.ObjectId;
   status: 'active' | 'blocked';
   isVerified: boolean;
   otp?: string;

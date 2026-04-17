@@ -6,6 +6,7 @@ import { TOKENS } from "../config/tokens";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import logger from "../utils/logger";
 import { AppError } from "../utils/AppError";
+import { parseParam } from "../utils/parseParam";
 
 @injectable()
 export class PropertyController implements IPropertyController {
@@ -86,7 +87,12 @@ export class PropertyController implements IPropertyController {
         throw new AppError("Unauthorized Access", STATUS_CODES.UNAUTHORIZED);
       }
 
-      const { propertyId } = req.params;
+      //const { propertyId } = req.params;
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+        throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const property = await this._propertyService.getOwnerPropertyById(
         ownerId,
@@ -115,7 +121,12 @@ export class PropertyController implements IPropertyController {
         throw new AppError("Unauthorized Access", STATUS_CODES.UNAUTHORIZED);
       }
 
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+         throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const propertyData = {
         ...req.body,
@@ -154,7 +165,12 @@ export class PropertyController implements IPropertyController {
         throw new AppError("Unauthorized Access", STATUS_CODES.UNAUTHORIZED);
       }
 
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+        throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const result = await this._propertyService.deleteOwnerProperty(
         ownerId,
@@ -199,7 +215,13 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+         throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
+
       const property =
         await this._propertyService.getAdminPropertyById(propertyId);
       console.log("property in the admin side fetched successfully:", property);
@@ -218,7 +240,12 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+        throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const result = await this._propertyService.approveProperty(propertyId);
       console.log("property activated successfully", result);
@@ -234,7 +261,13 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+          throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const result = await this._propertyService.rejectProperty(propertyId);
       console.log("Property rejected successfully:", result);
@@ -251,7 +284,14 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+         throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
+
       const result =
         await this._propertyService.blockPropertyByAdmin(propertyId);
       res.status(result.status).json(result);
@@ -266,7 +306,14 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+
+         const propertyId = parseParam(req.params.propertyId);
+
+        if (!propertyId) {
+           throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+        }
+
       const result =
         await this._propertyService.unblockPropertyByAdmin(propertyId);
       res.status(result.status).json(result);
@@ -306,7 +353,14 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+
+    const propertyId = parseParam(req.params.propertyId);
+
+    if (!propertyId) {
+      throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+    }
+
       const property =
         await this._propertyService.getActivePropertyById(propertyId);
       console.log("property detail fetched successfully:", property);
@@ -325,7 +379,14 @@ export class PropertyController implements IPropertyController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+
+      const propertyId = parseParam(req.params.propertyId);
+
+      if (!propertyId) {
+         throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+      }
+
       //const { checkIn, checkOut, guests } = req.query;
       const { checkIn, rentalPeriod, guests } = req.query;
 

@@ -12,7 +12,7 @@ const OwnerSubscriptionPage = () => {
     currentSubscription,
     fetchCurrentSubscription,
     subscribeToPlan,
-    upgradeSubscription, // ✅ added
+    upgradeSubscription, 
     subscriptionLoading,
     subscriptionError,
     subscriptionMessage,
@@ -39,7 +39,7 @@ const OwnerSubscriptionPage = () => {
 
   useEffect(() => {
     fetchPlansForOwner();
-    fetchCurrentSubscription(); // ✅ important
+    fetchCurrentSubscription(); 
   }, []);
 
   return (

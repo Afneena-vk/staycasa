@@ -1,9 +1,11 @@
-import mongoose, { Document, Schema, ObjectId  } from 'mongoose';
+// import mongoose, { Document, Schema, ObjectId  } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export type OwnerStatus = 'pending' | 'approved' | 'rejected';
 
 export interface IOwner extends Document {
-  _id: ObjectId;
+  
+  _id: Types.ObjectId;
   name: string;
   email: string;
   phone: string;

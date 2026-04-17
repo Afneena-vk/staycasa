@@ -6,6 +6,7 @@ import { TOKENS } from "../config/tokens";
 import { RecipientModel } from "../models/notificationModel";
 import { STATUS_CODES, MESSAGES} from "../utils/constants";
 import { AppError } from "../utils/AppError";
+import { parseParam } from "../utils/parseParam";
 
 @injectable()
 export class NotificationController implements INotificationController {
@@ -72,7 +73,12 @@ if (!userType) {
 
   async getNotificationById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { notificationId } = req.params;
+      // const { notificationId } = req.params;
+      const notificationId = parseParam(req.params.notificationId);
+
+      if (!notificationId) {
+        throw new AppError("Notification ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const result = await this._notificationService.getNotificationById(notificationId);
 
@@ -85,13 +91,19 @@ if (!userType) {
 
   async markAsRead(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { notificationId } = req.params;
+      // const { notificationId } = req.params;
+
+      const notificationId = parseParam(req.params.notificationId);
+
+      if (!notificationId) {
+         throw new AppError("Notification ID is required", STATUS_CODES.BAD_REQUEST);
+      }
     
       const userId= req.userId;
 
-if (!userId) {
-  throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
-}
+      if (!userId) {
+          throw new AppError(MESSAGES.ERROR.UNAUTHORIZED, STATUS_CODES.UNAUTHORIZED);
+      }
 
       const result = await this._notificationService.markAsRead(notificationId,userId);
 
@@ -137,7 +149,12 @@ if (!userType) {
 
 async deleteNotification(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { notificationId } = req.params;
+      // const { notificationId } = req.params;
+      const notificationId = parseParam(req.params.notificationId);
+
+      if (!notificationId) {
+        throw new AppError("Notification ID is required", STATUS_CODES.BAD_REQUEST);
+      }
 
       const result = await this._notificationService.deleteNotification(notificationId);
 

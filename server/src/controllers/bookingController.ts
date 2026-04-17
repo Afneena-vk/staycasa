@@ -6,6 +6,7 @@ import { TOKENS } from "../config/tokens";
 import { STATUS_CODES, MESSAGES } from "../utils/constants";
 import logger from "../utils/logger";
 import { AppError } from "../utils/AppError";
+import { parseParam } from "../utils/parseParam";
 
 @injectable()
 export class BookingController implements IBookingController {
@@ -153,8 +154,18 @@ async createPendingBooking(
 
 async retryPayment(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { bookingId } = req.params;
-   
+    // const { bookingId } = req.params;
+    const bookingId = parseParam(req.params.bookingId);
+
+    // if (!bookingId) {
+    //   res.status(STATUS_CODES.BAD_REQUEST).json({
+    //     message: "Booking ID is required",
+    //   });
+    //   return;
+    // }
+    if (!bookingId) {
+      throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
        const userId = req.userId;
 
@@ -228,8 +239,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const { bookingId } = req.params;
-     
+      // const { bookingId } = req.params;
+      const bookingId = parseParam(req.params.bookingId);
+
+
+    if (!bookingId) {
+     throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
       const userId = req.userId;
 
@@ -259,7 +275,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const { propertyId } = req.params;
+      // const { propertyId } = req.params;
+      const propertyId = parseParam(req.params.propertyId);
+
+    if (!propertyId) {
+      throw new AppError("Property ID is required", STATUS_CODES.BAD_REQUEST);
+    }
+
       const blockedDates = await this._bookingService.getBlockedDates(
         propertyId
       );
@@ -331,8 +353,12 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const { bookingId } = req.params;
+      // const { bookingId } = req.params;
+      const bookingId = parseParam(req.params.bookingId);
       
+    if (!bookingId) {
+      throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
       const ownerId = req.userId;
 
@@ -363,7 +389,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const { bookingId } = req.params;
+      // const { bookingId } = req.params;
+
+      const bookingId = parseParam(req.params.bookingId);
+
+    if (!bookingId) {
+      throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+    }
     
       const userId = req.userId;
 
@@ -391,8 +423,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const { bookingId } = req.params;
-      
+      // const { bookingId } = req.params;
+
+    const bookingId = parseParam(req.params.bookingId);
+
+    if (!bookingId) {
+      throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+    }
 
       const ownerId = req.userId;
 
@@ -465,14 +502,13 @@ async retryPayment(req: Request, res: Response, next: NextFunction): Promise<voi
     next: NextFunction
   ): Promise<void> {
     try {
-      const { bookingId } = req.params;
-      if (!bookingId) {
-        res.status(STATUS_CODES.BAD_REQUEST).json({
-          status: STATUS_CODES.BAD_REQUEST,
-          error: "Booking ID is required",
-        });
-        return;
-      }
+      // const { bookingId } = req.params;
+      const bookingId = parseParam(req.params.bookingId);
+
+     if (!bookingId) {
+       throw new AppError("Booking ID is required", STATUS_CODES.BAD_REQUEST);
+     }
+
       const bookingDetails =
         await this._bookingService.getBookingDetailsForAdmin(bookingId);
 

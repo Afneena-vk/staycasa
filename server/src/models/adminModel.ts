@@ -1,9 +1,11 @@
-import mongoose, { Document, Schema, ObjectId } from 'mongoose';
+// import mongoose, { Document, Schema, ObjectId } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 
 
 export interface IAdmin extends Document {
-  _id: ObjectId;
+ 
+  _id: Types.ObjectId;
   name: string;
   email: string;
   password: string;
