@@ -104,19 +104,33 @@ const AdminDashboard = () => {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <DashboardPieChart title="Users" data={dashboardStats.users} />
           <DashboardPieChart title="Owners" data={dashboardStats.owners} />
-          {/* <DashboardPieChart title="Properties" data={dashboardStats.properties} />
-          <DashboardPieChart title="Bookings" data={dashboardStats.bookings} /> */}
+
           <DashboardBarChart title="Properties" data={dashboardStats.properties} />
           <DashboardBarChart title="Bookings" data={dashboardStats.bookings} />
-        </div>
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {/* <RevenueLineChart data={dashboardStats.monthlyRevenue} /> */}
+        </div> */}
+        {/* <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
           <RevenueLineChart data={formattedMonthlyRevenue} />
 
-        </div>
+        </div> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <DashboardPieChart title="Users" data={dashboardStats.users} />
+  <DashboardPieChart title="Owners" data={dashboardStats.owners} />
+</div>
+
+{/* Bar charts */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <DashboardBarChart title="Properties" data={dashboardStats.properties} />
+  <DashboardBarChart title="Bookings" data={dashboardStats.bookings} />
+</div>
+
+{/* Revenue */}
+<div className="grid grid-cols-1 xl:grid-cols-1 gap-6">
+  <RevenueLineChart data={formattedMonthlyRevenue} />
+</div>
 
       </div>
     // </ModernAdminLayout>
