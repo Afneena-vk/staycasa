@@ -207,30 +207,24 @@ export class UserController implements IUserController {
 
       const csrfToken = this.generateCsrfToken();
 
-      // res.cookie("access-token", result.token, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   // sameSite: "strict",
-      //   sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
-      //   maxAge: accessTokenMaxAge,
-      //   path: "/",
-      // });
+      res.cookie("access-token", result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        // sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".staycasa.co.in" : "localhost",
+        maxAge: accessTokenMaxAge,
+        path: "/",
+      });
    
-res.cookie("access-token", result.token, {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-  ...(process.env.NODE_ENV === "production" && {
-    domain: ".staycasa.co.in",
-  }),
-  path: "/",
-});
+
 
       res.cookie("refresh-token", result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         // sameSite: "strict",
-        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".staycasa.co.in" : "localhost",
         maxAge: refreshTokenMaxAge,
         path: "/",
       });
@@ -239,7 +233,8 @@ res.cookie("access-token", result.token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",
         // sameSite: "strict",
-        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        domain: process.env.NODE_ENV === "production" ? ".staycasa.co.in" : "localhost",
         maxAge: refreshTokenMaxAge,
         path: "/",
       });
