@@ -271,7 +271,10 @@ const ActivePropertiesUser: React.FC = () => {
         </p>
 
         <p className="text-sm text-gray-600 mt-1">
-          Lease: {property.minLeasePeriod} - {property.maxLeasePeriod} months
+          {/* Lease: {property.minLeasePeriod} - {property.maxLeasePeriod} months */}
+            {property.minLeasePeriod === property.maxLeasePeriod
+    ? `Rent: ${property.minLeasePeriod} month${property.minLeasePeriod > 1 ? "s" : ""}`
+    : `Rent: ${property.minLeasePeriod} - ${property.maxLeasePeriod} months`}
         </p>
 
         {/* Features */}

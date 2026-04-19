@@ -220,8 +220,12 @@ const visibleReviews = showAllReviews
           </span>
         </p> */}
         <p className="text-gray-700">
-          Lease Period: {selectedProperty.minLeasePeriod} -{" "}
-          {selectedProperty.maxLeasePeriod} months
+          {/* Lease Period: {selectedProperty.minLeasePeriod} -{" "}
+          {selectedProperty.maxLeasePeriod} months */}
+          {selectedProperty.minLeasePeriod === selectedProperty.maxLeasePeriod
+    ? `Rental Period: ${selectedProperty.minLeasePeriod} month${selectedProperty.minLeasePeriod > 1 ? "s" : ""}`
+    : `Rental Period: ${selectedProperty.minLeasePeriod} - ${selectedProperty.maxLeasePeriod} months`}
+        
         </p>
       </div>
 

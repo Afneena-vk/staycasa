@@ -578,15 +578,31 @@ const endDate = new Date(checkInDate);
 endDate.setMonth(endDate.getMonth() + rentalPeriod);
 
 
- if (
-        rentalPeriod < property.minLeasePeriod ||
-        rentalPeriod > property.maxLeasePeriod
-      ) {
-        return PropertyMapper.toCheckAvailabilityResponse(
-          false,
-          `Lease period must be between ${property.minLeasePeriod} and ${property.maxLeasePeriod} months.`
-        );
-      }
+//  if (
+//         rentalPeriod < property.minLeasePeriod ||
+//         rentalPeriod > property.maxLeasePeriod
+//       ) {
+//         return PropertyMapper.toCheckAvailabilityResponse(
+//           false,
+//           `Lease period must be between ${property.minLeasePeriod} and ${property.maxLeasePeriod} months.`
+//         );
+//       }
+if (
+  rentalPeriod < property.minLeasePeriod ||
+  rentalPeriod > property.maxLeasePeriod
+) {
+  if (property.minLeasePeriod === property.maxLeasePeriod) {
+    return PropertyMapper.toCheckAvailabilityResponse(
+      false,
+      `Stay duration must be ${property.minLeasePeriod} month${property.minLeasePeriod > 1 ? "s" : ""}.`
+    );
+  }
+
+  return PropertyMapper.toCheckAvailabilityResponse(
+    false,
+    `Stay duration must be between ${property.minLeasePeriod} and ${property.maxLeasePeriod} months.`
+  );
+}
 
   // const bookings = await this._bookingRepository.getConfirmedBookingsByPropertyId(propertyId);
 

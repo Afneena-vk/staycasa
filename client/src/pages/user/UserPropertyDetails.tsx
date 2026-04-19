@@ -367,7 +367,10 @@ const UserPropertyDetails = () => {
                       <FaRegClock className="text-blue-600 mt-0.5 flex-shrink-0" />
                       <div>
                         <strong className="text-slate-900">Rental Period:</strong>{" "}
-                        {property.minLeasePeriod} to {property.maxLeasePeriod} months
+                        {/* {property.minLeasePeriod} to {property.maxLeasePeriod} months */}
+                          {property.minLeasePeriod === property.maxLeasePeriod
+    ? `${property.minLeasePeriod} month${property.minLeasePeriod > 1 ? "s" : ""}`
+    : `${property.minLeasePeriod} to ${property.maxLeasePeriod} months`}
                       </div>
                     </div>
                     <div className="flex items-start gap-2.5 py-[11px] text-[0.9rem] text-slate-700">
@@ -489,7 +492,10 @@ const UserPropertyDetails = () => {
                         <span className="text-white/50 text-[0.9rem]">/month</span>
                       </div>
                       <div className="mt-1.5 text-[0.8rem] text-white/45">
-                        Lease: {property.minLeasePeriod}–{property.maxLeasePeriod} months
+                        {/* Lease: {property.minLeasePeriod}–{property.maxLeasePeriod} months */}
+                          {property.minLeasePeriod === property.maxLeasePeriod
+    ? `Rent: ${property.minLeasePeriod} month${property.minLeasePeriod > 1 ? "s" : ""}`
+    : `Rent: ${property.minLeasePeriod}–${property.maxLeasePeriod} months`}
                       </div>
                     </div>
                   </div>
@@ -524,7 +530,10 @@ const UserPropertyDetails = () => {
                         className={INPUT}
                       />
                       <div className="text-[0.72rem] text-slate-400 mt-1">
-                        Min {property.minLeasePeriod} — Max {property.maxLeasePeriod} months
+                        {/* Min {property.minLeasePeriod} — Max {property.maxLeasePeriod} months */}
+                          {property.minLeasePeriod === property.maxLeasePeriod
+    ? `Rent: ${property.minLeasePeriod} month${property.minLeasePeriod > 1 ? "s" : ""}`
+    : `Rent: ${property.minLeasePeriod}–${property.maxLeasePeriod} months`}
                       </div>
                     </div>
  

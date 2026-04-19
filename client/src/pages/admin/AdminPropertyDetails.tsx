@@ -161,7 +161,13 @@ const visibleReviews = showAllReviews
             <p><strong>Bathrooms:</strong> {p.bathrooms}</p>
             <p><strong>Furnishing:</strong> {p.furnishing}</p>
             <p><strong>Max Guests:</strong> {p.maxGuests}</p>
-            <p><strong>Lease Period:</strong> {p.minLeasePeriod} – {p.maxLeasePeriod} months</p>
+            {/* <p><strong>Lease Period:</strong> {p.minLeasePeriod} – {p.maxLeasePeriod} months</p> */}
+            <p>
+  <strong>Rental Period:</strong>{" "}
+  {p.minLeasePeriod === p.maxLeasePeriod
+    ? `${p.minLeasePeriod} month${p.minLeasePeriod > 1 ? "s" : ""}`
+    : `${p.minLeasePeriod} – ${p.maxLeasePeriod} months`}
+</p>
             <p><strong>Features:</strong> {p.features?.join(", ") || "None"}</p>
           </div>
 

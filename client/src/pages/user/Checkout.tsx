@@ -249,7 +249,10 @@ const isStartDateValid = (dateString: string) => {
 </p>
 
                 <p className="text-sm text-gray-500 mt-1">
-                  Lease Period: {property.minLeasePeriod} – {property.maxLeasePeriod} months
+                  {/* Rent Period: {property.minLeasePeriod} – {property.maxLeasePeriod} months */}
+                    {property.minLeasePeriod === property.maxLeasePeriod
+    ? `Rental Period: ${property.minLeasePeriod} month${property.minLeasePeriod > 1 ? "s" : ""}`
+    : `Rental Period: ${property.minLeasePeriod} – ${property.maxLeasePeriod} months`}
                 </p>
               </div>
             </div>
