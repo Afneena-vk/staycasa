@@ -431,6 +431,7 @@ if (
 
     if (data.phone !== undefined) {
     const phone = data.phone?.trim() || "";
+    
 
     if (phone && !/^[6-9]\d{9}$/.test(phone)) {
       throw new AppError(
