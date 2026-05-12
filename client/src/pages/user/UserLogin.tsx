@@ -88,7 +88,7 @@ const UserLogin = () => {
             <p className="text-gray-500 mb-6">Login to book your perfect vacation stay</p>
 
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-              <div className="rounded-md shadow-sm -space-y-px">
+              <div className="rounded-md shadow-sm space-y-4">
                 <div>
                   <label htmlFor="email" className="sr-only">Email address</label>
                   <input
